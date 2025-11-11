@@ -1,0 +1,54 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "./Button";
+import { MagnifierIcon } from "src/icons/MagnifierIcon";
+
+const meta = {
+  component: Button,
+} satisfies Meta<typeof Button>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = {
+  render: (args) => <Button {...args}>Dark Button</Button>,
+};
+
+export const LeftIcon: Story = {
+  render: (args) => (
+    <Button {...args} leftIcon={<span>🔍</span>}>
+      Search
+    </Button>
+  ),
+};
+
+export const RightIcon: Story = {
+  render: (args) => (
+    <Button {...args} rightIcon={<span>➡️</span>}>
+      Next
+    </Button>
+  ),
+};
+
+export const BothIcons: Story = {
+  render: (args) => (
+    <Button {...args} leftIcon={<span>🚀</span>} rightIcon={<span>🚀</span>}>
+      Search Next
+    </Button>
+  ),
+};
+
+export const WithSvgIcon: Story = {
+  render: (args) => (
+    <Button {...args} leftIcon={<MagnifierIcon />}>
+      SVG Icon
+    </Button>
+  ),
+};
+
+export const WithoutText: Story = {
+  render: (args) => (
+    <Button {...args} aria-label="Magnifier">
+      <MagnifierIcon />
+    </Button>
+  ),
+};
