@@ -26,11 +26,13 @@ export const decorators: Preview["decorators"] = [
 
 const preview: Preview = {
   parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
+    docs: {
+      controls: {
+        sort: 'requiredFirst',
       },
+    },
+    controls: {
+      sort: 'requiredFirst',
     },
 
     a11y: {
