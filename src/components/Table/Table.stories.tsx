@@ -55,7 +55,8 @@ export const Primary: Story = {
     const pageSize = 5; // Number of rows per page
     const pageCount = Math.ceil(rows.length / pageSize);
 
-    const emptyRows = activePageIndex > 0 ? Math.max(0, (1 + activePageIndex) * pageSize - rows.length) : 0;
+    const emptyRows =
+      activePageIndex > 0 ? Math.max(0, (1 + activePageIndex) * pageSize - rows.length) : 0;
 
     return (
       <Stack style={{ overflow: 'auto' }}>

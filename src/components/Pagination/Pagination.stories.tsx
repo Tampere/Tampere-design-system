@@ -40,7 +40,9 @@ export const Primary: Story = {
         onPageChange={(idx) => {
           updateArgs({ activePageIndex: idx });
         }}
-        getAriaLabelForButton={(pageIndex) => `Page ${String(pageIndex + 1)} of ${String(args.pageCount)}`}
+        getAriaLabelForButton={(pageIndex) =>
+          `Page ${String(pageIndex + 1)} of ${String(args.pageCount)}`
+        }
         pageCount={args.pageCount}
         maxVisiblePages={args.maxVisiblePages}
       />

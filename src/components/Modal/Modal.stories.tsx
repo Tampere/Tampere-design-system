@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-// react hooks not required here; story state is managed via Storybook args
 import { useArgs } from '@storybook/client-api';
 import { Modal } from './Modal';
 import { Button } from 'src/components/Button/Button';

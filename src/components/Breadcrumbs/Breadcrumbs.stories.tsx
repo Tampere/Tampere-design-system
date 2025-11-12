@@ -3,7 +3,10 @@ import { Breadcrumbs, type Breadcrumb } from './Breadcrumbs';
 
 const meta: Meta<typeof Breadcrumbs> = {
   argTypes: {
-    items: { control: 'object', description: 'Array of breadcrumb items { label, href?, linkComponent? }' },
+    items: {
+      control: 'object',
+      description: 'Array of breadcrumb items { label, href?, linkComponent? }',
+    },
     isMobile: { control: 'boolean', description: 'Render mobile condensed view' },
     ariaLabel: { control: 'text', description: 'Accessible label for the breadcrumb nav' },
   },
