@@ -2,7 +2,7 @@ import { Box, Flex } from '@mantine/core';
 import cx from 'clsx';
 import { root, input, icon, inner, inputLabel } from './Checkbox.css';
 
-import { type ComponentPropsWithoutRef, useId, useState, useEffect } from 'react';
+import { type ComponentPropsWithoutRef, useId, useState } from 'react';
 import { CheckboxCheckedIcon } from 'src/icons/CheckboxCheckedIcon';
 import { CheckboxUncheckedIcon } from 'src/icons/CheckboxUncheckedIcon';
 
@@ -14,11 +14,9 @@ export function Checkbox({ label, ...inputProps }: Props) {
   const [checked, setChecked] = useState(inputProps.checked ?? false);
 
   // Keep internal state in sync when the parent provides a controlled `checked` prop.
-  useEffect(() => {
-    if (typeof inputProps.checked === 'boolean') {
-      setChecked(inputProps.checked);
-    }
-  }, [inputProps.checked]);
+  if (inputProps.checked !== checked) {
+    setChecked(!!inputProps.checked);
+  }
 
   const uniqueId = useId();
   const safeId = inputProps.id ?? uniqueId;
