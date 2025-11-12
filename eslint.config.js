@@ -39,6 +39,7 @@ export default defineConfig([
       'prettier/prettier': 'error',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      '@typescript-eslint/no-unused-vars': 'warn',
     },
   },
 

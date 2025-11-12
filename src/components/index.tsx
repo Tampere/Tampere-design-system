@@ -20,4 +20,5 @@ export {
   TableRow,
 } from './Table/Table';
 export { TextField } from './TextField/TextField';
+export { ThemeProvider, type ThemeProviderProps } from './ThemeProvider';
 export { Typography } from './Typography/Typography';

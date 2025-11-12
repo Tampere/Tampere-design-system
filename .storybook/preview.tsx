@@ -1,27 +1,15 @@
 import type { Preview } from '@storybook/react-vite';
 
-import '@mantine/core/styles.css';
-import '../src/theme/theme.css.ts';
-
-import '@fontsource/montserrat/500.css';
-import '@fontsource/montserrat/600.css';
-import '@fontsource/montserrat/700.css';
-import '@fontsource/montserrat/800.css';
-import '@fontsource/montserrat/900.css';
-import '@fontsource/open-sans/400.css';
-import '@fontsource/open-sans/500.css';
-import '@fontsource/open-sans/600.css';
-import '@fontsource/open-sans/700.css';
-
-import { Box, MantineProvider } from '@mantine/core';
+import { Box } from '@mantine/core';
+import { ThemeProvider } from '../src/components';
 
 export const decorators: Preview['decorators'] = [
   (Story) => (
-    <MantineProvider>
+    <ThemeProvider>
       <Box style={{ margin: '3rem' }}>
         <Story />
       </Box>
-    </MantineProvider>
+    </ThemeProvider>
   ),
 ];
 
