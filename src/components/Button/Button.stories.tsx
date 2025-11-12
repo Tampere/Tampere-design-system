@@ -3,6 +3,17 @@ import { Button } from './Button';
 import { MagnifierIcon } from 'src/icons/MagnifierIcon';
 
 const meta = {
+  argTypes: {
+    children: { control: 'text' },
+    variant: { control: { type: 'select' }, options: ['filled', 'outlined', 'text'] },
+    disabled: { control: 'boolean' },
+    onClick: { action: 'clicked' },
+  },
+  args: {
+    children: 'Button',
+    variant: 'filled',
+    disabled: false,
+  },
   component: Button,
 } satisfies Meta<typeof Button>;
 

@@ -19,14 +19,14 @@ export const decorators: Preview['decorators'] = [
   (Story) => (
     <MantineProvider>
       <Box style={{ margin: '3rem' }}>
-        {' '}
-        <Story />{' '}
+        <Story />
       </Box>
     </MantineProvider>
   ),
 ];
 
 const preview: Preview = {
+  tags: ['autodocs'],
   parameters: {
     docs: {
       controls: {

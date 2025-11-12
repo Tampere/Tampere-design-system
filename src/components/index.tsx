@@ -3,7 +3,7 @@ export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { Button } from './Button/Button';
 export { Checkbox } from './Checkbox/Checkbox';
 export { IconButton } from './IconButton/IconButton';
-export { Loader } from './Loader/Loader';
+export { LoadingSpinner } from './LoadingIndicators/LoadingIndicators';
 export { Modal } from './Modal/Modal';
 export { NavigationLink } from './NavigationLink/NavigationLink';
 export { Pagination } from './Pagination/Pagination';

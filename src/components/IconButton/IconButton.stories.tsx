@@ -4,6 +4,19 @@ import { IconButton } from '@treds';
 import { MagnifierIcon } from 'src/icons/MagnifierIcon';
 
 const meta = {
+  argTypes: {
+    children: { control: 'text' },
+    variant: { control: 'text' },
+    size: { control: { type: 'select' }, options: ['xs', 'sm', 'md', 'lg', 'xl'] },
+    disabled: { control: 'boolean' },
+    onClick: { action: 'clicked' },
+  },
+  args: {
+    children: '<Icon />',
+    variant: 'light',
+    size: 'md',
+    disabled: false,
+  },
   component: IconButton,
 } satisfies Meta<typeof IconButton>;
 

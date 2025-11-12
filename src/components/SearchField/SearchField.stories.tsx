@@ -2,6 +2,20 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from 'src/components';
 
 const meta: Meta<typeof SearchField> = {
+  argTypes: {
+    inputLabel: { control: 'text' },
+    data: { control: 'object' },
+    searchButtonLabel: { control: 'text' },
+    clearButtonLabel: { control: 'text' },
+    onSearch: { action: 'searched' },
+    onChange: { action: 'changed' },
+  },
+  args: {
+    inputLabel: 'Search',
+    data: [],
+    searchButtonLabel: 'Search',
+    clearButtonLabel: 'Clear',
+  },
   component: SearchField,
 };
 

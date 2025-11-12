@@ -5,7 +5,7 @@ const {
   components: { loadingIndicator },
 } = vars;
 
-export const loader = style({
+export const LoadingIndicatorStyles = style({
   selectors: {
     '&::after': {
       borderColor: `${loadingIndicator.indicator} ${loadingIndicator.indicator} ${loadingIndicator.indicator} ${loadingIndicator.background}`,

@@ -32,6 +32,7 @@
     "@storybook/addon-docs": "^10.0.7",
     "@storybook/addon-onboarding": "^10.0.7",
     "@storybook/addon-vitest": "^10.0.7",
+    "@storybook/client-api": "^7.6.17",
     "@storybook/react-vite": "^10.0.7",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.3",

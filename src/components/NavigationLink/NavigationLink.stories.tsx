@@ -13,6 +13,25 @@ const meta = {
       control: 'text',
       description: 'Link destination URL',
     },
+    variant: {
+      control: { type: 'select' },
+      options: ['default', 'inverted'],
+      description: 'Visual variant of the link',
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['md', 'sm'],
+      description: 'Size of the link',
+    },
+    children: { control: 'text', description: 'Link text or children' },
+    onClick: { action: 'clicked' },
+  },
+  args: {
+    href: '#',
+    children: 'Navigointilinkki',
+    isSelected: false,
+    variant: 'default',
+    size: 'md',
   },
 } satisfies Meta<typeof NavigationLink>;
 

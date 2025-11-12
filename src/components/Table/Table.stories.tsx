@@ -10,9 +10,16 @@ import {
   TableHeaderCell,
   TableRow,
 } from 'src/components';
-import { useState } from 'react';
+// react hooks not required here; story pagination state is managed via Storybook args
+import { useArgs } from '@storybook/client-api';
 
 const meta = {
+  argTypes: {
+    children: { control: 'text' },
+  },
+  args: {
+    children: 'Table content',
+  },
   component: Table,
 } satisfies Meta<typeof Table>;
 
@@ -43,12 +50,12 @@ const rows = [
 export const Primary: Story = {
   args: {},
   render: () => {
-    const [activePageIndex, setActivePageIndex] = useState(0);
+    const [storyArgs, updateArgs] = useArgs();
+    const activePageIndex = storyArgs.activePageIndex ?? 0;
     const pageSize = 5; // Number of rows per page
     const pageCount = Math.ceil(rows.length / pageSize);
 
-    const emptyRows =
-      activePageIndex > 0 ? Math.max(0, (1 + activePageIndex) * pageSize - rows.length) : 0;
+    const emptyRows = activePageIndex > 0 ? Math.max(0, (1 + activePageIndex) * pageSize - rows.length) : 0;
 
     return (
       <Stack style={{ overflow: 'auto' }}>
@@ -108,7 +115,7 @@ export const Primary: Story = {
             activePageIndex={activePageIndex}
             getAriaLabelForButton={(index) => `Sivu ${String(index + 1)} / ${String(pageCount)}`}
             onPageChange={(newPage) => {
-              setActivePageIndex(newPage);
+              updateArgs({ activePageIndex: newPage });
             }}
           />
         </TableFooter>

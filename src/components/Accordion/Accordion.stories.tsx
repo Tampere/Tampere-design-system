@@ -3,7 +3,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Accordion, AccordionItem } from 'src/components';
 
 const meta: Meta<typeof Accordion> = {
-  title: 'Accordion',
+  argTypes: {
+    spacing: { control: 'text' },
+    children: { control: 'text' },
+  },
+  args: {
+    spacing: 'default',
+  },
   component: Accordion,
 };
 export default meta;
