@@ -1,12 +1,12 @@
-import { Box, Flex } from "@mantine/core";
-import cx from "clsx";
-import { root, input, icon, inner, inputLabel } from "./Checkbox.css";
+import { Box, Flex } from '@mantine/core';
+import cx from 'clsx';
+import { root, input, icon, inner, inputLabel } from './Checkbox.css';
 
-import { type ComponentPropsWithoutRef, useId, useState } from "react";
-import { CheckboxCheckedIcon } from "src/icons/CheckboxCheckedIcon";
-import { CheckboxUncheckedIcon } from "src/icons/CheckboxUncheckedIcon";
+import { type ComponentPropsWithoutRef, useId, useState } from 'react';
+import { CheckboxCheckedIcon } from 'src/icons/CheckboxCheckedIcon';
+import { CheckboxUncheckedIcon } from 'src/icons/CheckboxUncheckedIcon';
 
-interface Props extends ComponentPropsWithoutRef<"input"> {
+interface Props extends ComponentPropsWithoutRef<'input'> {
   label: string | React.ReactNode;
 }
 

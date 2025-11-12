@@ -1,5 +1,5 @@
-import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   spacing,
@@ -11,11 +11,11 @@ const {
 } = vars;
 
 export const chevronOpen = style({
-  transform: "rotate(180deg)",
+  transform: 'rotate(180deg)',
 });
 
 export const root = style({
-  alignItems: "center",
+  alignItems: 'center',
 });
 
 export const inputText = style({
@@ -32,7 +32,7 @@ const wrapperBase = style([
     letterSpacing: font.letterSpacing,
     minHeight: textField.minHeight,
     padding: `${input.padding.vertical} ${input.padding.horizontal}`,
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
     gap: input.spacing.horizontalSpacing,
   },
 ]);
@@ -41,19 +41,19 @@ export const inputWrapper = styleVariants({
   default: [
     wrapperBase,
     {
-      pointerEvents: "all",
-      cursor: "pointer",
+      pointerEvents: 'all',
+      cursor: 'pointer',
       border: `${input.stroke.weight.default} solid ${core.states.default}`,
       background: core.background,
       selectors: {
-        "&::placeholder": {
+        '&::placeholder': {
           color: text.secondary,
         },
-        "&:hover": {
+        '&:hover': {
           border: `${input.stroke.weight.default} solid ${core.states.hover}`,
           background: core.background,
         },
-        "&:focus-visible": {
+        '&:focus-visible': {
           background: core.background,
           ...focusRing,
         },
@@ -65,7 +65,7 @@ export const inputWrapper = styleVariants({
     {
       border: `${input.stroke.weight.default} solid ${core.states.disabled}`,
       background: core.backgroundDisabled,
-      pointerEvents: "none",
+      pointerEvents: 'none',
     },
   ],
   error: [
@@ -120,24 +120,21 @@ export const helper = styleVariants({
   error: [errorTextBase],
 });
 
-export const errorText = style([
-  errorTextBase,
-  { paddingTop: input.spacing.verticalSpacing },
-]);
+export const errorText = style([errorTextBase, { paddingTop: input.spacing.verticalSpacing }]);
 
 export const dropDown = style({
   border: `${input.stroke.weight.default} solid ${core.divider}`,
-  borderTop: "none",
+  borderTop: 'none',
 });
 
 export const listOptions = style({
-  listStyle: "none",
+  listStyle: 'none',
   margin: 0,
   padding: 0,
 });
 
 const optionBase = style({
-  listStyle: "none",
+  listStyle: 'none',
 });
 
 export const dropDownOption = style([
@@ -145,15 +142,15 @@ export const dropDownOption = style([
   textBase,
   {
     selectors: {
-      "&:hover": {
+      '&:hover': {
         background: item.background.hover,
       },
 
-      "&:active": {
+      '&:active': {
         color: text.secondary,
         fontWeight: item.highlightFontWeight,
       },
-      "&:focus-visible": {
+      '&:focus-visible': {
         ...focusRing,
         background: core.background,
       },
@@ -173,15 +170,12 @@ globalStyle(`${dropDownOption}[data-combobox-selected="true"]:hover`, {
   color: text.primary,
 });
 
-globalStyle(
-  `${dropDownOption}[data-combobox-highlighted="true"]:focus-visible`,
-  {
-    ...focusRing,
-    background: item.background.selected.focus,
-    fontWeight: item.highlightFontWeight,
-    color: text.primary,
-  },
-);
+globalStyle(`${dropDownOption}[data-combobox-highlighted="true"]:focus-visible`, {
+  ...focusRing,
+  background: item.background.selected.focus,
+  fontWeight: item.highlightFontWeight,
+  color: text.primary,
+});
 
 export const rightSectionContainer = style({
   gap: spacing[1],

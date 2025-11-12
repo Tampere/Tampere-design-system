@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { TextField } from "src/components";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { TextField } from 'src/components';
 
 const meta = {
   component: TextField,

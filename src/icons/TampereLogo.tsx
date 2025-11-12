@@ -46,10 +46,7 @@ export function TampereLogo({ className }: { className?: string }) {
           d="M89.338 33.1853V37.4142L84.7411 33.1853H84.145V41H85.9935V36.755L90.5789 41H91.1889V33.1853H89.338Z"
           fill="#39A7D7"
         />
-        <path
-          d="M95.5703 33.1853V41H100.647V39.268H97.4211V33.1853H95.5703Z"
-          fill="#39A7D7"
-        />
+        <path d="M95.5703 33.1853V41H100.647V39.268H97.4211V33.1853H95.5703Z" fill="#39A7D7" />
         <path
           d="M107.269 35.9487L108.563 38.5421H105.959L107.269 35.9487ZM106.891 33.1853L102.939 41H104.725L105.263 39.9204H109.252L109.802 41H111.601L107.615 33.1853H106.889H106.891Z"
           fill="#39A7D7"
@@ -69,12 +66,7 @@ export function TampereLogo({ className }: { className?: string }) {
       </g>
       <defs>
         <clipPath>
-          <rect
-            width="131.4"
-            height="30"
-            fill="white"
-            transform="translate(0.600098 11)"
-          />
+          <rect width="131.4" height="30" fill="white" transform="translate(0.600098 11)" />
         </clipPath>
       </defs>
     </svg>

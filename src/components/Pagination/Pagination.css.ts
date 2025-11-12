@@ -1,5 +1,5 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   core,
@@ -9,15 +9,15 @@ const {
 } = vars;
 
 export const list = style({
-  display: "flex",
-  listStyleType: "none",
+  display: 'flex',
+  listStyleType: 'none',
   gap: spacing[1],
 });
 
 export const itemRoot = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   width: pagination.itemWidth,
   height: pagination.itemHeight,
 };
@@ -26,17 +26,17 @@ const itemActive = {
   color: core.contrast,
   background: core.states.default,
   selectors: {
-    "&:hover": {
+    '&:hover': {
       background: core.states.hover,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       background: core.states.focus,
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       background: core.states.active,
     },
-    "&:disabled": {
+    '&:disabled': {
       color: core.states.disabled,
       background: core.backgroundDisabled,
     },
@@ -46,16 +46,16 @@ const itemActive = {
 const item = {
   color: core.states.default,
   selectors: {
-    "&:hover": {
+    '&:hover': {
       color: core.states.hover,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       color: core.states.active,
     },
-    "&:disabled": {
+    '&:disabled': {
       color: core.states.disabled,
     },
   },
@@ -75,5 +75,5 @@ export const leftButton = style({
 export const rightButton = style({
   width: pagination.itemWidth,
   height: pagination.itemHeight,
-  transform: "rotate(180deg)",
+  transform: 'rotate(180deg)',
 });

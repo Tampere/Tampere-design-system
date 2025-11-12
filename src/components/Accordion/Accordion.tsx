@@ -1,21 +1,8 @@
-import { Flex, Accordion as MantineAccordion } from "@mantine/core";
-import cx from "clsx";
-import {
-  accordion,
-  chevron,
-  content,
-  control,
-  item,
-  label,
-} from "./Accordion.css.ts";
-import {
-  createContext,
-  isValidElement,
-  use,
-  useState,
-  type PropsWithChildren,
-} from "react";
-import { ChevronDownIcon } from "src/icons/ChevronDownIcon";
+import { Flex, Accordion as MantineAccordion } from '@mantine/core';
+import cx from 'clsx';
+import { accordion, chevron, content, control, item, label } from './Accordion.css.ts';
+import { createContext, isValidElement, use, useState, type PropsWithChildren } from 'react';
+import { ChevronDownIcon } from 'src/icons/ChevronDownIcon';
 
 interface AccordionControlProps {
   value: string;
@@ -24,31 +11,24 @@ interface AccordionControlProps {
   closeLabel?: React.ReactNode;
 }
 
-function AccordionControl({
-  value,
-  label,
-  openLabel,
-  closeLabel,
-}: AccordionControlProps) {
+function AccordionControl({ value, label, openLabel, closeLabel }: AccordionControlProps) {
   const openedAccordionValues = use(AccordionContext);
 
   const isOpen = openedAccordionValues.includes(value);
   return (
-    <Flex justify={"space-between"} flex={1} style={{ width: "100%" }}>
+    <Flex justify={'space-between'} flex={1} style={{ width: '100%' }}>
       {isValidElement(label) ? label : <span>{label}</span>}
       {isOpen &&
         closeLabel &&
         (isValidElement(closeLabel) ? closeLabel : <span>{closeLabel}</span>)}
-      {!isOpen &&
-        openLabel &&
-        (isValidElement(openLabel) ? openLabel : <span>{openLabel}</span>)}
+      {!isOpen && openLabel && (isValidElement(openLabel) ? openLabel : <span>{openLabel}</span>)}
     </Flex>
   );
 }
 
 const AccordionContext = createContext<string[]>([]);
 
-type AccordionGroupSpacing = "default" | "none";
+type AccordionGroupSpacing = 'default' | 'none';
 
 interface AccordionProps extends PropsWithChildren {
   spacing: AccordionGroupSpacing;

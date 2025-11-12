@@ -1,21 +1,15 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Breadcrumbs, type Breadcrumb } from "./Breadcrumbs";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Breadcrumbs, type Breadcrumb } from './Breadcrumbs';
 
 const meta: Meta<typeof Breadcrumbs> = {
-  title: "Breadcrumbs",
+  title: 'Breadcrumbs',
   component: Breadcrumbs,
 };
 export default meta;
 
 type Story = StoryObj<typeof Breadcrumbs>;
 
-function Link({
-  className,
-  children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) {
+function Link({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
     <a className={className} href="/">
       {children}
@@ -24,19 +18,19 @@ function Link({
 }
 
 const items: Breadcrumb[] = [
-  { label: "Home", linkComponent: (props) => <Link {...props} /> },
-  { label: "Library (default)", href: "/" },
+  { label: 'Home', linkComponent: (props) => <Link {...props} /> },
+  { label: 'Library (default)', href: '/' },
   {
-    label: "Data (default)",
-    href: "/",
+    label: 'Data (default)',
+    href: '/',
     linkComponent: (props) => <Link {...props} />,
   },
   {
-    label: "Previous",
-    href: "/",
+    label: 'Previous',
+    href: '/',
     linkComponent: (props) => <Link {...props} />,
   },
-  { label: "current" },
+  { label: 'current' },
 ];
 
 export const Default: Story = {

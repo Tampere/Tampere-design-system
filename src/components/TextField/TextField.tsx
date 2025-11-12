@@ -1,4 +1,4 @@
-import { TextInput, type TextInputProps } from "@mantine/core";
+import { TextInput, type TextInputProps } from '@mantine/core';
 import {
   description,
   errorRoot,
@@ -9,12 +9,12 @@ import {
   root,
   section,
   wrapper,
-} from "./TextField.css.ts";
-import { MagnifierIcon } from "src/icons/MagnifierIcon.tsx";
-import cx from "clsx";
-import { CrossIcon } from "src/icons/CrossIcon.tsx";
-import { useState } from "react";
-import { IconButton } from "../IconButton/IconButton.tsx";
+} from './TextField.css.ts';
+import { MagnifierIcon } from 'src/icons/MagnifierIcon.tsx';
+import cx from 'clsx';
+import { CrossIcon } from 'src/icons/CrossIcon.tsx';
+import { useState } from 'react';
+import { IconButton } from '../IconButton/IconButton.tsx';
 
 interface Props extends TextInputProps {
   /**
@@ -32,23 +32,23 @@ interface Props extends TextInputProps {
   onClearButtonClick?: () => void;
 }
 
-type InputStatus = "default" | "error" | "disabled";
+type InputStatus = 'default' | 'error' | 'disabled';
 
 function getInputStatus(error?: string, disabled?: boolean): InputStatus {
-  if (error) return "error";
-  if (disabled) return "disabled";
-  return "default";
+  if (error) return 'error';
+  if (disabled) return 'disabled';
+  return 'default';
 }
 
-type SectionStatus = "left" | "right" | "both";
+type SectionStatus = 'left' | 'right' | 'both';
 
 function getSectionStatus(
   showSearchIcon?: boolean,
-  showClearButton?: boolean,
+  showClearButton?: boolean
 ): SectionStatus | null {
-  if (showSearchIcon && showClearButton) return "both";
-  if (showSearchIcon) return "left";
-  if (showClearButton) return "right";
+  if (showSearchIcon && showClearButton) return 'both';
+  if (showSearchIcon) return 'left';
+  if (showClearButton) return 'right';
   return null;
 }
 
@@ -69,7 +69,7 @@ export function TextField({
   const inputStatus = getInputStatus(error, disabled);
   const sectionStatus = getSectionStatus(showSearchIcon, showClearButton);
 
-  const [textValue, setTextValue] = useState("");
+  const [textValue, setTextValue] = useState('');
 
   return (
     <TextInput
@@ -87,9 +87,7 @@ export function TextField({
         input: cx(
           input[inputStatus],
           sectionStatus && inputPaddingVariant[sectionStatus],
-          typeof props.classNames === "object"
-            ? props.classNames.input
-            : undefined,
+          typeof props.classNames === 'object' ? props.classNames.input : undefined
         ),
         label: label[inputStatus],
         description: description[inputStatus],
@@ -108,10 +106,10 @@ export function TextField({
             <IconButton
               aria-label={clearButtonLabel}
               onClick={() => {
-                setTextValue("");
+                setTextValue('');
                 onClearButtonClick?.();
               }}
-              size={"sm"}
+              size={'sm'}
               variant="dark"
             >
               <CrossIcon />

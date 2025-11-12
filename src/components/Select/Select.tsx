@@ -1,4 +1,4 @@
-import { Combobox, Flex, useCombobox } from "@mantine/core";
+import { Combobox, Flex, useCombobox } from '@mantine/core';
 import {
   dropDown,
   dropDownOption,
@@ -6,12 +6,12 @@ import {
   listOptions,
   rightSectionContainer,
   root,
-} from "./Select.css.ts";
-import { useState } from "react";
-import { IconButton, TextField } from "src/components/index.tsx";
-import { ChevronDownIcon } from "src/icons/ChevronDownIcon.tsx";
-import { CrossIcon } from "src/icons/CrossIcon.tsx";
-import cx from "clsx";
+} from './Select.css.ts';
+import { useState } from 'react';
+import { IconButton, TextField } from 'src/components/index.tsx';
+import { ChevronDownIcon } from 'src/icons/ChevronDownIcon.tsx';
+import { CrossIcon } from 'src/icons/CrossIcon.tsx';
+import cx from 'clsx';
 
 interface Props {
   /**
@@ -59,12 +59,7 @@ function SelectRightSection({
   return (
     <Flex className={rightSectionContainer}>
       {displayClearButton && (
-        <IconButton
-          aria-label={clearButtonLabel}
-          variant="dark"
-          onClick={onClearClick}
-          size={"sm"}
-        >
+        <IconButton aria-label={clearButtonLabel} variant="dark" onClick={onClearClick} size={'sm'}>
           <CrossIcon />
         </IconButton>
       )}
@@ -74,13 +69,9 @@ function SelectRightSection({
         onClick={() => {
           toggleDropdown();
         }}
-        size={"sm"}
+        size={'sm'}
       >
-        {dropDownOpened ? (
-          <ChevronDownIcon rotate={180} />
-        ) : (
-          <ChevronDownIcon />
-        )}
+        {dropDownOpened ? <ChevronDownIcon rotate={180} /> : <ChevronDownIcon />}
       </IconButton>
     </Flex>
   );
@@ -102,19 +93,18 @@ export function Select({
   ...props
 }: Props) {
   const combobox = useCombobox();
-  const { dropdownOpened, toggleDropdown, closeDropdown, openDropdown } =
-    combobox;
+  const { dropdownOpened, toggleDropdown, closeDropdown, openDropdown } = combobox;
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
 
   const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(value.toLowerCase().trim()),
+    item.toLowerCase().includes(value.toLowerCase().trim())
   );
 
   const selectOptions = filteredOptions.map((item, idx) => (
     <Combobox.Option
       aria-description={`${idx + 1} / ${options.length}`}
-      component={"li"}
+      component={'li'}
       className={dropDownOption}
       value={item}
       key={item}
@@ -169,8 +159,8 @@ export function Select({
               toggleDropdown={toggleDropdown}
               displayClearButton={!!value}
               onClearClick={() => {
-                props.onChange?.("");
-                setValue("");
+                props.onChange?.('');
+                setValue('');
                 closeDropdown();
               }}
             />
@@ -178,7 +168,7 @@ export function Select({
         />
       </Combobox.Target>
       <Combobox.Dropdown className={dropDown}>
-        <Combobox.Options component={"ul"} className={listOptions}>
+        <Combobox.Options component={'ul'} className={listOptions}>
           {selectOptions}
         </Combobox.Options>
       </Combobox.Dropdown>

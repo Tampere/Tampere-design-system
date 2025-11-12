@@ -1,20 +1,11 @@
 export function MapIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="22"
-      viewBox="0 0 24 22"
-      fill="none"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22" fill="none">
       <path
         d="M8.86319 11.5532L4.9783 11L2.8584 18L10.8584 13.6149L8.86319 11.5532Z"
         fill="#3E3E45"
       />
-      <path
-        d="M13.7334 20.7992L21.8584 21L20.6757 16L12.8584 20.7992H13.7334Z"
-        fill="#3E3E45"
-      />
+      <path d="M13.7334 20.7992L21.8584 21L20.6757 16L12.8584 20.7992H13.7334Z" fill="#3E3E45" />
       <path
         d="M8.75586 10V12H5.20801L2.7168 20H21L18.5088 12H14.9609V10H19.9805L23.7168 22H0L3.73633 10H8.75586Z"
         fill="#3E3E45"

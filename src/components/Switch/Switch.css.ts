@@ -1,5 +1,5 @@
-import { globalStyle, style } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { globalStyle, style } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   colors,
@@ -8,30 +8,30 @@ const {
 } = vars;
 
 export const body = style({
-  alignItems: "center",
+  alignItems: 'center',
 });
 
 export const input = style({
   selectors: {
-    "&:focus-visible": {
+    '&:focus-visible': {
       ...focusRing,
     },
   },
 });
 
 export const track = style({
-  cursor: "pointer",
+  cursor: 'pointer',
   height: switchComponent.height,
   borderRadius: 0,
   width: `calc(${switchComponent.height} * 2)`,
   vars: {
-    "--switch-color": vars.core.states.default,
-    "--switch-bg": switchComponent.backgroundUnchecked,
+    '--switch-color': vars.core.states.default,
+    '--switch-bg': switchComponent.backgroundUnchecked,
   },
   selectors: {
-    "&:hover": {
+    '&:hover': {
       vars: {
-        "--switch-color": vars.core.states.hover,
+        '--switch-color': vars.core.states.hover,
       },
     },
   },
@@ -44,8 +44,8 @@ export const thumb = style({
   right: 0,
   border: 0,
   vars: {
-    "--switch-thumb-size": switchComponent.height,
-    "--switch-track-label-padding": "0px",
+    '--switch-thumb-size': switchComponent.height,
+    '--switch-track-label-padding': '0px',
   },
 });
 

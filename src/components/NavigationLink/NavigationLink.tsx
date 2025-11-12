@@ -1,12 +1,11 @@
-import type { AnchorHTMLAttributes, ReactElement } from "react";
-import cx from "clsx";
-import { linkSize, linkVariant, selected } from "./NavigationLink.css";
+import type { AnchorHTMLAttributes, ReactElement } from 'react';
+import cx from 'clsx';
+import { linkSize, linkVariant, selected } from './NavigationLink.css';
 
-type NavigationLinkVariant = "default" | "inverted";
-type NavigationLinkSize = "sm" | "md";
+type NavigationLinkVariant = 'default' | 'inverted';
+type NavigationLinkSize = 'sm' | 'md';
 
-export interface NavigationLinkProps
-  extends AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface NavigationLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href?: string;
   isSelected?: boolean;
   className?: string;
@@ -26,8 +25,8 @@ export function NavigationLink({
   isSelected = false,
   children,
   className,
-  variant = "default",
-  size = "md",
+  variant = 'default',
+  size = 'md',
   renderLink,
   ...props
 }: NavigationLinkProps) {
@@ -35,7 +34,7 @@ export function NavigationLink({
     linkSize[size],
     linkVariant[variant],
     { [selected[variant]]: isSelected },
-    className,
+    className
   );
 
   if (renderLink) {

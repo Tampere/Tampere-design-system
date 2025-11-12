@@ -8,15 +8,9 @@ export function MenuIcon(props: React.SVGProps<SVGSVGElement>) {
       viewBox="0 0 24 10"
       fill="none"
     >
-      <path
-        d="M24 8.48804V10H0V8.48804H24Z"
-        fill={props.fill ?? "currentColor"}
-      />
-      <path
-        d="M24 4.24402V5.75598H0V4.24402H24Z"
-        fill={props.fill ?? "currentColor"}
-      />
-      <path d="M24 0V1.51196H0V0H24Z" fill={props.fill ?? "currentColor"} />
+      <path d="M24 8.48804V10H0V8.48804H24Z" fill={props.fill ?? 'currentColor'} />
+      <path d="M24 4.24402V5.75598H0V4.24402H24Z" fill={props.fill ?? 'currentColor'} />
+      <path d="M24 0V1.51196H0V0H24Z" fill={props.fill ?? 'currentColor'} />
     </svg>
   );
 }

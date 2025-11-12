@@ -1,8 +1,8 @@
-import { SVGProps } from "react";
-import ReactDOMServer from "react-dom/server";
+import { SVGProps } from 'react';
+import ReactDOMServer from 'react-dom/server';
 
 export function StructureIcon(props: SVGProps<SVGSVGElement>) {
-  const defaultColor = "#0074A4";
+  const defaultColor = '#0074A4';
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

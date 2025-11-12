@@ -4,21 +4,12 @@ interface Props {
 
 export function ZoomOutIcon({ fill }: Props) {
   return (
-    <svg
-      width="17"
-      height="16"
-      viewBox="0 0 17 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M8.5 1.07734C12.3161 1.07734 15.4227 4.18172 15.4227 8C15.4227 11.8183 12.3183 14.9227 8.5 14.9227C4.68172 14.9227 1.57734 11.8183 1.57734 8C1.57734 4.18172 4.68172 1.07734 8.5 1.07734ZM8.5 0C4.08248 0 0.5 3.58031 0.5 8C0.5 12.4197 4.08031 16 8.5 16C12.9197 16 16.5 12.4197 16.5 8C16.5 3.58031 12.9175 0 8.5 0Z"
-        fill={fill ?? "#3E3E45"}
+        fill={fill ?? '#3E3E45'}
       />
-      <path
-        d="M13.0279 7.46128V8.53872H3.9721V7.46128H13.0279Z"
-        fill={fill ?? "#3E3E45"}
-      />
+      <path d="M13.0279 7.46128V8.53872H3.9721V7.46128H13.0279Z" fill={fill ?? '#3E3E45'} />
     </svg>
   );
 }

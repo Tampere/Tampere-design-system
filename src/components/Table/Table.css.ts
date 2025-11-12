@@ -1,5 +1,5 @@
-import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   spacing,
@@ -7,10 +7,10 @@ const {
   core,
 } = vars;
 
-const cellPadding = `${spacing["1,5"]} ${spacing[2]}`;
+const cellPadding = `${spacing['1,5']} ${spacing[2]}`;
 
 export const root = style({
-  borderCollapse: "collapse",
+  borderCollapse: 'collapse',
 });
 
 export const tableCell = style({
@@ -21,30 +21,30 @@ export const tableCell = style({
 export const headerCell = styleVariants({
   col: {
     ...typography.subheader,
-    textAlign: "left",
+    textAlign: 'left',
     padding: cellPadding,
   },
   row: {
     ...typography.subheader,
     padding: cellPadding,
-    textAlign: "left",
+    textAlign: 'left',
     borderRight: `${core.strokeWeight} solid ${core.states.default}`,
   },
 });
 
 export const caption = style({
   ...typography.h5,
-  textAlign: "left",
+  textAlign: 'left',
   padding: cellPadding,
 });
 
 export const tableRow = style({
   borderBottom: `${core.strokeWeight} solid ${core.divider}`,
   selectors: {
-    "&:last-child": {
+    '&:last-child': {
       borderBottom: `${core.strokeWeight} solid ${core.states.default}`,
     },
-    "&:hover": {
+    '&:hover': {
       backgroundColor: item.background.hover,
     },
   },
@@ -60,7 +60,7 @@ globalStyle(`${tableRow}.selected:hover`, {
 
 export const footer = style({
   padding: ` ${spacing[2]} 0`,
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
 });

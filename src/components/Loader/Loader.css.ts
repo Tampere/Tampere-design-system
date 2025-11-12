@@ -1,5 +1,5 @@
-import { style } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { style } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   components: { loadingIndicator },
@@ -7,7 +7,7 @@ const {
 
 export const loader = style({
   selectors: {
-    "&::after": {
+    '&::after': {
       borderColor: `${loadingIndicator.indicator} ${loadingIndicator.indicator} ${loadingIndicator.indicator} ${loadingIndicator.background}`,
       borderWidth: loadingIndicator.thickness,
     },

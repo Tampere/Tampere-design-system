@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { NavigationLink } from "./NavigationLink";
-import { Flex, Stack } from "@mantine/core";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { NavigationLink } from './NavigationLink';
+import { Flex, Stack } from '@mantine/core';
 
 const meta = {
   component: NavigationLink,
   argTypes: {
     isSelected: {
-      control: "boolean",
-      description: "Whether the link is in a selected/active state",
+      control: 'boolean',
+      description: 'Whether the link is in a selected/active state',
     },
     href: {
-      control: "text",
-      description: "Link destination URL",
+      control: 'text',
+      description: 'Link destination URL',
     },
   },
 } satisfies Meta<typeof NavigationLink>;
@@ -21,16 +21,16 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    href: "#",
-    children: "Navigointilinkki",
+    href: '#',
+    children: 'Navigointilinkki',
     isSelected: false,
   },
 };
 
 export const Selected: Story = {
   args: {
-    href: "#",
-    children: "Navigointilinkki",
+    href: '#',
+    children: 'Navigointilinkki',
     isSelected: true,
   },
 };
@@ -58,8 +58,8 @@ export const AllStates: Story = {
         </Stack>
       </Flex>
 
-      <div style={{ background: "#0056A6", padding: "20px" }}>
-        <h3 style={{ color: "white" }}>Inverted Color</h3>
+      <div style={{ background: '#0056A6', padding: '20px' }}>
+        <h3 style={{ color: 'white' }}>Inverted Color</h3>
         <Flex gap="xl">
           <NavigationLink href="#" variant="inverted">
             Navigointilinkki
@@ -94,7 +94,7 @@ export const WithCustomLink: Story = {
           </a>
         )}
       />
-      <div style={{ background: "#0056A6", padding: "20px" }}>
+      <div style={{ background: '#0056A6', padding: '20px' }}>
         <NavigationLink
           variant="inverted"
           renderLink={(className) => {

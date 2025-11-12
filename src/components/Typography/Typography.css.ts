@@ -1,11 +1,8 @@
-import { vars } from "@theme";
-import { styleVariants } from "@vanilla-extract/css";
+import { vars } from '@theme';
+import { styleVariants } from '@vanilla-extract/css';
 
-type TypographyKeys = Exclude<
-  keyof typeof vars.components.typography,
-  "margin"
->;
-type HeaderKeys = Exclude<TypographyKeys, "subheader" | "p1" | "p2">;
+type TypographyKeys = Exclude<keyof typeof vars.components.typography, 'margin'>;
+type HeaderKeys = Exclude<TypographyKeys, 'subheader' | 'p1' | 'p2'>;
 type ParagraphKeys = Exclude<TypographyKeys, HeaderKeys>;
 
 const textColorMap = {
@@ -41,12 +38,12 @@ function getParagraphStyleObject(variant: ParagraphKeys) {
 }
 
 export const typography = styleVariants({
-  h1: getHeaderStyleObject("h1"),
-  h2: getHeaderStyleObject("h2"),
-  h3: getHeaderStyleObject("h3"),
-  h4: getHeaderStyleObject("h4"),
-  h5: getHeaderStyleObject("h5"),
-  subheader: getParagraphStyleObject("subheader"),
-  p1: getParagraphStyleObject("p1"),
-  p2: getParagraphStyleObject("p2"),
+  h1: getHeaderStyleObject('h1'),
+  h2: getHeaderStyleObject('h2'),
+  h3: getHeaderStyleObject('h3'),
+  h4: getHeaderStyleObject('h4'),
+  h5: getHeaderStyleObject('h5'),
+  subheader: getParagraphStyleObject('subheader'),
+  p1: getParagraphStyleObject('p1'),
+  p2: getParagraphStyleObject('p2'),
 });

@@ -1,22 +1,14 @@
-import { Switch as MantineSwitch, type SwitchProps } from "@mantine/core";
-import { CrossIcon } from "src/icons/CrossIcon";
-import {
-  body,
-  closeIcon,
-  input,
-  label,
-  openIcon,
-  thumb,
-  track,
-} from "./Switch.css";
-import { CheckboxCheckedIcon } from "src/icons/CheckboxCheckedIcon";
-import { CheckboxUncheckedIcon } from "src/icons/CheckboxUncheckedIcon";
-import { vars } from "@theme";
+import { Switch as MantineSwitch, type SwitchProps } from '@mantine/core';
+import { CrossIcon } from 'src/icons/CrossIcon';
+import { body, closeIcon, input, label, openIcon, thumb, track } from './Switch.css';
+import { CheckboxCheckedIcon } from 'src/icons/CheckboxCheckedIcon';
+import { CheckboxUncheckedIcon } from 'src/icons/CheckboxUncheckedIcon';
+import { vars } from '@theme';
 
 interface Props {
-  onChange: SwitchProps["onChange"];
+  onChange: SwitchProps['onChange'];
   label?: React.ReactNode;
-  checked: SwitchProps["checked"];
+  checked: SwitchProps['checked'];
   ariaLabel?: string;
 }
 
@@ -35,12 +27,12 @@ export function Switch(props: Props) {
       thumbIcon={
         <span
           style={{
-            position: "relative",
-            display: "inline-flex",
-            width: "100%",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center",
+            position: 'relative',
+            display: 'inline-flex',
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           {props.checked ? (
@@ -50,19 +42,15 @@ export function Switch(props: Props) {
               <CheckboxUncheckedIcon className={closeIcon} />
               <span
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  pointerEvents: "none",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
                 }}
               >
-                <CrossIcon
-                  width={"14px"}
-                  height={"14px"}
-                  className={closeIcon}
-                />
+                <CrossIcon width={'14px'} height={'14px'} className={closeIcon} />
               </span>
             </>
           )}

@@ -1,7 +1,7 @@
-import { Anchor, Flex } from "@mantine/core";
-import cx from "clsx";
-import type { ReactNode } from "react";
-import { BackIcon } from "src/icons/BackIcon.tsx";
+import { Anchor, Flex } from '@mantine/core';
+import cx from 'clsx';
+import type { ReactNode } from 'react';
+import { BackIcon } from 'src/icons/BackIcon.tsx';
 import {
   breadcrumbItem,
   breadcrumbListItem,
@@ -9,13 +9,13 @@ import {
   breadcrumbsList,
   mobileWrapper,
   separator,
-} from "./Breadcrumbs.css.ts";
+} from './Breadcrumbs.css.ts';
 
 export interface Breadcrumb {
   label: string;
   href?: string;
   /** Needs to have className and children placed from props in order to function correctly.  */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   linkComponent?: (props: any) => ReactNode;
 }
 
@@ -32,14 +32,9 @@ export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
 
   if (isMobile) {
     const prevLevelItem =
-      displayedItems.length > 2
-        ? items[displayedItems.length - 2]
-        : displayedItems[0];
+      displayedItems.length > 2 ? items[displayedItems.length - 2] : displayedItems[0];
     return (
-      <nav
-        {...(ariaLabel && { ["aria-label"]: ariaLabel })}
-        className={cx(breadcrumbs, className)}
-      >
+      <nav {...(ariaLabel && { ['aria-label']: ariaLabel })} className={cx(breadcrumbs, className)}>
         <Flex className={mobileWrapper}>
           <BackIcon />
           <Anchor
@@ -58,10 +53,7 @@ export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
   }
 
   return (
-    <nav
-      {...(ariaLabel && { ["aria-label"]: ariaLabel })}
-      className={breadcrumbs}
-    >
+    <nav {...(ariaLabel && { ['aria-label']: ariaLabel })} className={breadcrumbs}>
       <ol className={breadcrumbsList}>
         {displayedItems.map((item, idx) => (
           <li key={item.label}>
@@ -75,9 +67,7 @@ export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
               {item.label}
             </Anchor>
 
-            {idx < displayedItems.length - 1 && (
-              <span className={separator}>›</span>
-            )}
+            {idx < displayedItems.length - 1 && <span className={separator}>›</span>}
           </li>
         ))}
       </ol>

@@ -1,17 +1,11 @@
-import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   core,
   text,
   focusRing,
-  components: {
-    button: buttonVars,
-    item,
-    input: inputVars,
-    searchField,
-    typography,
-  },
+  components: { button: buttonVars, item, input: inputVars, searchField, typography },
 } = vars;
 
 export const buttonBase = style({
@@ -19,7 +13,7 @@ export const buttonBase = style({
   border: `${core.strokeWeight} solid ${core.states.default}`,
   padding: `${buttonVars.padding.vertical} ${buttonVars.padding.horizontal}`,
   selectors: {
-    "&:focus-visible": {
+    '&:focus-visible': {
       outline: `${core.strokeWeight} solid ${core.focus.visible}`,
     },
   },
@@ -31,7 +25,7 @@ export const button = styleVariants({
     buttonBase,
     {
       border: `${core.strokeWeight} solid ${core.states.disabled}`,
-      pointerEvents: "none",
+      pointerEvents: 'none',
     },
   ],
 });
@@ -46,24 +40,24 @@ export const dropdown = style({
   borderBottom: `${inputVars.stroke.weight.default} solid ${core.divider}`,
   borderLeft: `${inputVars.stroke.weight.default} solid ${core.divider}`,
   maxHeight: searchField.dropDownMaxHeight,
-  overflow: "auto",
+  overflow: 'auto',
 });
 
 export const option = style({
-  listStyle: "none",
+  listStyle: 'none',
   margin: typography.margin,
   fontSize: inputVars.font.label.fontSize,
   lineHeight: inputVars.font.label.lineHeight,
   selectors: {
-    "&:hover": {
+    '&:hover': {
       background: item.background.hover,
     },
 
-    "&:active": {
+    '&:active': {
       color: text.secondary,
       fontWeight: item.highlightFontWeight,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       ...focusRing,
       background: core.background,
     },
@@ -71,7 +65,7 @@ export const option = style({
 });
 
 export const listOptions = style({
-  listStyle: "none",
+  listStyle: 'none',
   margin: 0,
   padding: 0,
 });

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Select } from "src/components";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Select } from 'src/components';
 
 const meta = {
   component: Select,
@@ -10,13 +10,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    inputLabel: "Hedelmävalinta",
-    placeholder: "Valitse hedelmä...",
-    options: ["Omena", "Banaani", "Appelsiini", "Mango"],
+    inputLabel: 'Hedelmävalinta',
+    placeholder: 'Valitse hedelmä...',
+    options: ['Omena', 'Banaani', 'Appelsiini', 'Mango'],
     required: false,
-    error: "",
+    error: '',
     disabled: false,
-    helperText: "Ohjeteksti tähän",
+    helperText: 'Ohjeteksti tähän',
   },
   render: (args) => <Select {...args} />,
 };

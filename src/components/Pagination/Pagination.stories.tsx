@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
 
-import { Pagination } from "@treds";
+import { Pagination } from '@treds';
 
 const meta = {
   component: Pagination,

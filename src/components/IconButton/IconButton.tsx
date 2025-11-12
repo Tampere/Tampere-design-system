@@ -1,20 +1,16 @@
-import {
-  ActionIcon,
-  type ActionIconProps,
-  createPolymorphicComponent,
-} from "@mantine/core";
-import type { PropsWithChildren } from "react";
-import { iconWrapper, iconRoot } from "./IconButton.css.ts";
+import { ActionIcon, type ActionIconProps, createPolymorphicComponent } from '@mantine/core';
+import type { PropsWithChildren } from 'react';
+import { iconWrapper, iconRoot } from './IconButton.css.ts';
 
-type IconButtonVariant = "light" | "dark";
-type IconButtonSize = "sm" | "md" | "lg" | "xl";
+type IconButtonVariant = 'light' | 'dark';
+type IconButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 interface Props extends ActionIconProps, PropsWithChildren {
   variant?: IconButtonVariant;
   size: IconButtonSize;
 }
 
-function IconButtonComponent({ variant = "light", size, ...props }: Props) {
+function IconButtonComponent({ variant = 'light', size, ...props }: Props) {
   return (
     <ActionIcon
       size={size}
@@ -26,6 +22,4 @@ function IconButtonComponent({ variant = "light", size, ...props }: Props) {
   );
 }
 
-export const IconButton = createPolymorphicComponent<"button", Props>(
-  IconButtonComponent,
-);
+export const IconButton = createPolymorphicComponent<'button', Props>(IconButtonComponent);

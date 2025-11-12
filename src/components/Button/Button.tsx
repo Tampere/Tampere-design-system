@@ -1,10 +1,10 @@
-import { Flex, UnstyledButton, type UnstyledButtonProps } from "@mantine/core";
-import cx from "clsx";
-import type { PropsWithChildren } from "react";
-import { variants, content } from "./Button.css.ts";
+import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
+import cx from 'clsx';
+import type { PropsWithChildren } from 'react';
+import { variants, content } from './Button.css.ts';
 
 interface Props extends PropsWithChildren, UnstyledButtonProps {
-  variant?: "filled" | "outlined" | "text";
+  variant?: 'filled' | 'outlined' | 'text';
   disabled?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -13,7 +13,7 @@ interface Props extends PropsWithChildren, UnstyledButtonProps {
 
 /** A basic button components with variants. Remember to include aria-label for accessibility if no text is provided as children. */
 export function Button({
-  variant = "filled",
+  variant = 'filled',
   children,
   disabled,
   leftIcon,

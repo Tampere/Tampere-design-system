@@ -8,8 +8,8 @@ export function CrossIcon(props: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={props.width ?? "25"}
-      height={props.height ?? "24"}
+      width={props.width ?? '25'}
+      height={props.height ?? '24'}
       viewBox="0 0 25 24"
       fill="none"
       className={props.className}

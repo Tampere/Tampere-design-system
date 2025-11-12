@@ -1,5 +1,5 @@
-import { Stack } from "@mantine/core";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Stack } from '@mantine/core';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   Pagination,
   Table,
@@ -9,8 +9,8 @@ import {
   TableHeader,
   TableHeaderCell,
   TableRow,
-} from "src/components";
-import { useState } from "react";
+} from 'src/components';
+import { useState } from 'react';
 
 const meta = {
   component: Table,
@@ -20,24 +20,24 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const columns = [
-  "Kellonaika",
-  "Maanantai",
-  "Tiistai",
-  "Keskiviikko",
-  "Torstai",
-  "Perjantai",
-  "Lauantai",
-  "Sunnuntai",
+  'Kellonaika',
+  'Maanantai',
+  'Tiistai',
+  'Keskiviikko',
+  'Torstai',
+  'Perjantai',
+  'Lauantai',
+  'Sunnuntai',
 ];
 
 const rows = [
-  "09:00-11:00",
-  "11:00-13:00",
-  "13:00-16:00",
-  "16:00-17:00",
-  "17:00-18:00",
-  "18:00-20:00",
-  "20:00-22:00",
+  '09:00-11:00',
+  '11:00-13:00',
+  '13:00-16:00',
+  '16:00-17:00',
+  '17:00-18:00',
+  '18:00-20:00',
+  '20:00-22:00',
 ];
 
 export const Primary: Story = {
@@ -48,20 +48,15 @@ export const Primary: Story = {
     const pageCount = Math.ceil(rows.length / pageSize);
 
     const emptyRows =
-      activePageIndex > 0
-        ? Math.max(0, (1 + activePageIndex) * pageSize - rows.length)
-        : 0;
+      activePageIndex > 0 ? Math.max(0, (1 + activePageIndex) * pageSize - rows.length) : 0;
 
     return (
-      <Stack style={{ overflow: "auto" }}>
+      <Stack style={{ overflow: 'auto' }}>
         <Table>
-          <TableHeader title={"Viikkokalenteri"}>
+          <TableHeader title={'Viikkokalenteri'}>
             <TableRow>
               {columns.map((column, index) => (
-                <TableHeaderCell
-                  key={index}
-                  scope={index === 0 ? "row" : "col"}
-                >
+                <TableHeaderCell key={index} scope={index === 0 ? 'row' : 'col'}>
                   {column}
                 </TableHeaderCell>
               ))}
@@ -69,14 +64,11 @@ export const Primary: Story = {
           </TableHeader>
           <TableBody>
             {rows
-              .slice(
-                activePageIndex * pageSize,
-                activePageIndex * pageSize + pageSize,
-              )
+              .slice(activePageIndex * pageSize, activePageIndex * pageSize + pageSize)
               .map((row, index) => (
                 <TableRow key={activePageIndex * pageSize + index}>
                   <TableHeaderCell
-                    style={{ width: "fit-content", whiteSpace: "nowrap" }}
+                    style={{ width: 'fit-content', whiteSpace: 'nowrap' }}
                     scope="row"
                   >
                     {row}
@@ -101,8 +93,8 @@ export const Primary: Story = {
         </Table>
         <TableFooter
           style={{
-            justifyContent: "center",
-            position: "sticky",
+            justifyContent: 'center',
+            position: 'sticky',
             bottom: 0,
             left: 0,
           }}
@@ -114,9 +106,7 @@ export const Primary: Story = {
             rightButtonLabel="Seuraava"
             pageCount={pageCount}
             activePageIndex={activePageIndex}
-            getAriaLabelForButton={(index) =>
-              `Sivu ${String(index + 1)} / ${String(pageCount)}`
-            }
+            getAriaLabelForButton={(index) => `Sivu ${String(index + 1)} / ${String(pageCount)}`}
             onPageChange={(newPage) => {
               setActivePageIndex(newPage);
             }}

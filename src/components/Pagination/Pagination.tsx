@@ -1,7 +1,7 @@
-import { Flex, List, UnstyledButton } from "@mantine/core";
-import { leftButton, list, listItem, rightButton } from "./Pagination.css.ts";
-import { IconButton } from "../IconButton/IconButton.tsx";
-import { IconChevronLeft } from "src/icons/IconChevronLeft";
+import { Flex, List, UnstyledButton } from '@mantine/core';
+import { leftButton, list, listItem, rightButton } from './Pagination.css.ts';
+import { IconButton } from '../IconButton/IconButton.tsx';
+import { IconChevronLeft } from 'src/icons/IconChevronLeft';
 
 interface Props {
   pageCount: number;
@@ -23,15 +23,13 @@ function ListItem({ index, ...props }: ListItemProps) {
     <List.Item key={index}>
       <UnstyledButton
         {...(props.getAriaLabelForButton && {
-          ["aria-label"]: props.getAriaLabelForButton(index),
+          ['aria-label']: props.getAriaLabelForButton(index),
         })}
-        {...(index === props.activePageIndex && { "aria-current": "page" })}
+        {...(index === props.activePageIndex && { 'aria-current': 'page' })}
         onClick={() => {
           props.onPageChange(index);
         }}
-        className={
-          listItem[index === props.activePageIndex ? "active" : "default"]
-        }
+        className={listItem[index === props.activePageIndex ? 'active' : 'default']}
       >
         {index + 1}
       </UnstyledButton>
@@ -60,23 +58,19 @@ export function Pagination({
   const visibleLeftOfActive = Math.floor(visibleMiddlePages / 2);
   const visibleRightOfActive = Math.max(
     0,
-    Math.min(
-      Math.ceil(visibleMiddlePages / 2),
-      pageCount - 1 - activePageIndex,
-    ),
+    Math.min(Math.ceil(visibleMiddlePages / 2), pageCount - 1 - activePageIndex)
   );
 
   const startPage = Math.max(
     1,
-    activePageIndex -
-      Math.max(visibleLeftOfActive, visibleMiddlePages - visibleRightOfActive),
+    activePageIndex - Math.max(visibleLeftOfActive, visibleMiddlePages - visibleRightOfActive)
   );
   const endPage = Math.min(startPage + visibleMiddlePages - 1, pageCount - 1);
   const displayLeftEllipsis = startPage > 1;
   const displayRightEllipsis = endPage < pageCount - 2;
 
   return (
-    <Flex component={"nav"}>
+    <Flex component={'nav'}>
       <IconButton
         aria-label={leftButtonLabel}
         disabled={activePageIndex === 0}

@@ -53,12 +53,7 @@ export function TampereVaakunaWhite() {
       </g>
       <defs>
         <clipPath>
-          <rect
-            width="157.371"
-            height="40.0581"
-            fill="white"
-            transform="translate(0 0.559998)"
-          />
+          <rect width="157.371" height="40.0581" fill="white" transform="translate(0 0.559998)" />
         </clipPath>
       </defs>
     </svg>

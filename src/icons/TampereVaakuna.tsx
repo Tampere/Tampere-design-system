@@ -58,10 +58,7 @@ export function TampereVaakuna() {
           strokeWidth="0.22"
           strokeMiterlimit="3.86"
         />
-        <path
-          d="M9.87359 7.85297V17.6036H5.59931V7.85297H9.87359Z"
-          fill="#FDB924"
-        />
+        <path d="M9.87359 7.85297V17.6036H5.59931V7.85297H9.87359Z" fill="#FDB924" />
         <path
           d="M2.58216 2.65326H11.2661L13.558 4.64793V7.33009H9.87359H5.5993H2.58216V2.65326Z"
           fill="#FDB924"

@@ -1,5 +1,5 @@
-import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   core,
@@ -10,20 +10,20 @@ const {
 // Root style
 const root = style({
   padding: iconButton.padding,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  aspectRatio: "1 / 1",
-  background: "none",
-  border: "none",
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  aspectRatio: '1 / 1',
+  background: 'none',
+  border: 'none',
 });
 
 // Icon wrapper
 export const iconWrapper = style({
-  display: "flex",
-  alignSelf: "center",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  alignSelf: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 globalStyle(`${root}[data-size="sm"] svg`, {
@@ -46,14 +46,14 @@ globalStyle(`${root}[data-size="xl"] svg`, {
 // Light theme states
 const light = style({
   selectors: {
-    "&:hover": {
+    '&:hover': {
       background: iconButton.states.contrast.overlay,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       borderRadius: core.cornerRadius,
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       background: iconButton.states.contrast.overlay,
     },
   },
@@ -75,14 +75,14 @@ globalStyle(`${light}:disabled svg path`, {
 // Dark theme states
 const dark = style({
   selectors: {
-    "&:hover": {
+    '&:hover': {
       background: iconButton.states.overlay,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       borderRadius: core.cornerRadius,
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       background: iconButton.states.overlay,
     },
   },

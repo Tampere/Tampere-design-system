@@ -1,5 +1,5 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   components: { button },
@@ -10,7 +10,7 @@ const {
 } = vars;
 
 const root = style({
-  width: "fit-content",
+  width: 'fit-content',
   fontSize: button.fontSize,
   lineHeight: button.lineHeight,
   letterSpacing: font.letterSpacing,
@@ -21,17 +21,17 @@ const filled = style({
   background: core.states.default,
   color: core.contrast,
   selectors: {
-    "&:hover": {
+    '&:hover': {
       background: core.states.hover,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       background: core.states.focus,
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       background: core.states.active,
     },
-    "&:disabled": {
+    '&:disabled': {
       color: core.states.disabled,
       background: core.backgroundDisabled,
     },
@@ -42,17 +42,17 @@ const outlined = style({
   color: core.states.default,
   border: `${core.strokeWeight} solid ${core.states.default}`,
   selectors: {
-    "&:hover": {
+    '&:hover': {
       border: `${core.strokeWeight} solid ${core.states.hover}`,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       color: core.states.active,
       border: `${core.strokeWeight} solid ${core.states.active}`,
     },
-    "&:disabled": {
+    '&:disabled': {
       color: core.states.disabled,
       border: `${core.strokeWeight} solid ${core.states.disabled}`,
     },
@@ -63,18 +63,18 @@ const text = style({
   color: core.states.default,
   borderBottom: `${core.strokeWeight} solid transparent`,
   selectors: {
-    "&:hover": {
+    '&:hover': {
       borderBottom: `${core.strokeWeight} solid ${core.states.hover}`,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       borderBottom: `${core.strokeWeight} solid ${core.states.hover}`,
       ...focusRing,
     },
-    "&:active": {
+    '&:active': {
       borderBottom: `${core.strokeWeight} solid ${core.states.active}`,
       color: core.states.active,
     },
-    "&:disabled": {
+    '&:disabled': {
       color: core.states.disabled,
     },
   },
@@ -87,6 +87,6 @@ export const variants = styleVariants({
 });
 
 export const content = style({
-  alignItems: "center",
-  gap: spacing["1,5"],
+  alignItems: 'center',
+  gap: spacing['1,5'],
 });

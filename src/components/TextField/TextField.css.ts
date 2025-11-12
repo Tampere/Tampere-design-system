@@ -1,5 +1,5 @@
-import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
-import { vars } from "@theme";
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
+import { vars } from '@theme';
 
 const {
   core,
@@ -10,24 +10,24 @@ const {
 } = vars;
 
 export const root = style({
-  display: "flex",
-  flexDirection: "column",
+  display: 'flex',
+  flexDirection: 'column',
   gap: inputVars.spacing.verticalSpacing,
 });
 
 export const wrapper = style({
-  display: "flex",
-  alignSelf: "stretch",
-  alignItems: "center",
-  position: "relative", // For left and right sections positioning
+  display: 'flex',
+  alignSelf: 'stretch',
+  alignItems: 'center',
+  position: 'relative', // For left and right sections positioning
 });
 
 // Optional left and right sections
 export const section = style({
-  position: "absolute",
+  position: 'absolute',
   zIndex: 1,
-  display: "flex",
-  alignItems: "center",
+  display: 'flex',
+  alignItems: 'center',
 });
 
 globalStyle(`${section}[data-position="left"]`, {
@@ -46,27 +46,27 @@ export const inputRoot = style({
   letterSpacing: font.letterSpacing,
   minHeight: textField.minHeight,
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
-  alignItems: "flex-start",
+  alignItems: 'flex-start',
   gap: inputVars.spacing.horizontalSpacing,
   border: `${inputVars.stroke.weight.default} solid ${core.states.default}`,
   background: core.background,
   selectors: {
-    "&::placeholder": {
+    '&::placeholder': {
       color: text.secondary,
     },
-    "&:hover": {
+    '&:hover': {
       border: `${inputVars.stroke.weight.default} solid ${core.states.hover}`,
       background: core.background,
     },
-    "&:focus-visible": {
+    '&:focus-visible': {
       background: core.background,
       ...focusRing,
     },
-    "&:disabled": {
+    '&:disabled': {
       border: `${inputVars.stroke.weight.default} solid ${core.states.disabled}`,
       background: core.backgroundDisabled,
     },
-    "&:disabled::placeholder": {
+    '&:disabled::placeholder': {
       color: text.disabled,
     },
   },
@@ -104,7 +104,7 @@ export const descriptionRoot = style({
   lineHeight: inputVars.font.helperText.lineHeight,
   letterSpacing: font.letterSpacing,
   selectors: {
-    "&:disabled": {
+    '&:disabled': {
       color: text.disabled,
     },
   },

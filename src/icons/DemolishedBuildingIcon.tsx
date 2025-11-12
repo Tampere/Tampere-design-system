@@ -1,8 +1,8 @@
-import { SVGProps } from "react";
-import ReactDOMServer from "react-dom/server";
+import { SVGProps } from 'react';
+import ReactDOMServer from 'react-dom/server';
 
 export function DemolishedBuildingIcon(props: SVGProps<SVGSVGElement>) {
-  const defaultColor = "#AE1E20";
+  const defaultColor = '#AE1E20';
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

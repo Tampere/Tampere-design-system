@@ -1,21 +1,9 @@
-import {
-  Combobox,
-  type ComboboxProps,
-  Flex,
-  Highlight,
-  useCombobox,
-} from "@mantine/core";
-import { Button, TextField } from "src/components/index.tsx";
-import { type ReactElement, useMemo, useState } from "react";
-import { MagnifierIcon } from "src/icons/MagnifierIcon";
-import { themeVariables } from "../../theme/themeVariables.ts";
-import {
-  button,
-  dropdown,
-  inputWrapper,
-  listOptions,
-  option,
-} from "./SearchField.css.ts";
+import { Combobox, type ComboboxProps, Flex, Highlight, useCombobox } from '@mantine/core';
+import { Button, TextField } from 'src/components/index.tsx';
+import { type ReactElement, useMemo, useState } from 'react';
+import { MagnifierIcon } from 'src/icons/MagnifierIcon';
+import { themeVariables } from '../../theme/themeVariables.ts';
+import { button, dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
 
 function SearchButton({
   onClick,
@@ -32,9 +20,9 @@ function SearchButton({
       disabled={disabled}
       variant="filled"
       onClick={onClick}
-      className={button[disabled ? "disabled" : "default"]}
+      className={button[disabled ? 'disabled' : 'default']}
     >
-      <MagnifierIcon {...(!disabled && { fill: "white" })} />
+      <MagnifierIcon {...(!disabled && { fill: 'white' })} />
     </Button>
   );
 }
@@ -73,7 +61,7 @@ export function SearchField<T extends SearchFieldData>({
   ...props
 }: Props<T>) {
   const [searchValue, setSearchValue] = useState<string | null>(null);
-  const [currentValue, setCurrentValue] = useState<string>("");
+  const [currentValue, setCurrentValue] = useState<string>('');
 
   const combobox = useCombobox();
 
@@ -92,9 +80,8 @@ export function SearchField<T extends SearchFieldData>({
             <Highlight
               highlightStyles={() => {
                 return {
-                  color: "currentcolor",
-                  fontWeight:
-                    themeVariables.components.item.highlightFontWeight,
+                  color: 'currentcolor',
+                  fontWeight: themeVariables.components.item.highlightFontWeight,
                   backgroundColor: themeVariables.highlight.backgroundColor,
                 };
               }}
@@ -107,7 +94,7 @@ export function SearchField<T extends SearchFieldData>({
           )}
         </Combobox.Option>
       )),
-    [data, currentValue],
+    [data, currentValue]
   );
 
   return (
@@ -150,7 +137,7 @@ export function SearchField<T extends SearchFieldData>({
             clearButtonLabel={clearButtonLabel}
             showClearButton
             onClearButtonClick={() => {
-              setCurrentValue("");
+              setCurrentValue('');
               combobox.closeDropdown();
               combobox.resetSelectedOption();
               onClearClick?.();
@@ -168,7 +155,7 @@ export function SearchField<T extends SearchFieldData>({
       </Flex>
 
       <Combobox.Dropdown hidden={options.length === 0} className={dropdown}>
-        <Combobox.Options component={"ul"} className={listOptions}>
+        <Combobox.Options component={'ul'} className={listOptions}>
           {options}
         </Combobox.Options>
       </Combobox.Dropdown>
