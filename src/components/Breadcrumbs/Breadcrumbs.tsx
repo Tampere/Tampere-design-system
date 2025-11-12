@@ -1,7 +1,7 @@
 import { Anchor, Flex } from '@mantine/core';
 import cx from 'clsx';
 import type { ReactNode } from 'react';
-import { BackIcon } from 'src/icons/BackIcon.tsx';
+import { ArrowLeftIcon } from 'src/icons/ArrowLeftIcon.tsx';
 import {
   breadcrumbItem,
   breadcrumbListItem,
@@ -36,7 +36,7 @@ export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
     return (
       <nav {...(ariaLabel && { ['aria-label']: ariaLabel })} className={cx(breadcrumbs, className)}>
         <Flex className={mobileWrapper}>
-          <BackIcon />
+          <ArrowLeftIcon />
           <Anchor
             datatype="mobile-breadcrumb"
             className={breadcrumbItem}

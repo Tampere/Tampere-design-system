@@ -94,7 +94,7 @@ export function TextField({
         error: cx(errorRoot, errorText),
       }}
       disabled={disabled}
-      withAsterisk={required}
+      required={required}
       placeholder={placeholder}
       label={inputLabel}
       description={helperText}

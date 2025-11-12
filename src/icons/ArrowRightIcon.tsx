@@ -7,16 +7,17 @@ export function ArrowRightIcon({ rotate, fill }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="17"
-      viewBox="0 0 14 17"
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
       fill="none"
       style={{ transform: rotate ? `rotate(${rotate}deg)` : undefined }}
     >
       <path
-        d="M13.3506 8.49805L5.25098 16.5L4.2666 15.5283L10.6875 9.18555H0.333008V7.81152H10.6885L4.26758 1.47168L5.25098 0.5L13.3506 8.49805Z"
-        fill={fill ?? '#9999A0'}
+        d="M20.4141 9.70703L10.707 19.4141L9.29297 18L17.5859 9.70703L9.29297 1.41406L10.707 0L20.4141 9.70703Z"
+        fill={fill ?? '#3E3E45'}
       />
+      <path d="M19 8.70703V10.707H0V8.70703H19Z" fill={fill ?? '#3E3E45'} />
     </svg>
   );
 }

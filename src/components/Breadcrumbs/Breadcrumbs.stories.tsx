@@ -3,7 +3,9 @@ import { Breadcrumbs, type Breadcrumb } from './Breadcrumbs';
 
 const meta: Meta<typeof Breadcrumbs> = {
   argTypes: {
-    items: { control: 'object' },
+    items: { control: 'object', description: 'Array of breadcrumb items { label, href?, linkComponent? }' },
+    isMobile: { control: 'boolean', description: 'Render mobile condensed view' },
+    ariaLabel: { control: 'text', description: 'Accessible label for the breadcrumb nav' },
   },
   args: {
     items: [],
@@ -41,5 +43,13 @@ const items: Breadcrumb[] = [
 export const Default: Story = {
   args: {
     items,
+  },
+};
+
+export const Mobile: Story = {
+  args: {
+    items,
+    isMobile: true,
+    ariaLabel: 'Breadcrumb',
   },
 };
