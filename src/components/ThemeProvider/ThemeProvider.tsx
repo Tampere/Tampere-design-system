@@ -1,5 +1,5 @@
 import { MantineProvider, type MantineProviderProps } from '@mantine/core';
-import '@mantine/core/styles.css';
+import '@mantine/core/styles.layer.css';
 import '../../theme/theme.css.ts';
 
 import '@fontsource/montserrat/500.css';
