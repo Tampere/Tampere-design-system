@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+.vscode
+coverage
+public
+.coverage
+*.log
+package-lock.json
+
+# Local editor/IDE folders
+.vscode/*
+.idea/*
+
+# Generated files
+**/*.css.d.ts
