@@ -1,9 +1,9 @@
 import { Switch as MantineSwitch, type SwitchProps } from '@mantine/core';
-import { CrossIcon } from 'src/icons/CrossIcon';
+import { CrossIcon } from '../../icons/CrossIcon';
+import { CheckboxCheckedIcon } from '../../icons/CheckboxCheckedIcon';
+import { CheckboxUncheckedIcon } from '../../icons/CheckboxUncheckedIcon';
+import { vars } from '../../theme';
 import { body, closeIcon, input, label, openIcon, thumb, track } from './Switch.css';
-import { CheckboxCheckedIcon } from 'src/icons/CheckboxCheckedIcon';
-import { CheckboxUncheckedIcon } from 'src/icons/CheckboxUncheckedIcon';
-import { vars } from '@theme';
 
 interface Props {
   onChange: SwitchProps['onChange'];

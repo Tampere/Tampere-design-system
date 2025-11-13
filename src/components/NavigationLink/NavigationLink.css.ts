@@ -1,5 +1,5 @@
 import { styleVariants } from '@vanilla-extract/css';
-import { vars } from '@theme';
+import { vars } from '../../theme';
 
 const { components, core, focusRing, focusRingInverted, text } = vars;
 

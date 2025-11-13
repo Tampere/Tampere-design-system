@@ -1,7 +1,8 @@
-import { Combobox, type ComboboxProps, Flex, Highlight, useCombobox } from '@mantine/core';
-import { Button, TextField } from 'src/components/index.tsx';
 import { type ReactElement, useMemo, useState } from 'react';
-import { MagnifierIcon } from 'src/icons/MagnifierIcon';
+import { Combobox, type ComboboxProps, Flex, Highlight, useCombobox } from '@mantine/core';
+import { Button } from '../Button';
+import { TextField } from '../TextField/';
+import { MagnifierIcon } from '../../icons/MagnifierIcon';
 import { themeVariables } from '../../theme/themeVariables.ts';
 import { button, dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
 

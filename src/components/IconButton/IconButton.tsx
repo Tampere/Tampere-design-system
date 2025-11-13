@@ -1,5 +1,5 @@
-import { ActionIcon, type ActionIconProps, createPolymorphicComponent } from '@mantine/core';
 import type { PropsWithChildren } from 'react';
+import { ActionIcon, type ActionIconProps, createPolymorphicComponent } from '@mantine/core';
 import { iconWrapper, iconRoot } from './IconButton.css.ts';
 
 type IconButtonVariant = 'light' | 'dark';

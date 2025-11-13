@@ -1,4 +1,4 @@
-import { vars } from '@theme';
+import { vars } from '../../theme';
 import { styleVariants } from '@vanilla-extract/css';
 
 type TypographyKeys = Exclude<keyof typeof vars.components.typography, 'margin'>;

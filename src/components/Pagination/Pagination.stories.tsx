@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 // react hooks not required here; story state is managed via Storybook args
 import { useArgs } from '@storybook/client-api';
 
-import { Pagination } from '@treds';
+import { Pagination } from './Pagination';
 
 const meta = {
   argTypes: {

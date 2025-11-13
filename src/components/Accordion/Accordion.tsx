@@ -1,8 +1,8 @@
 import { Flex, Accordion as MantineAccordion } from '@mantine/core';
 import cx from 'clsx';
-import { accordion, chevron, content, control, item, label } from './Accordion.css.ts';
 import { createContext, isValidElement, use, useState, type PropsWithChildren } from 'react';
-import { ChevronDownIcon } from 'src/icons/ChevronDownIcon';
+import { ChevronDownIcon } from '../../icons/ChevronDownIcon';
+import { accordion, chevron, content, control, item, label } from './Accordion.css.ts';
 
 interface AccordionControlProps {
   value: string;

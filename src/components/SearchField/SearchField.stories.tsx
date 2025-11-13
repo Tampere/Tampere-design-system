@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SearchField } from 'src/components';
+import { SearchField } from './SearchField';
 
 const meta: Meta<typeof SearchField> = {
   argTypes: {

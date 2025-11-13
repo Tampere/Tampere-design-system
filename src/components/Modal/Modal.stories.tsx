@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
 import { Modal } from './Modal';
-import { Button } from 'src/components/Button/Button';
+import { Button } from '../Button';
 
 const meta = {
   argTypes: {

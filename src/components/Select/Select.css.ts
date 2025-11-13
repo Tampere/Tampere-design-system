@@ -1,5 +1,5 @@
 import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
-import { vars } from '@theme';
+import { vars } from '../../theme';
 
 const {
   spacing,

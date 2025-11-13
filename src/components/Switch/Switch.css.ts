@@ -1,5 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css';
-import { vars } from '@theme';
+import { vars } from '../../theme';
 
 const {
   colors,

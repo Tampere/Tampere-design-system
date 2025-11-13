@@ -1,4 +1,9 @@
+import { useState } from 'react';
+import cx from 'clsx';
 import { TextInput, type TextInputProps } from '@mantine/core';
+import { MagnifierIcon } from '../../icons/MagnifierIcon.tsx';
+import { CrossIcon } from '../../icons/CrossIcon.tsx';
+import { IconButton } from '../IconButton/IconButton.tsx';
 import {
   description,
   errorRoot,
@@ -10,11 +15,6 @@ import {
   section,
   wrapper,
 } from './TextField.css.ts';
-import { MagnifierIcon } from 'src/icons/MagnifierIcon.tsx';
-import cx from 'clsx';
-import { CrossIcon } from 'src/icons/CrossIcon.tsx';
-import { useState } from 'react';
-import { IconButton } from '../IconButton/IconButton.tsx';
 
 interface Props extends TextInputProps {
   /**

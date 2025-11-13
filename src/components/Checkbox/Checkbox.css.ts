@@ -1,6 +1,6 @@
-import { vars } from '@theme';
-import { style } from '@vanilla-extract/css';
 import { rem } from '@mantine/core';
+import { style } from '@vanilla-extract/css';
+import { vars } from '../../theme';
 
 const { spacing, focusRing } = vars;
 
