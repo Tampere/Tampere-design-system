@@ -35,6 +35,5 @@
     "noFallthroughCasesInSwitch": true
   },
 
-  "include": ["src", "**/*.css.ts", "vite.config.ts"],
-  "exclude": ["src/**/*stories.tsx"]
+  "include": ["src", "**/*.css.ts"],
 }
