@@ -1,5 +1,3 @@
-// These follow TREDS Figma JSON export where applicable...
-
 import { rem } from '@mantine/core';
 
 export const breakpoints = {

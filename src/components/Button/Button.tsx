@@ -1,6 +1,6 @@
-import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
-import cx from 'clsx';
 import type { PropsWithChildren } from 'react';
+import cx from 'clsx';
+import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { variants, content } from './Button.css.ts';
 
 interface Props extends PropsWithChildren, UnstyledButtonProps {

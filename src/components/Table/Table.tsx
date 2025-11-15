@@ -1,7 +1,7 @@
-import { Table as MantineTable, TableCaption } from '@mantine/core';
 import type { ComponentPropsWithoutRef } from 'react';
-import { caption, footer, headerCell, root, tableCell, tableRow } from './Table.css.ts';
 import cx from 'clsx';
+import { Table as MantineTable, TableCaption } from '@mantine/core';
+import { caption, footer, headerCell, root, tableCell, tableRow } from './Table.css.ts';
 
 export function Table({ children, className, ...props }: ComponentPropsWithoutRef<'table'>) {
   return (

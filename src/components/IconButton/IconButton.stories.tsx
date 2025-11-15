@@ -1,7 +1,7 @@
 import { Box, Flex } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { IconButton } from '@treds';
-import { MagnifierIcon } from 'src/icons/MagnifierIcon';
+import { IconButton } from './IconButton';
+import { MagnifierIcon } from '../../icons/MagnifierIcon';
 
 const meta = {
   argTypes: {

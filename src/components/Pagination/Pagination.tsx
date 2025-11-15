@@ -1,7 +1,7 @@
 import { Flex, List, UnstyledButton } from '@mantine/core';
-import { leftButton, list, listItem, rightButton } from './Pagination.css.ts';
 import { IconButton } from '../IconButton/IconButton.tsx';
-import { IconChevronLeft } from 'src/icons/IconChevronLeft';
+import { IconChevronLeft } from '../../icons/IconChevronLeft';
+import { leftButton, list, listItem, rightButton } from './Pagination.css.ts';
 
 interface Props {
   pageCount: number;

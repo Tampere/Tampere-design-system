@@ -1,9 +1,8 @@
-import { Flex, Modal as MantineModal, type ModalProps } from '@mantine/core';
-// import { useTranslations } from "src/hooks/useTranslations";
-import { CrossIcon } from 'src/icons/CrossIcon';
-import { header, modalCloseButton, modalHeaderTitle, padding } from './Modal.css';
 import cx from 'clsx';
-import { IconButton } from 'src/components';
+import { Flex, Modal as MantineModal, type ModalProps } from '@mantine/core';
+import { CrossIcon } from '../../icons/CrossIcon';
+import { IconButton } from '../IconButton';
+import { header, modalCloseButton, modalHeaderTitle, padding } from './Modal.css';
 
 export function Modal(props: Omit<ModalProps, 'withCloseButton'>) {
   // const { tr } = useTranslations();

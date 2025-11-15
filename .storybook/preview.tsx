@@ -1,5 +1,4 @@
 import type { Preview } from '@storybook/react-vite';
-
 import { Box } from '@mantine/core';
 import { ThemeProvider } from '../src/components';
 

@@ -1,7 +1,7 @@
 import { Anchor, Flex } from '@mantine/core';
 import cx from 'clsx';
 import type { ReactNode } from 'react';
-import { ArrowLeftIcon } from 'src/icons/ArrowLeftIcon.tsx';
+import { ArrowLeftIcon } from '../../icons/ArrowLeftIcon.tsx';
 import {
   breadcrumbItem,
   breadcrumbListItem,

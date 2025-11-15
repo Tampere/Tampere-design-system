@@ -1,4 +1,4 @@
-import { SVGProps } from 'react';
+import type { SVGProps } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 export function BuildingIcon(props: SVGProps<SVGSVGElement>) {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 // react hooks not required here; story state is managed via Storybook args
 import { useArgs } from '@storybook/client-api';
-import { TextField } from 'src/components';
+import { TextField } from './TextField';
 
 const meta = {
   component: TextField,

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
-import { MagnifierIcon } from 'src/icons/MagnifierIcon';
+import { MagnifierIcon } from '../../icons/MagnifierIcon';
 
 const meta = {
   argTypes: {

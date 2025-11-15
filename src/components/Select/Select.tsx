@@ -1,4 +1,10 @@
+import { useState } from 'react';
+import cx from 'clsx';
 import { Combobox, Flex, useCombobox } from '@mantine/core';
+import { IconButton } from '../IconButton';
+import { TextField } from '../TextField';
+import { ChevronDownIcon } from '../../icons/ChevronDownIcon.tsx';
+import { CrossIcon } from '../../icons/CrossIcon.tsx';
 import {
   dropDown,
   dropDownOption,
@@ -7,11 +13,6 @@ import {
   rightSectionContainer,
   root,
 } from './Select.css.ts';
-import { useState } from 'react';
-import { IconButton, TextField } from 'src/components/index.tsx';
-import { ChevronDownIcon } from 'src/icons/ChevronDownIcon.tsx';
-import { CrossIcon } from 'src/icons/CrossIcon.tsx';
-import cx from 'clsx';
 
 interface Props {
   /**
