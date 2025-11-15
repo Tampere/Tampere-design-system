@@ -5,7 +5,7 @@ import { iconWrapper, iconRoot } from './IconButton.css.ts';
 type IconButtonVariant = 'light' | 'dark';
 type IconButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
-interface Props extends ActionIconProps, PropsWithChildren {
+export interface Props extends ActionIconProps, PropsWithChildren {
   variant?: IconButtonVariant;
   size: IconButtonSize;
 }

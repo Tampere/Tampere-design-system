@@ -6,6 +6,8 @@ import postcss from 'rollup-plugin-postcss';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
+import replace from 'rollup-plugin-replace';
+import { vanillaExtractPlugin } from '@vanilla-extract/rollup-plugin';
 
 export default {
   input: 'src/index.ts',
@@ -22,16 +24,22 @@ export default {
     },
   ],
   plugins: [
+    vanillaExtractPlugin(),
     peerDepsExternal(),
     resolve(),
-    commonjs(),
-    json(),
-    typescript({ tsconfig: './tsconfig.json' }),
-    postcss({
-      extract: true,
-      minimize: true,
-      sourceMap: true,
+    commonjs({
+      defaultIsModuleExports: true,
     }),
+    json(),
+    replace({
+      preventAssignment: true,
+      include: ['node_modules/**', 'src/**'],
+      values: {
+        'use client;': '',
+      },
+    }),
+    typescript({ tsconfig: './tsconfig.json' }),
+    postcss({ minimize: true, sourceMap: true }),
     terser(),
   ],
   external: ['react', 'react-dom'],
