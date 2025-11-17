@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Select } from 'src/components';
+import { Select } from './Select';
 
 const meta = {
   argTypes: {

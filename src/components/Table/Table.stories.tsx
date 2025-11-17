@@ -1,7 +1,6 @@
 import { Stack } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
-  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -9,7 +8,8 @@ import {
   TableHeader,
   TableHeaderCell,
   TableRow,
-} from 'src/components';
+} from './Table';
+import { Pagination } from '../Pagination';
 // react hooks not required here; story pagination state is managed via Storybook args
 import { useArgs } from '@storybook/client-api';
 

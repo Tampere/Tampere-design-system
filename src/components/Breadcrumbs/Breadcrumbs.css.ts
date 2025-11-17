@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { vars } from '@theme';
+import { vars } from '../../theme';
 
 const {
   components: { typography, link, breadcrumbs: bcVars },

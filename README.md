@@ -1,73 +1,97 @@
-# React + TypeScript + Vite
+# Tampere Design System (TREDS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Design system for the City of Tampere.
 
-Currently, two official plugins are available:
+Tampere Design System (TREDS) is developed by the City of Tampere to enable creating accessible, high-quality digital services with a consistent user experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This React component library is built on top of [Mantine](https://mantine.dev/).
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📄 License
 
-## Expanding the ESLint configuration
+TREDS is released under the **European Union Public Licence (EUPL)**.  
+See the `LICENSE` file for full license details.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚧 Development
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### **Installation**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Storybook
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run storybook
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Eslint and Prettier
+
+```bash
+npm run eslint
+```
+
+```bash
+npm run format
+```
+
+### Build with rollup
+
+```bash
+npm run build
+```
+
+## Using TREDS in a Project
+
+### Setup (Before npm Package Is Published)
+
+Until the npm package is available, clone this repository next to your project folder:
+
+my-projects/
+├── tampere-design-system/
+└── your-project/
+
+Build Tampere Design System as instructed above, then install it inside your project:
+
+```bash
+npm install ../Tampere-design-system
+npm install --save-peer @mantine/core
+```
+
+**_Note!_** If you use Mantine in your project you can remove the `--save-peer` flag.
+
+### Usage
+
+main.tsx
+
+```jsx
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+
+import { ThemeProvider } from "treds";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </StrictMode>
+);
+```
+
+app.tsx
+
+```jsx
+import { Button } from 'treds';
+
+const App = () => {
+  return <Button>Click here!</Button>;
+};
+
+export default App;
 ```
