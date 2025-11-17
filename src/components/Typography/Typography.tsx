@@ -1,13 +1,13 @@
 import { Box } from '@mantine/core';
 import cx from 'clsx';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { typography } from './Typography.css.ts';
 import { vars } from '../../theme';
 
 type Variant = Exclude<keyof typeof vars.components.typography, 'margin'>;
 type Component = 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
 
-interface Props extends ComponentPropsWithoutRef<'div'> {
+interface Props extends ComponentPropsWithRef<'div'> {
   variant: Variant;
   component?: Component;
 }

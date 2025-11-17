@@ -40,6 +40,7 @@ interface Props<T extends SearchFieldData> extends ComboboxProps {
   data: T[];
   onSearch: (value: T) => void;
   inputLabel: string;
+  placeholder?: string;
   onClearClick?: () => void;
   /** Aria-label attribute for search button. */
   searchButtonLabel: string;
@@ -55,6 +56,7 @@ export function SearchField<T extends SearchFieldData>({
   onSearch,
   onClearClick,
   inputLabel,
+  placeholder,
   searchButtonLabel,
   fillAvailableSpace,
   clearButtonLabel,
@@ -118,8 +120,8 @@ export function SearchField<T extends SearchFieldData>({
           <TextField
             disabled={props.disabled}
             className={inputWrapper}
-            label={inputLabel}
-            placeholder={inputLabel}
+            aria-label={inputLabel}
+            placeholder={placeholder}
             value={currentValue}
             onChange={(event) => {
               setCurrentValue(event.currentTarget.value);

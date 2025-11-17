@@ -42,6 +42,7 @@ interface AccordionProps extends PropsWithChildren {
     chevron?: string;
     content?: string;
   };
+  role?: 'list' | 'region' | 'group';
 }
 
 export function Accordion({
@@ -50,11 +51,13 @@ export function Accordion({
   onChange,
   transitionDuration = 0,
   classNames,
+  role,
 }: AccordionProps) {
   const [value, setValue] = useState<string[]>([]);
 
   return (
     <MantineAccordion
+      role={role}
       transitionDuration={transitionDuration}
       unstyled
       multiple
@@ -84,6 +87,7 @@ interface AccordionItemProps extends PropsWithChildren {
   disabled?: boolean;
   openLabel?: React.ReactNode;
   closeLabel?: React.ReactNode;
+  role?: 'listitem';
 }
 
 export function AccordionItem({
@@ -93,9 +97,10 @@ export function AccordionItem({
   disabled = false,
   openLabel,
   closeLabel,
+  role,
 }: AccordionItemProps) {
   return (
-    <MantineAccordion.Item value={value}>
+    <MantineAccordion.Item role={role} value={value}>
       <MantineAccordion.Control disabled={disabled}>
         <AccordionControl
           value={value}
