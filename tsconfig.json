@@ -2,38 +2,34 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "dist/types",
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": true,
     "module": "ESNext",
-    "target": "ES6",
+    "target": "ES2020",
     "outDir": "dist",
     "sourceMap": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowJs": true,
-
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules"
-      }
-    ],
-    /* Bundler mode */
-    "moduleResolution": "bundler",
+    "declarationMap": true,
+
     "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "rewriteRelativeImportExtensions": true,
+
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
-  },
+    "noFallthroughCasesInSwitch": true,
 
+    "types": ["node"]
+  },
   "include": ["src", "**/*.css.ts"]
 }
