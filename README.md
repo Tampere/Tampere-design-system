@@ -21,6 +21,7 @@ See the `LICENSE` file for full license details.
 
 ```bash
 npm install
+npm run prepare
 ```
 
 ### Storybook
@@ -33,10 +34,7 @@ npm run storybook
 
 ```bash
 npm run eslint
-```
-
-```bash
-npm run format
+npm run prettier
 ```
 
 ### Build with rollup
@@ -51,9 +49,11 @@ npm run build
 
 Until the npm package is available, clone this repository next to your project folder:
 
+```
 my-projects/
 ├── tampere-design-system/
 └── your-project/
+```
 
 Build Tampere Design System as instructed above, then install it inside your project:
 
