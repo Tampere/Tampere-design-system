@@ -126,3 +126,50 @@ const App = () => {
 
 export default App;
 ```
+
+## 📦 How to Publish a New Release of TREDS
+
+Below are the steps for creating and publishing a new release of the Tampere Design System (TREDS).  
+These instructions assume you have the required permissions for the repository.
+
+### 1. Update Version Number
+
+TREDS uses semantic versioning (SemVer):
+
+- **MAJOR** → breaking changes
+- **MINOR** → new features, no breaking changes
+- **PATCH** → small fixes
+
+Update the version in `package.json`:
+
+```bash
+npm version patch
+# or: npm version minor
+# or: npm version major
+```
+
+This command will:
+
+- Update package.json
+- Create a Git tag with the version number
+
+### 2. Merge changes
+
+Merge your changes into the `main` branch
+
+### 3. Create a GitHub Release
+
+1. Go to GitHub → Releases
+2. Click Draft a new release
+3. Select the newly created tag (vX.X.X)
+4. Add release notes
+   - Summary of changes
+   - New components
+   - Breaking changes (if any)
+5. Publish the release
+
+Now GitHub action job will publish the new version of the NPM package.
+
+```
+
+```
