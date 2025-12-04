@@ -45,9 +45,40 @@ npm run build
 
 ## Using TREDS in a Project
 
-### Setup (Before npm Package Is Published)
+### Setup with NPM-package
 
-Until the npm package is available, clone this repository next to your project folder:
+To install this package from GitHub Packages, you need to configure npm to use the GitHub registry and authenticate with a Personal Access Token.
+
+#### 1. Configure project .npmrc
+
+Create a `.npmrc` file in your project root:
+
+```
+@tampere:registry=https://npm.pkg.github.com
+```
+
+#### 2. Add authentication (user-level)
+
+Add your GitHub Personal Access Token to your user-level npm config:
+
+`~/.npmrc`
+
+```
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT
+```
+
+#### 3. Install the package
+
+```bash
+npm install @tampere/treds
+npm install --save-peer @mantine/core
+```
+
+**_Note!_** If you use Mantine in your project you can remove the `--save-peer` flag.
+
+### Setup without NPM-package (Not recommended)
+
+Clone this repository next to your project folder:
 
 ```
 my-projects/
@@ -66,14 +97,14 @@ npm install --save-peer @mantine/core
 
 ### Usage
 
-main.tsx
+`main.tsx`
 
 ```jsx
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
 
-import { ThemeProvider } from "treds";
+import { ThemeProvider } from '@tampere/treds';
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -84,10 +115,10 @@ createRoot(document.getElementById("root")!).render(
 );
 ```
 
-app.tsx
+`app.tsx`
 
 ```jsx
-import { Button } from 'treds';
+import { Button } from '@tampere/treds';
 
 const App = () => {
   return <Button>Click here!</Button>;
