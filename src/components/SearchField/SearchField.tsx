@@ -5,8 +5,10 @@ import { TextField } from '../TextField/';
 import { MagnifierIcon } from '../../icons/MagnifierIcon';
 import { themeVariables } from '../../theme/themeVariables.ts';
 import { button, dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
+import { LoadingSpinner } from '../LoadingIndicators';
 
-function SearchButton({
+// Search button component
+const SearchButton = ({
   onClick,
   disabled,
   label,
@@ -14,7 +16,7 @@ function SearchButton({
   onClick: () => void;
   disabled: boolean;
   label: string;
-}) {
+}) => {
   return (
     <Button
       aria-label={label}
@@ -26,16 +28,28 @@ function SearchButton({
       <MagnifierIcon {...(!disabled && { fill: 'white' })} />
     </Button>
   );
-}
+};
 
-interface SearchFieldData {
+/**
+ * Loading option component
+ * @returns Combobox option with loading spinner
+ */
+const LoadingOption = () => {
+  return (
+    <Combobox.Option className={option} component="li" value="loading">
+      <LoadingSpinner size={'sm'} />
+    </Combobox.Option>
+  );
+};
+
+export interface SearchFieldData {
   value: string;
   label: string;
   /** A custom element that will be rendered in place of label to appearing listbox */
   labelElement?: ReactElement;
 }
 
-interface Props<T extends SearchFieldData> extends ComboboxProps {
+export interface Props<T extends SearchFieldData> extends ComboboxProps {
   onChange: (value: string) => void;
   data: T[];
   onSearch: (value: T) => void;
@@ -48,6 +62,7 @@ interface Props<T extends SearchFieldData> extends ComboboxProps {
   clearButtonLabel: string;
   /** Trigger onSearch immediately when an item is selected */
   searchOnItemSelect?: boolean;
+  isLoading?: boolean;
 }
 
 export function SearchField<T extends SearchFieldData>({
@@ -61,6 +76,7 @@ export function SearchField<T extends SearchFieldData>({
   fillAvailableSpace,
   clearButtonLabel,
   searchOnItemSelect,
+  isLoading = false,
   ...props
 }: Props<T>) {
   const [searchValue, setSearchValue] = useState<string | null>(null);
@@ -157,9 +173,9 @@ export function SearchField<T extends SearchFieldData>({
         />
       </Flex>
 
-      <Combobox.Dropdown hidden={options.length === 0} className={dropdown}>
+      <Combobox.Dropdown hidden={options.length === 0 && !isLoading} className={dropdown}>
         <Combobox.Options component={'ul'} className={listOptions}>
-          {options}
+          {isLoading ? <LoadingOption /> : options}
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox>

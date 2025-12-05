@@ -3,7 +3,7 @@ import cx from 'clsx';
 import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { variants, content } from './Button.css.ts';
 
-interface Props extends PropsWithChildren, UnstyledButtonProps {
+export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps {
   variant?: 'filled' | 'outlined' | 'text';
   disabled?: boolean;
   leftIcon?: React.ReactNode;
@@ -12,7 +12,7 @@ interface Props extends PropsWithChildren, UnstyledButtonProps {
 }
 
 /** A basic button components with variants. Remember to include aria-label for accessibility if no text is provided as children. */
-export function Button({
+export const Button = ({
   variant = 'filled',
   children,
   disabled,
@@ -20,7 +20,7 @@ export function Button({
   rightIcon,
   onClick,
   ...props
-}: Props) {
+}: ButtonProps) => {
   return (
     <UnstyledButton
       {...props}
@@ -35,4 +35,4 @@ export function Button({
       </Flex>
     </UnstyledButton>
   );
-}
+};
