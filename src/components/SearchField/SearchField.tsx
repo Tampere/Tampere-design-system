@@ -1,6 +1,6 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { Combobox, type ComboboxProps, Flex, Highlight, useCombobox } from '@mantine/core';
-import { Button } from '../Button';
+import { Button, ButtonProps } from '../Button';
 import { TextField } from '../TextField/';
 import { MagnifierIcon } from '../../icons/MagnifierIcon';
 import { themeVariables } from '../../theme/themeVariables.ts';
@@ -8,23 +8,9 @@ import { button, dropdown, inputWrapper, listOptions, option } from './SearchFie
 import { LoadingSpinner } from '../LoadingIndicators';
 
 // Search button component
-const SearchButton = ({
-  onClick,
-  disabled,
-  label,
-}: {
-  onClick: () => void;
-  disabled: boolean;
-  label: string;
-}) => {
+const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
   return (
-    <Button
-      aria-label={label}
-      disabled={disabled}
-      variant="filled"
-      onClick={onClick}
-      className={button[disabled ? 'disabled' : 'default']}
-    >
+    <Button variant="filled" className={button[disabled ? 'disabled' : 'default']} {...restProps}>
       <MagnifierIcon {...(!disabled && { fill: 'white' })} />
     </Button>
   );
@@ -42,6 +28,9 @@ const LoadingOption = () => {
   );
 };
 
+/**
+ * Data item for SearchField component
+ */
 export interface SearchFieldData {
   value: string;
   label: string;
@@ -49,7 +38,10 @@ export interface SearchFieldData {
   labelElement?: ReactElement;
 }
 
-export interface Props<T extends SearchFieldData> extends ComboboxProps {
+/**
+ * Props for SearchField component
+ */
+export interface SearchFieldProps<T extends SearchFieldData> extends ComboboxProps {
   onChange: (value: string) => void;
   data: T[];
   onSearch: (value: T) => void;
@@ -78,7 +70,7 @@ export function SearchField<T extends SearchFieldData>({
   searchOnItemSelect,
   isLoading = false,
   ...props
-}: Props<T>) {
+}: SearchFieldProps<T>) {
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [currentValue, setCurrentValue] = useState<string>('');
 
@@ -134,6 +126,7 @@ export function SearchField<T extends SearchFieldData>({
       <Flex {...(fillAvailableSpace && { flex: 1 })}>
         <Combobox.Target>
           <TextField
+            inputLabel={inputLabel}
             disabled={props.disabled}
             className={inputWrapper}
             aria-label={inputLabel}
@@ -161,16 +154,18 @@ export function SearchField<T extends SearchFieldData>({
               combobox.resetSelectedOption();
               onClearClick?.();
             }}
+            endInstance={
+              <SearchButton
+                aria-label={searchButtonLabel}
+                disabled={props.disabled ?? false}
+                onClick={() => {
+                  const dataItem = data.find((d) => d.label === searchValue);
+                  if (dataItem) onSearch(dataItem);
+                }}
+              />
+            }
           />
         </Combobox.Target>
-        <SearchButton
-          label={searchButtonLabel}
-          disabled={props.disabled ?? false}
-          onClick={() => {
-            const dataItem = data.find((d) => d.label === searchValue);
-            if (dataItem) onSearch(dataItem);
-          }}
-        />
       </Flex>
 
       <Combobox.Dropdown hidden={options.length === 0 && !isLoading} className={dropdown}>

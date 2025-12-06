@@ -20,6 +20,12 @@ export const wrapper = style({
   alignSelf: 'stretch',
   alignItems: 'center',
   position: 'relative', // For left and right sections positioning
+  flex: 1,
+});
+
+// Container for input and endInstance
+export const inputContainer = style({
+  display: 'flex',
 });
 
 // Optional left and right sections
