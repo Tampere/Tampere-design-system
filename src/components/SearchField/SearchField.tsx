@@ -1,7 +1,7 @@
 import { type ReactElement, useMemo, useState } from 'react';
 import { Combobox, type ComboboxProps, Flex, Highlight, useCombobox } from '@mantine/core';
 import { Button, ButtonProps } from '../Button';
-import { TextField } from '../TextField/';
+import { TextField, TextFieldProps } from '../TextField/';
 import { MagnifierIcon } from '../../icons/MagnifierIcon';
 import { themeVariables } from '../../theme/themeVariables.ts';
 import { button, dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
@@ -55,6 +55,7 @@ export interface SearchFieldProps<T extends SearchFieldData> extends ComboboxPro
   /** Trigger onSearch immediately when an item is selected */
   searchOnItemSelect?: boolean;
   isLoading?: boolean;
+  textFieldProps?: TextFieldProps;
 }
 
 export function SearchField<T extends SearchFieldData>({
@@ -69,6 +70,7 @@ export function SearchField<T extends SearchFieldData>({
   clearButtonLabel,
   searchOnItemSelect,
   isLoading = false,
+  textFieldProps,
   ...props
 }: SearchFieldProps<T>) {
   const [searchValue, setSearchValue] = useState<string | null>(null);
@@ -126,6 +128,7 @@ export function SearchField<T extends SearchFieldData>({
       <Flex {...(fillAvailableSpace && { flex: 1 })}>
         <Combobox.Target>
           <TextField
+            {...textFieldProps}
             inputLabel={inputLabel}
             disabled={props.disabled}
             className={inputWrapper}

@@ -150,14 +150,23 @@ npm version patch
 
 This command will:
 
-- Update package.json
-- Create a Git tag with the version number
+- Update package.json and package-lock.json
+- Create a Git commit
+- Create a Git tag
 
-### 2. Merge changes
+### 2. Push the commit and the tag
+
+```bash
+git push
+git push origin --tags
+
+```
+
+### 3. Merge changes
 
 Merge your changes into the `main` branch
 
-### 3. Create a GitHub Release
+### 4. Create a GitHub Release
 
 1. Go to GitHub → Releases
 2. Click Draft a new release
@@ -169,7 +178,3 @@ Merge your changes into the `main` branch
 5. Publish the release
 
 Now GitHub action job will publish the new version of the NPM package.
-
-```
-
-```

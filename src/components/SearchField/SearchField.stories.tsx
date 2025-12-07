@@ -81,7 +81,7 @@ interface GithubRepoSearchResponse {
 }
 
 interface SearchResult extends SearchFieldData {
-  type: 'user' | 'repo';
+  type: 'user' | 'repo' | 'error' | 'noResults';
   data: GithubUser | GithubRepo;
 }
 
@@ -98,6 +98,7 @@ export const GithubSearch: Story = {
   render: (args) => {
     const [searchData, setData] = useState<SearchResult[]>([]);
     const [isLoading, setLoading] = useState(false);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -106,6 +107,28 @@ export const GithubSearch: Story = {
       const repoUrl = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+in:name`;
 
       const [userRes, repoRes] = await Promise.all([fetch(userUrl), fetch(repoUrl)]);
+
+      if (!userRes.ok || !repoRes.ok) {
+        const message =
+          userRes.status === 403 || repoRes.status === 403
+            ? 'GitHub rate limit exceeded. Try again in 30 seconds.'
+            : 'GitHub returned an error. Try again in 30 seconds.';
+        // Set error state to display in TextField error message
+        setError(message);
+
+        // Return an error item to display in the dropdown
+        return [
+          {
+            type: 'error',
+            value: 'error',
+            label: message,
+            data: {},
+          } as SearchResult,
+        ];
+      } else {
+        // Clear any previous error
+        setError(undefined);
+      }
 
       const [usersData, reposData]: [GithubUserSearchResponse, GithubRepoSearchResponse] =
         await Promise.all([userRes.json(), repoRes.json()]);
@@ -124,12 +147,21 @@ export const GithubSearch: Story = {
         data: item,
       })) as SearchResult[];
 
-      /**
-       * Combine and sort results by label, limit to 50 results
-       */
-      return [...userResults, ...repoResults]
-        .sort((a, b) => a.label.localeCompare(b.label))
-        .slice(0, 50);
+      // Combine user and repo results
+      const searhchResults: SearchResult[] = [...userResults, ...repoResults];
+
+      // Sort results alphabetically and limit to 50 items
+      // If no results, return a "No results found" item
+      return searhchResults.length > 0
+        ? searhchResults.sort((a, b) => a.label.localeCompare(b.label)).slice(0, 50)
+        : [
+            {
+              type: 'noResults',
+              value: 'noResults',
+              label: 'No results found',
+              data: {},
+            } as SearchResult,
+          ];
     };
 
     const handleChange = (value: string) => {
@@ -166,6 +198,7 @@ export const GithubSearch: Story = {
         onSearch={(value) => onSearch(value)}
         onClearClick={() => setData([])}
         isLoading={isLoading}
+        textFieldProps={{ error: error }}
       />
     );
   },
