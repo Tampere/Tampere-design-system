@@ -34,6 +34,7 @@ const filled = style({
     '&:disabled': {
       color: core.states.disabled,
       background: core.backgroundDisabled,
+      cursor: 'default',
     },
   },
 });
@@ -55,6 +56,7 @@ const outlined = style({
     '&:disabled': {
       color: core.states.disabled,
       border: `${core.strokeWeight} solid ${core.states.disabled}`,
+      cursor: 'default',
     },
   },
 });
@@ -76,6 +78,7 @@ const text = style({
     },
     '&:disabled': {
       color: core.states.disabled,
+      cursor: 'default',
     },
   },
 });

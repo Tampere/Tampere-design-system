@@ -16,6 +16,7 @@ const root = style({
   aspectRatio: '1 / 1',
   background: 'none',
   border: 'none',
+  cursor: 'pointer',
 });
 
 // Icon wrapper
@@ -56,6 +57,9 @@ const light = style({
     '&:active': {
       background: iconButton.states.contrast.overlay,
     },
+    '&:disabled': {
+      cursor: 'default',
+    },
   },
 });
 
@@ -84,6 +88,9 @@ const dark = style({
     },
     '&:active': {
       background: iconButton.states.overlay,
+    },
+    '&:disabled': {
+      cursor: 'default',
     },
   },
 });

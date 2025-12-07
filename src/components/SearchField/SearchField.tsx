@@ -1,16 +1,16 @@
 import { type ReactElement, useMemo, useState } from 'react';
-import { Combobox, type ComboboxProps, Flex, Highlight, useCombobox } from '@mantine/core';
+import { Combobox, Flex, Highlight, useCombobox } from '@mantine/core';
 import { Button, ButtonProps } from '../Button';
 import { TextField, TextFieldProps } from '../TextField/';
 import { MagnifierIcon } from '../../icons/MagnifierIcon';
 import { themeVariables } from '../../theme/themeVariables.ts';
-import { button, dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
+import { dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
 import { LoadingSpinner } from '../LoadingIndicators';
 
 // Search button component
 const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
   return (
-    <Button variant="filled" className={button[disabled ? 'disabled' : 'default']} {...restProps}>
+    <Button variant="filled" disabled={disabled} {...restProps}>
       <MagnifierIcon {...(!disabled && { fill: 'white' })} />
     </Button>
   );
@@ -41,21 +41,16 @@ export interface SearchFieldData {
 /**
  * Props for SearchField component
  */
-export interface SearchFieldProps<T extends SearchFieldData> extends ComboboxProps {
-  onChange: (value: string) => void;
+export interface SearchFieldProps<T extends SearchFieldData> extends TextFieldProps {
   data: T[];
   onSearch: (value: T) => void;
-  inputLabel: string;
-  placeholder?: string;
   onClearClick?: () => void;
-  /** Aria-label attribute for search button. */
-  searchButtonLabel: string;
   fillAvailableSpace?: boolean;
   clearButtonLabel: string;
   /** Trigger onSearch immediately when an item is selected */
   searchOnItemSelect?: boolean;
   isLoading?: boolean;
-  textFieldProps?: TextFieldProps;
+  searchButtonProps?: ButtonProps;
 }
 
 export function SearchField<T extends SearchFieldData>({
@@ -63,14 +58,12 @@ export function SearchField<T extends SearchFieldData>({
   data,
   onSearch,
   onClearClick,
-  inputLabel,
   placeholder,
-  searchButtonLabel,
   fillAvailableSpace,
   clearButtonLabel,
   searchOnItemSelect,
   isLoading = false,
-  textFieldProps,
+  searchButtonProps,
   ...props
 }: SearchFieldProps<T>) {
   const [searchValue, setSearchValue] = useState<string | null>(null);
@@ -112,7 +105,6 @@ export function SearchField<T extends SearchFieldData>({
 
   return (
     <Combobox
-      {...props}
       offset={0}
       onOptionSubmit={(optionValue) => {
         if (searchOnItemSelect) {
@@ -128,16 +120,13 @@ export function SearchField<T extends SearchFieldData>({
       <Flex {...(fillAvailableSpace && { flex: 1 })}>
         <Combobox.Target>
           <TextField
-            {...textFieldProps}
-            inputLabel={inputLabel}
-            disabled={props.disabled}
+            {...props}
             className={inputWrapper}
-            aria-label={inputLabel}
             placeholder={placeholder}
             value={currentValue}
             onChange={(event) => {
               setCurrentValue(event.currentTarget.value);
-              onChange(event.currentTarget.value);
+              onChange?.(event);
 
               combobox.openDropdown();
               combobox.resetSelectedOption();
@@ -159,12 +148,15 @@ export function SearchField<T extends SearchFieldData>({
             }}
             endInstance={
               <SearchButton
-                aria-label={searchButtonLabel}
+                // set default bahaviout for some properties
+                aria-label={props.inputLabel}
                 disabled={props.disabled ?? false}
                 onClick={() => {
                   const dataItem = data.find((d) => d.label === searchValue);
                   if (dataItem) onSearch(dataItem);
                 }}
+                // Allow overriding other props
+                {...searchButtonProps}
               />
             }
           />

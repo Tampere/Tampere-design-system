@@ -3,7 +3,7 @@ import cx from 'clsx';
 import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { variants, content } from './Button.css.ts';
 
-export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps {
+export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps, React.AriaAttributes {
   variant?: 'filled' | 'outlined' | 'text';
   disabled?: boolean;
   leftIcon?: React.ReactNode;

@@ -4,17 +4,30 @@ import { SearchField, SearchFieldData } from './SearchField';
 
 const meta: Meta<typeof SearchField> = {
   argTypes: {
-    inputLabel: { control: 'text' },
     data: { control: 'object' },
-    searchButtonLabel: { control: 'text' },
-    clearButtonLabel: { control: 'text' },
     onSearch: { action: 'searched' },
     onChange: { action: 'changed' },
+
+    inputLabel: { control: 'text', description: 'Input label (visible)' },
+    placeholder: { control: 'text', description: 'Placeholder text' },
+    helperText: { control: 'text', description: 'Helper/description text' },
+    error: { control: 'text', description: 'Error text (shows error state)' },
+    disabled: { control: 'boolean' },
+    required: { control: 'boolean' },
+    showSearchIcon: { control: 'boolean', description: 'Show left search icon' },
+    showClearButton: { control: 'boolean', description: 'Show clear button when non-empty' },
+    clearButtonLabel: { control: 'text', description: 'aria-label for clear button' },
   },
   args: {
-    inputLabel: 'Search',
     data: [],
-    searchButtonLabel: 'Search',
+    inputLabel: 'Search',
+    placeholder: '',
+    helperText: '',
+    error: '',
+    disabled: false,
+    required: false,
+    showSearchIcon: false,
+    showClearButton: false,
     clearButtonLabel: 'Clear',
   },
   component: SearchField,
@@ -41,7 +54,6 @@ export const Primary: Story = {
       { value: 'pappilankatu', label: 'Pappilankatu' },
       { value: 'peltokatu', label: 'Peltokatu' },
     ],
-    searchButtonLabel: 'Search button',
     clearButtonLabel: 'Clear',
     onSearch: () => {},
     onChange: () => {},
@@ -92,7 +104,6 @@ export const GithubSearch: Story = {
   args: {
     inputLabel: 'Search GitHub Users and Repositories',
     placeholder: 'Type at least 3 characters to search...',
-    searchButtonLabel: 'Search button',
     clearButtonLabel: 'Clear',
   },
   render: (args) => {
@@ -164,10 +175,12 @@ export const GithubSearch: Story = {
           ];
     };
 
-    const handleChange = (value: string) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement> | undefined) => {
       if (typingTimeout.current) {
         clearTimeout(typingTimeout.current);
       }
+
+      const value = event?.target?.value || '';
 
       if (value.length < 3) {
         setData([]);
@@ -198,7 +211,10 @@ export const GithubSearch: Story = {
         onSearch={(value) => onSearch(value)}
         onClearClick={() => setData([])}
         isLoading={isLoading}
-        textFieldProps={{ error: error }}
+        error={error}
+        searchButtonProps={{
+          'aria-label': 'Search GitHub users and repositories',
+        }}
       />
     );
   },

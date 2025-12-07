@@ -17,16 +17,13 @@ import {
   inputContainer,
 } from './TextField.css.ts';
 
-export interface TextFieldProps extends TextInputProps {
+export interface TextFieldProps extends TextInputProps, React.AriaAttributes {
   /**
    * Label for the input field. If not set, you must provide an aria-label for accessibility.
    */
   inputLabel?: string;
   helperText?: string;
-  placeholder?: string;
-  required?: boolean;
-  error?: string;
-  disabled?: boolean;
+  error?: string; // Overrides TextInputProps error to be string for error message. Remove this if custom error components are needed.
   showSearchIcon?: boolean;
   showClearButton?: boolean;
   clearButtonLabel?: string;
@@ -36,7 +33,7 @@ export interface TextFieldProps extends TextInputProps {
 
 type InputStatus = 'default' | 'error' | 'disabled';
 
-const getInputStatus = (error?: string, disabled?: boolean): InputStatus => {
+const getInputStatus = (error?: TextFieldProps['error'], disabled?: boolean): InputStatus => {
   if (error) return 'error';
   if (disabled) return 'disabled';
   return 'default';
@@ -78,8 +75,6 @@ const InputContainer = ({
 export const TextField = ({
   inputLabel,
   helperText,
-  placeholder,
-  required,
   error,
   disabled,
   showSearchIcon,
@@ -118,9 +113,8 @@ export const TextField = ({
         error: cx(errorRoot, errorText),
       }}
       disabled={disabled}
-      required={required}
-      placeholder={placeholder}
       label={inputLabel}
+      aria-label={inputLabel}
       description={helperText}
       error={error}
       inputContainer={(children) => (
