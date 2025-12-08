@@ -4,4 +4,4 @@ import { LoadingIndicatorStyles } from './LoadingIndicators.css.ts';
 export const LoadingSpinner = (props: {
   size?: LoaderProps['size'];
   style?: LoaderProps['style'];
-}) => <MantineLoader className={LoadingIndicatorStyles} {...props} />;
+}) => <MantineLoader role="progressbar" className={LoadingIndicatorStyles} {...props} />;
