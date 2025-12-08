@@ -1,5 +1,14 @@
 import { useState, useRef } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import {
+  within,
+  userEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+  screen,
+} from '@storybook/testing-library';
+import { expect, fn } from 'storybook/test';
+
 import { SearchField, SearchFieldData } from './SearchField';
 
 const meta: Meta<typeof SearchField> = {
@@ -194,7 +203,7 @@ export const GithubSearch: Story = {
         fetchGithubData(value)
           .then(setData)
           .finally(() => setLoading(false));
-      }, 400);
+      }, 300);
     };
 
     const onSearch = (value: SearchResult) => {
@@ -217,5 +226,99 @@ export const GithubSearch: Story = {
         }}
       />
     );
+  },
+};
+
+export const ShowsLoadingAfterThreeChars: Story = {
+  ...GithubSearch,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Tam');
+    await expect(screen.queryByRole('progressbar')).toBeInTheDocument();
+    await waitFor(() => {
+      waitForElementToBeRemoved(screen.queryByRole('progressbar'), { timeout: 4000 });
+    });
+  },
+};
+
+export const NoLoadingWithTwoChars: Story = {
+  ...GithubSearch,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Ta');
+    await expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  },
+};
+
+export const ShowsSearchResult: Story = {
+  ...GithubSearch,
+
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Tampere/design');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', { name: 'Tampere/Tampere-design-system' })
+      ).toBeInTheDocument();
+    });
+  },
+};
+
+export const OpensItemOnSelect: Story = {
+  ...GithubSearch,
+
+  play: async ({ canvasElement }) => {
+    window.open = fn();
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Tampere/design');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', { name: 'Tampere/Tampere-design-system' })
+      ).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText('Tampere/Tampere-design-system'));
+
+    expect(window.open).toHaveBeenCalled();
+  },
+};
+
+export const OpensItemOnEnter: Story = {
+  ...GithubSearch,
+
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Tampere/design');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', { name: 'Tampere/Tampere-design-system' })
+      ).toBeInTheDocument();
+    });
+
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    expect(window.open).toHaveBeenCalled();
+  },
+};
+
+export const ClearInput: Story = {
+  ...GithubSearch,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Ta');
+
+    await expect(canvas.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Clear' }));
+    await expect(input).toHaveValue('');
   },
 };

@@ -76,6 +76,7 @@ export function SearchField<T extends SearchFieldData>({
       data.map((item, idx) => (
         <Combobox.Option
           aria-description={`${idx + 1} / ${data.length}`}
+          aria-label={item.label}
           className={option}
           value={item.label} // Note this is on purpose. The label value is rendered to input after select.
           component="li"
