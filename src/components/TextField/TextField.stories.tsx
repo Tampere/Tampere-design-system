@@ -6,7 +6,6 @@ import { TextField } from './TextField';
 const meta = {
   component: TextField,
   argTypes: {
-    size: { control: { type: 'select' }, options: ['xs', 'sm', 'md', 'lg', 'xl'] },
     inputLabel: { control: 'text', description: 'Input label (visible)' },
     placeholder: { control: 'text', description: 'Placeholder text' },
     helperText: { control: 'text', description: 'Helper/description text' },
@@ -18,7 +17,6 @@ const meta = {
     clearButtonLabel: { control: 'text', description: 'aria-label for clear button' },
   },
   args: {
-    size: 'md',
     inputLabel: 'Text input',
     placeholder: '',
     helperText: '',
