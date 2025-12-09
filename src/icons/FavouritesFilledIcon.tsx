@@ -1,10 +1,6 @@
 import type { SVGProps } from 'react';
 
-export const FavouritesFilledIcon = ({
-  width = 24,
-  height = 24,
-  ...props
-}: SVGProps<SVGSVGElement>) => {
+export const FavouritesFilledIcon = ({ width = 24, ...props }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       width={width}
