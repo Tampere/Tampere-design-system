@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export const MenuIcon = (props: SVGProps<SVGSVGElement>) => {
+export const IconChevronLeft = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       width="24"
@@ -10,9 +10,7 @@ export const MenuIcon = (props: SVGProps<SVGSVGElement>) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <path d="M24 16V18H0V16H24Z" />
-      <path d="M24 11V13H0V11H24Z" />
-      <path d="M24 6V8H0V6H24Z" />
+      <path d="M15.207 20.207L7 12L15.207 3.79297L16.6211 5.20703L9.82812 12L16.6211 18.793L15.207 20.207Z" />
     </svg>
   );
 };

@@ -4,7 +4,7 @@ import { Combobox, Flex, useCombobox } from '@mantine/core';
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
 import { ChevronDownIcon } from '../../icons/ChevronDownIcon.tsx';
-import { CrossIcon } from '../../icons/CrossIcon.tsx';
+import { CloseIcon } from '../../icons/CloseIcon.tsx';
 import {
   dropDown,
   dropDownOption,
@@ -61,7 +61,7 @@ function SelectRightSection({
     <Flex className={rightSectionContainer}>
       {displayClearButton && (
         <IconButton aria-label={clearButtonLabel} variant="dark" onClick={onClearClick} size={'sm'}>
-          <CrossIcon />
+          <CloseIcon />
         </IconButton>
       )}
       <IconButton

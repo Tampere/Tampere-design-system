@@ -1,5 +1,5 @@
 import { Switch as MantineSwitch, type SwitchProps } from '@mantine/core';
-import { CrossIcon } from '../../icons/CrossIcon';
+import { CloseIcon } from '../../icons/CloseIcon';
 import { CheckboxCheckedIcon } from '../../icons/CheckboxCheckedIcon';
 import { CheckboxUncheckedIcon } from '../../icons/CheckboxUncheckedIcon';
 import { vars } from '../../theme';
@@ -50,7 +50,7 @@ export function Switch(props: Props) {
                   pointerEvents: 'none',
                 }}
               >
-                <CrossIcon width={'14px'} height={'14px'} className={closeIcon} />
+                <CloseIcon width={'14px'} height={'14px'} className={closeIcon} />
               </span>
             </>
           )}

@@ -2,7 +2,7 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { Combobox, Flex, Highlight, useCombobox } from '@mantine/core';
 import { Button, ButtonProps } from '../Button';
 import { TextField, TextFieldProps } from '../TextField/';
-import { MagnifierIcon } from '../../icons/MagnifierIcon';
+import { SearchIcon } from '../../icons/SearchIcon.tsx';
 import { themeVariables } from '../../theme/themeVariables.ts';
 import { dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
 import { LoadingSpinner } from '../LoadingIndicators';
@@ -11,7 +11,7 @@ import { LoadingSpinner } from '../LoadingIndicators';
 const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
   return (
     <Button variant="filled" disabled={disabled} {...restProps}>
-      <MagnifierIcon {...(!disabled && { fill: 'white' })} />
+      <SearchIcon {...(!disabled && { fill: 'white' })} />
     </Button>
   );
 };

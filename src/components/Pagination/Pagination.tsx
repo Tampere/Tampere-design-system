@@ -1,6 +1,6 @@
 import { Flex, List, UnstyledButton } from '@mantine/core';
 import { IconButton } from '../IconButton/IconButton.tsx';
-import { IconChevronLeft } from '../../icons/IconChevronLeft';
+import { IconChevronLeft } from '../../icons/ChevronLeftIcon.tsx';
 import { leftButton, list, listItem, rightButton } from './Pagination.css.ts';
 
 interface Props {

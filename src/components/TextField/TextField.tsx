@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import cx from 'clsx';
 import { TextInput, type TextInputProps } from '@mantine/core';
-import { MagnifierIcon } from '../../icons/MagnifierIcon.tsx';
-import { CrossIcon } from '../../icons/CrossIcon.tsx';
+import { SearchIcon } from '../../icons/SearchIcon.tsx';
+import { CloseIcon } from '../../icons/CloseIcon.tsx';
 import { IconButton } from '../IconButton/IconButton.tsx';
 import {
   description,
@@ -114,13 +114,12 @@ export const TextField = ({
       }}
       disabled={disabled}
       label={inputLabel}
-      aria-label={inputLabel}
       description={helperText}
       error={error}
       inputContainer={(children) => (
         <InputContainer endInstance={endInstance}>{children}</InputContainer>
       )}
-      {...(showSearchIcon && { leftSection: <MagnifierIcon /> })}
+      {...(showSearchIcon && { leftSection: <SearchIcon /> })}
       {...(showClearButton &&
         textValue.length > 0 && {
           rightSection: (
@@ -133,7 +132,7 @@ export const TextField = ({
               size={'sm'}
               variant="dark"
             >
-              <CrossIcon />
+              <CloseIcon />
             </IconButton>
           ),
         })}

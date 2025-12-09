@@ -1,17 +1,20 @@
-export function TrashcanIcon(props: React.SVGProps<SVGSVGElement>) {
+import type { SVGProps } from 'react';
+
+export const TrashcanIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="25"
+      width="24"
       height="24"
-      viewBox="0 0 25 24"
-      fill="none"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <path
-        d="M16.4841 0V3.57615H23.5557V5.39128H22.0136L20.1913 24H4.91998L3.09769 5.39128H1.55566V3.57615H8.62754V0H16.4841ZM6.49657 22.1849H18.6148L20.2594 5.39128H4.85188L6.49657 22.1849ZM11.1504 8.2092V19.4947H9.4054V8.2092H11.1504ZM15.7059 8.2092V19.4947H13.961V8.2092H15.7059ZM10.3725 3.57615H14.7388V1.81549H10.3725V3.57615Z"
-        fill={props.fill ?? '#3E3E45'}
-      />
+      <path d="M20.6035 5L18.8311 23H5.16895L3.39648 5H20.6035ZM6.98145 21H17.0186L18.3965 7H5.60352L6.98145 21Z" />
+      <path d="M22 5V7H2V5H22Z" />
+      <path d="M14 4H10V7H8V2H16V7H14V4Z" />
+      <path d="M11.01 10.0011L11 19.0011L9 18.9989L9.01001 9.99889L11.01 10.0011Z" />
+      <path d="M14.99 9.99889L15 18.9989L13 19.0011L12.99 10.0011L14.99 9.99889Z" />
     </svg>
   );
-}
+};
