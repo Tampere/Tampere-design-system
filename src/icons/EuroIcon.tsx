@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export function PaymentIcon(props: SVGProps<SVGSVGElement>) {
+export function EuroIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="24"

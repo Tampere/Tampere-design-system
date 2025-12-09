@@ -15,7 +15,7 @@ import { SearchIcon } from './SearchIcon';
 import { MapIcon } from './MapIcon';
 import { MenuIcon } from './MenuIcon';
 import { OpenExternalLinkIcon } from './OpenExternalLinkIcon';
-import { PaymentIcon } from './PaymentIcon';
+import { EuroIcon } from './EuroIcon';
 import { SettingsIcon } from './SettingsIcon';
 import { TrashcanIcon } from './TrashcanIcon';
 import { UserAuthenticateIcon } from './UserAuthenticateIcon';
@@ -47,7 +47,7 @@ const icons: { name: string; Component: any; props?: Record<string, unknown> }[]
   { name: 'MapIcon', Component: MapIcon },
   { name: 'MenuIcon', Component: MenuIcon },
   { name: 'OpenExternalLinkIcon', Component: OpenExternalLinkIcon },
-  { name: 'PaymentIcon', Component: PaymentIcon },
+  { name: 'PaymentIcon', Component: EuroIcon },
   { name: 'SettingsIcon', Component: SettingsIcon },
   { name: 'TrashcanIcon', Component: TrashcanIcon },
   { name: 'UserAuthenticateIcon', Component: UserAuthenticateIcon },

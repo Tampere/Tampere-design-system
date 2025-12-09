@@ -14,7 +14,7 @@ export * from './SearchIcon';
 export * from './MapIcon';
 export * from './MenuIcon';
 export * from './OpenExternalLinkIcon';
-export * from './PaymentIcon';
+export * from './EuroIcon';
 export * from './SettingsIcon';
 export * from './TrashcanIcon';
 export * from './UserAuthenticateIcon';
