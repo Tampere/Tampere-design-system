@@ -1,10 +1,10 @@
 import type { SVGProps } from 'react';
 
-export function EuroIcon(props: SVGProps<SVGSVGElement>) {
+export const EuroIcon = ({ width = 24, height = 24, ...props }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
-      width="24"
-      height="24"
+      width={width}
+      height={height}
       viewBox="0 0 24 24"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
@@ -16,4 +16,4 @@ export function EuroIcon(props: SVGProps<SVGSVGElement>) {
       <path d="M14 12.5V14.5H5V12.5H14Z" />
     </svg>
   );
-}
+};
