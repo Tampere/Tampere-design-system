@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
-import { MagnifierIcon } from '../../icons/MagnifierIcon';
+import { SearchIcon } from '../../icons/SearchIcon';
 
 const meta = {
   argTypes: {
@@ -50,7 +50,7 @@ export const BothIcons: Story = {
 
 export const WithSvgIcon: Story = {
   render: (args) => (
-    <Button {...args} leftIcon={<MagnifierIcon />}>
+    <Button {...args} leftIcon={<SearchIcon />}>
       SVG Icon
     </Button>
   ),
@@ -59,7 +59,7 @@ export const WithSvgIcon: Story = {
 export const WithoutText: Story = {
   render: (args) => (
     <Button {...args} aria-label="Magnifier">
-      <MagnifierIcon />
+      <SearchIcon />
     </Button>
   ),
 };

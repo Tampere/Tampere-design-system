@@ -1,16 +1,17 @@
-export function MenuIcon(props: React.SVGProps<SVGSVGElement>) {
+import type { SVGProps } from 'react';
+
+export const MenuIcon = ({ width = 24, ...props }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
-      {...props}
+      width={width}
+      viewBox="0 0 24 24"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="10"
-      viewBox="0 0 24 10"
-      fill="none"
+      {...props}
     >
-      <path d="M24 8.48804V10H0V8.48804H24Z" fill={props.fill ?? 'currentColor'} />
-      <path d="M24 4.24402V5.75598H0V4.24402H24Z" fill={props.fill ?? 'currentColor'} />
-      <path d="M24 0V1.51196H0V0H24Z" fill={props.fill ?? 'currentColor'} />
+      <path d="M24 16V18H0V16H24Z" />
+      <path d="M24 11V13H0V11H24Z" />
+      <path d="M24 6V8H0V6H24Z" />
     </svg>
   );
-}
+};

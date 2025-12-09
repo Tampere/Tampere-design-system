@@ -1,21 +1,15 @@
 import type { SVGProps } from 'react';
 
-export function CheckboxUncheckedIcon(props: SVGProps<SVGSVGElement>) {
+export const CheckboxUncheckedIcon = ({ width = 24, ...props }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={width}
       viewBox="0 0 24 24"
-      fill="none"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
     >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M22 2H2V22H22V2ZM0 0V24H24V0H0Z"
-        fill="#686872"
-      />
+      <path d="M22 2V22H2V2H22ZM24 0H0V24H24V0Z" />
     </svg>
   );
-}
+};

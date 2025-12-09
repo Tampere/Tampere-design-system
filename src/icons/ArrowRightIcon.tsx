@@ -1,23 +1,16 @@
-interface Props {
-  rotate?: number;
-  fill?: string;
-}
+import type { SVGProps } from 'react';
 
-export function ArrowRightIcon({ rotate, fill }: Props) {
+export const ArrowRightIcon = ({ width = 24, ...props }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
+      width={width}
+      viewBox="0 0 24 24"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
-      width="21"
-      height="20"
-      viewBox="0 0 21 20"
-      fill="none"
-      style={{ transform: rotate ? `rotate(${rotate}deg)` : undefined }}
+      {...props}
     >
-      <path
-        d="M20.4141 9.70703L10.707 19.4141L9.29297 18L17.5859 9.70703L9.29297 1.41406L10.707 0L20.4141 9.70703Z"
-        fill={fill ?? '#3E3E45'}
-      />
-      <path d="M19 8.70703V10.707H0V8.70703H19Z" fill={fill ?? '#3E3E45'} />
+      <path d="M22.4141 12L12.707 21.707L11.293 20.293L19.5859 12L11.293 3.70703L12.707 2.29297L22.4141 12Z" />
+      <path d="M21 11V13H2V11H21Z" />
     </svg>
   );
-}
+};

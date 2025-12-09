@@ -1,6 +1,6 @@
 import cx from 'clsx';
 import { Flex, Modal as MantineModal, type ModalProps } from '@mantine/core';
-import { CrossIcon } from '../../icons/CrossIcon';
+import { CloseIcon } from '../../icons/CloseIcon';
 import { IconButton } from '../IconButton';
 import { header, modalCloseButton, modalHeaderTitle, padding } from './Modal.css';
 
@@ -30,7 +30,7 @@ export function Modal(props: Omit<ModalProps, 'withCloseButton'>) {
             }}
             // aria-label={tr("close")}
           >
-            <CrossIcon />
+            <CloseIcon />
           </IconButton>
         </Flex>
         <MantineModal.Body className={padding}> {children}</MantineModal.Body>

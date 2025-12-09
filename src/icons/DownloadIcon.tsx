@@ -1,19 +1,17 @@
-interface Props {
-  fill?: string;
-}
+import type { SVGProps } from 'react';
 
-export function DownloadIcon({ fill }: Props) {
+export const DownloadIcon = ({ width = 24, ...props }: SVGProps<SVGSVGElement>) => {
   return (
-    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M21.3884 8.22236L22.7503 9.52599L12.4708 19.3653L2.18737 9.52612L3.54905 8.22223L12.4697 16.7574L21.3884 8.22236Z"
-        fill={fill ?? '#3E3E45'}
-      />
-      <path d="M13.4338 0V18.0618H11.5077V0H13.4338Z" fill={fill ?? '#3E3E45'} />
-      <path
-        d="M2.64093 15.3756V22.1564H22.7888V15.3756H24.7148V24H0.714844V15.3756H2.64093Z"
-        fill={fill ?? '#3E3E45'}
-      />
+    <svg
+      width={width}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M12.0085 17.8159L20.0124 9.81297L21.4274 11.227L12.0104 20.643L2.57393 11.228L3.98604 9.81199L12.0085 17.8159Z" />
+      <path d="M13 0V19.2402H11V0H13Z" />
+      <path d="M2.99637 17V22H21.0036V17H23V24H1V17H2.99637Z" />
     </svg>
   );
-}
+};
