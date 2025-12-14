@@ -247,6 +247,13 @@ const core = {
     error: colors.red['300'],
     visited: colors.blue['300'],
   },
+  selectionStates: {
+    unchecked: {
+      hover: colors.neutral['500'],
+      focus: colors.neutral['500'],
+      active: colors.neutral['400'],
+    },
+  },
 } as const;
 
 const fontFamilyHeader = 'Montserrat, sans-serif';
