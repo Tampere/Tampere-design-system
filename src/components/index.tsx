@@ -7,6 +7,7 @@ export { LoadingSpinner } from './LoadingIndicators/LoadingIndicators';
 export { Modal } from './Modal/Modal';
 export { NavigationLink } from './NavigationLink/NavigationLink';
 export { Pagination } from './Pagination/Pagination';
+export { RadioButton } from './RadioButton/RadioButton';
 export { SearchField } from './SearchField/SearchField';
 export { Select } from './Select/Select';
 export { Switch } from './Switch/Switch';
@@ -15,8 +16,8 @@ export {
   TableBody,
   TableCell,
   TableFooter,
-  TableHeaderCell,
   TableHeader,
+  TableHeaderCell,
   TableRow,
 } from './Table/Table';
 export { TextField } from './TextField/TextField';
