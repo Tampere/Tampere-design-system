@@ -17,7 +17,7 @@ export const RadioButton = ({
   ...props
 }: RadioButtonProps) => {
   const generatedId = useId();
-  const defaultId = `radio-${generatedId}`;
+  const inputId = id ?? `radio-${generatedId}`;
 
   const getInputVariant = () => {
     if (error) return 'error';
@@ -33,7 +33,7 @@ export const RadioButton = ({
       <div className={styles.iconWrapper}>
         <input
           type="radio"
-          id={id ?? defaultId}
+          id={inputId}
           checked={checked}
           className={styles.input[inputVariant]}
           {...props}
@@ -49,7 +49,7 @@ export const RadioButton = ({
         <label
           data-disabled={props.disabled}
           data-error={error}
-          htmlFor={id ?? defaultId}
+          htmlFor={inputId}
           className={styles.labelText}
         >
           {label}

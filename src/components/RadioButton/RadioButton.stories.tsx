@@ -28,14 +28,11 @@ export const Primary: Story = {
   render: (args) => {
     const [, updateArgs] = useArgs();
     const checked = Boolean(args.checked);
-    const handleClick = (e: any) => {
+    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
       updateArgs({ checked: !checked });
-      try {
-        (args as any).onChange?.(!checked);
-      } catch {}
       // preserve original onClick if provided
       try {
-        (args as any).onClick?.(e);
+        args.onClick?.(e);
       } catch {}
     };
     return <RadioButton {...args} checked={checked} onClick={handleClick} />;
@@ -47,13 +44,10 @@ export const Checked: Story = {
   render: (args) => {
     const [, updateArgs] = useArgs();
     const checked = Boolean(args.checked);
-    const handleClick = (e: any) => {
+    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
       updateArgs({ checked: !checked });
       try {
-        (args as any).onChange?.(!checked);
-      } catch {}
-      try {
-        (args as any).onClick?.(e);
+        args.onClick?.(e);
       } catch {}
     };
     return <RadioButton {...args} checked={checked} onClick={handleClick} />;
@@ -70,13 +64,10 @@ export const Error: Story = {
   render: (args) => {
     const [, updateArgs] = useArgs();
     const checked = Boolean(args.checked);
-    const handleClick = (e: any) => {
+    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
       updateArgs({ checked: !checked });
       try {
-        (args as any).onChange?.(!checked);
-      } catch {}
-      try {
-        (args as any).onClick?.(e);
+        args.onClick?.(e);
       } catch {}
     };
     return <RadioButton {...args} checked={checked} onClick={handleClick} />;
@@ -89,7 +80,16 @@ export const RadioGroup: Story = {
     const selectedValue = selected.selected || 'option1';
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <fieldset
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          border: 'none',
+          padding: 0,
+        }}
+      >
+        <label>Radio button group</label>
         <RadioButton
           label="Option 1"
           checked={selectedValue === 'option1'}
@@ -106,7 +106,7 @@ export const RadioGroup: Story = {
           onClick={() => setSelected({ selected: 'option3' })}
         />
         <RadioButton label="Disabled option" disabled checked={false} />
-      </div>
+      </fieldset>
     );
   },
 };
