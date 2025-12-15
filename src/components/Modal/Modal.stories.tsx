@@ -29,6 +29,7 @@ export const Primary: Story = {
     title: 'Modal title',
     children: <div>Modal content goes here.</div>,
     opened: false,
+    closeButtonProps: { 'aria-label': 'Close modal' },
   },
   render: (args) => {
     const [, updateArgs] = useArgs();
@@ -64,6 +65,7 @@ export const Large: Story = {
       </div>
     ),
     opened: false,
+    closeButtonProps: { 'aria-label': 'Close modal' },
   },
   render: (args) => {
     const [, updateArgs] = useArgs();
@@ -93,6 +95,7 @@ export const WithoutTitle: Story = {
     title: undefined,
     children: <div>Modal without title.</div>,
     opened: false,
+    closeButtonProps: { 'aria-label': 'Close modal' },
   },
   render: (args) => {
     const [, updateArgs] = useArgs();
@@ -130,6 +133,7 @@ export const WithFooter: Story = {
       </div>
     ),
     opened: false,
+    closeButtonProps: { 'aria-label': 'Close modal' },
   },
   render: (args) => {
     const [, updateArgs] = useArgs();
