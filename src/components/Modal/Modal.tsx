@@ -5,8 +5,7 @@ import { IconButton } from '../IconButton';
 import { header, modalCloseButton, modalHeaderTitle, padding } from './Modal.css';
 
 export function Modal(props: Omit<ModalProps, 'withCloseButton'>) {
-  // const { tr } = useTranslations();
-  const { classNames, title, children, onClose, ...rest } = props;
+  const { classNames, title, children, onClose, closeButtonProps, ...rest } = props;
 
   return (
     <MantineModal.Root
@@ -28,7 +27,7 @@ export function Modal(props: Omit<ModalProps, 'withCloseButton'>) {
             onClick={() => {
               onClose();
             }}
-            // aria-label={tr("close")}
+            aria-label={closeButtonProps?.['aria-label']}
           >
             <CloseIcon />
           </IconButton>
