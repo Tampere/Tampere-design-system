@@ -3,6 +3,7 @@ import { CloseIcon } from '../../icons/CloseIcon';
 import { CheckboxCheckedIcon } from '../../icons/CheckboxCheckedIcon';
 import { CheckboxUncheckedIcon } from '../../icons/CheckboxUncheckedIcon';
 import { vars } from '../../theme';
+import { mergeClassNames } from '../../utils';
 import { body, closeIcon, input, label, openIcon, thumb, track } from './Switch.css';
 
 interface Props {
@@ -10,18 +11,27 @@ interface Props {
   label?: React.ReactNode;
   checked: SwitchProps['checked'];
   ariaLabel?: string;
+  classNames?: {
+    body?: string;
+    track?: string;
+    thumb?: string;
+    label?: string;
+    input?: string;
+  };
 }
 
 export function Switch(props: Props) {
+  const defaultClassNames = {
+    body: body,
+    track: track,
+    thumb: thumb,
+    label: label,
+    input: input,
+  };
+
   return (
     <MantineSwitch
-      classNames={{
-        body: body,
-        track: track,
-        thumb: thumb,
-        label: label,
-        input: input,
-      }}
+      classNames={mergeClassNames(defaultClassNames, props.classNames)}
       checked={props.checked}
       onChange={props.onChange}
       thumbIcon={

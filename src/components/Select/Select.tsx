@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import cx from 'clsx';
 import { Combobox, Flex, useCombobox } from '@mantine/core';
-import { IconButton } from '../IconButton';
-import { TextField } from '../TextField';
+import { useState } from 'react';
 import { ChevronDownIcon } from '../../icons/ChevronDownIcon.tsx';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
+
+import { mergeClassNames } from '../../utils.ts';
+import { IconButton } from '../IconButton';
+import { TextField } from '../TextField';
 import {
   dropDown,
   dropDownOption,
@@ -132,11 +133,14 @@ export function Select({
           tabIndex={0}
           required={required}
           value={props.value ?? value}
-          classNames={{
-            root: cx(classNames?.root),
-            wrapper: cx(root, classNames?.wrapper),
-            input: cx(inputField, classNames?.input),
-          }}
+          classNames={mergeClassNames(
+            {
+              root: '',
+              wrapper: root,
+              input: inputField,
+            },
+            classNames
+          )}
           helperText={helperText}
           inputLabel={inputLabel}
           placeholder={placeholder}

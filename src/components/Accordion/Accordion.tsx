@@ -1,7 +1,7 @@
 import { Flex, Accordion as MantineAccordion } from '@mantine/core';
-import cx from 'clsx';
 import { createContext, isValidElement, use, useState, type PropsWithChildren } from 'react';
 import { ChevronDownIcon } from '../../icons/ChevronDownIcon';
+import { mergeClassNames } from '../../utils';
 import { accordion, chevron, content, control, item, label } from './Accordion.css.ts';
 
 interface AccordionControlProps {
@@ -55,6 +55,15 @@ export function Accordion({
 }: AccordionProps) {
   const [value, setValue] = useState<string[]>([]);
 
+  const defaultClassNames = {
+    root: accordion[spacing],
+    control: control,
+    label: label,
+    item: item,
+    chevron: chevron,
+    content: content,
+  };
+
   return (
     <MantineAccordion
       role={role}
@@ -66,14 +75,7 @@ export function Accordion({
         setValue(value);
         onChange?.(value);
       }}
-      classNames={{
-        root: cx(accordion[spacing], classNames?.root),
-        control: cx(control, classNames?.control),
-        label: cx(label, classNames?.label),
-        item: cx(item, classNames?.item),
-        chevron: cx(chevron, classNames?.chevron),
-        content: cx(content, classNames?.content),
-      }}
+      classNames={mergeClassNames(defaultClassNames, classNames)}
       chevron={<ChevronDownIcon />}
     >
       <AccordionContext value={value}>{children}</AccordionContext>
