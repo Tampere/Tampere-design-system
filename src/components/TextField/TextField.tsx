@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import cx from 'clsx';
 import { TextInput, type TextInputProps } from '@mantine/core';
-import { SearchIcon } from '../../icons/SearchIcon.tsx';
+import cx from 'clsx';
+import { useState } from 'react';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
+import { SearchIcon } from '../../icons/SearchIcon.tsx';
+import { mergeClassNames } from '../../utils.ts';
 import { IconButton } from '../IconButton/IconButton.tsx';
 import {
   description,
   errorRoot,
   errorText,
   input,
+  inputContainer,
   inputPaddingVariant,
   label,
   root,
   section,
   wrapper,
-  inputContainer,
 } from './TextField.css.ts';
 
 export interface TextFieldProps extends TextInputProps, React.AriaAttributes {
@@ -83,10 +84,21 @@ export const TextField = ({
   endInstance,
   onChange,
   onClearButtonClick,
+  classNames,
   ...props
 }: TextFieldProps) => {
   const inputStatus = getInputStatus(error, disabled);
   const sectionStatus = getSectionStatus(showSearchIcon, showClearButton);
+
+  const defaultClassNames = {
+    section: section,
+    root: root,
+    wrapper: wrapper,
+    input: cx(input[inputStatus], sectionStatus && inputPaddingVariant[sectionStatus]),
+    label: label[inputStatus],
+    description: description[inputStatus],
+    error: cx(errorRoot, errorText),
+  };
 
   const [textValue, setTextValue] = useState('');
 
@@ -99,19 +111,7 @@ export const TextField = ({
       }}
       value={props.value ?? textValue}
       unstyled
-      classNames={{
-        section: section,
-        root: root,
-        wrapper: wrapper,
-        input: cx(
-          input[inputStatus],
-          sectionStatus && inputPaddingVariant[sectionStatus],
-          typeof props.classNames === 'object' ? props.classNames.input : undefined
-        ),
-        label: label[inputStatus],
-        description: description[inputStatus],
-        error: cx(errorRoot, errorText),
-      }}
+      classNames={mergeClassNames(defaultClassNames, classNames)}
       disabled={disabled}
       label={inputLabel}
       description={helperText}
