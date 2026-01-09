@@ -5,7 +5,7 @@
     "url": "https://github.com/Tampere/Tampere-design-system.git"
   },
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
