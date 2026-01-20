@@ -1,15 +1,16 @@
-import { type ComponentPropsWithoutRef, useId, useState } from 'react';
-import cx from 'clsx';
 import { Box, Flex } from '@mantine/core';
+import cx from 'clsx';
+import { type ComponentPropsWithoutRef, useId, useState } from 'react';
 import { CheckboxCheckedIcon } from '../../icons/CheckboxCheckedIcon';
 import { CheckboxUncheckedIcon } from '../../icons/CheckboxUncheckedIcon';
-import { root, input, icon, inner, inputLabel } from './Checkbox.css';
+import { icon, inner, input, inputLabel, root } from './Checkbox.css';
 
 interface Props extends ComponentPropsWithoutRef<'input'> {
   label: string | React.ReactNode;
+  error?: boolean;
 }
 
-export function Checkbox({ label, ...inputProps }: Props) {
+export function Checkbox({ label, error, ...inputProps }: Props) {
   const [checked, setChecked] = useState(inputProps.checked ?? false);
 
   // Keep internal state in sync when the parent provides a controlled `checked` prop.
@@ -20,14 +21,18 @@ export function Checkbox({ label, ...inputProps }: Props) {
   const uniqueId = useId();
   const safeId = inputProps.id ?? uniqueId;
 
+  const getInputVariant = () => {
+    if (error) return 'error';
+    if (inputProps.disabled) return 'disabled';
+    if (checked) return 'checked';
+    return 'unchecked';
+  };
+
+  const inputVariant = getInputVariant();
+
   return (
     <Flex className={root}>
       <Box className={inner}>
-        {checked ? (
-          <CheckboxCheckedIcon aria-hidden="true" className={icon} />
-        ) : (
-          <CheckboxUncheckedIcon aria-hidden="true" className={icon} />
-        )}
         <input
           {...inputProps}
           checked={checked}
@@ -38,11 +43,19 @@ export function Checkbox({ label, ...inputProps }: Props) {
             }
           }}
           id={safeId}
-          className={input}
+          className={input[inputVariant]}
           type="checkbox"
         />
+        {checked ? (
+          <CheckboxCheckedIcon aria-hidden="true" className={icon} />
+        ) : (
+          <CheckboxUncheckedIcon aria-hidden="true" className={icon} />
+        )}
       </Box>
-      <label className={cx(root, inputLabel)} htmlFor={safeId}>
+      <label
+        className={cx(root, inputLabel[inputProps.disabled ? 'disabled' : 'default'])}
+        htmlFor={safeId}
+      >
         {label}
       </label>
     </Flex>

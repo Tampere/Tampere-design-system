@@ -579,7 +579,7 @@ const font = {
 const text = {
   primary: colors.neutral[800],
   secondary: colors.neutral[600],
-  disabled: colors.neutral[400],
+  disabled: colors.neutral[500],
   header: colors.neutral[900],
   primaryHeader: core.mainDark,
 } as const;
