@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Checkbox } from './Checkbox';
 
 const meta = {
@@ -8,11 +8,13 @@ const meta = {
     checked: { control: 'boolean' },
     disabled: { control: 'boolean' },
     onChange: { action: 'changed' },
+    error: { control: 'boolean' },
   },
   args: {
     label: 'Label',
     checked: false,
     disabled: false,
+    error: false,
   },
   component: Checkbox,
 } satisfies Meta<typeof Checkbox>;
@@ -59,6 +61,11 @@ export const Checked: Story = {
 
 export const Disabled: Story = {
   args: { label: 'Disabled option', disabled: true },
+  render: (args) => <Checkbox {...args} />,
+};
+
+export const Error: Story = {
+  args: { label: 'Error option', error: true },
   render: (args) => <Checkbox {...args} />,
 };
 
