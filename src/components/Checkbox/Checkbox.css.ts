@@ -24,7 +24,7 @@ export const inner = style({
   height: rem(24),
 });
 
-export const inputBase = style({
+export const input = style({
   cursor: 'pointer',
   appearance: 'none',
   width: rem(24),
@@ -34,14 +34,10 @@ export const inputBase = style({
     '&:focus-visible': {
       ...focusRing,
     },
+    '&:disabled': {
+      cursor: 'default',
+    },
   },
-});
-
-export const input = styleVariants({
-  unchecked: [inputBase],
-  checked: [inputBase],
-  disabled: [inputBase],
-  error: [inputBase],
 });
 
 export const icon = style({
@@ -61,45 +57,46 @@ export const inputLabel = styleVariants({
     height: rem(24),
     gap: spacing['0,5'],
     color: text.disabled,
+    cursor: 'default',
   },
 });
 
 // Unchecked state
-globalStyle(`${input.unchecked} + svg path`, {
+globalStyle(`${input} + svg path`, {
   fill: iconButton.states.default,
 });
 
-globalStyle(`${input.unchecked}:hover + svg path`, {
+globalStyle(`${input}:hover + svg path`, {
   fill: core.selectionStates.unchecked.hover,
 });
 
-globalStyle(`${input.unchecked}:active + svg path`, {
+globalStyle(`${input}:active + svg path`, {
   fill: core.selectionStates.unchecked.active,
 });
 
-globalStyle(`${input.unchecked}:focus-visible + svg path`, {
+globalStyle(`${input}:focus-visible + svg path`, {
   fill: core.selectionStates.unchecked.focus,
 });
 
 // Checked state
-globalStyle(`${input.checked} + svg path`, {
+globalStyle(`${input}[data-checked=true] + svg path`, {
   fill: core.states.default,
 });
 
-globalStyle(`${input.checked}:hover + svg path`, {
+globalStyle(`${input}[data-checked=true]:hover + svg path`, {
   fill: core.states.hover,
 });
 
-globalStyle(`${input.checked}:active + svg path`, {
+globalStyle(`${input}[data-checked=true]:active + svg path`, {
   fill: core.states.active,
 });
 
 // Disabled state
-globalStyle(`${input.disabled} + svg path`, {
+globalStyle(`${input}[data-disabled=true] + svg path`, {
   fill: core.states.disabled,
 });
 
 // Error state
-globalStyle(`${input.error} + svg path`, {
+globalStyle(`${input}[data-error=true] + svg path`, {
   fill: colors.red[400],
 });

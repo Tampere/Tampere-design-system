@@ -22,10 +22,10 @@ export function Checkbox({ label, error, ...inputProps }: Props) {
   const safeId = inputProps.id ?? uniqueId;
 
   const getInputVariant = () => {
-    if (error) return 'error';
-    if (inputProps.disabled) return 'disabled';
-    if (checked) return 'checked';
-    return 'unchecked';
+    if (error) return { 'data-error': true };
+    if (inputProps.disabled) return { 'data-disabled': true };
+    if (checked) return { 'data-checked': true };
+    return null;
   };
 
   const inputVariant = getInputVariant();
@@ -43,8 +43,9 @@ export function Checkbox({ label, error, ...inputProps }: Props) {
             }
           }}
           id={safeId}
-          className={input[inputVariant]}
+          className={input}
           type="checkbox"
+          {...inputVariant}
         />
         {checked ? (
           <CheckboxCheckedIcon aria-hidden="true" className={icon} />

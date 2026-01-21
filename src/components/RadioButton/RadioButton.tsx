@@ -1,7 +1,7 @@
 import { InputHTMLAttributes, useId } from 'react';
 
-import * as styles from './RadioButton.css';
 import { RadioCheckedIcon, RadioUncheckedIcon } from '../../icons';
+import * as styles from './RadioButton.css';
 
 export interface RadioButtonProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string;
@@ -20,12 +20,11 @@ export const RadioButton = ({
   const inputId = id ?? `radio-${generatedId}`;
 
   const getInputVariant = () => {
-    if (error) return 'error';
-    if (props.disabled) return 'disabled';
-    if (checked) return 'checked';
-    return 'unchecked';
+    if (error) return { 'data-error': true };
+    if (props.disabled) return { 'data-disabled': true };
+    if (checked) return { 'data-checked': true };
+    return null;
   };
-
   const inputVariant = getInputVariant();
 
   return (
@@ -35,8 +34,9 @@ export const RadioButton = ({
           type="radio"
           id={inputId}
           checked={checked}
-          className={styles.input[inputVariant]}
+          className={styles.input}
           {...props}
+          {...inputVariant}
         />
         {checked ? (
           <RadioCheckedIcon aria-hidden className={styles.icon} />
