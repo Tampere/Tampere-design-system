@@ -20,6 +20,7 @@ export {
   TableHeaderCell,
   TableRow,
 } from './Table/Table';
+export { TextArea } from './TextArea/TextArea';
 export { TextField } from './TextField/TextField';
 export { ThemeProvider, type ThemeProviderProps } from './ThemeProvider';
 export { Typography } from './Typography/Typography';
