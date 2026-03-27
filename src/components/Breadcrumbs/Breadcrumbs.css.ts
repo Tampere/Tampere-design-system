@@ -10,6 +10,15 @@ export const mobileWrapper = style({
   gap: link.spacing,
 });
 
+export const arrowLeftIcon = style({
+  width: typography.p2.fontSize,
+  height: typography.p2.fontSize,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: '0',
+});
+
 export const breadcrumbs = style({
   display: 'flex',
   alignItems: 'center',
