@@ -1,11 +1,11 @@
-import { type ReactElement, useMemo, useState } from 'react';
 import { Combobox, Flex, Highlight, useCombobox } from '@mantine/core';
-import { Button, ButtonProps } from '../Button';
-import { TextField, TextFieldProps } from '../TextField/';
+import { type ReactElement, useMemo, useState } from 'react';
 import { SearchIcon } from '../../icons/SearchIcon.tsx';
 import { themeVariables } from '../../theme/themeVariables.ts';
-import { dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
+import { Button, ButtonProps } from '../Button';
 import { LoadingSpinner } from '../LoadingIndicators';
+import { TextField, TextFieldProps } from '../TextField/';
+import { dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
 
 // Search button component
 const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {

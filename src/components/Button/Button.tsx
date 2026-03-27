@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import cx from 'clsx';
 import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
-import { variants, content } from './Button.css.ts';
+import { variants, content, iconWrapper } from './Button.css.ts';
 
 export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps, React.AriaAttributes {
   variant?: 'filled' | 'outlined' | 'text';
@@ -29,9 +29,9 @@ export const Button = ({
       className={cx(variants[variant], props.className)}
     >
       <Flex component="span" className={content}>
-        {leftIcon && leftIcon}
+        {leftIcon && <span className={iconWrapper}>{leftIcon}</span>}
         {children}
-        {rightIcon && rightIcon}
+        {rightIcon && <span className={iconWrapper}>{rightIcon}</span>}
       </Flex>
     </UnstyledButton>
   );

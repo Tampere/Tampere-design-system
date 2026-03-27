@@ -31,5 +31,5 @@
 
     "types": ["node"]
   },
-  "include": ["src", "**/*.css.ts"]
+  "include": ["src", "**/*.css.ts", "vite.config.ts", "vitest.shims.d.ts"]
 }

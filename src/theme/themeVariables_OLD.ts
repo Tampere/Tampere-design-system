@@ -1,77 +1,8 @@
+/** @deprecated This file is deprecated. Use `themeVariables` instead. */
+
 import { rem } from '@mantine/core';
 
-const spacing = {
-  '1': rem('8px'),
-  '2': rem('16px'),
-  '3': rem('24px'),
-  '4': rem('32px'),
-  '5': rem('40px'),
-  '6': rem('48px'),
-  '7': rem('56px'),
-  '8': rem('64px'),
-  '9': rem('72px'),
-  '10': rem('80px'),
-  '12': rem('96px'),
-  '14': rem('112px'),
-  '20': rem('160px'),
-  '0,5': rem('4px'),
-  '1,5': rem('12px'),
-} as const;
-
 export const breakpoints = {
-  xxl: {
-    typography: {
-      size: {
-        h1: rem('40px'),
-        h2: rem('36px'),
-        h3: rem('32px'),
-        h4: rem('28px'),
-        h5: rem('24px'),
-        subheader: rem('20px'),
-        p1: rem('20px'),
-        p2: rem('18px'),
-        caption: rem('16px'),
-      },
-    },
-    appWidth: '1920px',
-    layout: {
-      columns: '12',
-      gutter: rem('32px'),
-      margin: rem('32px'),
-    },
-    appHeader: {
-      logo: {
-        primaryLogoHeight: rem('36px'),
-        secondaryLogoHeight: rem('32px'),
-      },
-      search: {
-        maxWidth: rem('320px'),
-      },
-    },
-    components: {
-      button: {
-        lineHeight: rem('20px'),
-      },
-      input: {
-        lineHeight: rem('20px'),
-      },
-      list: {
-        lineHeight: rem('24px'),
-      },
-    },
-    spacing: {
-      xxs: spacing['1'],
-      xs: spacing['1,5'],
-      sm: spacing['2'],
-      md: spacing['3'],
-      lg: spacing['4'],
-      xl: spacing['6'],
-      xxl: spacing['8'],
-    },
-    footer: {
-      navigationMinWidth: rem('768px'),
-    },
-  },
   xl: {
     typography: {
       size: {
@@ -83,46 +14,17 @@ export const breakpoints = {
         subheader: rem('20px'),
         p1: rem('20px'),
         p2: rem('18px'),
-        caption: rem('16px'),
       },
     },
     appWidth: '1440px',
-    layout: {
-      columns: '12',
-      gutter: rem('32px'),
-      margin: rem('32px'),
-    },
     appHeader: {
       logo: {
-        primaryLogoHeight: rem('34px'),
-        secondaryLogoHeight: rem('32px'),
+        primaryLogoHeight: rem('40px'),
+        secondaryLogoHeight: rem('30px'),
       },
       search: {
-        maxWidth: rem('320px'),
+        maxWidth: rem('275px'),
       },
-    },
-    components: {
-      button: {
-        lineHeight: rem('20px'),
-      },
-      input: {
-        lineHeight: rem('20px'),
-      },
-      list: {
-        lineHeight: rem('24px'),
-      },
-    },
-    spacing: {
-      xxs: spacing['1'],
-      xs: spacing['1,5'],
-      sm: spacing['2'],
-      md: spacing['3'],
-      lg: spacing['4'],
-      xl: spacing['6'],
-      xxl: spacing['8'],
-    },
-    footer: {
-      navigationMinWidth: rem('768px'),
     },
   },
   lg: {
@@ -136,46 +38,17 @@ export const breakpoints = {
         subheader: rem('20px'),
         p1: rem('20px'),
         p2: rem('18px'),
-        caption: rem('16px'),
       },
     },
     appWidth: '1024px',
-    layout: {
-      columns: '12',
-      gutter: rem('24px'),
-      margin: rem('24px'),
-    },
     appHeader: {
       logo: {
-        primaryLogoHeight: rem('32px'),
-        secondaryLogoHeight: rem('28px'),
+        primaryLogoHeight: rem('35px'),
+        secondaryLogoHeight: rem('26px'),
       },
       search: {
         maxWidth: rem('9999px'),
       },
-    },
-    components: {
-      button: {
-        lineHeight: rem('20px'),
-      },
-      input: {
-        lineHeight: rem('20px'),
-      },
-      list: {
-        lineHeight: rem('24px'),
-      },
-    },
-    spacing: {
-      xxs: spacing['1'],
-      xs: spacing['1,5'],
-      sm: spacing['2'],
-      md: spacing['3'],
-      lg: spacing['4'],
-      xl: spacing['6'],
-      xxl: spacing['8'],
-    },
-    footer: {
-      navigationMinWidth: rem('680px'),
     },
   },
   md: {
@@ -189,46 +62,17 @@ export const breakpoints = {
         subheader: rem('18px'),
         p1: rem('18px'),
         p2: rem('16px'),
-        caption: rem('14px'),
       },
     },
     appWidth: '768px',
-    layout: {
-      columns: '8',
-      gutter: rem('16px'),
-      margin: rem('24px'),
-    },
     appHeader: {
       logo: {
-        primaryLogoHeight: rem('28px'),
-        secondaryLogoHeight: rem('24px'),
+        primaryLogoHeight: rem('30px'),
+        secondaryLogoHeight: rem('23px'),
       },
       search: {
         maxWidth: rem('9999px'),
       },
-    },
-    components: {
-      button: {
-        lineHeight: rem('18px'),
-      },
-      input: {
-        lineHeight: rem('18px'),
-      },
-      list: {
-        lineHeight: rem('24px'),
-      },
-    },
-    spacing: {
-      xxs: spacing['0,5'],
-      xs: spacing['1'],
-      sm: spacing['1,5'],
-      md: spacing['2'],
-      lg: spacing['3'],
-      xl: spacing['5'],
-      xxl: spacing['6'],
-    },
-    footer: {
-      navigationMinWidth: rem('550px'),
     },
   },
   sm: {
@@ -242,46 +86,17 @@ export const breakpoints = {
         subheader: rem('16px'),
         p1: rem('16px'),
         p2: rem('14px'),
-        caption: rem('12px'),
       },
     },
     appWidth: '480px',
-    layout: {
-      columns: '4',
-      gutter: rem('12px'),
-      margin: rem('16px'),
-    },
     appHeader: {
       logo: {
-        primaryLogoHeight: rem('24px'),
+        primaryLogoHeight: rem('25px'),
         secondaryLogoHeight: rem('20px'),
       },
       search: {
         maxWidth: rem('9999px'),
       },
-    },
-    components: {
-      button: {
-        lineHeight: rem('16px'),
-      },
-      input: {
-        lineHeight: rem('16px'),
-      },
-      list: {
-        lineHeight: rem('24px'),
-      },
-    },
-    spacing: {
-      xxs: spacing['0,5'],
-      xs: spacing['1'],
-      sm: spacing['1,5'],
-      md: spacing['2'],
-      lg: spacing['3'],
-      xl: spacing['4'],
-      xxl: spacing['5'],
-    },
-    footer: {
-      navigationMinWidth: rem('300px'),
     },
   },
   xs: {
@@ -295,46 +110,17 @@ export const breakpoints = {
         subheader: rem('16px'),
         p1: rem('16px'),
         p2: rem('14px'),
-        caption: rem('12px'),
       },
     },
     appWidth: '320px',
-    layout: {
-      columns: '4',
-      gutter: rem('8px'),
-      margin: rem('12px'),
-    },
     appHeader: {
       logo: {
-        primaryLogoHeight: rem('24px'),
+        primaryLogoHeight: rem('25px'),
         secondaryLogoHeight: rem('20px'),
       },
       search: {
         maxWidth: rem('9999px'),
       },
-    },
-    components: {
-      button: {
-        lineHeight: rem('16px'),
-      },
-      input: {
-        lineHeight: rem('16px'),
-      },
-      list: {
-        lineHeight: rem('24px'),
-      },
-    },
-    spacing: {
-      xxs: spacing['0,5'],
-      xs: spacing['1'],
-      sm: spacing['1,5'],
-      md: spacing['2'],
-      lg: spacing['3'],
-      xl: spacing['4'],
-      xxl: spacing['5'],
-    },
-    footer: {
-      navigationMinWidth: rem('280px'),
     },
   },
 } as const;
@@ -412,6 +198,24 @@ const colors = {
       '100': '#f1eeeb',
     },
   },
+} as const;
+
+const spacing = {
+  '1': rem('8px'),
+  '2': rem('16px'),
+  '3': rem('24px'),
+  '4': rem('32px'),
+  '5': rem('40px'),
+  '6': rem('48px'),
+  '7': rem('56px'),
+  '8': rem('64px'),
+  '9': rem('72px'),
+  '10': rem('80px'),
+  '12': rem('96px'),
+  '14': rem('112px'),
+  '20': rem('160px'),
+  '0,5': rem('4px'),
+  '1,5': rem('12px'),
 } as const;
 
 const core = {
@@ -508,11 +312,6 @@ export function getComponents(bp: keyof typeof breakpoints) {
         fontWeight: '400',
         lineHeight: '150%',
       },
-      caption: {
-        fontSize: breakpoints[bp].typography.size.caption,
-        fontWeight: '400',
-        lineHeight: '150%',
-      },
     },
     textField: {
       labelMargin: rem('0px'),
@@ -527,17 +326,17 @@ export function getComponents(bp: keyof typeof breakpoints) {
       itemHeight: rem('40px'),
     },
     accordion: {
-      spacing: breakpoints[bp].spacing.xs,
+      spacing: spacing['1,5'],
       padding: {
-        horizontal: breakpoints[bp].spacing.md,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing['3'],
+        vertical: spacing['1,5'],
       },
     },
     appHeader: {
-      spacing: breakpoints[bp].spacing.sm,
+      spacing: spacing['3'],
       padding: {
-        horizontal: breakpoints[bp].layout.margin,
-        vertical: breakpoints[bp].spacing.sm,
+        horizontal: spacing['4'],
+        vertical: spacing['2'],
       },
     },
     footer: {
@@ -549,32 +348,34 @@ export function getComponents(bp: keyof typeof breakpoints) {
       },
       backgroundBottom: core.mainDark,
       backgroundTop: core.main,
-      columnMinWidth: breakpoints[bp].footer.navigationMinWidth,
+      columnMinWidth: rem('250px'),
     },
     button: {
       fontSize: breakpoints[bp].typography.size.p2,
-      lineHeight: breakpoints[bp].components.button.lineHeight,
-      spacing: breakpoints[bp].spacing.xs,
+      lineHeight: rem('20px'),
+      spacing: spacing['1,5'],
       padding: {
-        horizontal: breakpoints[bp].spacing.sm,
-        vertical: breakpoints[bp].spacing.sm,
+        horizontal: spacing['2'],
+        vertical: spacing['2'],
       },
     },
     card: {
-      padding: breakpoints[bp].spacing.sm,
-      spacing: breakpoints[bp].spacing.sm,
+      paddingSmall: spacing['3'],
+      paddingMedium: spacing['6'],
+      paddingLarge: spacing['8'],
+      spacing: spacing['3'],
       textContentSpacing: spacing['1'],
     },
     chip: {
-      spacing: breakpoints[bp].spacing.xs,
+      spacing: spacing['1,5'],
       cornerRadius: rem('20px'),
       font: {
-        lineHeight: breakpoints[bp].components.input.lineHeight,
+        lineHeight: rem('20px'),
         size: breakpoints[bp].typography.size.p2,
       },
       padding: {
-        horizontal: breakpoints[bp].spacing.sm,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing['2'],
+        vertical: spacing['1'],
       },
     },
     datePicker: {
@@ -619,7 +420,7 @@ export function getComponents(bp: keyof typeof breakpoints) {
       font: {
         helperText: {
           fontSize: breakpoints[bp].typography.size.p2,
-          lineHeight: breakpoints[bp].components.input.lineHeight,
+          lineHeight: rem('22px'),
         },
         label: {
           fontSize: breakpoints[bp].typography.size.p2,
@@ -627,12 +428,12 @@ export function getComponents(bp: keyof typeof breakpoints) {
         },
         text: {
           fontSize: breakpoints[bp].typography.size.p2,
-          lineHeight: breakpoints[bp].components.input.lineHeight,
+          lineHeight: rem('20px'),
         },
       },
       padding: {
-        horizontal: breakpoints[bp].spacing.sm,
-        vertical: breakpoints[bp].spacing.sm,
+        horizontal: spacing['2'],
+        vertical: spacing['2'],
       },
       stroke: {
         weight: {
@@ -641,8 +442,8 @@ export function getComponents(bp: keyof typeof breakpoints) {
         },
       },
       spacing: {
-        verticalSpacing: breakpoints[bp].spacing.xxs,
-        horizontalSpacing: breakpoints[bp].spacing.xxs,
+        verticalSpacing: spacing['1'],
+        horizontalSpacing: spacing['1,5'],
       },
     },
     item: {
@@ -660,16 +461,16 @@ export function getComponents(bp: keyof typeof breakpoints) {
       },
     },
     link: {
-      spacing: breakpoints[bp].spacing.xxs,
+      spacing: spacing['1'],
     },
     list: {
       fontSize: breakpoints[bp].typography.size.p1,
-      lineHeight: breakpoints[bp].components.list.lineHeight,
+      lineHeight: rem('24px'),
       padding: {
-        horizontal: breakpoints[bp].spacing.md,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing['3'],
+        vertical: spacing['1,5'],
       },
-      spacing: breakpoints[bp].spacing.lg,
+      spacing: spacing['4'],
       hilightStroke: {
         default: rem('2px'),
         selected: rem('8px'),
@@ -688,8 +489,82 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
     menuItem: {
       padding: {
-        horizontal: breakpoints[bp].spacing.md,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing['2'],
+        vertical: spacing['1,5'],
+      },
+    },
+    map: {
+      backgroundMap: {
+        opacity: '0.5',
+      },
+      buildingLayer: {
+        default: {
+          fillColor: '#70BEFF',
+          fillOpacity: '0.66',
+          strokeColor: colors.blue[500],
+          strokeWidth: '1',
+        },
+        hover: {
+          fillColor: '#A5407B',
+          fillOpacity: '0.8',
+          strokeColor: colors.blue[500],
+          strokeWidth: '1',
+        },
+        selected: {
+          fillColor: colors.pink[300],
+          fillOpacity: '1.0',
+          strokeColor: colors.pink[300],
+          strokeWidth: '1',
+        },
+        insideSelection: {
+          fillColor: colors.neutral.white,
+          fillOpacity: '1.0',
+          strokeWidth: '1',
+          planned: {
+            strokeColor: colors.green[400],
+          },
+          demolished: {
+            strokeColor: colors.red[400],
+          },
+          building: {
+            strokeColor: colors.blue[500],
+          },
+          structure: {
+            strokeColor: colors.turquoise[300],
+          },
+        },
+        planned: {
+          fillColor: colors.green[50],
+        },
+        demolished: {
+          fillColor: colors.pink[50],
+        },
+        building: {
+          fillColor: colors.blue[100],
+        },
+        structure: {
+          fillColor: '#E0EFF8',
+        },
+      },
+      propertyLayer: {
+        default: {
+          fillColor: '#FFFFFF',
+          fillOpacity: '0.0',
+          strokeColor: colors.turquoise[300],
+          strokeWidth: '1',
+        },
+        hover: {
+          fillColor: '#FFDCE5',
+          fillOpacity: '0.54',
+          strokeColor: colors.turquoise[300],
+          strokeWidth: '1',
+        },
+        selected: {
+          fillColor: '#FFDCE5',
+          fillOpacity: '0.54',
+          strokeColor: colors.pink[200],
+          strokeWidth: '2',
+        },
       },
     },
     switch: {
@@ -726,6 +601,9 @@ const focusRingInverted = {
   outlineOffset: `calc(${core.strokeWeight} / 2)`,
 };
 
+/**
+ * @deprecated Use `themeVariables` instead.
+ */
 export const themeVariables = {
   focusRing,
   focusRingInverted,
