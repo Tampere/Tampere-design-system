@@ -1,11 +1,12 @@
-import { vars } from '../../theme';
 import { styleVariants } from '@vanilla-extract/css';
+import { vars } from '../../theme';
 
 type TypographyKeys = Exclude<keyof typeof vars.components.typography, 'margin'>;
-type HeaderKeys = Exclude<TypographyKeys, 'subheader' | 'p1' | 'p2'>;
+type HeaderKeys = Exclude<TypographyKeys, 'subheader' | 'p1' | 'p2' | 'caption'>;
 type ParagraphKeys = Exclude<TypographyKeys, HeaderKeys>;
 
 const textColorMap = {
+  caption: vars.text.secondary,
   p2: vars.text.secondary,
   p1: vars.text.primary,
   subheader: vars.text.header,
@@ -46,4 +47,5 @@ export const typography = styleVariants({
   subheader: getParagraphStyleObject('subheader'),
   p1: getParagraphStyleObject('p1'),
   p2: getParagraphStyleObject('p2'),
+  caption: getParagraphStyleObject('caption'),
 });

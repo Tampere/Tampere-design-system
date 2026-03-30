@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Typography } from './Typography';
 
-const variants = ['h1', 'h2', 'h3', 'h4', 'h5', 'subheader', 'p1', 'p2'] as const;
+const variants = ['h1', 'h2', 'h3', 'h4', 'h5', 'subheader', 'p1', 'p2', 'caption'] as const;
 const components = ['span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5'] as const;
 
 const meta = {
@@ -50,4 +50,8 @@ export const P1: Story = {
 
 export const P2: Story = {
   args: { variant: 'p2', children: 'Paragraph 2 — secondary text example' },
+};
+
+export const Caption: Story = {
+  args: { variant: 'caption', children: 'Caption text example' },
 };
