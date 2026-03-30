@@ -5,7 +5,6 @@ const {
   components: { button },
   font,
   core,
-  spacing,
   focusRing,
 } = vars;
 
@@ -91,5 +90,14 @@ export const variants = styleVariants({
 
 export const content = style({
   alignItems: 'center',
-  gap: spacing['1,5'],
+  gap: button.spacing,
+});
+
+export const iconWrapper = style({
+  width: button.lineHeight,
+  height: button.lineHeight,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: '0',
 });

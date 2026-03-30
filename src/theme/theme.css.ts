@@ -14,37 +14,44 @@ createGlobalTheme(':root', vars, themeVariables);
 
 globalStyle(':root', {
   '@media': {
-    [`screen and (max-width: ${breakpoints.sm.appWidth})`]: {
+    [`screen and (max-width: ${breakpoints.xs.appWidth})`]: {
       vars: assignVars(vars, {
         ...themeVariables,
-        components: getComponents('sm'),
+        components: getComponents('xs'),
       }),
     },
-    [`screen and (min-width: ${breakpoints.sm.appWidth}) and (max-width: ${breakpoints.md.appWidth})`]:
+    [`screen and (min-width: ${breakpoints.xs.appWidth}) and (max-width: ${breakpoints.sm.appWidth})`]:
       {
         vars: assignVars(vars, {
           ...themeVariables,
           components: getComponents('sm'),
         }),
       },
-    [`screen and (min-width: ${breakpoints.md.appWidth}) and (max-width: ${breakpoints.lg.appWidth})`]:
+    [`screen and (min-width: ${breakpoints.sm.appWidth}) and (max-width: ${breakpoints.md.appWidth})`]:
       {
         vars: assignVars(vars, {
           ...themeVariables,
           components: getComponents('md'),
         }),
       },
-    [`screen and (min-width: ${breakpoints.lg.appWidth}) and (max-width: ${breakpoints.xl.appWidth})`]:
+    [`screen and (min-width: ${breakpoints.md.appWidth}) and (max-width: ${breakpoints.lg.appWidth})`]:
       {
         vars: assignVars(vars, {
           ...themeVariables,
           components: getComponents('lg'),
         }),
       },
+    [`screen and (min-width: ${breakpoints.lg.appWidth}) and (max-width: ${breakpoints.xl.appWidth})`]:
+      {
+        vars: assignVars(vars, {
+          ...themeVariables,
+          components: getComponents('xl'),
+        }),
+      },
     [`screen and (min-width: ${breakpoints.xl.appWidth})`]: {
       vars: assignVars(vars, {
         ...themeVariables,
-        components: getComponents('xl'),
+        components: getComponents('xxl'),
       }),
     },
   },

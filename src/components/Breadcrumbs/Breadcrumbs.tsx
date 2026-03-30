@@ -3,6 +3,7 @@ import cx from 'clsx';
 import type { ReactNode } from 'react';
 import { ArrowLeftIcon } from '../../icons/ArrowLeftIcon.tsx';
 import {
+  arrowLeftIcon,
   breadcrumbItem,
   breadcrumbListItem,
   breadcrumbs,
@@ -36,7 +37,7 @@ export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
     return (
       <nav {...(ariaLabel && { ['aria-label']: ariaLabel })} className={cx(breadcrumbs, className)}>
         <Flex className={mobileWrapper}>
-          <ArrowLeftIcon />
+          <ArrowLeftIcon className={arrowLeftIcon} />
           <Anchor
             datatype="mobile-breadcrumb"
             className={breadcrumbItem}
