@@ -1,8 +1,8 @@
 import { Box } from '@mantine/core';
 import cx from 'clsx';
 import type { ComponentPropsWithRef } from 'react';
-import { typography } from './Typography.css.ts';
 import { vars } from '../../theme';
+import { typography } from './Typography.css.ts';
 
 type Variant = Exclude<keyof typeof vars.components.typography, 'margin'>;
 type Component = 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
@@ -21,6 +21,7 @@ const variantMap: Record<Variant, Partial<Component>> = {
   subheader: 'p',
   p1: 'p',
   p2: 'p',
+  caption: 'p',
 };
 
 export function Typography({ variant, component, children, className, ...props }: Props) {
