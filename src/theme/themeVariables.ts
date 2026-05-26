@@ -670,7 +670,7 @@ export function getComponents(bp: keyof typeof breakpoints) {
         vertical: breakpoints[bp].spacing.xs,
       },
       spacing: breakpoints[bp].spacing.lg,
-      hilightStroke: {
+      highlightStroke: {
         default: rem('2px'),
         selected: rem('8px'),
       },
