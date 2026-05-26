@@ -176,3 +176,33 @@ Merge your changes into the `main` branch
 5. Publish the release
 
 Now GitHub action job will publish the new version of the NPM package.
+
+## Commit Messages Guidelines
+
+This project follows [Conventional Commits](https://www.conventionalcommits.org/).
+
+### Types
+
+- **feat**: New feature
+- **fix**: Bug fix
+- **style**: Code style updates with no functional changes
+- **docs**: Documentation changes
+- **refactor**: Code refactoring
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks
+- **perf**: Code performance improvements
+- **build**: Commits that affect build-related components
+- **ci**: Commits that affect CI/CD configurations or workflows
+- **revert**: Commits that reverts changes
+
+If applicable, issue ticket number should be added as scope value.
+
+### Examples
+
+```
+feat(#42): Add user authentication
+```
+
+Commits are automatically validated. Invalid formats will be rejected.
+
+See `.commitlintrc` for full details.
