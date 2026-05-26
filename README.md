@@ -177,7 +177,7 @@ Merge your changes into the `main` branch
 
 Now GitHub action job will publish the new version of the NPM package.
 
-## Commit Message Guidelines
+## 🔀 Commit Message Guidelines
 
 This project follows [Conventional Commits](https://www.conventionalcommits.org/).
 
