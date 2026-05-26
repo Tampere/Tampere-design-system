@@ -27,7 +27,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "build": "rollup -c",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:watch": "vitest watch",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "@fontsource/montserrat": "^5.2.8",
