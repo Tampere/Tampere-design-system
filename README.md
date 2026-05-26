@@ -30,6 +30,13 @@ npm run prepare
 npm run storybook
 ```
 
+### Test
+
+```bash
+npm run test
+npm run test:watch
+```
+
 ### Eslint and Prettier
 
 ```bash
