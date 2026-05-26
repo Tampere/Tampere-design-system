@@ -5,4 +5,3 @@ export {
   themeVariables as themeVariablesV2,
   type ThemeVariables as ThemeVariablesV2,
 } from './themeVariables';
-export * from './themeVariables_OLD.ts';
