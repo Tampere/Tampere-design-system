@@ -50,7 +50,7 @@ npm run prettier
 npm run build
 ```
 
-## Using TREDS in a Project
+## 🚀 Using TREDS in a Project
 
 ### Setup with NPM-package
 
