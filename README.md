@@ -197,12 +197,19 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 
 If applicable, issue ticket number should be added as scope value.
 
+Breaking changes must be marked with `!` before `:` in the subject line.
+Also `BREAKING CHANGE:` should be described in the commit footer section, if the commit description isn't sufficiently informative.
+
+Commits are automatically validated. Invalid formats will be rejected.
+
+See `.commitlintrc` for full details.
+
 ### Examples
 
 ```
 feat(#42): Add user authentication
 ```
 
-Commits are automatically validated. Invalid formats will be rejected.
-
-See `.commitlintrc` for full details.
+```
+fix(#67)!: Breaking change
+```
