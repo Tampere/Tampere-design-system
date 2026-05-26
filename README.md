@@ -30,6 +30,13 @@ npm run prepare
 npm run storybook
 ```
 
+### Test
+
+```bash
+npm run test
+npm run test:watch
+```
+
 ### Eslint and Prettier
 
 ```bash
@@ -43,7 +50,7 @@ npm run prettier
 npm run build
 ```
 
-## Using TREDS in a Project
+## 🚀 Using TREDS in a Project
 
 ### Setup with NPM-package
 
@@ -176,3 +183,40 @@ Merge your changes into the `main` branch
 5. Publish the release
 
 Now GitHub action job will publish the new version of the NPM package.
+
+## 🔀 Commit Message Guidelines
+
+This project follows [Conventional Commits](https://www.conventionalcommits.org/).
+
+### Types
+
+- **feat**: New feature
+- **fix**: Bug fix
+- **style**: Code style updates with no functional changes
+- **docs**: Documentation changes
+- **refactor**: Code refactoring
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks
+- **perf**: Code performance improvements
+- **build**: Commits that affect build-related components
+- **ci**: Commits that affect CI/CD configurations or workflows
+- **revert**: Commits that reverts changes
+
+If applicable, issue ticket number should be added as scope value.
+
+Breaking changes must be marked with `!` before `:` in the subject line.
+Also `BREAKING CHANGE:` should be described in the commit footer section, if the commit description isn't sufficiently informative.
+
+Commits are automatically validated. Invalid formats will be rejected.
+
+See `.commitlintrc` for full details.
+
+### Examples
+
+```
+feat(#42): Add user authentication
+```
+
+```
+fix(#67)!: Breaking change
+```
