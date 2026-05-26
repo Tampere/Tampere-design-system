@@ -435,7 +435,7 @@ const core = {
   divider: colors.neutral['200'],
   cornerRadius: rem(0),
   strokeWeight: rem('2px'),
-  dropshadow: colors.neutral['400'],
+  dropShadow: colors.neutral['400'],
   states: {
     default: colors.blue['400'],
     hover: colors.blue['600'],

@@ -74,7 +74,7 @@ export const chevron = style({
 export const item = style({
   display: 'flex',
   flexDirection: 'column',
-  boxShadow: `0px 1px 4px 0px ${core.dropshadow}`, // TODO: Use theme variable
+  boxShadow: `0px 1px 4px 0px ${core.dropShadow}`, // TODO: Use theme variable
 });
 
 export const content = style({
