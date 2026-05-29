@@ -455,6 +455,7 @@ const core = {
 } as const;
 
 const fontFamilyHeader = 'Montserrat, sans-serif';
+const fontFamilyBody = 'Open Sans, sans-serif';
 
 export function getComponents(bp: keyof typeof breakpoints) {
   return {
@@ -495,21 +496,25 @@ export function getComponents(bp: keyof typeof breakpoints) {
       },
       subheader: {
         fontSize: breakpoints[bp].typography.size.subheader,
+        fontFamily: fontFamilyBody,
         fontWeight: '600',
         lineHeight: '150%',
       },
       p1: {
         fontSize: breakpoints[bp].typography.size.p1,
+        fontFamily: fontFamilyBody,
         fontWeight: '400',
         lineHeight: '150%',
       },
       p2: {
         fontSize: breakpoints[bp].typography.size.p2,
+        fontFamily: fontFamilyBody,
         fontWeight: '400',
         lineHeight: '150%',
       },
       caption: {
         fontSize: breakpoints[bp].typography.size.caption,
+        fontFamily: fontFamilyBody,
         fontWeight: '400',
         lineHeight: '150%',
       },
