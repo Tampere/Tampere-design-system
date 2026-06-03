@@ -45,5 +45,12 @@ export default defineConfig([
 
   storybook.configs['flat/recommended'],
   { files: ['**/*.md'], plugins: { markdown } },
-  { files: ['**/*.css'], plugins: { css } },
+  {
+    files: ['**/*.css'],
+    plugins: { css },
+    language: 'css/css',
+    rules: {
+      'css/no-duplicate-imports': 'error',
+    },
+  },
 ]);
