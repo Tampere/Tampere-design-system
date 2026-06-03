@@ -31,6 +31,7 @@ function getHeaderStyleObject(variant: HeaderKeys) {
 function getParagraphStyleObject(variant: ParagraphKeys) {
   return {
     margin: vars.components.typography.margin,
+    fontFamily: vars.components.typography[variant].fontFamily,
     fontSize: vars.components.typography[variant].fontSize,
     fontWeight: vars.components.typography[variant].fontWeight,
     lineHeight: vars.components.typography[variant].lineHeight,
