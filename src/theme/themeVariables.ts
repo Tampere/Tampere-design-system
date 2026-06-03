@@ -1,5 +1,11 @@
 import { rem } from '@mantine/core';
 
+const openSans = 'Open Sans Variable';
+const montserrat = 'Montserrat Variable';
+
+const fontFamilyHeader = `${montserrat}, sans-serif`;
+const fontFamilyBody = `${openSans}, sans-serif`;
+
 const spacing = {
   '1': rem('8px'),
   '2': rem('16px'),
@@ -453,9 +459,6 @@ const core = {
     },
   },
 } as const;
-
-const fontFamilyHeader = 'Montserrat, sans-serif';
-const fontFamilyBody = 'Open Sans, sans-serif';
 
 export function getComponents(bp: keyof typeof breakpoints) {
   return {
