@@ -7,6 +7,7 @@ import { mergeClassNames } from '../../utils.ts';
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
 import {
+  chevronOpen,
   dropDown,
   dropDownOption,
   inputField,
@@ -72,7 +73,7 @@ function SelectRightSection({
         onClick={toggleDropdown}
         size={'sm'}
       >
-        <ChevronDownIcon style={dropDownOpened ? { transform: 'rotate(180deg)' } : undefined} />
+        <ChevronDownIcon className={dropDownOpened ? chevronOpen : undefined} />
       </IconButton>
     </Flex>
   );
