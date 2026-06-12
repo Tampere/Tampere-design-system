@@ -3,7 +3,7 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { SearchIcon } from '../../icons/SearchIcon.tsx';
 import { themeVariables } from '../../theme/themeVariables.ts';
 import { Button, ButtonProps } from '../Button';
-import { LoadingSpinner } from '../LoadingIndicators';
+import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
 import { dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
 
