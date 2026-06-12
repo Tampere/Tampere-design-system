@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { LoadingSpinner } from './LoadingIndicators';
+import { LoadingSpinner } from './LoadingSpinner';
 
 const meta = {
   argTypes: {

@@ -1,5 +1,6 @@
 export * from './AddIcon';
 export * from './AirplaneIcon';
+export * from './ArrowDownIcon';
 export * from './ArrowLeftIcon';
 export * from './ArrowRightIcon';
 export * from './ArrowUpIcon';

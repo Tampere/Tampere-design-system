@@ -1,5 +1,5 @@
 import { type LoaderProps, Loader as MantineLoader } from '@mantine/core';
-import { LoadingIndicatorStyles } from './LoadingIndicators.css.ts';
+import { LoadingIndicatorStyles } from './LoadingSpinner.css.ts';
 
 export const LoadingSpinner = (props: {
   size?: LoaderProps['size'];
