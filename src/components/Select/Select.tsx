@@ -68,12 +68,11 @@ function SelectRightSection({
       <IconButton
         aria-label={dropDownOpened ? collapseButtonLabel : expandButtonLabel}
         variant="dark"
-        onClick={() => {
-          toggleDropdown();
-        }}
+        onMouseDown={(e) => e.nativeEvent.stopPropagation()}
+        onClick={toggleDropdown}
         size={'sm'}
       >
-        {dropDownOpened ? <ChevronDownIcon rotate={180} /> : <ChevronDownIcon />}
+        <ChevronDownIcon style={dropDownOpened ? { transform: 'rotate(180deg)' } : undefined} />
       </IconButton>
     </Flex>
   );
