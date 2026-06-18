@@ -32,8 +32,8 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@fontsource/montserrat": "^5.2.8",
-    "@fontsource/open-sans": "^5.2.7",
+    "@fontsource-variable/montserrat": "^5.2.8",
+    "@fontsource-variable/open-sans": "^5.2.7",
     "@mantine/core": "^8.3.8",
     "@mantine/hooks": "^8.3.8",
     "@mantine/vanilla-extract": "^8.3.8",
