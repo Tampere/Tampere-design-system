@@ -149,6 +149,11 @@ export function DateField({
     setCalendarMonth(today);
   }
 
+  function handleMonthChange(month: Date) {
+    setCalendarMonth(month);
+    setLiveMessage(dayjs(month).locale('fi').format('MMMM YYYY'));
+  }
+
   function handleStagedDateChange(date: Date) {
     setStagedDate(date);
     setLiveMessage(dayjs(date).locale('fi').format('dddd D. MMMM YYYY'));
@@ -200,7 +205,7 @@ export function DateField({
             <DateFieldCalendar
               stagedDate={stagedDate}
               calendarMonth={calendarMonth}
-              onMonthChange={setCalendarMonth}
+              onMonthChange={handleMonthChange}
               onStagedDateChange={handleStagedDateChange}
               onConfirm={handleConfirm}
               onCancel={closeCalendar}

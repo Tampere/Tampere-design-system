@@ -269,6 +269,40 @@ export const ControlledValueResync: Story = {
   },
 };
 
+export const MonthNavRespectsRange: Story = {
+  args: {
+    min: new Date(2025, 7, 10),
+    max: new Date(2025, 7, 20),
+    value: new Date(2025, 7, 16),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    // Previous month (July) is entirely before min (Aug 10) → arrow must be disabled
+    await waitFor(() => expect(body.getByLabelText('Edellinen kuukausi')).toBeDisabled());
+    // Next month (September) is entirely after max (Aug 20) → arrow must be disabled
+    await waitFor(() => expect(body.getByLabelText('Seuraava kuukausi')).toBeDisabled());
+  },
+};
+
+export const MonthChangeAnnounced: Story = {
+  args: { value: new Date(2025, 7, 16) }, // August 2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    // Click "next month" to go from August → September
+    await userEvent.click(body.getByLabelText('Seuraava kuukausi'));
+    // Live region should announce "syyskuu 2025" (fi locale, lowercase MMMM)
+    // Query by the aria-live attribute to avoid matching the (hidden) Mantine header button
+    const liveRegion = document.querySelector('[aria-live="polite"]') as HTMLElement;
+    await waitFor(() => expect(liveRegion.textContent).toMatch(/syyskuu 2025/i));
+  },
+};
+
 export const StagedDayHighlighted: Story = {
   args: { value: new Date(2025, 7, 1) }, // 01.08.2025 — calendar opens on August 2025
   play: async ({ canvasElement }) => {

@@ -5,8 +5,8 @@ import 'dayjs/locale/fi';
 import cx from 'clsx';
 import { Button } from '../Button';
 import { IconButton } from '../IconButton';
-import { ChevronUpIcon } from '../../icons/ChevronUpIcon';
-import { ChevronDownIcon } from '../../icons/ChevronDownIcon';
+import { ChevronLeftIcon } from '../../icons/ChevronLeftIcon';
+import { ChevronRightIcon } from '../../icons/ChevronRightIcon';
 import {
   calendarHeader,
   calendarHeaderSelects,
@@ -17,6 +17,7 @@ import {
   dayCellOutsideMonth,
   dayCellDisabled,
   nativeSelect,
+  hiddenCalendarHeader,
 } from './DateField.css.ts';
 
 const FINNISH_MONTHS = [
@@ -78,6 +79,13 @@ export function DateFieldCalendar({
   const currentYear = dayjs(calendarMonth).year();
   const currentMonth = dayjs(calendarMonth).month(); // 0-indexed
 
+  const prevDisabled =
+    min !== undefined &&
+    dayjs(calendarMonth).subtract(1, 'month').endOf('month').isBefore(dayjs(min), 'day');
+  const nextDisabled =
+    max !== undefined &&
+    dayjs(calendarMonth).add(1, 'month').startOf('month').isAfter(dayjs(max), 'day');
+
   function handleYearChange(e: React.ChangeEvent<HTMLSelectElement>) {
     onMonthChange(dayjs(calendarMonth).year(Number(e.target.value)).toDate());
   }
@@ -90,6 +98,17 @@ export function DateFieldCalendar({
     <div data-testid="date-field-calendar">
       {/* Header */}
       <div className={calendarHeader}>
+        <IconButton
+          aria-label={prevMonthLabel}
+          variant="dark"
+          size="sm"
+          disabled={prevDisabled}
+          onClick={() => {
+            if (!prevDisabled) onMonthChange(dayjs(calendarMonth).subtract(1, 'month').toDate());
+          }}
+        >
+          <ChevronLeftIcon />
+        </IconButton>
         <div className={calendarHeaderSelects}>
           <select
             className={nativeSelect}
@@ -117,20 +136,15 @@ export function DateFieldCalendar({
           </select>
         </div>
         <IconButton
-          aria-label={prevMonthLabel}
-          variant="dark"
-          size="sm"
-          onClick={() => onMonthChange(dayjs(calendarMonth).subtract(1, 'month').toDate())}
-        >
-          <ChevronUpIcon />
-        </IconButton>
-        <IconButton
           aria-label={nextMonthLabel}
           variant="dark"
           size="sm"
-          onClick={() => onMonthChange(dayjs(calendarMonth).add(1, 'month').toDate())}
+          disabled={nextDisabled}
+          onClick={() => {
+            if (!nextDisabled) onMonthChange(dayjs(calendarMonth).add(1, 'month').toDate());
+          }}
         >
-          <ChevronDownIcon />
+          <ChevronRightIcon />
         </IconButton>
       </div>
 
@@ -150,6 +164,7 @@ export function DateFieldCalendar({
           level="month"
           date={dayjs(calendarMonth).format('YYYY-MM-DD')}
           onDateChange={(value) => onMonthChange(dayjs(value).toDate())}
+          classNames={{ calendarHeader: hiddenCalendarHeader }}
           getDayProps={(dateString) => {
             const day = dayjs(dateString); // dateString is 'YYYY-MM-DD'
             const isStaged = stagedDate ? day.isSame(dayjs(stagedDate), 'day') : false;

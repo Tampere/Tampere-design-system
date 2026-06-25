@@ -92,6 +92,8 @@ export const calendarFooter = style({
   gap: inputVars.spacing.horizontalSpacing,
 });
 
+export const hiddenCalendarHeader = style({ display: 'none' });
+
 export const visuallyHidden = style({
   position: 'absolute',
   width: '1px',
