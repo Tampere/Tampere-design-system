@@ -132,6 +132,7 @@ export function DateField({
 
   function handleToday() {
     const today = new Date();
+    if (!isInRange(today, min, max)) return;
     setStagedDate(today);
     setCalendarMonth(today);
   }
@@ -142,13 +143,7 @@ export function DateField({
   }
 
   return (
-    <Popover
-      opened={isOpen}
-      onClose={closeCalendar}
-      position="bottom-start"
-      withinPortal={false}
-      transitionProps={{ duration: 0 }}
-    >
+    <Popover opened={isOpen} onClose={closeCalendar} position="bottom-start">
       <Popover.Target>
         <div data-testid="date-field">
           <TextField

@@ -25,7 +25,9 @@ export const CalendarOpens: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
-    await expect(canvas.getByTestId('date-field-calendar')).toBeInTheDocument();
+    // Dropdown portals to document.body, outside canvasElement
+    const body = within(document.body);
+    await expect(await body.findByTestId('date-field-calendar')).toBeInTheDocument();
   },
 };
 
@@ -41,17 +43,21 @@ export const StageAndConfirm: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    // Dropdown (calendar, day buttons, confirm) portals to document.body
+    const body = within(document.body);
     await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
     // Stage day 16 (not day 1 which is the committed date)
-    const allButtons = canvas.getAllByRole('button');
+    const calendar = await body.findByTestId('date-field-calendar');
+    const allButtons = within(calendar).getAllByRole('button');
     const day16 = allButtons.find(
       (b) => b.textContent?.trim() === '16' && !b.hasAttribute('disabled')
     );
+    await expect(day16).toBeTruthy();
     await userEvent.click(day16!);
     // onChange not yet called — output still shows original
     await expect(canvas.getByTestId('output').textContent).toBe('01.08.2025');
     // Confirm
-    await userEvent.click(canvas.getByText('Valitse'));
+    await userEvent.click(await body.findByText('Valitse'));
     await expect(canvas.queryByTestId('date-field-calendar')).not.toBeInTheDocument();
     await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');
   },
