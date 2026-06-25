@@ -420,3 +420,5 @@ FodyWeavers.xsd
 *storybook.log
 storybook-static
 dist
+CLAUDE.md
+docs/superpowers/
