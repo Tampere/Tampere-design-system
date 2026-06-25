@@ -246,3 +246,49 @@ export const TypeDateOutsideRange: Story = {
     await expect(canvas.getByTestId('output').textContent).toBe('none');
   },
 };
+
+export const ControlledValueResync: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(new Date(2025, 7, 16)); // 16.08.2025
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <button onClick={() => setValue(new Date(2025, 11, 24))}>Set to 24.12.2025</button>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    // Initial value is displayed
+    await expect(input.value).toBe('16.08.2025');
+    // Parent programmatically changes the controlled value — no user typing
+    await userEvent.click(canvas.getByText('Set to 24.12.2025'));
+    // Input must resync to the new value without any user interaction
+    await waitFor(() => expect(input.value).toBe('24.12.2025'));
+  },
+};
+
+export const StagedDayHighlighted: Story = {
+  args: { value: new Date(2025, 7, 1) }, // 01.08.2025 — calendar opens on August 2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    // Click day 16 to stage it
+    const allButtons = within(calendar).getAllByRole('button');
+    const day16 = allButtons.find(
+      (b) => b.textContent?.trim() === '16' && !b.hasAttribute('disabled')
+    );
+    await expect(day16).toBeTruthy();
+    await userEvent.click(day16!);
+    // Staged day must have aria-pressed="true"; a non-staged day must not
+    await waitFor(() => expect(day16).toHaveAttribute('aria-pressed', 'true'));
+    const day10 = allButtons.find(
+      (b) => b.textContent?.trim() === '10' && !b.hasAttribute('disabled')
+    );
+    await expect(day10).toBeTruthy();
+    await expect(day10).not.toHaveAttribute('aria-pressed', 'true');
+  },
+};

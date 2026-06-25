@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FocusTrap, Popover } from '@mantine/core';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -87,6 +87,13 @@ export function DateField({
   const [liveMessage, setLiveMessage] = useState('');
 
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
+  const isInputFocusedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isInputFocusedRef.current) {
+      setTextValue(formatDate(committedDate));
+    }
+  }, [committedDate]);
 
   function commit(date: Date | null) {
     if (!isControlled) setInternalCommitted(date);
@@ -115,7 +122,12 @@ export function DateField({
     }
   }
 
+  function handleTextFocus() {
+    isInputFocusedRef.current = true;
+  }
+
   function handleTextBlur() {
+    isInputFocusedRef.current = false;
     const parsed = parseDate(textValue);
     if (!parsed || !isInRange(parsed, min, max)) {
       setTextValue(formatDate(committedDate));
@@ -155,6 +167,7 @@ export function DateField({
             required={required}
             value={textValue}
             onChange={handleTextChange}
+            onFocus={handleTextFocus}
             onBlur={handleTextBlur}
             aria-haspopup="dialog"
             aria-expanded={isOpen}

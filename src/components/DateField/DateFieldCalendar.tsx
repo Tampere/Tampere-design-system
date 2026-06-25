@@ -1,5 +1,5 @@
 import { Calendar } from '@mantine/dates';
-import '@mantine/dates/styles.css';
+import '@mantine/dates/styles.layer.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fi';
 import cx from 'clsx';
