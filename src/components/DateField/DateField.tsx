@@ -197,7 +197,12 @@ export function DateField({
         </div>
       </Popover.Target>
       <Popover.Dropdown className={cx(popoverContent, classNames?.calendar)}>
-        <span aria-live="polite" aria-atomic="true" className={visuallyHidden}>
+        <span
+          data-testid="date-field-live"
+          aria-live="polite"
+          aria-atomic="true"
+          className={visuallyHidden}
+        >
           {liveMessage}
         </span>
         <FocusTrap active={isOpen}>

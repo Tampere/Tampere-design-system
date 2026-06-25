@@ -296,9 +296,10 @@ export const MonthChangeAnnounced: Story = {
     await body.findByTestId('date-field-calendar');
     // Click "next month" to go from August → September
     await userEvent.click(body.getByLabelText('Seuraava kuukausi'));
-    // Live region should announce "syyskuu 2025" (fi locale, lowercase MMMM)
-    // Query by the aria-live attribute to avoid matching the (hidden) Mantine header button
-    const liveRegion = document.querySelector('[aria-live="polite"]') as HTMLElement;
+    // Live region should announce "syyskuu 2025" (fi locale, lowercase MMMM).
+    // Scope to THIS DateField's live region via its testid (avoids matching any
+    // other aria-live region elsewhere in the suite, and the hidden Mantine header).
+    const liveRegion = await body.findByTestId('date-field-live');
     await waitFor(() => expect(liveRegion.textContent).toMatch(/syyskuu 2025/i));
   },
 };
