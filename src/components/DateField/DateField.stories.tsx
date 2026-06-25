@@ -85,7 +85,7 @@ export const NavigatePrevMonth: Story = {
     }) as HTMLSelectElement;
     const before = Number(monthSelect.value); // 7 = August
     await userEvent.click(within(calendar).getByLabelText('Edellinen kuukausi'));
-    await expect(Number(monthSelect.value)).toBe(before - 1); // 6 = July
+    await waitFor(() => expect(Number(monthSelect.value)).toBe(before - 1)); // 6 = July
   },
 };
 
@@ -102,7 +102,7 @@ export const NavigateNextMonth: Story = {
     }) as HTMLSelectElement;
     const before = Number(monthSelect.value); // 7 = August
     await userEvent.click(within(calendar).getByLabelText('Seuraava kuukausi'));
-    await expect(Number(monthSelect.value)).toBe(before + 1); // 8 = September
+    await waitFor(() => expect(Number(monthSelect.value)).toBe(before + 1)); // 8 = September
   },
 };
 
