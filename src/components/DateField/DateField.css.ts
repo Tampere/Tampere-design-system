@@ -4,7 +4,7 @@ import { vars } from '../../theme';
 const {
   core,
   font,
-  components: { input: inputVars },
+  components: { input: inputVars, typography, datePicker },
   text,
   focusRing,
 } = vars;
@@ -31,7 +31,9 @@ export const calendarHeaderSelects = style({
 });
 
 export const nativeSelect = style({
-  border: `${core.strokeWeight} solid ${core.states.default}`,
+  // Design: select border uses Input-states/Default (#52525b = text.secondary),
+  // not the blue Primary-states/Default used by text inputs.
+  border: `${core.strokeWeight} solid ${text.secondary}`,
   background: core.background,
   color: text.primary,
   fontSize: inputVars.font.text.fontSize,
@@ -40,7 +42,7 @@ export const nativeSelect = style({
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
   cursor: 'pointer',
   selectors: {
-    '&:hover': { border: `${core.strokeWeight} solid ${core.states.hover}` },
+    '&:hover': { border: `${core.strokeWeight} solid ${text.primary}` },
     '&:focus-visible': { ...focusRing },
     '&:disabled': {
       border: `${core.strokeWeight} solid ${core.states.disabled}`,
@@ -58,27 +60,46 @@ globalStyle(`${calendarGrid} table button`, {
   borderRadius: 0,
   width: '40px',
   height: '40px',
+  // Day numbers: P2 body type, regular weight, primary text colour (design tokens).
+  fontFamily: typography.p2.fontFamily,
+  fontSize: typography.p2.fontSize,
+  fontWeight: typography.p2.fontWeight,
+  color: text.primary,
 });
 
 globalStyle(`${calendarGrid} table button:focus-visible`, {
   ...focusRing,
 });
 
+// Weekday header (Ma, Ti, …): P2 size, Subheader (Semi-Bold) weight, secondary colour.
+globalStyle(`${calendarGrid} thead th`, {
+  fontFamily: typography.p2.fontFamily,
+  fontSize: typography.p2.fontSize,
+  fontWeight: typography.subheader.fontWeight,
+  color: text.secondary,
+});
+
 export const dayCellStaged = style({
   background: `${core.states.default} !important`,
   color: `${core.contrast} !important`,
+  // Selected day number is Semi-Bold per design.
+  fontWeight: `${typography.subheader.fontWeight} !important`,
 });
 
 export const dayCellToday = style({
-  outline: `${core.strokeWeight} solid ${core.states.default}`,
+  // Today marker: dashed outline in the Date-picker today-marker colour.
+  outline: `${core.strokeWeight} dashed ${datePicker.todayMarker}`,
   outlineOffset: '-2px',
 });
 
 export const dayCellOutsideMonth = style({
-  opacity: '0.35',
+  // Outside-month days read as disabled in the design: muted bg + disabled text.
+  background: `${core.backgroundDisabled} !important`,
+  color: `${text.disabled} !important`,
 });
 
 export const dayCellDisabled = style({
+  background: `${core.backgroundDisabled} !important`,
   color: `${text.disabled} !important`,
   cursor: 'default !important',
   pointerEvents: 'none',
