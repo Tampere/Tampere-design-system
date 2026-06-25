@@ -113,7 +113,7 @@ Three visual sections:
 
 **Header**
 - Two native `<select>` elements: month (Finnish names array, 12 options) and year (default range: 100 years before today to 20 years after today, clamped to `min`/`max` if provided)
-- Prev/next `IconButton`s using TREDS `ChevronLeftIcon` / `ChevronRightIcon`
+- Prev/next `IconButton`s using TREDS `ChevronUpIcon` (previous month) / `ChevronDownIcon` (next month)
 - Changing either select or clicking prev/next updates `calendarMonth` only
 
 **Grid**
