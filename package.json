@@ -35,13 +35,15 @@
     "@fontsource/montserrat": "^5.2.8",
     "@fontsource/open-sans": "^5.2.7",
     "@mantine/core": "^8.3.8",
+    "@mantine/dates": "^8.3.8",
     "@mantine/hooks": "^8.3.8",
     "@mantine/vanilla-extract": "^8.3.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "clsx": "^2.1.1"
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.13"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.2",
@@ -53,6 +55,7 @@
     "@fontsource/montserrat": "^5.2.8",
     "@fontsource/open-sans": "^5.2.7",
     "@mantine/core": "^8.3.8",
+    "@mantine/dates": "^8.3.8",
     "@mantine/vanilla-extract": "^8.3.8",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
@@ -78,6 +81,7 @@
     "@vitest/browser-playwright": "^4.0.8",
     "@vitest/coverage-v8": "^4.0.8",
     "baseline-browser-mapping": "^2.10.12",
+    "dayjs": "^1.11.13",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
