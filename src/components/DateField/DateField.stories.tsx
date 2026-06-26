@@ -304,6 +304,60 @@ export const MonthChangeAnnounced: Story = {
   },
 };
 
+export const YearSelectIncludesDisplayedYear: Story = {
+  // No value + a past-only range: the calendar opens on today, whose year falls
+  // outside [min, max]. The year <select> must still offer that year as an option
+  // rather than silently falling back to the first option.
+  args: {
+    min: new Date(2020, 0, 1),
+    max: new Date(2020, 11, 31),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const yearSelect = within(calendar).getByRole('combobox', {
+      name: 'Vuosi',
+    }) as HTMLSelectElement;
+    await expect(Number(yearSelect.value)).toBe(new Date().getFullYear());
+  },
+};
+
+export const SwappedMinMaxYearOptions: Story = {
+  // Misconfigured bounds (min after max) must not produce an empty year selector.
+  args: {
+    min: new Date(2030, 0, 1),
+    max: new Date(2020, 0, 1),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const yearSelect = within(calendar).getByRole('combobox', {
+      name: 'Vuosi',
+    }) as HTMLSelectElement;
+    await expect(yearSelect.options.length).toBeGreaterThan(0);
+  },
+};
+
+export const TodayDisabledOutsideRange: Story = {
+  // When today is outside [min, max] it can never be staged, so the "Today"
+  // button must be disabled rather than appear clickable and silently no-op.
+  args: {
+    min: new Date(2020, 0, 1),
+    max: new Date(2020, 11, 31),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    await waitFor(() => expect(body.getByText('Tänään').closest('button')).toBeDisabled());
+  },
+};
+
 export const StagedDayHighlighted: Story = {
   args: { value: new Date(2025, 7, 1) }, // 01.08.2025 — calendar opens on August 2025
   play: async ({ canvasElement }) => {

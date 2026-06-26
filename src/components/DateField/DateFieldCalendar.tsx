@@ -35,10 +35,17 @@ const FINNISH_MONTHS = [
   'Joulukuu',
 ];
 
-function getYearRange(min?: Date, max?: Date): number[] {
+function getYearRange(currentYear: number, min?: Date, max?: Date): number[] {
   const today = new Date();
-  const start = min ? min.getFullYear() : today.getFullYear() - 100;
-  const end = max ? max.getFullYear() : today.getFullYear() + 20;
+  let start = min ? min.getFullYear() : today.getFullYear() - 100;
+  let end = max ? max.getFullYear() : today.getFullYear() + 20;
+  // Guard against a misconfigured/swapped range (min after max), which would
+  // otherwise produce a negative length and render an empty year <select>.
+  if (end < start) [start, end] = [end, start];
+  // The displayed year must always have a matching <option>, even when it
+  // falls outside [min, max] (e.g. today is outside a past-only range).
+  start = Math.min(start, currentYear);
+  end = Math.max(end, currentYear);
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
 
@@ -75,9 +82,9 @@ export function DateFieldCalendar({
   cancelLabel,
   confirmLabel,
 }: DateFieldCalendarProps) {
-  const years = getYearRange(min, max);
   const currentYear = dayjs(calendarMonth).year();
   const currentMonth = dayjs(calendarMonth).month(); // 0-indexed
+  const years = getYearRange(currentYear, min, max);
 
   const prevDisabled =
     min !== undefined &&
@@ -85,6 +92,13 @@ export function DateFieldCalendar({
   const nextDisabled =
     max !== undefined &&
     dayjs(calendarMonth).add(1, 'month').startOf('month').isAfter(dayjs(max), 'day');
+
+  // The "Today" action stages today's date; when today is outside [min, max]
+  // it can never be staged, so disable the button instead of silently no-opping.
+  const today = dayjs();
+  const todayDisabled =
+    (min !== undefined && today.isBefore(dayjs(min), 'day')) ||
+    (max !== undefined && today.isAfter(dayjs(max), 'day'));
 
   function handleYearChange(e: React.ChangeEvent<HTMLSelectElement>) {
     onMonthChange(dayjs(calendarMonth).year(Number(e.target.value)).toDate());
@@ -183,7 +197,15 @@ export function DateFieldCalendar({
               }),
               disabled: isDisabled,
               'aria-pressed': isStaged,
-              onClick: isDisabled ? undefined : () => onStagedDateChange(day.toDate()),
+              onClick: isDisabled
+                ? undefined
+                : () => {
+                    // Clicking a trailing/leading day of an adjacent month must
+                    // bring that month into view, otherwise the staged highlight
+                    // lands off-screen and the user gets no selection feedback.
+                    if (isOutside) onMonthChange(day.toDate());
+                    onStagedDateChange(day.toDate());
+                  },
             };
           }}
         />
@@ -191,7 +213,7 @@ export function DateFieldCalendar({
 
       {/* Footer */}
       <div className={calendarFooter}>
-        <Button variant="text" onClick={onToday}>
+        <Button variant="text" onClick={onToday} disabled={todayDisabled}>
           {todayLabel}
         </Button>
         <Button variant="outlined" onClick={onCancel}>
