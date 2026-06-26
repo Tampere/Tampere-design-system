@@ -421,4 +421,10 @@ FodyWeavers.xsd
 storybook-static
 dist
 CLAUDE.md
-docs/superpowers/
+docs/
+
+# Obsidian
+.obsidian/
+
+# macOS
+.DS_Store
