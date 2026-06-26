@@ -4,6 +4,13 @@ import { Button } from './Button';
 import { TextField } from '../TextField';
 import { Select } from '../Select';
 import { SearchIcon } from '../../icons/SearchIcon';
+import { ArrowRightIcon } from '../../icons/ArrowRightIcon';
+import { vars } from '../../theme';
+
+// Size in-button icons with the design-system icon.size token (20px, matching the
+// button line-height) rather than an emoji or a hardcoded value.
+const iconSize = vars.components.icon.size.medium;
+const iconProps = { style: { width: iconSize, height: iconSize } };
 
 const meta = {
   argTypes: {
@@ -73,42 +80,42 @@ export const Disabled: Story = {
   ),
 };
 
+/** Leading TREDS icon. */
 export const LeftIcon: Story = {
   render: (args) => (
-    <Button {...args} leftIcon={<span>🔍</span>}>
+    <Button {...args} leftIcon={<SearchIcon {...iconProps} />}>
       Search
     </Button>
   ),
 };
 
+/** Trailing TREDS icon. */
 export const RightIcon: Story = {
   render: (args) => (
-    <Button {...args} rightIcon={<span>➡️</span>}>
+    <Button {...args} rightIcon={<ArrowRightIcon {...iconProps} />}>
       Next
     </Button>
   ),
 };
 
+/** Leading and trailing TREDS icons. */
 export const BothIcons: Story = {
   render: (args) => (
-    <Button {...args} leftIcon={<span>🚀</span>} rightIcon={<span>🚀</span>}>
+    <Button
+      {...args}
+      leftIcon={<SearchIcon {...iconProps} />}
+      rightIcon={<ArrowRightIcon {...iconProps} />}
+    >
       Search Next
     </Button>
   ),
 };
 
-export const WithSvgIcon: Story = {
-  render: (args) => (
-    <Button {...args} leftIcon={<SearchIcon />}>
-      SVG Icon
-    </Button>
-  ),
-};
-
+/** Icon-only button. Always provide an aria-label for accessibility. */
 export const WithoutText: Story = {
   render: (args) => (
-    <Button {...args} aria-label="Magnifier">
-      <SearchIcon />
+    <Button {...args} aria-label="Search">
+      <SearchIcon {...iconProps} />
     </Button>
   ),
 };
