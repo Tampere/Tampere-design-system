@@ -457,8 +457,22 @@ const core = {
 const fontFamilyHeader = 'Montserrat, sans-serif';
 const fontFamilyBody = 'Open Sans, sans-serif';
 
+// Shared height for single-line controls (buttons, text inputs, selects), responsive per
+// breakpoint. Authoritative values from the Figma `Breakpoint` variable collection
+// (Input/Line-height + 2 × Spacing/Small); matches the `filled` button at every breakpoint.
+// Borders are absorbed into this height via `box-sizing: border-box`. See issue #79.
+const controlHeights = {
+  xxl: '52px',
+  xl: '52px',
+  lg: '52px',
+  md: '42px',
+  sm: '40px',
+  xs: '40px',
+} as const satisfies Record<keyof typeof breakpoints, string>;
+
 export function getComponents(bp: keyof typeof breakpoints) {
   return {
+    controlHeight: rem(controlHeights[bp]),
     breadcrumbs: {
       activePageFontWeight: '600',
     },
