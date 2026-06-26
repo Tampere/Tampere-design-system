@@ -121,36 +121,44 @@ export const WithoutText: Story = {
 };
 
 /**
- * All single-line controls (button variants, text input, select) must render at the
+ * All single-line controls (text input, select, button variants) must render at the
  * same shared, responsive control height — borders absorbed via box-sizing (issue #79).
+ *
+ * Inputs (which carry a label above the box) sit on the left and the buttons on the
+ * right, bottom-aligned: because every control box is the same height, their bottom
+ * borders land on a single line.
  */
 export const ControlHeightConsistency: Story = {
   render: () => (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+      <TextField inputLabel="Text input" placeholder="Input" />
+      <Select inputLabel="Select picker" options={['One', 'Two']} />
       <Button variant="filled">Filled</Button>
       <Button variant="outlined">Outlined</Button>
       <Button variant="text">Text</Button>
-      <TextField inputLabel="Text input" placeholder="Input" />
-      <Select inputLabel="Select picker" options={['One', 'Two']} />
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
+    const textInput = canvas.getByRole('textbox', { name: 'Text input' });
+    const selectInput = canvas.getByRole('textbox', { name: 'Select picker' });
     const filled = canvas.getByRole('button', { name: 'Filled' });
     const outlined = canvas.getByRole('button', { name: 'Outlined' });
     const text = canvas.getByRole('button', { name: 'Text' });
-    const textInput = canvas.getByRole('textbox', { name: 'Text input' });
-    const selectInput = canvas.getByRole('textbox', { name: 'Select picker' });
+    const controls = [textInput, selectInput, filled, outlined, text];
 
     const heightOf = (el: Element) => Math.round(el.getBoundingClientRect().height);
-    const reference = heightOf(filled);
+    const bottomOf = (el: Element) => Math.round(el.getBoundingClientRect().bottom);
 
-    // Filled is the design source of truth; every other control must match it exactly.
-    await expect(reference).toBeGreaterThan(0);
-    await expect(heightOf(outlined)).toBe(reference);
-    await expect(heightOf(text)).toBe(reference);
-    await expect(heightOf(textInput)).toBe(reference);
-    await expect(heightOf(selectInput)).toBe(reference);
+    // Filled is the design source of truth: every control matches its height, and
+    // bottom-alignment puts every bottom border on the same line.
+    const referenceHeight = heightOf(filled);
+    const referenceBottom = bottomOf(filled);
+    await expect(referenceHeight).toBeGreaterThan(0);
+    for (const control of controls) {
+      await expect(heightOf(control)).toBe(referenceHeight);
+      await expect(bottomOf(control)).toBe(referenceBottom);
+    }
   },
 };
