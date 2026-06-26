@@ -11,7 +11,7 @@ const meta = {
     calendarButtonLabel: 'Avaa kalenteri',
     prevMonthLabel: 'Edellinen kuukausi',
     nextMonthLabel: 'Seuraava kuukausi',
-    label: 'Otsake',
+    label: 'Valitse päivämäärä',
     placeholder: 'PP.KK.VVVV',
   },
 } satisfies Meta<typeof DateField>;
