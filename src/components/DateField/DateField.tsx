@@ -5,7 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import 'dayjs/locale/fi';
 import cx from 'clsx';
 import { TextField } from '../TextField';
-import { IconButton } from '../IconButton';
+import { Button } from '../Button';
 import { CalendarIcon } from '../../icons/CalendarIcon';
 import { DateFieldCalendar } from './DateFieldCalendar';
 import { popoverContent, visuallyHidden } from './DateField.css.ts';
@@ -180,18 +180,17 @@ export function DateField({
               classNames ? { root: classNames.root, wrapper: classNames.input } : undefined
             }
             endInstance={
-              <IconButton
+              <Button
                 ref={calendarButtonRef}
+                variant="filled"
                 aria-label={calendarButtonLabel}
                 aria-expanded={isOpen}
                 aria-haspopup="dialog"
-                variant="dark"
-                size="sm"
                 disabled={disabled}
                 onClick={isOpen ? closeCalendar : openCalendar}
               >
-                <CalendarIcon />
-              </IconButton>
+                <CalendarIcon {...(!disabled && { fill: 'white' })} />
+              </Button>
             }
           />
         </div>
