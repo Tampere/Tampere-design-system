@@ -23,8 +23,54 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-  render: (args) => <Button {...args}>Dark Button</Button>,
+/** High-emphasis, primary action. Use at most one filled button per view. */
+export const Filled: Story = {
+  args: { variant: 'filled' },
+};
+
+/** Medium emphasis — secondary actions placed alongside a filled button. */
+export const Outlined: Story = {
+  args: { variant: 'outlined' },
+};
+
+/** Low emphasis — tertiary or inline actions. */
+export const Text: Story = {
+  args: { variant: 'text' },
+};
+
+/** All three variants side by side, sharing the same control height (issue #79). */
+export const Variants: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="filled">
+        Filled
+      </Button>
+      <Button {...args} variant="outlined">
+        Outlined
+      </Button>
+      <Button {...args} variant="text">
+        Text
+      </Button>
+    </div>
+  ),
+};
+
+/** Disabled appearance for each variant. */
+export const Disabled: Story = {
+  args: { disabled: true },
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="filled">
+        Filled
+      </Button>
+      <Button {...args} variant="outlined">
+        Outlined
+      </Button>
+      <Button {...args} variant="text">
+        Text
+      </Button>
+    </div>
+  ),
 };
 
 export const LeftIcon: Story = {
