@@ -4,6 +4,7 @@ import { vars } from '../../theme';
 const {
   core,
   font,
+  spacing,
   components: { input: inputVars, typography, datePicker },
   text,
   focusRing,
@@ -30,7 +31,18 @@ export const calendarHeaderSelects = style({
   flex: '1',
 });
 
+// Wraps a native <select> so the design's chevron-down icon can be overlaid on
+// the right; the wrapper hugs the select so each dropdown keeps its natural
+// width (the full month name must stay visible, never truncated).
+export const nativeSelectWrapper = style({
+  position: 'relative',
+  display: 'inline-flex',
+  alignItems: 'center',
+});
+
 export const nativeSelect = style({
+  // Strip the browser's default dropdown arrow so the TREDS chevron can show.
+  appearance: 'none',
   // Design: select border uses Input-states/Default (#52525b = text.secondary),
   // not the blue Primary-states/Default used by text inputs.
   border: `${core.strokeWeight} solid ${text.secondary}`,
@@ -39,7 +51,11 @@ export const nativeSelect = style({
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
   letterSpacing: font.letterSpacing,
-  padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
+  // Shorter than a text input: compact vertical padding keeps the calendar
+  // header tight. Horizontal stays at small (16px) per the design.
+  padding: `${spacing['1']} ${spacing['2']}`,
+  // Reserve room on the right for the overlaid chevron (icon width + its inset).
+  paddingRight: `calc(${spacing['2']} + 20px + ${spacing['1']})`,
   cursor: 'pointer',
   selectors: {
     '&:hover': { border: `${core.strokeWeight} solid ${text.primary}` },
@@ -51,6 +67,16 @@ export const nativeSelect = style({
       cursor: 'default',
     },
   },
+});
+
+export const nativeSelectIcon = style({
+  position: 'absolute',
+  right: spacing['2'],
+  top: '50%',
+  transform: 'translateY(-50%)',
+  // Let clicks fall through to the <select> beneath.
+  pointerEvents: 'none',
+  color: text.secondary,
 });
 
 // Wrapper around Mantine Calendar — used to scope globalStyles below

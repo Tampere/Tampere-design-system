@@ -7,6 +7,7 @@ import { Button } from '../Button';
 import { IconButton } from '../IconButton';
 import { ChevronLeftIcon } from '../../icons/ChevronLeftIcon';
 import { ChevronRightIcon } from '../../icons/ChevronRightIcon';
+import { ChevronDownIcon } from '../../icons/ChevronDownIcon';
 import {
   calendarHeader,
   calendarHeaderSelects,
@@ -17,6 +18,8 @@ import {
   dayCellOutsideMonth,
   dayCellDisabled,
   nativeSelect,
+  nativeSelectWrapper,
+  nativeSelectIcon,
   hiddenCalendarHeader,
 } from './DateField.css.ts';
 
@@ -124,30 +127,36 @@ export function DateFieldCalendar({
           <ChevronLeftIcon />
         </IconButton>
         <div className={calendarHeaderSelects}>
-          <select
-            className={nativeSelect}
-            value={currentYear}
-            onChange={handleYearChange}
-            aria-label="Vuosi"
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-          <select
-            className={nativeSelect}
-            value={currentMonth}
-            onChange={handleMonthSelectChange}
-            aria-label="Kuukausi"
-          >
-            {FINNISH_MONTHS.map((name, i) => (
-              <option key={i} value={i}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <span className={nativeSelectWrapper}>
+            <select
+              className={nativeSelect}
+              value={currentYear}
+              onChange={handleYearChange}
+              aria-label="Vuosi"
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+            <ChevronDownIcon width={20} className={nativeSelectIcon} aria-hidden />
+          </span>
+          <span className={nativeSelectWrapper}>
+            <select
+              className={nativeSelect}
+              value={currentMonth}
+              onChange={handleMonthSelectChange}
+              aria-label="Kuukausi"
+            >
+              {FINNISH_MONTHS.map((name, i) => (
+                <option key={i} value={i}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <ChevronDownIcon width={20} className={nativeSelectIcon} aria-hidden />
+          </span>
         </div>
         <IconButton
           aria-label={nextMonthLabel}
