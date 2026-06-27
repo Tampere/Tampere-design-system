@@ -7,8 +7,8 @@ import { SearchIcon } from '../../icons/SearchIcon';
 import { ArrowRightIcon } from '../../icons/ArrowRightIcon';
 import { vars } from '../../theme';
 
-// Size in-button icons with the design-system icon.size token (20px, matching the
-// button line-height) rather than an emoji or a hardcoded value.
+// Size in-button icons with the design-system icon.size token (a fixed 20px) rather
+// than an emoji or a hardcoded value.
 const iconSize = vars.components.icon.size.medium;
 const iconProps = { style: { width: iconSize, height: iconSize } };
 
@@ -148,8 +148,13 @@ export const ControlHeightConsistency: Story = {
     const text = canvas.getByRole('button', { name: 'Text' });
     const controls = [textInput, selectInput, filled, outlined, text];
 
-    const heightOf = (el: Element) => Math.round(el.getBoundingClientRect().height);
-    const bottomOf = (el: Element) => Math.round(el.getBoundingClientRect().bottom);
+    const heightOf = (el: Element) => el.getBoundingClientRect().height;
+    const bottomOf = (el: Element) => el.getBoundingClientRect().bottom;
+
+    // Variants reach the same border-box height via different border configs (filled has
+    // none, outlined a full border, text a bottom border), so allow 1px of sub-pixel
+    // rounding slack rather than asserting exact equality.
+    const TOLERANCE = 1;
 
     // Filled is the design source of truth: every control matches its height, and
     // bottom-alignment puts every bottom border on the same line.
@@ -157,8 +162,8 @@ export const ControlHeightConsistency: Story = {
     const referenceBottom = bottomOf(filled);
     await expect(referenceHeight).toBeGreaterThan(0);
     for (const control of controls) {
-      await expect(heightOf(control)).toBe(referenceHeight);
-      await expect(bottomOf(control)).toBe(referenceBottom);
+      await expect(Math.abs(heightOf(control) - referenceHeight)).toBeLessThanOrEqual(TOLERANCE);
+      await expect(Math.abs(bottomOf(control) - referenceBottom)).toBeLessThanOrEqual(TOLERANCE);
     }
   },
 };

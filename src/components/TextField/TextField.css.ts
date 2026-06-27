@@ -50,8 +50,8 @@ export const inputRoot = style({
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
   letterSpacing: font.letterSpacing,
-  // Fixed, responsive height shared with buttons; border-box absorbs the 2px border so the
-  // input matches button variants at every breakpoint (issue #79).
+  // Fixed, responsive height shared with buttons; border-box absorbs the stroke-weight border
+  // so the input matches button variants at every breakpoint (issue #79).
   height: controlHeight,
   boxSizing: 'border-box',
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
