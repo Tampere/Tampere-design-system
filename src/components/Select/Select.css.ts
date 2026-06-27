@@ -4,9 +4,8 @@ import { vars } from '../../theme';
 const {
   spacing,
   core,
-  font,
   text,
-  components: { typography, input, textField, item },
+  components: { typography, input, item },
   focusRing,
 } = vars;
 
@@ -16,64 +15,6 @@ export const chevronOpen = style({
 
 export const root = style({
   alignItems: 'center',
-});
-
-export const inputText = style({
-  color: text.secondary,
-});
-
-const wrapperBase = style([
-  inputText,
-  {
-    flex: 1,
-    borderRadius: core.cornerRadius,
-    fontSize: input.font.label.fontSize,
-    lineHeight: input.font.text.lineHeight,
-    letterSpacing: font.letterSpacing,
-    minHeight: textField.minHeight,
-    padding: `${input.padding.vertical} ${input.padding.horizontal}`,
-    alignItems: 'flex-start',
-    gap: input.spacing.horizontalSpacing,
-  },
-]);
-
-export const inputWrapper = styleVariants({
-  default: [
-    wrapperBase,
-    {
-      pointerEvents: 'all',
-      cursor: 'pointer',
-      border: `${input.stroke.weight.default} solid ${core.states.default}`,
-      background: core.background,
-      selectors: {
-        '&::placeholder': {
-          color: text.secondary,
-        },
-        '&:hover': {
-          border: `${input.stroke.weight.default} solid ${core.states.hover}`,
-          background: core.background,
-        },
-        '&:focus-visible': {
-          background: core.background,
-          ...focusRing,
-        },
-      },
-    },
-  ],
-  disabled: [
-    wrapperBase,
-    {
-      border: `${input.stroke.weight.default} solid ${core.states.disabled}`,
-      background: core.backgroundDisabled,
-      pointerEvents: 'none',
-    },
-  ],
-  error: [
-    wrapperBase,
-    {
-      border: `${input.stroke.weight.default} solid ${core.states.error}`,
-    },
-  ],
 });
 
 export const inputField = style({
