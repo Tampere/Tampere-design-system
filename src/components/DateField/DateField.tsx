@@ -16,8 +16,13 @@ dayjs.extend(customParseFormat);
 
 const DATE_FORMAT = 'DD.MM.YYYY';
 
+// Accept every leading-zero combination of the Finnish d.m.yyyy form (1.8.2025,
+// 01.08.2025, 1.08.2025, …); display always normalises back to DATE_FORMAT.
+// Strict parsing still rejects impossible dates (29.02 on a non-leap year, 32.13).
+const PARSE_FORMATS = ['DD.MM.YYYY', 'D.M.YYYY', 'D.MM.YYYY', 'DD.M.YYYY'];
+
 function parseDate(text: string): Date | null {
-  const parsed = dayjs(text, DATE_FORMAT, true);
+  const parsed = dayjs(text, PARSE_FORMATS, true);
   return parsed.isValid() ? parsed.toDate() : null;
 }
 
@@ -40,7 +45,20 @@ export interface DateFieldClassNames {
 }
 
 export interface DateFieldProps {
+  /**
+   * Committed date. Omit for an uncontrolled field that manages its own value.
+   * When controlled, the displayed value always reflects this prop: if your
+   * `onChange` normalises or rejects the date, pass the result back here (or leave
+   * it unchanged to veto the edit — the field then keeps showing the typed text).
+   */
   value?: Date | null;
+  /**
+   * Called with the committed date, or `null` when cleared. Fires only when the
+   * committed value actually changes — not on every keystroke, and not again on
+   * blur for an already-committed date. Typing an unparseable or out-of-range
+   * value over a valid one surfaces an error and keeps the last committed value;
+   * it does not fire `onChange(null)`.
+   */
   onChange?: (date: Date | null) => void;
   /** Visible field label. Provide this, `aria-label`, or `aria-labelledby` so the date input has an accessible name. */
   label?: string;
@@ -69,6 +87,10 @@ export interface DateFieldProps {
   clearButtonLabel?: string;
   prevMonthLabel: string;
   nextMonthLabel: string;
+  /** Accessible name for the calendar's year `<select>`. Default: Finnish. */
+  yearLabel?: string;
+  /** Accessible name for the calendar's month `<select>`. Default: Finnish. */
+  monthLabel?: string;
   todayLabel?: string;
   cancelLabel?: string;
   confirmLabel?: string;
@@ -95,6 +117,8 @@ export function DateField({
   clearButtonLabel = 'Tyhjennä päivämäärä',
   prevMonthLabel,
   nextMonthLabel,
+  yearLabel = 'Vuosi',
+  monthLabel = 'Kuukausi',
   todayLabel = 'Tänään',
   cancelLabel = 'Peruuta',
   confirmLabel = 'Vahvista',
@@ -135,6 +159,14 @@ export function DateField({
   }, [label, ariaLabel, ariaLabelledby]);
 
   function commit(date: Date | null) {
+    // Skip no-op commits so onChange isn't re-fired with an equal value (e.g. the
+    // keystroke that completes a valid date already commits it, then blur would
+    // commit the same day again as a fresh Date instance). Compare at day
+    // granularity, treating both-null as equal.
+    const unchanged =
+      date === committedDate ||
+      (date !== null && committedDate !== null && dayjs(date).isSame(committedDate, 'day'));
+    if (unchanged) return;
     if (!isControlled) setInternalCommitted(date);
     onChange?.(date);
   }
@@ -212,6 +244,9 @@ export function DateField({
 
   function handleToday() {
     const today = new Date();
+    // Redundant safety net: the calendar disables the Today button when today is
+    // out of range, so this guard normally can't fire. Kept so a programmatic
+    // trigger can't stage a date that could never be confirmed.
     if (!isInRange(today, min, max)) return;
     setStagedDate(today);
     setCalendarMonth(today);
@@ -347,6 +382,8 @@ export function DateField({
               max={max}
               prevMonthLabel={prevMonthLabel}
               nextMonthLabel={nextMonthLabel}
+              yearLabel={yearLabel}
+              monthLabel={monthLabel}
               todayLabel={todayLabel}
               cancelLabel={cancelLabel}
               confirmLabel={confirmLabel}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
-import { expect } from 'storybook/test';
+import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
 
@@ -294,6 +294,132 @@ export const TypeValidDate: Story = {
   },
 };
 
+export const TypeSingleDigitDate: Story = {
+  // Finnish dates are routinely written without leading zeros (1.8.2025), so the
+  // field must accept single-digit day/month, not only the padded DD.MM.YYYY form.
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, '1.8.2025'); // no leading zeros
+    await userEvent.tab();
+    await expect(canvas.queryByText('Virheellinen päivämäärä')).not.toBeInTheDocument();
+    await expect(canvas.getByTestId('output').textContent).toBe('01.08.2025');
+  },
+};
+
+export const TypeImpossibleCalendarDateRejected: Story = {
+  // A format-valid but calendar-impossible date (non-leap 29 Feb) must be rejected,
+  // not silently rolled over to a real date.
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, '29.02.2025'); // 2025 is not a leap year
+    await userEvent.tab();
+    await expect(await canvas.findByText('Virheellinen päivämäärä')).toBeInTheDocument();
+    await expect(canvas.getByTestId('output').textContent).toBe('none');
+  },
+};
+
+export const TypingThenBlurFiresOnChangeOnce: Story = {
+  // Typing a complete valid date commits it; blurring must NOT re-fire onChange
+  // with an equal value. Consumers comparing by reference (autosave, analytics,
+  // useEffect deps) would otherwise see a spurious second change.
+  args: { onChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV');
+    await userEvent.type(input, '16.08.2025');
+    await userEvent.tab(); // blur
+    await waitFor(() => expect(args.onChange).toHaveBeenCalledTimes(1));
+    const committed = (args.onChange as ReturnType<typeof fn>).mock.calls[0][0] as Date;
+    await expect(dayjs(committed).format('DD.MM.YYYY')).toBe('16.08.2025');
+  },
+};
+
+export const UncontrolledRetainsTypedValue: Story = {
+  // With no `value` prop the field manages its own committed state. Typing a
+  // valid date and blurring must retain it, and the calendar opens on that month.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, '16.08.2025');
+    await userEvent.tab();
+    await expect(input.value).toBe('16.08.2025');
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await expect(Number(monthSelect.value)).toBe(7); // August
+  },
+};
+
+export const EmptyBlurRevertsToCommitted: Story = {
+  // Clearing the text and blurring is not a clear action: it silently reverts to
+  // the committed value (the explicit ✕ button is the way to clear) and must not
+  // fire onChange(null).
+  args: { value: new Date(2025, 7, 16), onChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await expect(input.value).toBe('16.08.2025');
+    await userEvent.clear(input);
+    await userEvent.tab();
+    await waitFor(() => expect(input.value).toBe('16.08.2025'));
+    await expect(args.onChange).not.toHaveBeenCalled();
+  },
+};
+
+export const ArrowKeysNavigateGrid: Story = {
+  // Arrow keys move day-to-day in the grid and Enter stages the focused day
+  // (APG date-picker keyboard pattern).
+  args: { value: new Date(2025, 7, 16) },
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(args.value ?? null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('16')
+    );
+    await userEvent.keyboard('{ArrowRight}');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('17')
+    );
+    await userEvent.keyboard('{Enter}');
+    await userEvent.click(await body.findByText('Vahvista'));
+    await waitFor(() => expect(canvas.getByTestId('output').textContent).toBe('17.08.2025'));
+  },
+};
+
 export const TypeInvalidDateThenBlur: Story = {
   render: (args) => {
     const [value, setValue] = useState<Date | null>(new Date(2025, 7, 1));
@@ -433,6 +559,68 @@ export const MonthNavRespectsRange: Story = {
     await waitFor(() => expect(body.getByLabelText('Edellinen kuukausi')).toBeDisabled());
     // Next month (September) is entirely after max (Aug 20) → arrow must be disabled
     await waitFor(() => expect(body.getByLabelText('Seuraava kuukausi')).toBeDisabled());
+  },
+};
+
+export const MonthOptionsRespectRange: Story = {
+  // Months entirely outside [min, max] must be disabled in the header select, so
+  // the user can't navigate to an all-disabled grid with no feedback.
+  args: {
+    min: new Date(2025, 7, 10),
+    max: new Date(2025, 7, 20), // August 2025 only
+    value: new Date(2025, 7, 16),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    // August (index 7) is in range; December (index 11) is not.
+    await expect(monthSelect.options[7].disabled).toBe(false);
+    await expect(monthSelect.options[11].disabled).toBe(true);
+  },
+};
+
+export const YearOptionsRespectRange: Story = {
+  // A past-only range with no value opens on today, so getYearRange spans the
+  // gap between the range and the current year. Those in-between years are fully
+  // out of range and must be disabled; the in-range year stays selectable.
+  args: {
+    min: new Date(2020, 0, 1),
+    max: new Date(2020, 11, 31), // 2020 only
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const yearSelect = within(calendar).getByRole('combobox', {
+      name: 'Vuosi',
+    }) as HTMLSelectElement;
+    const optionFor = (year: string) =>
+      Array.from(yearSelect.options).find((o) => o.value === year);
+    // 2020 is in range; a year between 2020 and today is not.
+    await expect(optionFor('2020')?.disabled).toBe(false);
+    const inBetween = optionFor(String(new Date().getFullYear() - 1));
+    await expect(inBetween).toBeTruthy();
+    await expect(inBetween?.disabled).toBe(true);
+  },
+};
+
+export const HeaderSelectLabelsAreConfigurable: Story = {
+  // The year/month select accessible names are props (like every other label),
+  // so the component can be localised beyond the Finnish defaults.
+  args: { yearLabel: 'Year', monthLabel: 'Month' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await expect(within(calendar).getByRole('combobox', { name: 'Year' })).toBeInTheDocument();
+    await expect(within(calendar).getByRole('combobox', { name: 'Month' })).toBeInTheDocument();
   },
 };
 

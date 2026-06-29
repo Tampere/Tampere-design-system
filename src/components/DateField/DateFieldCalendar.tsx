@@ -54,6 +54,25 @@ function getYearRange(currentYear: number, min?: Date, max?: Date): number[] {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
 
+// A month/year is selectable only when some day in it falls within [min, max];
+// fully out-of-range periods are disabled in the header selects so the user can't
+// navigate to an all-disabled grid with no explanation.
+function isMonthInRange(year: number, month: number, min?: Date, max?: Date): boolean {
+  const start = dayjs().year(year).month(month).startOf('month');
+  const end = start.endOf('month');
+  if (min && end.isBefore(dayjs(min), 'day')) return false;
+  if (max && start.isAfter(dayjs(max), 'day')) return false;
+  return true;
+}
+
+function isYearInRange(year: number, min?: Date, max?: Date): boolean {
+  const start = dayjs().year(year).startOf('year');
+  const end = start.endOf('year');
+  if (min && end.isBefore(dayjs(min), 'day')) return false;
+  if (max && start.isAfter(dayjs(max), 'day')) return false;
+  return true;
+}
+
 export interface DateFieldCalendarProps {
   stagedDate: Date | null;
   calendarMonth: Date;
@@ -66,6 +85,8 @@ export interface DateFieldCalendarProps {
   max?: Date;
   prevMonthLabel: string;
   nextMonthLabel: string;
+  yearLabel: string;
+  monthLabel: string;
   todayLabel: string;
   cancelLabel: string;
   confirmLabel: string;
@@ -83,6 +104,8 @@ export function DateFieldCalendar({
   max,
   prevMonthLabel,
   nextMonthLabel,
+  yearLabel,
+  monthLabel,
   todayLabel,
   cancelLabel,
   confirmLabel,
@@ -134,30 +157,30 @@ export function DateFieldCalendar({
               className={nativeSelect}
               value={currentYear}
               onChange={handleYearChange}
-              aria-label="Vuosi"
+              aria-label={yearLabel}
             >
               {years.map((y) => (
-                <option key={y} value={y}>
+                <option key={y} value={y} disabled={!isYearInRange(y, min, max)}>
                   {y}
                 </option>
               ))}
             </select>
-            <ChevronDownIcon width={20} className={nativeSelectIcon} aria-hidden />
+            <ChevronDownIcon className={nativeSelectIcon} aria-hidden />
           </span>
           <span className={nativeSelectWrapper}>
             <select
               className={nativeSelect}
               value={currentMonth}
               onChange={handleMonthSelectChange}
-              aria-label="Kuukausi"
+              aria-label={monthLabel}
             >
               {FINNISH_MONTHS.map((name, i) => (
-                <option key={i} value={i}>
+                <option key={i} value={i} disabled={!isMonthInRange(currentYear, i, min, max)}>
                   {name}
                 </option>
               ))}
             </select>
-            <ChevronDownIcon width={20} className={nativeSelectIcon} aria-hidden />
+            <ChevronDownIcon className={nativeSelectIcon} aria-hidden />
           </span>
         </div>
         <IconButton

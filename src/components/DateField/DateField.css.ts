@@ -5,7 +5,7 @@ const {
   core,
   font,
   spacing,
-  components: { input: inputVars, typography, datePicker, controlHeight, button: buttonVars },
+  components: { input: inputVars, typography, datePicker, controlHeight, button: buttonVars, icon },
   text,
   focusRing,
 } = vars;
@@ -85,7 +85,7 @@ export const nativeSelect = style({
   // Horizontal padding tracks the input's responsive Spacing/Small (16→12).
   padding: `0 ${inputVars.padding.horizontal}`,
   // Reserve room on the right for the overlaid chevron (padding + icon width + gap).
-  paddingRight: `calc(${inputVars.padding.horizontal} + 20px + ${spacing['1']})`,
+  paddingRight: `calc(${inputVars.padding.horizontal} + ${icon.size.medium} + ${spacing['1']})`,
   cursor: 'pointer',
   selectors: {
     '&:hover': { border: `${core.strokeWeight} solid ${text.primary}` },
@@ -104,6 +104,10 @@ export const nativeSelectIcon = style({
   right: inputVars.padding.horizontal,
   top: '50%',
   transform: 'translateY(-50%)',
+  // Single source for the chevron width, matched by the select's reserved
+  // paddingRight above (Components/Icon/Size medium = 20px).
+  width: icon.size.medium,
+  height: 'auto',
   // Let clicks fall through to the <select> beneath.
   pointerEvents: 'none',
   color: text.secondary,
