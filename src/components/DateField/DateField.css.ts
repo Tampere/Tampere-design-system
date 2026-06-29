@@ -5,10 +5,19 @@ const {
   core,
   font,
   spacing,
-  components: { input: inputVars, typography, datePicker, controlHeight },
+  components: { input: inputVars, typography, datePicker, controlHeight, button: buttonVars },
   text,
   focusRing,
 } = vars;
+
+// The calendar trigger icon scales with the responsive control size: its width
+// tracks the button line-height token (Figma Components/Button/Icon/Size =
+// 20/18/16 across breakpoints), so it shrinks with the field instead of staying
+// a fixed 24px. Height auto keeps the icon's aspect ratio.
+export const triggerIcon = style({
+  width: buttonVars.lineHeight,
+  height: 'auto',
+});
 
 // Dropdown surface. Outer padding scales with the breakpoint (Figma Spacing/Medium, 24→16).
 export const popoverContent = style({

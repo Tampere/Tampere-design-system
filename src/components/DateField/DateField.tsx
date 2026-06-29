@@ -8,7 +8,7 @@ import { TextField } from '../TextField';
 import { Button } from '../Button';
 import { CalendarIcon } from '../../icons/CalendarIcon';
 import { DateFieldCalendar } from './DateFieldCalendar';
-import { popoverContent, visuallyHidden } from './DateField.css.ts';
+import { popoverContent, visuallyHidden, triggerIcon } from './DateField.css.ts';
 
 dayjs.extend(customParseFormat);
 
@@ -283,7 +283,7 @@ export function DateField({
                 disabled={disabled}
                 onClick={isOpen ? closeCalendar : openCalendar}
               >
-                <CalendarIcon {...(!disabled && { fill: 'white' })} />
+                <CalendarIcon className={triggerIcon} {...(!disabled && { fill: 'white' })} />
               </Button>
             }
           />

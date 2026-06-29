@@ -104,6 +104,22 @@ export const FormatDescriptionAlongsideHelperText: Story = {
   },
 };
 
+export const TriggerIconTracksControlSize: Story = {
+  // The calendar trigger icon must scale with the responsive control size (it is
+  // sized to the button's line-height token), not stay a fixed 24px while the
+  // field shrinks on small breakpoints. Asserted viewport-independently by
+  // comparing the rendered icon width to the button's resolved line-height.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByLabelText('Avaa kalenteri');
+    const icon = trigger.querySelector('svg') as SVGElement;
+    await expect(icon).toBeTruthy();
+    const lineHeightPx = parseFloat(getComputedStyle(trigger).lineHeight);
+    const iconWidth = icon.getBoundingClientRect().width;
+    await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
+  },
+};
+
 // ── Interaction tests ────────────────────────────────────────────────────────
 
 export const OpenCalendar: Story = {
