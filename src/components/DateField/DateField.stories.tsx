@@ -131,7 +131,7 @@ export const StageAndConfirm: Story = {
     // onChange not yet called — output still shows original
     await expect(canvas.getByTestId('output').textContent).toBe('01.08.2025');
     // Confirm — button is in the portal
-    await userEvent.click(await body.findByText('Valitse'));
+    await userEvent.click(await body.findByText('Vahvista'));
     // Calendar closes with a transition — use waitFor
     await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
     await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');

@@ -73,7 +73,7 @@ export function DateField({
   nextMonthLabel,
   todayLabel = 'Tänään',
   cancelLabel = 'Peruuta',
-  confirmLabel = 'Valitse',
+  confirmLabel = 'Vahvista',
   classNames,
 }: DateFieldProps) {
   const isControlled = value !== undefined;
