@@ -472,6 +472,19 @@ const controlHeights = {
   xs: '40px',
 } as const satisfies Record<keyof typeof breakpoints, string>;
 
+// Calendar day-cell size. Figma fixes this at 50px from md up (it designed the picker
+// down to a 480px frame, which renders in the md tier). On the narrower sm/xs tiers the
+// fixed 50px grid would overflow a phone, so cells shrink to keep the popover within a
+// ~320px viewport: 7 × 36 + 6 × 4 gap + 2 × 16 padding + borders ≈ 312px.
+const calendarCellSizes = {
+  xxl: '50px',
+  xl: '50px',
+  lg: '50px',
+  md: '50px',
+  sm: '36px',
+  xs: '36px',
+} as const satisfies Record<keyof typeof breakpoints, string>;
+
 export function getComponents(bp: keyof typeof breakpoints) {
   return {
     controlHeight: rem(controlHeights[bp]),
@@ -600,6 +613,16 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
+      // Outer dropdown padding and the gap between header / grid / footer — Figma
+      // `Spacing/Medium`, which scales 24→16 across breakpoints.
+      padding: breakpoints[bp].spacing.md,
+      // Day cells follow Figma `Components/Calendar-item/Size` (50) from md up, shrinking on
+      // sm/xs so the grid fits a phone. Inter-cell gap `Spacing/0,5` = 4, header gap
+      // `Spacing/1,5` = 12, today marker inset 4 — all fixed across breakpoints.
+      cellSize: rem(calendarCellSizes[bp]),
+      cellGap: spacing['0,5'],
+      headerGap: spacing['1,5'],
+      todayMarkerInset: spacing['0,5'],
     },
     forms: {
       spacing: spacing['3'],

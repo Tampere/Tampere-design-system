@@ -5,28 +5,36 @@ const {
   core,
   font,
   spacing,
-  components: { input: inputVars, typography, datePicker },
+  components: { input: inputVars, typography, datePicker, controlHeight },
   text,
   focusRing,
 } = vars;
 
+// Dropdown surface. Outer padding scales with the breakpoint (Figma Spacing/Medium, 24→16).
 export const popoverContent = style({
   background: core.background,
   border: `${core.strokeWeight} solid ${core.divider}`,
   boxShadow: `0 4px 12px ${core.dropshadow}`,
-  padding: inputVars.padding.vertical,
-  minWidth: '280px',
+  padding: datePicker.padding,
+});
+
+// Header, grid and footer stack vertically with a Spacing/Medium gap (responsive 24→16).
+export const calendar = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: datePicker.padding,
 });
 
 export const calendarHeader = style({
   display: 'flex',
   alignItems: 'center',
-  gap: inputVars.spacing.horizontalSpacing,
-  marginBottom: inputVars.spacing.verticalSpacing,
+  // Figma Header gap = Spacing/1,5 (12px, fixed across breakpoints).
+  gap: datePicker.headerGap,
 });
 
 export const calendarHeaderSelects = style({
   display: 'flex',
+  // Gap between the year and month selects = Figma Input/Input-spacing (8→4, responsive).
   gap: inputVars.spacing.horizontalSpacing,
   flex: '1',
 });
@@ -43,6 +51,10 @@ export const nativeSelectWrapper = style({
 export const nativeSelect = style({
   // Strip the browser's default dropdown arrow so the TREDS chevron can show.
   appearance: 'none',
+  // Match the shared control height (issue #79) so the header selects align with
+  // the field's inputs and buttons; border sits inside the box.
+  height: controlHeight,
+  boxSizing: 'border-box',
   // Design: select border uses Input-states/Default (#52525b = text.secondary),
   // not the blue Primary-states/Default used by text inputs.
   border: `${core.strokeWeight} solid ${text.secondary}`,
@@ -51,11 +63,10 @@ export const nativeSelect = style({
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
   letterSpacing: font.letterSpacing,
-  // Shorter than a text input: compact vertical padding keeps the calendar
-  // header tight. Horizontal stays at small (16px) per the design.
-  padding: `${spacing['1']} ${spacing['2']}`,
-  // Reserve room on the right for the overlaid chevron (icon width + its inset).
-  paddingRight: `calc(${spacing['2']} + 20px + ${spacing['1']})`,
+  // Horizontal padding tracks the input's responsive Spacing/Small (16→12).
+  padding: `0 ${inputVars.padding.horizontal}`,
+  // Reserve room on the right for the overlaid chevron (padding + icon width + gap).
+  paddingRight: `calc(${inputVars.padding.horizontal} + 20px + ${spacing['1']})`,
   cursor: 'pointer',
   selectors: {
     '&:hover': { border: `${core.strokeWeight} solid ${text.primary}` },
@@ -71,7 +82,7 @@ export const nativeSelect = style({
 
 export const nativeSelectIcon = style({
   position: 'absolute',
-  right: spacing['2'],
+  right: inputVars.padding.horizontal,
   top: '50%',
   transform: 'translateY(-50%)',
   // Let clicks fall through to the <select> beneath.
@@ -82,15 +93,23 @@ export const nativeSelectIcon = style({
 // Wrapper around Mantine Calendar — used to scope globalStyles below
 export const calendarGrid = style({});
 
+// Day cells are a fixed 50px square at every breakpoint (Figma Calendar-item/Size).
 globalStyle(`${calendarGrid} table button`, {
   borderRadius: 0,
-  width: '40px',
-  height: '40px',
+  width: datePicker.cellSize,
+  height: datePicker.cellSize,
   // Day numbers: P2 body type, regular weight, primary text colour (design tokens).
   fontFamily: typography.p2.fontFamily,
   fontSize: typography.p2.fontSize,
   fontWeight: typography.p2.fontWeight,
   color: text.primary,
+});
+
+// 4px (Spacing/0,5) gap between day/weekday cells: half the gap as padding on each
+// side of every table cell. `:where()` in Mantine's reset has zero specificity, so
+// this class-scoped rule wins without `!important`.
+globalStyle(`${calendarGrid} td, ${calendarGrid} th`, {
+  padding: `calc(${datePicker.cellGap} / 2)`,
 });
 
 globalStyle(`${calendarGrid} table button:focus-visible`, {
@@ -113,9 +132,10 @@ export const dayCellStaged = style({
 });
 
 export const dayCellToday = style({
-  // Today marker: dashed outline in the Date-picker today-marker colour.
+  // Today marker: dashed outline in the Date-picker today-marker colour, inset 4px
+  // so it renders as a 42px square inside the 50px cell (Figma today marker).
   outline: `${core.strokeWeight} dashed ${datePicker.todayMarker}`,
-  outlineOffset: '-2px',
+  outlineOffset: `calc(${datePicker.todayMarkerInset} * -1)`,
 });
 
 export const dayCellOutsideMonth = style({
@@ -135,8 +155,14 @@ export const calendarFooter = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  marginTop: inputVars.spacing.verticalSpacing,
-  gap: inputVars.spacing.horizontalSpacing,
+});
+
+// Groups the cancel + confirm buttons together on the right (Figma Primary actions),
+// leaving the Today button on the left. Gap = Figma Spacing/2 (16px, fixed).
+export const footerActions = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: spacing['2'],
 });
 
 export const hiddenCalendarHeader = style({ display: 'none' });

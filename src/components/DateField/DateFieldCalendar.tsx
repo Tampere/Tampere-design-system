@@ -9,9 +9,11 @@ import { ChevronLeftIcon } from '../../icons/ChevronLeftIcon';
 import { ChevronRightIcon } from '../../icons/ChevronRightIcon';
 import { ChevronDownIcon } from '../../icons/ChevronDownIcon';
 import {
+  calendar,
   calendarHeader,
   calendarHeaderSelects,
   calendarFooter,
+  footerActions,
   calendarGrid,
   dayCellStaged,
   dayCellToday,
@@ -112,7 +114,7 @@ export function DateFieldCalendar({
   }
 
   return (
-    <div data-testid="date-field-calendar">
+    <div className={calendar} data-testid="date-field-calendar">
       {/* Header */}
       <div className={calendarHeader}>
         <IconButton
@@ -220,17 +222,19 @@ export function DateFieldCalendar({
         />
       </div>
 
-      {/* Footer */}
+      {/* Footer: Today on the left, cancel + confirm grouped on the right (Figma layout). */}
       <div className={calendarFooter}>
         <Button variant="text" onClick={onToday} disabled={todayDisabled}>
           {todayLabel}
         </Button>
-        <Button variant="outlined" onClick={onCancel}>
-          {cancelLabel}
-        </Button>
-        <Button variant="filled" onClick={onConfirm}>
-          {confirmLabel}
-        </Button>
+        <div className={footerActions}>
+          <Button variant="outlined" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+          <Button variant="filled" onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+        </div>
       </div>
     </div>
   );
