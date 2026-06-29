@@ -6,9 +6,11 @@ import 'dayjs/locale/fi';
 import cx from 'clsx';
 import { TextField } from '../TextField';
 import { Button } from '../Button';
+import { IconButton } from '../IconButton';
 import { CalendarIcon } from '../../icons/CalendarIcon';
+import { CloseIcon } from '../../icons/CloseIcon';
 import { DateFieldCalendar } from './DateFieldCalendar';
-import { popoverContent, visuallyHidden, triggerIcon } from './DateField.css.ts';
+import { popoverContent, visuallyHidden, triggerIcon, inputWithClear } from './DateField.css.ts';
 
 dayjs.extend(customParseFormat);
 
@@ -63,6 +65,8 @@ export interface DateFieldProps {
   disabled?: boolean;
   required?: boolean;
   calendarButtonLabel: string;
+  /** Accessible name for the clear (✕) button shown when the field has a value. */
+  clearButtonLabel?: string;
   prevMonthLabel: string;
   nextMonthLabel: string;
   todayLabel?: string;
@@ -88,6 +92,7 @@ export function DateField({
   disabled,
   required,
   calendarButtonLabel,
+  clearButtonLabel = 'Tyhjennä päivämäärä',
   prevMonthLabel,
   nextMonthLabel,
   todayLabel = 'Tänään',
@@ -196,6 +201,15 @@ export function DateField({
     closeCalendar();
   }
 
+  function handleClear() {
+    setTextValue('');
+    setInternalError(null);
+    commit(null);
+    // The ✕ disappears once the field is empty, so move focus to the adjacent
+    // calendar trigger rather than letting it fall back to <body> (WCAG 2.4.3).
+    requestAnimationFrame(() => calendarButtonRef.current?.focus());
+  }
+
   function handleToday() {
     const today = new Date();
     if (!isInRange(today, min, max)) return;
@@ -229,9 +243,17 @@ export function DateField({
     helperText
   );
 
+  // Show the clear (✕) button only when the field has something to clear and is
+  // not disabled. Gating on the text (not just the committed date) means it also
+  // appears while the user is mid-typing an entry.
+  const showClear = !disabled && textValue.trim() !== '';
+
   const fieldClassNames = {
     root: classNames?.root,
     wrapper: classNames?.input,
+    // Reserve right padding for the clear button so the typed date can't slide
+    // under it; only while the button is shown, so the empty field keeps full width.
+    input: showClear ? inputWithClear : undefined,
     // With no visible helper text, take the description wrapper out of the flex
     // flow (visuallyHidden is position:absolute) so the format hint is announced
     // without adding a gap below the input.
@@ -272,6 +294,19 @@ export function DateField({
             onFocus={handleTextFocus}
             onBlur={handleTextBlur}
             classNames={fieldClassNames}
+            rightSectionPointerEvents={showClear ? 'auto' : 'none'}
+            rightSection={
+              showClear ? (
+                <IconButton
+                  size="sm"
+                  variant="dark"
+                  aria-label={clearButtonLabel}
+                  onClick={handleClear}
+                >
+                  <CloseIcon />
+                </IconButton>
+              ) : undefined
+            }
             endInstance={
               <Button
                 ref={calendarButtonRef}

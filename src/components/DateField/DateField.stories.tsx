@@ -574,6 +574,50 @@ export const TodayHasAriaCurrent: Story = {
   },
 };
 
+export const ClearButtonClearsValue: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(new Date(2025, 7, 16));
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await expect(input.value).toBe('16.08.2025');
+    // The clear (✕) button is present while the field has a value.
+    const clear = canvas.getByLabelText('Tyhjennä päivämäärä');
+    await userEvent.click(clear);
+    // Field empties and the committed value is cleared via onChange(null).
+    await waitFor(() => expect(input.value).toBe(''));
+    await expect(canvas.getByTestId('output').textContent).toBe('none');
+    // The ✕ is removed once the field is empty; focus moves to the trigger so it
+    // isn't lost to <body> when the button it sat on disappears (WCAG 2.4.3).
+    await expect(canvas.queryByLabelText('Tyhjennä päivämäärä')).not.toBeInTheDocument();
+    await waitFor(() => expect(canvas.getByLabelText('Avaa kalenteri')).toHaveFocus());
+  },
+};
+
+export const ClearButtonHiddenWhenEmpty: Story = {
+  // Nothing to clear on an empty field, so the ✕ must not be present.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.queryByLabelText('Tyhjennä päivämäärä')).not.toBeInTheDocument();
+  },
+};
+
+export const ClearButtonHiddenWhenDisabled: Story = {
+  // A disabled field can't be edited, so the clear affordance is suppressed.
+  args: { disabled: true, value: new Date(2025, 7, 16) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.queryByLabelText('Tyhjennä päivämäärä')).not.toBeInTheDocument();
+  },
+};
+
 export const StagedDayHighlighted: Story = {
   args: { value: new Date(2025, 7, 1) }, // 01.08.2025 — calendar opens on August 2025
   play: async ({ canvasElement }) => {
