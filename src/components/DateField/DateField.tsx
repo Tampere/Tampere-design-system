@@ -160,7 +160,7 @@ export function DateField({
   }
 
   return (
-    <Popover opened={isOpen} onClose={closeCalendar} position="bottom-start">
+    <Popover opened={isOpen} onClose={closeCalendar} position="bottom-end">
       <Popover.Target>
         <div data-testid="date-field">
           <TextField
