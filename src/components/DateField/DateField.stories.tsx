@@ -7,6 +7,12 @@ import { DateField } from './DateField';
 
 const meta = {
   component: DateField,
+  // Most DateField stories are browser test specs (they have a `play` fn), not
+  // documentation. Default every story to test-only: still run by the vitest
+  // addon (the `test` tag is untouched) but hidden from the sidebar (`!dev`) and
+  // the autodocs page (`!autodocs`) so the docs stay a small, curated set. The
+  // documentation examples below opt back in with `tags: docExample`.
+  tags: ['!dev', '!autodocs'],
   args: {
     calendarButtonLabel: 'Avaa kalenteri',
     prevMonthLabel: 'Edellinen kuukausi',
@@ -19,27 +25,39 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ── Render stories ──────────────────────────────────────────────────────────
+// Re-adds the visibility tags that `meta` strips, marking a story as a
+// documentation example shown in both the sidebar and the autodocs page.
+const docExample = ['dev', 'autodocs'];
 
-export const Default: Story = {};
+// ── Documentation examples (visible in sidebar + autodocs) ───────────────────
+// These cover every distinct visual state; the interactive behaviours (opening
+// the calendar, typing, clearing) are discoverable by interacting with them, so
+// the behavioural/a11y stories further down stay test-only to keep docs focused.
+
+export const Default: Story = { tags: docExample };
 
 export const WithValue: Story = {
+  tags: docExample,
   args: { value: new Date(2025, 7, 16) },
 };
 
 export const Disabled: Story = {
+  tags: docExample,
   args: { disabled: true, value: new Date(2025, 7, 16) },
 };
 
 export const WithError: Story = {
+  tags: docExample,
   args: { error: 'Päivämäärä on virheellinen' },
 };
 
 export const WithHelperText: Story = {
+  tags: docExample,
   args: { helperText: 'Muoto: PP.KK.VVVV' },
 };
 
 export const WithMinMax: Story = {
+  tags: docExample,
   args: {
     min: new Date(2025, 7, 10),
     max: new Date(2025, 7, 20),
