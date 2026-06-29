@@ -47,6 +47,63 @@ export const WithMinMax: Story = {
   },
 };
 
+// ── Accessibility tests ──────────────────────────────────────────────────────
+
+// Captures console.error calls for the dev-warning test below.
+let capturedConsoleErrors: string[] = [];
+
+export const AccessibleNameViaAriaLabel: Story = {
+  // With no visible label, an aria-label must give the input an accessible name.
+  args: { label: undefined, 'aria-label': 'Päivämäärä' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV');
+    await expect(input).toHaveAccessibleName('Päivämäärä');
+  },
+};
+
+export const WarnsWithoutAccessibleName: Story = {
+  // With neither label nor aria-label/aria-labelledby, the component must warn
+  // the developer in dev (the input would otherwise be unnamed).
+  args: { label: undefined },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /accessible name/i.test(m))).toBe(true)
+    );
+  },
+};
+
+export const InputHasFormatDescription: Story = {
+  // The expected date format must be conveyed accessibly (not via placeholder
+  // alone) — exposed through the input's description (WCAG 3.3.2).
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV');
+    await expect(input).toHaveAccessibleDescription(/päivä\.kuukausi\.vuosi/i);
+  },
+};
+
+export const FormatDescriptionAlongsideHelperText: Story = {
+  // When helper text is present, both it and the format hint are announced.
+  args: { helperText: 'Valinnainen ohje' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV');
+    await expect(input).toHaveAccessibleDescription(/Valinnainen ohje/);
+    await expect(input).toHaveAccessibleDescription(/päivä\.kuukausi\.vuosi/i);
+  },
+};
+
 // ── Interaction tests ────────────────────────────────────────────────────────
 
 export const OpenCalendar: Story = {
@@ -219,9 +276,67 @@ export const TypeInvalidDateThenBlur: Story = {
     await userEvent.clear(input);
     await userEvent.type(input, 'ei-päivämäärä');
     await userEvent.tab(); // trigger blur
-    // Field reverts to committed value; onChange was never called with the invalid text
-    await expect(input.value).toBe('01.08.2025');
+    // Invalid input is NOT silently discarded: an error is surfaced (WCAG 3.3.1)
+    // and the typed text is retained so the user can correct it.
+    await expect(await canvas.findByText('Virheellinen päivämäärä')).toBeInTheDocument();
+    await expect(input).toHaveAttribute('aria-invalid', 'true');
+    await expect(input.value).toBe('ei-päivämäärä');
+    // onChange was never called with the invalid text — committed value unchanged
     await expect(canvas.getByTestId('output').textContent).toBe('01.08.2025');
+  },
+};
+
+export const TypeOutOfRangeThenBlurShowsError: Story = {
+  args: {
+    min: new Date(2025, 7, 10),
+    max: new Date(2025, 7, 20),
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, '01.08.2025'); // valid date, before min
+    await userEvent.tab();
+    // A parseable but out-of-range date gets its own, distinct message.
+    await expect(
+      await canvas.findByText('Päivämäärä on sallitun välin ulkopuolella')
+    ).toBeInTheDocument();
+    await expect(canvas.getByTestId('output').textContent).toBe('none');
+  },
+};
+
+export const ErrorClearsWhenCorrected: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, 'xx');
+    await userEvent.tab();
+    await expect(await canvas.findByText('Virheellinen päivämäärä')).toBeInTheDocument();
+    // Correcting the input clears the error and commits the valid date.
+    await userEvent.click(input);
+    await userEvent.clear(input);
+    await userEvent.type(input, '16.08.2025');
+    await waitFor(() =>
+      expect(canvas.queryByText('Virheellinen päivämäärä')).not.toBeInTheDocument()
+    );
+    await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');
   },
 };
 
@@ -355,6 +470,91 @@ export const TodayDisabledOutsideRange: Story = {
     await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
     await body.findByTestId('date-field-calendar');
     await waitFor(() => expect(body.getByText('Tänään').closest('button')).toBeDisabled());
+  },
+};
+
+export const InputHasNoPopupSemantics: Story = {
+  // The editable input does not open the dialog (only the trigger button does),
+  // so it must not advertise popup semantics (WCAG 4.1.2).
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV');
+    await expect(input).not.toHaveAttribute('aria-haspopup');
+    await expect(input).not.toHaveAttribute('aria-expanded');
+  },
+};
+
+export const TriggerControlsDialog: Story = {
+  // The trigger button must be programmatically linked to the dialog it opens
+  // via aria-controls → dialog id (WCAG 4.1.2 / APG date-picker pattern).
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    const trigger = canvas.getByLabelText('Avaa kalenteri');
+    await userEvent.click(trigger);
+    const dialog = await body.findByRole('dialog');
+    const controls = trigger.getAttribute('aria-controls');
+    await expect(controls).toBeTruthy();
+    await expect(dialog).toHaveAttribute('id', controls);
+  },
+};
+
+export const InitialFocusOnSelectedDay: Story = {
+  // Opening the calendar should move focus into the grid onto the selected day
+  // (not the previous-month arrow), per the APG date-picker pattern (WCAG 2.4.3).
+  args: { value: new Date(2025, 7, 16) }, // 16.08.2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    await waitFor(() => {
+      const active = document.activeElement as HTMLElement;
+      // The staged day is the only cell with aria-pressed="true".
+      expect(active).toHaveAttribute('aria-pressed', 'true');
+      expect(active.textContent?.trim()).toBe('16');
+    });
+  },
+};
+
+export const InitialFocusOnTodayWhenNoValue: Story = {
+  // With no committed value, focus should land on today's cell.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    await waitFor(() => {
+      const active = document.activeElement as HTMLElement;
+      expect(active).toHaveAttribute('aria-current', 'date');
+    });
+  },
+};
+
+export const DialogIsModal: Story = {
+  // A focus-trapped dialog must declare itself modal so AT treats the rest of
+  // the page as inert (WCAG 4.1.2 / APG).
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const dialog = await body.findByRole('dialog');
+    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+  },
+};
+
+export const TodayHasAriaCurrent: Story = {
+  // Today is conveyed visually by a dashed outline; it must also be exposed
+  // programmatically so screen-reader users can identify it (WCAG 1.3.1 / 1.4.1).
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    // Mantine tags today's cell with data-today regardless of locale.
+    const todayCell = document.querySelector('[data-today]') as HTMLElement;
+    await expect(todayCell).toBeTruthy();
+    await expect(todayCell).toHaveAttribute('aria-current', 'date');
   },
 };
 

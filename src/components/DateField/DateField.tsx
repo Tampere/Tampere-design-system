@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { FocusTrap, Popover } from '@mantine/core';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -40,9 +40,23 @@ export interface DateFieldClassNames {
 export interface DateFieldProps {
   value?: Date | null;
   onChange?: (date: Date | null) => void;
+  /** Visible field label. Provide this, `aria-label`, or `aria-labelledby` so the date input has an accessible name. */
   label?: string;
+  /** Accessible name for the date input when no visible `label` is used. */
+  'aria-label'?: string;
+  /** Id of an element labelling the date input when no visible `label` is used. */
+  'aria-labelledby'?: string;
+  /**
+   * Date-format instruction announced to assistive tech via the input's
+   * description (visually hidden). Set to '' to omit. Default: Finnish.
+   */
+  formatDescription?: string;
   helperText?: string;
   error?: string;
+  /** Message shown when typed text cannot be parsed as a date. */
+  invalidDateError?: string;
+  /** Message shown when a parseable typed date falls outside [min, max]. */
+  outOfRangeError?: string;
   placeholder?: string;
   min?: Date;
   max?: Date;
@@ -61,8 +75,13 @@ export function DateField({
   value,
   onChange,
   label,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledby,
   helperText,
   error,
+  invalidDateError = 'Virheellinen päivämäärä',
+  outOfRangeError = 'Päivämäärä on sallitun välin ulkopuolella',
+  formatDescription = 'Päivämäärän muoto: päivä.kuukausi.vuosi',
   placeholder = 'PP.KK.VVVV',
   min,
   max,
@@ -85,15 +104,30 @@ export function DateField({
   const [stagedDate, setStagedDate] = useState<Date | null>(null);
   const [calendarMonth, setCalendarMonth] = useState<Date>(() => committedDate ?? new Date());
   const [liveMessage, setLiveMessage] = useState('');
+  // Validation error for the typed text. The consumer-supplied `error` prop, when
+  // present, takes precedence over this internal one.
+  const [internalError, setInternalError] = useState<string | null>(null);
 
   const calendarButtonRef = useRef<HTMLButtonElement>(null);
   const isInputFocusedRef = useRef(false);
+  const dialogId = useId();
 
   useEffect(() => {
     if (!isInputFocusedRef.current) {
       setTextValue(formatDate(committedDate));
+      setInternalError(null);
     }
   }, [committedDate]);
+
+  // Dev-only guard: without a visible label or an aria-label/aria-labelledby the
+  // date input has no accessible name (the placeholder is not a name).
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && !label && !ariaLabel && !ariaLabelledby) {
+      console.error(
+        'DateField: provide a `label`, `aria-label`, or `aria-labelledby` so the date input has an accessible name.'
+      );
+    }
+  }, [label, ariaLabel, ariaLabelledby]);
 
   function commit(date: Date | null) {
     if (!isControlled) setInternalCommitted(date);
@@ -115,6 +149,9 @@ export function DateField({
   function handleTextChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.currentTarget.value;
     setTextValue(raw);
+    // Clear any standing validation error as soon as the user edits, so the
+    // message disappears while they correct the value rather than nagging.
+    setInternalError(null);
     const parsed = parseDate(raw);
     if (parsed && isInRange(parsed, min, max)) {
       commit(parsed);
@@ -128,16 +165,33 @@ export function DateField({
 
   function handleTextBlur() {
     isInputFocusedRef.current = false;
-    const parsed = parseDate(textValue);
-    if (!parsed || !isInRange(parsed, min, max)) {
+    // An empty field is not an error: revert to the committed value silently.
+    if (textValue.trim() === '') {
+      setInternalError(null);
       setTextValue(formatDate(committedDate));
+      return;
     }
+    const parsed = parseDate(textValue);
+    // Surface a message instead of silently discarding the input (WCAG 3.3.1).
+    // The typed text is kept so the user can see and fix what they entered.
+    if (!parsed) {
+      setInternalError(invalidDateError);
+      return;
+    }
+    if (!isInRange(parsed, min, max)) {
+      setInternalError(outOfRangeError);
+      return;
+    }
+    setInternalError(null);
+    commit(parsed);
+    setTextValue(formatDate(parsed));
   }
 
   function handleConfirm() {
     if (stagedDate) {
       commit(stagedDate);
       setTextValue(formatDate(stagedDate));
+      setInternalError(null);
     }
     closeCalendar();
   }
@@ -159,14 +213,57 @@ export function DateField({
     setLiveMessage(dayjs(date).locale('fi').format('dddd D. MMMM YYYY'));
   }
 
+  // The date format is announced via the input's description (aria-describedby),
+  // not the placeholder alone (WCAG 3.3.2). When helper text is visible the hint
+  // rides alongside it (visually hidden); otherwise the whole description wrapper
+  // is hidden so it adds no layout (see fieldClassNames below).
+  const fieldDescription = formatDescription ? (
+    helperText ? (
+      <>
+        {helperText} <span className={visuallyHidden}>{formatDescription}</span>
+      </>
+    ) : (
+      formatDescription
+    )
+  ) : (
+    helperText
+  );
+
+  const fieldClassNames = {
+    root: classNames?.root,
+    wrapper: classNames?.input,
+    // With no visible helper text, take the description wrapper out of the flex
+    // flow (visuallyHidden is position:absolute) so the format hint is announced
+    // without adding a gap below the input.
+    description: !helperText && formatDescription ? visuallyHidden : undefined,
+  };
+
+  // Forward an aria-label/aria-labelledby only when there is no visible label,
+  // so it can't silently override a visible label's accessible name.
+  const inputAriaProps =
+    !label && (ariaLabel || ariaLabelledby)
+      ? { 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledby }
+      : {};
+
   return (
-    <Popover opened={isOpen} onClose={closeCalendar} position="bottom-end">
+    <Popover
+      opened={isOpen}
+      onClose={closeCalendar}
+      position="bottom-end"
+      // Mantine would otherwise add its own role="dialog" to the dropdown and
+      // aria-haspopup/expanded/controls to the (non-interactive) target wrapper,
+      // producing a second, unnamed dialog. We own these roles instead: the
+      // trigger button carries the popup semantics and the dialog below is the
+      // single, aria-labelled dialog the button's aria-controls points to.
+      withRoles={false}
+    >
       <Popover.Target>
         <div data-testid="date-field">
           <TextField
             inputLabel={label}
-            helperText={helperText}
-            error={error}
+            {...inputAriaProps}
+            helperText={fieldDescription}
+            error={error ?? internalError ?? undefined}
             placeholder={placeholder}
             disabled={disabled}
             required={required}
@@ -174,11 +271,7 @@ export function DateField({
             onChange={handleTextChange}
             onFocus={handleTextFocus}
             onBlur={handleTextBlur}
-            aria-haspopup="dialog"
-            aria-expanded={isOpen}
-            classNames={
-              classNames ? { root: classNames.root, wrapper: classNames.input } : undefined
-            }
+            classNames={fieldClassNames}
             endInstance={
               <Button
                 ref={calendarButtonRef}
@@ -186,6 +279,7 @@ export function DateField({
                 aria-label={calendarButtonLabel}
                 aria-expanded={isOpen}
                 aria-haspopup="dialog"
+                aria-controls={dialogId}
                 disabled={disabled}
                 onClick={isOpen ? closeCalendar : openCalendar}
               >
@@ -205,7 +299,7 @@ export function DateField({
           {liveMessage}
         </span>
         <FocusTrap active={isOpen}>
-          <div role="dialog" aria-label={calendarButtonLabel}>
+          <div id={dialogId} role="dialog" aria-modal="true" aria-label={calendarButtonLabel}>
             <DateFieldCalendar
               stagedDate={stagedDate}
               calendarMonth={calendarMonth}

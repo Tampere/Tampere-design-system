@@ -198,6 +198,12 @@ export function DateFieldCalendar({
             const isDisabled =
               (min !== undefined && day.isBefore(dayjs(min), 'day')) ||
               (max !== undefined && day.isAfter(dayjs(max), 'day'));
+            // Cell that should receive focus when the calendar opens: the staged
+            // day, or today when nothing is staged. FocusTrap honours
+            // data-autofocus, so focus lands in the grid rather than on the
+            // previous-month arrow (WCAG 2.4.3 / APG date-picker pattern).
+            const isFocusTarget =
+              !isDisabled && !isOutside && (isStaged || (!stagedDate && isToday));
 
             return {
               className: cx({
@@ -207,7 +213,21 @@ export function DateFieldCalendar({
                 [dayCellDisabled]: isDisabled,
               }),
               disabled: isDisabled,
+              // Align Mantine's roving-tabindex origin (getDateInTabOrder picks the
+              // `selected` date first) with the staged day, so Tab into/out of the
+              // grid returns to it.
+              selected: isStaged,
+              // Conscious deviation from the APG date-picker pattern (role="grid"
+              // + aria-selected): Mantine renders the month as a plain <table> of
+              // <button>s, where aria-selected is not valid without grid roles.
+              // aria-pressed is valid on a button and announces selection state, so
+              // we keep it rather than re-implement Mantine's grid. Flag to design
+              // if full APG grid semantics become a requirement.
               'aria-pressed': isStaged,
+              // Today is shown with a dashed outline; expose it programmatically
+              // too so screen-reader users can identify it (WCAG 1.3.1 / 1.4.1).
+              ...(isToday && { 'aria-current': 'date' as const }),
+              ...(isFocusTarget && { 'data-autofocus': true }),
               onClick: isDisabled
                 ? undefined
                 : () => {
