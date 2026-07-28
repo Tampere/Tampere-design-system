@@ -10,6 +10,9 @@ import { Breakpoints } from './themeVariables/breakpoints';
 import { footer, layout } from './themeVariables/layout';
 import { components } from './themeVariables/components';
 
+// TODO! This can be split more
+// contains both values that change with breakpoint and
+// values that stay the same
 export function getComponents(bp: Breakpoints) {
   return {
     controlHeight: rem(controlHeights[bp]),
