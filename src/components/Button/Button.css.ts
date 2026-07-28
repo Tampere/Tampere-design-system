@@ -2,7 +2,7 @@ import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  components: { button },
+  components: { button, controlHeight },
   font,
   core,
   focusRing,
@@ -10,6 +10,13 @@ const {
 
 const root = style({
   width: 'fit-content',
+  // Fixed, responsive height shared with inputs; border-box absorbs each variant's border
+  // so filled/outlined/text render identical heights (issue #79).
+  height: controlHeight,
+  boxSizing: 'border-box',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   fontSize: button.fontSize,
   lineHeight: button.lineHeight,
   letterSpacing: font.letterSpacing,

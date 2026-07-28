@@ -7,6 +7,7 @@ import { mergeClassNames } from '../../utils.ts';
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
 import {
+  chevronOpen,
   dropDown,
   dropDownOption,
   inputField,
@@ -68,12 +69,11 @@ function SelectRightSection({
       <IconButton
         aria-label={dropDownOpened ? collapseButtonLabel : expandButtonLabel}
         variant="dark"
-        onClick={() => {
-          toggleDropdown();
-        }}
+        onMouseDown={(e) => e.nativeEvent.stopPropagation()}
+        onClick={toggleDropdown}
         size={'sm'}
       >
-        {dropDownOpened ? <ChevronDownIcon rotate={180} /> : <ChevronDownIcon />}
+        <ChevronDownIcon className={dropDownOpened ? chevronOpen : undefined} />
       </IconButton>
     </Flex>
   );
