@@ -1,28 +1,12 @@
 import { rem } from '@mantine/core';
-
-const openSans = 'Open Sans Variable';
-const montserrat = 'Montserrat Variable';
-
-const fontFamilyHeader = `${montserrat}, sans-serif`;
-const fontFamilyBody = `${openSans}, sans-serif`;
-
-const spacing = {
-  '1': rem('8px'),
-  '2': rem('16px'),
-  '3': rem('24px'),
-  '4': rem('32px'),
-  '5': rem('40px'),
-  '6': rem('48px'),
-  '7': rem('56px'),
-  '8': rem('64px'),
-  '9': rem('72px'),
-  '10': rem('80px'),
-  '12': rem('96px'),
-  '14': rem('112px'),
-  '20': rem('160px'),
-  '0,5': rem('4px'),
-  '1,5': rem('12px'),
-} as const;
+import { fontFamilyBody, fontFamilyHeader } from './themeVariables/fontFamily';
+import { spacing } from './themeVariables/spacing';
+import { colors } from './themeVariables/colors';
+import { font, text, highlight } from './themeVariables/typography';
+import { core } from './themeVariables/core';
+import { focusRing, focusRingInverted } from './themeVariables/focus';
+import { controlHeights } from './themeVariables/controlHeights';
+import { Breakpoints } from './themeVariables/breakpoints';
 
 export const breakpoints = {
   xxl: {
@@ -345,137 +329,7 @@ export const breakpoints = {
   },
 } as const;
 
-const colors = {
-  red: {
-    '100': '#eb5e58',
-    '200': '#c83e36',
-    '300': '#da2321',
-    '400': '#ae1e20',
-  },
-
-  pink: {
-    '50': '#f7e4e9',
-    '100': '#cb4a6c',
-    '200': '#ad3963',
-    '300': '#a5407b',
-  },
-
-  yellow: {
-    '50': '#f9ecd4',
-    '100': '#f8de79',
-    '200': '#f4d240',
-    '300': '#e8b455',
-    '400': '#fdb924',
-  },
-
-  blue: {
-    '100': '#e5eef8',
-    '200': '#88bce7',
-    '300': '#5f93c6',
-    '400': '#29549a',
-    '500': '#22437b',
-    '600': '#1d3a6c',
-    '700': '#172f5a',
-    '800': '#122648',
-    '900': '#0d1b36',
-  },
-
-  turquoise: {
-    '100': '#91c9ea',
-    '200': '#39a7d7',
-    '300': '#0074a4',
-  },
-
-  green: {
-    '50': '#eaf1db',
-    '100': '#cddeaa',
-    '200': '#abc872',
-    '300': '#88b068',
-    '400': '#64995f',
-    '500': '#418155',
-    '600': '#386f49',
-    '700': '#2f5d3d',
-    '800': '#254a31',
-    '900': '#1c3825',
-  },
-
-  neutral: {
-    '50': '#f7f7f9',
-    '100': '#f2f2f4',
-    '200': '#dedee2',
-    '300': '#c9c9ce',
-    '400': '#9999a0',
-    '500': '#686872',
-    '600': '#52525b',
-    '700': '#3e3e45',
-    '800': '#2d2d32',
-    '900': '#1e1e22',
-
-    white: '#ffffff',
-    black: '#000000',
-
-    warm: {
-      '100': '#f1eeeb',
-    },
-  },
-} as const;
-
-const core = {
-  background: colors.neutral.white,
-  backgroundDisabled: colors.neutral['100'],
-  contrast: colors.neutral.white,
-  error: colors.red['300'],
-  mainLight: colors.blue['300'],
-  main: colors.blue['400'],
-  mainDark: colors.blue['500'],
-  mainDarker: colors.blue['600'],
-  focus: {
-    visible: colors.neutral['900'],
-    visibleInverted: colors.neutral.white,
-  },
-  mainExtraDark: colors.blue['700'],
-  hover: {
-    overlay: 'rgba(0, 0, 0, 0.0300)',
-    overlayContrast: 'rgba(255, 255, 255, 0.0500)',
-  },
-  divider: colors.neutral['200'],
-  cornerRadius: rem(0),
-  strokeWeight: rem('2px'),
-  dropShadow: colors.neutral['400'],
-  states: {
-    default: colors.blue['400'],
-    hover: colors.blue['600'],
-    focus: colors.blue['400'],
-    active: colors.blue['300'],
-    disabled: colors.neutral['300'],
-    error: colors.red['300'],
-    visited: colors.blue['300'],
-  },
-  selectionStates: {
-    unchecked: {
-      hover: colors.neutral['500'],
-      focus: colors.neutral['500'],
-      active: colors.neutral['400'],
-    },
-  },
-} as const;
-
-// Shared height for single-line controls (buttons, text inputs, selects), responsive per
-// breakpoint. Values come from the Figma `Breakpoint` variable collection and equal
-// `input.lineHeight + 2 × spacing.sm` (Figma: Input/Line-height + 2 × Spacing/Small) at each
-// breakpoint — keep this table in sync if either of those tokens changes. Every button variant
-// and input renders at this height; borders are absorbed via `box-sizing: border-box`.
-// See issue #79.
-const controlHeights = {
-  xxl: '52px',
-  xl: '52px',
-  lg: '52px',
-  md: '42px',
-  sm: '40px',
-  xs: '40px',
-} as const satisfies Record<keyof typeof breakpoints, string>;
-
-export function getComponents(bp: keyof typeof breakpoints) {
+export function getComponents(bp: Breakpoints) {
   return {
     controlHeight: rem(controlHeights[bp]),
     breadcrumbs: {
@@ -722,33 +576,6 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
   };
 }
-
-const font = {
-  letterSpacing: rem(0),
-} as const;
-
-const text = {
-  primary: colors.neutral[800],
-  secondary: colors.neutral[600],
-  disabled: colors.neutral[500],
-  header: colors.neutral[900],
-  primaryHeader: core.mainDark,
-} as const;
-
-const highlight = {
-  fontWeight: '700',
-  backgroundColor: 'transparent',
-};
-
-const focusRing = {
-  outline: `${core.strokeWeight} solid ${core.focus.visible}`,
-  outlineOffset: `calc(${core.strokeWeight} / 2)`,
-};
-
-const focusRingInverted = {
-  outline: `${core.strokeWeight} solid ${core.focus.visibleInverted}`,
-  outlineOffset: `calc(${core.strokeWeight} / 2)`,
-};
 
 export const themeVariables = {
   focusRing,
