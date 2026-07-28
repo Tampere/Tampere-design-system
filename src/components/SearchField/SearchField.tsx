@@ -1,7 +1,7 @@
 import { Combobox, Flex, Highlight, useCombobox } from '@mantine/core';
 import { type ReactElement, useMemo, useState } from 'react';
 import { SearchIcon } from '../../icons/SearchIcon.tsx';
-import { themeVariables } from '../../theme/themeVariables.ts';
+import { vars } from '../../theme';
 import { Button, ButtonProps } from '../Button';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
@@ -88,8 +88,8 @@ export function SearchField<T extends SearchFieldData>({
               highlightStyles={() => {
                 return {
                   color: 'currentcolor',
-                  fontWeight: themeVariables.components.item.highlightFontWeight,
-                  backgroundColor: themeVariables.highlight.backgroundColor,
+                  fontWeight: vars.components.item.highlightFontWeight,
+                  backgroundColor: vars.highlight.backgroundColor,
                 };
               }}
               highlight={currentValue}
