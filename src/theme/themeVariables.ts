@@ -1,8 +1,8 @@
 import { rem } from '@mantine/core';
 import { fontFamilyBody, fontFamilyHeader } from './themeVariables/fontFamily';
-import { spacing } from './themeVariables/spacing';
+import { spacingPrimitives, spacing } from './themeVariables/spacing';
 import { colors } from './themeVariables/colors';
-import { font, text, highlight } from './themeVariables/typography';
+import { font, text, highlight, typography } from './themeVariables/typography';
 import { core } from './themeVariables/core';
 import { focusRing, focusRingInverted } from './themeVariables/focus';
 import { controlHeights } from './themeVariables/controlHeights';
@@ -10,19 +10,6 @@ import { Breakpoints } from './themeVariables/breakpoints';
 
 export const breakpoints = {
   xxl: {
-    typography: {
-      size: {
-        h1: rem('40px'),
-        h2: rem('36px'),
-        h3: rem('32px'),
-        h4: rem('28px'),
-        h5: rem('24px'),
-        subheader: rem('20px'),
-        p1: rem('20px'),
-        p2: rem('18px'),
-        caption: rem('16px'),
-      },
-    },
     appWidth: '1920px',
     layout: {
       columns: '12',
@@ -49,33 +36,11 @@ export const breakpoints = {
         lineHeight: rem('24px'),
       },
     },
-    spacing: {
-      xxs: spacing['1'],
-      xs: spacing['1,5'],
-      sm: spacing['2'],
-      md: spacing['3'],
-      lg: spacing['4'],
-      xl: spacing['6'],
-      xxl: spacing['8'],
-    },
     footer: {
       navigationMinWidth: rem('768px'),
     },
   },
   xl: {
-    typography: {
-      size: {
-        h1: rem('40px'),
-        h2: rem('36px'),
-        h3: rem('32px'),
-        h4: rem('28px'),
-        h5: rem('24px'),
-        subheader: rem('20px'),
-        p1: rem('20px'),
-        p2: rem('18px'),
-        caption: rem('16px'),
-      },
-    },
     appWidth: '1440px',
     layout: {
       columns: '12',
@@ -102,33 +67,11 @@ export const breakpoints = {
         lineHeight: rem('24px'),
       },
     },
-    spacing: {
-      xxs: spacing['1'],
-      xs: spacing['1,5'],
-      sm: spacing['2'],
-      md: spacing['3'],
-      lg: spacing['4'],
-      xl: spacing['6'],
-      xxl: spacing['8'],
-    },
     footer: {
       navigationMinWidth: rem('768px'),
     },
   },
   lg: {
-    typography: {
-      size: {
-        h1: rem('36px'),
-        h2: rem('32px'),
-        h3: rem('28px'),
-        h4: rem('24px'),
-        h5: rem('22px'),
-        subheader: rem('20px'),
-        p1: rem('20px'),
-        p2: rem('18px'),
-        caption: rem('16px'),
-      },
-    },
     appWidth: '1024px',
     layout: {
       columns: '12',
@@ -155,33 +98,11 @@ export const breakpoints = {
         lineHeight: rem('24px'),
       },
     },
-    spacing: {
-      xxs: spacing['1'],
-      xs: spacing['1,5'],
-      sm: spacing['2'],
-      md: spacing['3'],
-      lg: spacing['4'],
-      xl: spacing['6'],
-      xxl: spacing['8'],
-    },
     footer: {
       navigationMinWidth: rem('680px'),
     },
   },
   md: {
-    typography: {
-      size: {
-        h1: rem('32px'),
-        h2: rem('28px'),
-        h3: rem('24px'),
-        h4: rem('20px'),
-        h5: rem('18px'),
-        subheader: rem('18px'),
-        p1: rem('18px'),
-        p2: rem('16px'),
-        caption: rem('14px'),
-      },
-    },
     appWidth: '768px',
     layout: {
       columns: '8',
@@ -208,33 +129,11 @@ export const breakpoints = {
         lineHeight: rem('24px'),
       },
     },
-    spacing: {
-      xxs: spacing['0,5'],
-      xs: spacing['1'],
-      sm: spacing['1,5'],
-      md: spacing['2'],
-      lg: spacing['3'],
-      xl: spacing['5'],
-      xxl: spacing['6'],
-    },
     footer: {
       navigationMinWidth: rem('550px'),
     },
   },
   sm: {
-    typography: {
-      size: {
-        h1: rem('28px'),
-        h2: rem('24px'),
-        h3: rem('20px'),
-        h4: rem('18px'),
-        h5: rem('16px'),
-        subheader: rem('16px'),
-        p1: rem('16px'),
-        p2: rem('14px'),
-        caption: rem('12px'),
-      },
-    },
     appWidth: '480px',
     layout: {
       columns: '4',
@@ -261,33 +160,11 @@ export const breakpoints = {
         lineHeight: rem('24px'),
       },
     },
-    spacing: {
-      xxs: spacing['0,5'],
-      xs: spacing['1'],
-      sm: spacing['1,5'],
-      md: spacing['2'],
-      lg: spacing['3'],
-      xl: spacing['4'],
-      xxl: spacing['5'],
-    },
     footer: {
       navigationMinWidth: rem('300px'),
     },
   },
   xs: {
-    typography: {
-      size: {
-        h1: rem('28px'),
-        h2: rem('24px'),
-        h3: rem('20px'),
-        h4: rem('18px'),
-        h5: rem('16px'),
-        subheader: rem('16px'),
-        p1: rem('16px'),
-        p2: rem('14px'),
-        caption: rem('12px'),
-      },
-    },
     appWidth: '320px',
     layout: {
       columns: '4',
@@ -314,15 +191,6 @@ export const breakpoints = {
         lineHeight: rem('24px'),
       },
     },
-    spacing: {
-      xxs: spacing['0,5'],
-      xs: spacing['1'],
-      sm: spacing['1,5'],
-      md: spacing['2'],
-      lg: spacing['3'],
-      xl: spacing['4'],
-      xxl: spacing['5'],
-    },
     footer: {
       navigationMinWidth: rem('280px'),
     },
@@ -338,55 +206,55 @@ export function getComponents(bp: Breakpoints) {
     typography: {
       margin: rem(0),
       h1: {
-        fontSize: breakpoints[bp].typography.size.h1,
+        fontSize: typography[bp].size.h1,
         fontFamily: fontFamilyHeader,
         fontWeight: '900',
         lineHeight: '130%',
       },
       h2: {
-        fontSize: breakpoints[bp].typography.size.h2,
+        fontSize: typography[bp].size.h2,
         fontFamily: fontFamilyHeader,
         fontWeight: '900',
         lineHeight: '140%',
       },
       h3: {
-        fontSize: breakpoints[bp].typography.size.h3,
+        fontSize: typography[bp].size.h3,
         fontFamily: fontFamilyHeader,
         fontWeight: '800',
         lineHeight: '150%',
       },
       h4: {
-        fontSize: breakpoints[bp].typography.size.h4,
+        fontSize: typography[bp].size.h4,
         fontFamily: fontFamilyHeader,
         fontWeight: '800',
         lineHeight: '150%',
       },
       h5: {
-        fontSize: breakpoints[bp].typography.size.h5,
+        fontSize: typography[bp].size.h5,
         fontFamily: fontFamilyHeader,
         fontWeight: '600',
         lineHeight: '150%',
       },
       subheader: {
-        fontSize: breakpoints[bp].typography.size.subheader,
+        fontSize: typography[bp].size.subheader,
         fontFamily: fontFamilyBody,
         fontWeight: '600',
         lineHeight: '150%',
       },
       p1: {
-        fontSize: breakpoints[bp].typography.size.p1,
+        fontSize: typography[bp].size.p1,
         fontFamily: fontFamilyBody,
         fontWeight: '400',
         lineHeight: '150%',
       },
       p2: {
-        fontSize: breakpoints[bp].typography.size.p2,
+        fontSize: typography[bp].size.p2,
         fontFamily: fontFamilyBody,
         fontWeight: '400',
         lineHeight: '150%',
       },
       caption: {
-        fontSize: breakpoints[bp].typography.size.caption,
+        fontSize: typography[bp].size.caption,
         fontFamily: fontFamilyBody,
         fontWeight: '400',
         lineHeight: '150%',
@@ -405,63 +273,63 @@ export function getComponents(bp: Breakpoints) {
       itemHeight: rem('40px'),
     },
     accordion: {
-      spacing: breakpoints[bp].spacing.xs,
+      spacing: spacing[bp].xs,
       padding: {
-        horizontal: breakpoints[bp].spacing.md,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing[bp].md,
+        vertical: spacing[bp].xs,
       },
     },
     appHeader: {
-      spacing: breakpoints[bp].spacing.sm,
+      spacing: spacing[bp].sm,
       padding: {
         horizontal: breakpoints[bp].layout.margin,
-        vertical: breakpoints[bp].spacing.sm,
+        vertical: spacing[bp].sm,
       },
     },
     footer: {
-      spacing: spacing['4'],
+      spacing: spacingPrimitives['4'],
       padding: {
-        horizontal: spacing['4'],
-        verticalBottom: spacing['2'],
-        verticalTop: spacing['8'],
+        horizontal: spacingPrimitives['4'],
+        verticalBottom: spacingPrimitives['2'],
+        verticalTop: spacingPrimitives['8'],
       },
       backgroundBottom: core.mainDark,
       backgroundTop: core.main,
       columnMinWidth: breakpoints[bp].footer.navigationMinWidth,
     },
     button: {
-      fontSize: breakpoints[bp].typography.size.p2,
+      fontSize: typography[bp].size.p2,
       lineHeight: breakpoints[bp].components.button.lineHeight,
-      spacing: breakpoints[bp].spacing.xs,
+      spacing: spacing[bp].xs,
       padding: {
-        horizontal: breakpoints[bp].spacing.sm,
-        vertical: breakpoints[bp].spacing.sm,
+        horizontal: spacing[bp].sm,
+        vertical: spacing[bp].sm,
       },
     },
     card: {
-      padding: breakpoints[bp].spacing.sm,
-      spacing: breakpoints[bp].spacing.sm,
-      textContentSpacing: spacing['1'],
+      padding: spacing[bp].sm,
+      spacing: spacing[bp].sm,
+      textContentSpacing: spacingPrimitives['1'],
     },
     chip: {
-      spacing: breakpoints[bp].spacing.xs,
+      spacing: spacing[bp].xs,
       cornerRadius: rem('20px'),
       font: {
         lineHeight: breakpoints[bp].components.input.lineHeight,
-        size: breakpoints[bp].typography.size.p2,
+        size: typography[bp].size.p2,
       },
       padding: {
-        horizontal: breakpoints[bp].spacing.sm,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing[bp].sm,
+        vertical: spacing[bp].xs,
       },
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
     },
     forms: {
-      spacing: spacing['3'],
+      spacing: spacingPrimitives['3'],
       fieldset: {
-        spacing: spacing['1'],
+        spacing: spacingPrimitives['1'],
       },
     },
     icon: {
@@ -496,21 +364,21 @@ export function getComponents(bp: Breakpoints) {
     input: {
       font: {
         helperText: {
-          fontSize: breakpoints[bp].typography.size.p2,
+          fontSize: typography[bp].size.p2,
           lineHeight: breakpoints[bp].components.input.lineHeight,
         },
         label: {
-          fontSize: breakpoints[bp].typography.size.p2,
+          fontSize: typography[bp].size.p2,
           lineHeight: rem('24px'),
         },
         text: {
-          fontSize: breakpoints[bp].typography.size.p2,
+          fontSize: typography[bp].size.p2,
           lineHeight: breakpoints[bp].components.input.lineHeight,
         },
       },
       padding: {
-        horizontal: breakpoints[bp].spacing.sm,
-        vertical: breakpoints[bp].spacing.sm,
+        horizontal: spacing[bp].sm,
+        vertical: spacing[bp].sm,
       },
       stroke: {
         weight: {
@@ -519,8 +387,8 @@ export function getComponents(bp: Breakpoints) {
         },
       },
       spacing: {
-        verticalSpacing: breakpoints[bp].spacing.xxs,
-        horizontalSpacing: breakpoints[bp].spacing.xxs,
+        verticalSpacing: spacing[bp].xxs,
+        horizontalSpacing: spacing[bp].xxs,
       },
     },
     item: {
@@ -538,16 +406,16 @@ export function getComponents(bp: Breakpoints) {
       },
     },
     link: {
-      spacing: breakpoints[bp].spacing.xxs,
+      spacing: spacing[bp].xxs,
     },
     list: {
-      fontSize: breakpoints[bp].typography.size.p1,
+      fontSize: typography[bp].size.p1,
       lineHeight: breakpoints[bp].components.list.lineHeight,
       padding: {
-        horizontal: breakpoints[bp].spacing.md,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing[bp].md,
+        vertical: spacing[bp].xs,
       },
-      spacing: breakpoints[bp].spacing.lg,
+      spacing: spacing[bp].lg,
       highlightStroke: {
         default: rem('2px'),
         selected: rem('8px'),
@@ -562,12 +430,12 @@ export function getComponents(bp: Breakpoints) {
       thickness: rem('4px'),
     },
     mainMenu: {
-      spacing: spacing['4'],
+      spacing: spacingPrimitives['4'],
     },
     menuItem: {
       padding: {
-        horizontal: breakpoints[bp].spacing.md,
-        vertical: breakpoints[bp].spacing.xs,
+        horizontal: spacing[bp].md,
+        vertical: spacing[bp].xs,
       },
     },
     switch: {
@@ -581,13 +449,13 @@ export const themeVariables = {
   focusRing,
   focusRingInverted,
   colors,
-  spacing,
+  spacing: spacingPrimitives,
   components: getComponents('md'),
   core,
   font,
   text,
   highlight,
-  breakpoints,
+  //breakpoints,
 } as const;
 
 export type ThemeVariables = typeof themeVariables;

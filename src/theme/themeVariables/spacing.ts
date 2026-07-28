@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core';
 
-export const spacing = {
+export const spacingPrimitives = {
   '1': rem('8px'),
   '2': rem('16px'),
   '3': rem('24px'),
@@ -17,3 +17,60 @@ export const spacing = {
   '0,5': rem('4px'),
   '1,5': rem('12px'),
 } as const;
+
+export const spacing = {
+  xxl: {
+    xxs: spacingPrimitives['1'],
+    xs: spacingPrimitives['1,5'],
+    sm: spacingPrimitives['2'],
+    md: spacingPrimitives['3'],
+    lg: spacingPrimitives['4'],
+    xl: spacingPrimitives['6'],
+    xxl: spacingPrimitives['8'],
+  },
+  xl: {
+    xxs: spacingPrimitives['1'],
+    xs: spacingPrimitives['1,5'],
+    sm: spacingPrimitives['2'],
+    md: spacingPrimitives['3'],
+    lg: spacingPrimitives['4'],
+    xl: spacingPrimitives['6'],
+    xxl: spacingPrimitives['8'],
+  },
+  lg: {
+    xxs: spacingPrimitives['1'],
+    xs: spacingPrimitives['1,5'],
+    sm: spacingPrimitives['2'],
+    md: spacingPrimitives['3'],
+    lg: spacingPrimitives['4'],
+    xl: spacingPrimitives['6'],
+    xxl: spacingPrimitives['8'],
+  },
+  md: {
+    xxs: spacingPrimitives['0,5'],
+    xs: spacingPrimitives['1'],
+    sm: spacingPrimitives['1,5'],
+    md: spacingPrimitives['2'],
+    lg: spacingPrimitives['3'],
+    xl: spacingPrimitives['5'],
+    xxl: spacingPrimitives['6'],
+  },
+  sm: {
+    xxs: spacingPrimitives['0,5'],
+    xs: spacingPrimitives['1'],
+    sm: spacingPrimitives['1,5'],
+    md: spacingPrimitives['2'],
+    lg: spacingPrimitives['3'],
+    xl: spacingPrimitives['4'],
+    xxl: spacingPrimitives['5'],
+  },
+  xs: {
+    xxs: spacingPrimitives['0,5'],
+    xs: spacingPrimitives['1'],
+    sm: spacingPrimitives['1,5'],
+    md: spacingPrimitives['2'],
+    lg: spacingPrimitives['3'],
+    xl: spacingPrimitives['4'],
+    xxl: spacingPrimitives['5'],
+  },
+};
