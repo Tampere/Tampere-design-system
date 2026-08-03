@@ -15,10 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `@fontsource-variable/montserrat` and `@fontsource-variable/open-sans`.
   Consumers must update their installed font packages accordingly.
 - Font families are now `"Montserrat Variable"` (headings) and
-  `"Open Sans Variable"` (body). `@font-face` declarations ship via
-  `src/styles/fonts/` and are loaded by `ThemeProvider`.
+  `"Open Sans Variable"` (body). `ThemeProvider` imports the variable font CSS
+  from the `@fontsource-variable/*` packages; as peer dependencies these stay
+  external in the published bundle and are resolved by the consumer's build.
 
 ### Removed
 
 - The nine discrete `@fontsource/*` per-weight CSS imports in `ThemeProvider`,
-  replaced by a single variable-axis file per family.
+  replaced by one variable-axis import per family.

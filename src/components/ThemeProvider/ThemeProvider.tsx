@@ -2,8 +2,12 @@ import { MantineProvider, createTheme, type MantineProviderProps } from '@mantin
 import '@mantine/core/styles.layer.css';
 import '../../theme/theme.css.ts';
 
-// Variable-font @font-face declarations (Montserrat Variable, Open Sans Variable)
-import '../../styles/index.css';
+// Variable fonts. Imported as peer-dependency specifiers so they are left
+// external in the built bundle and resolved/bundled by the consumer's build
+// (see @fontsource-variable). Provides the "Montserrat Variable" and
+// "Open Sans Variable" families used below and in themeVariables.ts.
+import '@fontsource-variable/montserrat';
+import '@fontsource-variable/open-sans';
 
 const theme = createTheme({
   fontFamily: 'Open Sans Variable, sans-serif',
