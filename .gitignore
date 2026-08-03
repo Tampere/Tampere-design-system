@@ -420,3 +420,9 @@ FodyWeavers.xsd
 *storybook.log
 storybook-static
 dist
+
+# Local-only files (keep out of remote)
+.DS_Store
+.obsidian/
+CLAUDE.md
+docs/
