@@ -4,7 +4,7 @@ import { vars } from '../../theme';
 const {
   core,
   font,
-  components: { input: inputVars, textField },
+  components: { input: inputVars, textField, controlHeight },
   text,
   focusRing,
 } = vars;
@@ -50,9 +50,12 @@ export const inputRoot = style({
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
   letterSpacing: font.letterSpacing,
-  minHeight: textField.minHeight,
+  // Fixed, responsive height shared with buttons; border-box absorbs the stroke-weight border
+  // so the input matches button variants at every breakpoint (issue #79).
+  height: controlHeight,
+  boxSizing: 'border-box',
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
-  alignItems: 'flex-start',
+  alignItems: 'center',
   gap: inputVars.spacing.horizontalSpacing,
   border: `${inputVars.stroke.weight.default} solid ${core.states.default}`,
   background: core.background,
