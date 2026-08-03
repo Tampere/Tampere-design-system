@@ -2,18 +2,14 @@ import { MantineProvider, createTheme, type MantineProviderProps } from '@mantin
 import '@mantine/core/styles.layer.css';
 import '../../theme/theme.css.ts';
 
-import '@fontsource/montserrat/500.css';
-import '@fontsource/montserrat/600.css';
-import '@fontsource/montserrat/700.css';
-import '@fontsource/montserrat/800.css';
-import '@fontsource/montserrat/900.css';
-import '@fontsource/open-sans/400.css';
-import '@fontsource/open-sans/500.css';
-import '@fontsource/open-sans/600.css';
-import '@fontsource/open-sans/700.css';
+// Variable-font @font-face declarations (Montserrat Variable, Open Sans Variable)
+import '../../styles/index.css';
 
 const theme = createTheme({
-  fontFamily: 'Open Sans, sans-serif',
+  fontFamily: 'Open Sans Variable, sans-serif',
+  headings: {
+    fontFamily: 'Montserrat Variable, sans-serif',
+  },
 });
 
 export interface ThemeProviderProps extends MantineProviderProps {}

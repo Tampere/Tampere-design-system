@@ -454,8 +454,8 @@ const core = {
   },
 } as const;
 
-const fontFamilyHeader = 'Montserrat, sans-serif';
-const fontFamilyBody = 'Open Sans, sans-serif';
+const fontFamilyHeader = 'Montserrat Variable, sans-serif';
+const fontFamilyBody = 'Open Sans Variable, sans-serif';
 
 export function getComponents(bp: keyof typeof breakpoints) {
   return {
