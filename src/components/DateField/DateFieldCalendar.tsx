@@ -44,9 +44,6 @@ function getYearRange(currentYear: number, min?: Date, max?: Date): number[] {
   const today = new Date();
   let start = min ? min.getFullYear() : today.getFullYear() - 100;
   let end = max ? max.getFullYear() : today.getFullYear() + 20;
-  // Guard against a misconfigured/swapped range (min after max), which would
-  // otherwise produce a negative length and render an empty year <select>.
-  if (end < start) [start, end] = [end, start];
   // The displayed year must always have a matching <option>, even when it
   // falls outside [min, max] (e.g. today is outside a past-only range).
   start = Math.min(start, currentYear);
@@ -90,6 +87,7 @@ export interface DateFieldCalendarProps {
   todayLabel: string;
   cancelLabel: string;
   confirmLabel: string;
+  confirmDisabled: boolean;
 }
 
 export function DateFieldCalendar({
@@ -109,6 +107,7 @@ export function DateFieldCalendar({
   todayLabel,
   cancelLabel,
   confirmLabel,
+  confirmDisabled,
 }: DateFieldCalendarProps) {
   const currentYear = dayjs(calendarMonth).year();
   const currentMonth = dayjs(calendarMonth).month(); // 0-indexed
@@ -138,7 +137,6 @@ export function DateFieldCalendar({
 
   return (
     <div className={calendar} data-testid="date-field-calendar">
-      {/* Header */}
       <div className={calendarHeader}>
         <IconButton
           aria-label={prevMonthLabel}
@@ -196,20 +194,23 @@ export function DateFieldCalendar({
         </IconButton>
       </div>
 
-      {/* Grid */}
       {/*
         Mantine v8 Calendar uses 'YYYY-MM-DD' STRINGS, not Date objects:
         - `date` (controlled displayed month) is a string → format calendarMonth out
         - `onDateChange` hands back a string → parse it to a Date before bubbling up
         - the `date` argument to `getDayProps` is a string → compare via dayjs(string)
           and convert to a Date before calling onStagedDateChange
-        All string↔Date conversion stays inside this component (see Global Constraints).
+        All string↔Date conversion stays inside this component.
       */}
       <div className={calendarGrid}>
         <Calendar
           locale="fi"
           firstDayOfWeek={1}
           level="month"
+          weekdayFormat={(dateStr) => {
+            const label = dayjs(dateStr).locale('fi').format('dd');
+            return label.charAt(0).toUpperCase() + label.slice(1);
+          }}
           date={dayjs(calendarMonth).format('YYYY-MM-DD')}
           onDateChange={(value) => onMonthChange(dayjs(value).toDate())}
           classNames={{ calendarHeader: hiddenCalendarHeader }}
@@ -240,12 +241,9 @@ export function DateFieldCalendar({
               // `selected` date first) with the staged day, so Tab into/out of the
               // grid returns to it.
               selected: isStaged,
-              // Conscious deviation from the APG date-picker pattern (role="grid"
-              // + aria-selected): Mantine renders the month as a plain <table> of
-              // <button>s, where aria-selected is not valid without grid roles.
-              // aria-pressed is valid on a button and announces selection state, so
-              // we keep it rather than re-implement Mantine's grid. Flag to design
-              // if full APG grid semantics become a requirement.
+              // aria-pressed announces the toggled "pressed" state to AT; we keep it
+              // rather than re-implement Mantine's grid. If APG semantics become a
+              // hard requirement, this needs a bespoke grid instead of Mantine's Calendar.
               'aria-pressed': isStaged,
               // Today is shown with a dashed outline; expose it programmatically
               // too so screen-reader users can identify it (WCAG 1.3.1 / 1.4.1).
@@ -274,7 +272,7 @@ export function DateFieldCalendar({
           <Button variant="outlined" onClick={onCancel}>
             {cancelLabel}
           </Button>
-          <Button variant="filled" onClick={onConfirm}>
+          <Button variant="filled" onClick={onConfirm} disabled={confirmDisabled}>
             {confirmLabel}
           </Button>
         </div>

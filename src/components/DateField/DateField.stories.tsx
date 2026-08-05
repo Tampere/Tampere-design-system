@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, userEvent, waitFor } from '@storybook/testing-library';
+import { within, userEvent, waitFor, fireEvent } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
+import { dayCellOutsideMonth } from './DateField.css.ts';
 
 const meta = {
   component: DateField,
@@ -44,6 +45,15 @@ export const WithValue: Story = {
 export const Disabled: Story = {
   tags: docExample,
   args: { disabled: true, value: new Date(2025, 7, 16) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    // A disabled trigger must not open the calendar.
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument();
+    // The text input itself must also be disabled.
+    await expect(canvas.getByPlaceholderText('PP.KK.VVVV')).toBeDisabled();
+  },
 };
 
 export const WithError: Story = {
@@ -160,6 +170,8 @@ export const CloseWithCancel: Story = {
     await userEvent.click(await body.findByText('Peruuta'));
     // Calendar closes with a transition — use waitFor
     await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
+    // Focus returns to the trigger that opened the calendar (WCAG 2.4.3).
+    await waitFor(() => expect(canvas.getByLabelText('Avaa kalenteri')).toHaveFocus());
   },
 };
 
@@ -197,6 +209,36 @@ export const NavigateNextMonth: Story = {
   },
 };
 
+export const SelectYearNavigatesCalendar: Story = {
+  args: { value: new Date(2025, 7, 16) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const yearSelect = within(calendar).getByRole('combobox', { name: 'Vuosi' });
+    await userEvent.selectOptions(yearSelect, '2026');
+    await waitFor(() =>
+      expect(within(calendar).getByRole('combobox', { name: 'Vuosi' })).toHaveValue('2026')
+    );
+  },
+};
+
+export const SelectMonthNavigatesCalendar: Story = {
+  args: { value: new Date(2025, 7, 16) }, // August 2025 (month index 7)
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const monthSelect = within(calendar).getByRole('combobox', { name: 'Kuukausi' });
+    await userEvent.selectOptions(monthSelect, '9'); // October
+    await waitFor(() =>
+      expect(within(calendar).getByRole('combobox', { name: 'Kuukausi' })).toHaveValue('9')
+    );
+  },
+};
+
 export const StageAndConfirm: Story = {
   render: (args) => {
     const [value, setValue] = useState<Date | null>(new Date(2025, 7, 1));
@@ -222,10 +264,41 @@ export const StageAndConfirm: Story = {
     // onChange not yet called — output still shows original
     await expect(canvas.getByTestId('output').textContent).toBe('01.08.2025');
     // Confirm — button is in the portal
-    await userEvent.click(await body.findByText('Vahvista'));
+    await userEvent.click(await body.findByText('Valitse'));
     // Calendar closes with a transition — use waitFor
     await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
     await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');
+    // Focus returns to the trigger that opened the calendar (WCAG 2.4.3).
+    await waitFor(() => expect(canvas.getByLabelText('Avaa kalenteri')).toHaveFocus());
+  },
+};
+
+export const ConfirmWithNothingStagedIsNoOp: Story = {
+  // Opening the calendar with no committed value stages nothing, so the Confirm
+  // button is disabled (see `confirmDisabled`) — clicking it must not commit
+  // anything or fire onChange, and the calendar stays open.
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    // Nothing staged yet — the Confirm button is disabled.
+    const confirmButton = within(calendar).getByText('Valitse').closest('button');
+    await expect(confirmButton).toBeDisabled();
+    // Clicking a disabled button is a genuine no-op: nothing commits and the
+    // calendar stays open.
+    await userEvent.click(confirmButton!);
+    await expect(body.getByTestId('date-field-calendar')).toBeInTheDocument();
+    await expect(canvas.getByTestId('output').textContent).toBe('none');
   },
 };
 
@@ -273,6 +346,11 @@ export const TodayButton: Story = {
       name: 'Vuosi',
     }) as HTMLSelectElement;
     await expect(Number(yearSelect.value)).toBe(new Date().getFullYear());
+    // Clicking Today must also announce the staged date via the live region
+    // (fi locale, 'dddd D. MMMMta YYYY' form).
+    const expectedAnnouncement = dayjs(new Date()).locale('fi').format('dddd LL');
+    const liveRegion = await body.findByTestId('date-field-live');
+    await waitFor(() => expect(liveRegion.textContent).toBe(expectedAnnouncement));
   },
 };
 
@@ -313,6 +391,28 @@ export const TypeSingleDigitDate: Story = {
     await userEvent.tab();
     await expect(canvas.queryByText('Virheellinen päivämäärä')).not.toBeInTheDocument();
     await expect(canvas.getByTestId('output').textContent).toBe('01.08.2025');
+  },
+};
+
+export const TypeDateWithSurroundingWhitespace: Story = {
+  // Stray leading/trailing whitespace should not cause parsing to fail; the field
+  // must trim the text before parsing so " 16.08.2025 " commits successfully.
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, ' 16.08.2025 '); // leading and trailing spaces
+    await userEvent.tab();
+    await expect(canvas.queryByText('Virheellinen päivämäärä')).not.toBeInTheDocument();
+    await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');
   },
 };
 
@@ -373,6 +473,43 @@ export const UncontrolledRetainsTypedValue: Story = {
   },
 };
 
+export const TypeValidDateWhileCalendarOpen: Story = {
+  // The focus trap only intercepts Tab (see useFocusTrap), so clicking into the
+  // text input while the dialog is open is not blocked. Typing a valid date
+  // there must still steer the already-open calendar to that month, AND update
+  // the staged date — otherwise a later Confirm click would re-commit the
+  // earlier (stale) staged date and silently overwrite the just-typed value.
+  args: { value: new Date(2025, 7, 16) }, // August 2025
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(args.value ?? null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await expect(Number(monthSelect.value)).toBe(7); // August
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.click(input);
+    await userEvent.clear(input);
+    await userEvent.type(input, '24.12.2025'); // December
+    await waitFor(() => expect(Number(monthSelect.value)).toBe(11));
+    // Confirm must re-commit the just-typed date, not a stale earlier staged one.
+    await userEvent.click(await body.findByText('Valitse'));
+    await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
+    await expect(canvas.getByTestId('output').textContent).toBe('24.12.2025');
+  },
+};
+
 export const EmptyBlurRevertsToCommitted: Story = {
   // Clearing the text and blurring is not a clear action: it silently reverts to
   // the committed value (the explicit ✕ button is the way to clear) and must not
@@ -415,7 +552,7 @@ export const ArrowKeysNavigateGrid: Story = {
       expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('17')
     );
     await userEvent.keyboard('{Enter}');
-    await userEvent.click(await body.findByText('Vahvista'));
+    await userEvent.click(await body.findByText('Valitse'));
     await waitFor(() => expect(canvas.getByTestId('output').textContent).toBe('17.08.2025'));
   },
 };
@@ -500,25 +637,18 @@ export const ErrorClearsWhenCorrected: Story = {
   },
 };
 
-export const TypeDateOutsideRange: Story = {
-  args: {
-    min: new Date(2025, 7, 10),
-    max: new Date(2025, 7, 20),
-  },
-  render: (args) => {
-    const [value, setValue] = useState<Date | null>(null);
-    return (
-      <>
-        <DateField {...args} value={value} onChange={setValue} />
-        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
-      </>
-    );
-  },
+export const ExternalErrorTakesPrecedence: Story = {
+  // A consumer-supplied `error` always wins over the field's own validation
+  // message (`error ?? internalError`) — even while typed text is unparseable
+  // and would otherwise surface `invalidDateError`.
+  args: { error: 'Ulkoinen virhe' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText('PP.KK.VVVV');
-    await userEvent.type(input, '01.08.2025'); // before min — out of range
-    await expect(canvas.getByTestId('output').textContent).toBe('none');
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.type(input, 'ei-päivämäärä');
+    await userEvent.tab();
+    await expect(await canvas.findByText('Ulkoinen virhe')).toBeInTheDocument();
+    await expect(canvas.queryByText('Virheellinen päivämäärä')).not.toBeInTheDocument();
   },
 };
 
@@ -662,10 +792,21 @@ export const YearSelectIncludesDisplayedYear: Story = {
 };
 
 export const SwappedMinMaxYearOptions: Story = {
-  // Misconfigured bounds (min after max) must not produce an empty year selector.
+  // Misconfigured bounds (min after max) must not produce an empty year selector
+  // — and the normalized [2020, 2030] range must actually accept dates in
+  // between (e.g. 2025), not just render options.
   args: {
     min: new Date(2030, 0, 1),
     max: new Date(2020, 0, 1),
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(null);
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -676,6 +817,56 @@ export const SwappedMinMaxYearOptions: Story = {
       name: 'Vuosi',
     }) as HTMLSelectElement;
     await expect(yearSelect.options.length).toBeGreaterThan(0);
+    const option2025 = Array.from(yearSelect.options).find((o) => o.value === '2025');
+    await expect(option2025).toBeTruthy();
+    await expect(option2025?.disabled).toBe(false);
+    // Typing a date inside the swapped [2020, 2030] range must actually commit.
+    const input = canvas.getByPlaceholderText('PP.KK.VVVV') as HTMLInputElement;
+    await userEvent.click(input);
+    await userEvent.type(input, '15.06.2025');
+    await waitFor(() => expect(canvas.getByTestId('output').textContent).toBe('15.06.2025'));
+  },
+};
+
+export const InvalidMinDoesNotDisableMaxRangeCheck: Story = {
+  // An invalid min must be dropped (treated as absent) rather than disabling
+  // every range check via NaN comparisons — the still-valid max keeps
+  // restricting navigation on its own.
+  args: {
+    min: new Date('invalid'),
+    max: new Date(2025, 7, 20),
+    value: new Date(2025, 7, 16),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    // No lower bound (min was invalid, dropped) → previous month stays enabled.
+    await waitFor(() => expect(body.getByLabelText('Edellinen kuukausi')).not.toBeDisabled());
+    // max (Aug 20) is still enforced → next month (entirely after max) is disabled.
+    await waitFor(() => expect(body.getByLabelText('Seuraava kuukausi')).toBeDisabled());
+  },
+};
+
+export const WarnsOnInvalidMinOrMax: Story = {
+  // Passing an unparseable min/max must warn in dev rather than silently
+  // turning off every range check.
+  args: { min: new Date('invalid'), max: new Date(2025, 7, 20) },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /`min`.*valid Date/i.test(m))).toBe(true)
+    );
   },
 };
 
@@ -765,6 +956,23 @@ export const DialogIsModal: Story = {
   },
 };
 
+export const DialogAccessibleNameDiffersFromTrigger: Story = {
+  // The dialog has its own accessible name (calendarDialogLabel), distinct from
+  // the trigger's accessible name (calendarButtonLabel). They serve different
+  // semantic purposes and must be configurable independently.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    const trigger = canvas.getByLabelText('Avaa kalenteri');
+    await userEvent.click(trigger);
+    const dialog = await body.findByRole('dialog');
+    // Dialog announces its purpose ("choose a date") not the button action
+    await expect(dialog).toHaveAccessibleName('Valitse päivämäärä');
+    // Trigger announces its action ("open calendar"), not the dialog's purpose
+    await expect(trigger).toHaveAccessibleName('Avaa kalenteri');
+  },
+};
+
 export const TodayHasAriaCurrent: Story = {
   // Today is conveyed visually by a dashed outline; it must also be exposed
   // programmatically so screen-reader users can identify it (WCAG 1.3.1 / 1.4.1).
@@ -845,5 +1053,105 @@ export const StagedDayHighlighted: Story = {
     );
     await expect(day10).toBeTruthy();
     await expect(day10).not.toHaveAttribute('aria-pressed', 'true');
+    // Staging a day must also be announced via the live region (fi locale).
+    const liveRegion = await body.findByTestId('date-field-live');
+    await waitFor(() => expect(liveRegion.textContent).toMatch(/lauantai 16\. elokuuta 2025/i));
+  },
+};
+
+export const DisabledDayCellClickIsNoOp: Story = {
+  // Clicking a disabled day cell (outside [min, max]) must not stage anything —
+  // the committed value stays whatever it was before the click.
+  args: {
+    min: new Date(2025, 7, 10),
+    max: new Date(2025, 7, 20),
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(new Date(2025, 7, 16)); // 16.08.2025
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    // Day 25 is after `max` (Aug 20), so it is disabled.
+    const allButtons = within(calendar).getAllByRole('button');
+    const disabledDay = allButtons.find(
+      (b) => b.textContent?.trim() === '25' && b.hasAttribute('disabled')
+    );
+    await expect(disabledDay).toBeTruthy();
+    // The disabled cell has `pointer-events: none`, so a real pointer click
+    // (userEvent) can never reach it — dispatch the click event directly to
+    // prove the handler itself is also a no-op, not just the mouse.
+    fireEvent.click(disabledDay!);
+    // Nothing gets staged — the disabled cell never becomes pressed.
+    await expect(disabledDay).not.toHaveAttribute('aria-pressed', 'true');
+    // Confirm — the committed value is unchanged since the click was a no-op.
+    await userEvent.click(await body.findByText('Valitse'));
+    await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
+    await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');
+  },
+};
+
+export const ClickOutsideMonthDayNavigatesAndStages: Story = {
+  // August 2025 starts on a Friday, so with a Monday-first grid the first week
+  // leads with four trailing days of July (28–31) — real, clickable outside-month
+  // cells. Clicking one must both bring July into view (see the comment in
+  // DateFieldCalendar's day onClick) and stage that July day, not just one or the
+  // other — a prior fix that switched handleMonthChange/handleStagedDateChange to
+  // closure-reading `setSession` calls let the second handler's update silently
+  // clobber the first's within the same click, so only the staging half survived.
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(new Date(2025, 7, 16)); // 16.08.2025
+    return (
+      <>
+        <DateField {...args} value={value} onChange={setValue} />
+        <div data-testid="output">{value ? dayjs(value).format('DD.MM.YYYY') : 'none'}</div>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await expect(monthSelect.value).toBe('7'); // August
+
+    // Day "31" appears twice in the grid — the real 31 August cell, and the
+    // outside-month leading cell for 31 July. Only the latter carries
+    // dayCellOutsideMonth, so filter on the class to click the right one.
+    const allButtons = within(calendar).getAllByRole('button');
+    const outsideJuly31 = allButtons.find(
+      (b) => b.textContent?.trim() === '31' && b.className.includes(dayCellOutsideMonth)
+    );
+    await expect(outsideJuly31).toBeTruthy();
+    await userEvent.click(outsideJuly31!);
+
+    // (a) the month header/select must advance to the adjacent month (July).
+    await waitFor(() => expect(monthSelect.value).toBe('6'));
+    // (b) the clicked day must still be staged, not dropped by the navigation.
+    // Mantine's <Calendar> re-renders a fresh grid of day-cell buttons for the
+    // new month, so the earlier `outsideJuly31` element is stale — re-query.
+    await waitFor(() => {
+      const july31 = within(calendar)
+        .getAllByRole('button')
+        .find((b) => b.textContent?.trim() === '31' && !b.hasAttribute('disabled'));
+      expect(july31).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    // Confirming commits the staged July day, proving the staging survived
+    // through to commit and wasn't just a transient DOM attribute.
+    await userEvent.click(await body.findByText('Valitse'));
+    await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
+    await expect(canvas.getByTestId('output').textContent).toBe('31.07.2025');
   },
 };

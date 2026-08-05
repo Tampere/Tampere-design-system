@@ -428,3 +428,6 @@ docs/
 
 # macOS
 .DS_Store
+
+# Isolated worktrees for feature work
+.worktrees/

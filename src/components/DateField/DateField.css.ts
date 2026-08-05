@@ -70,12 +70,12 @@ export const nativeSelectWrapper = style({
 export const nativeSelect = style({
   // Strip the browser's default dropdown arrow so the TREDS chevron can show.
   appearance: 'none',
-  // Match the shared control height (issue #79) so the header selects align with
-  // the field's inputs and buttons; border sits inside the box.
+  // Match the shared control height so the header selects align with the field's
+  // inputs and buttons; border sits inside the box.
   height: controlHeight,
   boxSizing: 'border-box',
-  // Design: select border uses Input-states/Default (#52525b = text.secondary),
-  // not the blue Primary-states/Default used by text inputs.
+  // Design: select border uses the neutral secondary-text color, not the interactive
+  // blue used by text inputs.
   border: `${core.strokeWeight} solid ${text.secondary}`,
   background: core.background,
   color: text.primary,
@@ -116,7 +116,7 @@ export const nativeSelectIcon = style({
 // Wrapper around Mantine Calendar — used to scope globalStyles below
 export const calendarGrid = style({});
 
-// Day cells are a fixed 50px square at every breakpoint (Figma Calendar-item/Size).
+// Day cells follow Figma Calendar-item/Size: 50px from md up, 36px on sm/xs (see themeVariables.datePicker.cellSize).
 globalStyle(`${calendarGrid} table button`, {
   borderRadius: 0,
   width: datePicker.cellSize,
@@ -139,6 +139,10 @@ globalStyle(`${calendarGrid} table button:focus-visible`, {
   ...focusRing,
 });
 
+globalStyle(`${calendarGrid} table button:hover:not([data-disabled]):not([data-selected])`, {
+  background: core.hover.overlay,
+});
+
 // Weekday header (Ma, Ti, …): P2 size, Subheader (Semi-Bold) weight, secondary colour.
 globalStyle(`${calendarGrid} thead th`, {
   fontFamily: typography.p2.fontFamily,
@@ -155,8 +159,8 @@ export const dayCellStaged = style({
 });
 
 export const dayCellToday = style({
-  // Today marker: dashed outline in the Date-picker today-marker colour, inset 4px
-  // so it renders as a 42px square inside the 50px cell (Figma today marker).
+  // Today marker: dashed outline in the Date-picker today-marker colour, inset from each edge;
+  // the inset is fixed but the resulting cell size varies by breakpoint (Figma today marker).
   outline: `${core.strokeWeight} dashed ${datePicker.todayMarker}`,
   outlineOffset: `calc(${datePicker.todayMarkerInset} * -1)`,
 });
