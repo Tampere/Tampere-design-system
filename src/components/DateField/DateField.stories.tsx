@@ -5,6 +5,7 @@ import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
 import { dayCellOutsideMonth, dayCellDisabled } from './DateField.css.ts';
+import { vars } from '../../theme';
 
 const meta = {
   component: DateField,
@@ -92,25 +93,36 @@ export const WithRange: Story = {
         ? `Valittu väli: ${dayjs(startDate).format('DD.MM.YYYY')}–${dayjs(endDate).format('DD.MM.YYYY')}`
         : 'Ei valittua väliä';
     return (
-      <>
-        <DateField
-          {...args}
-          label="Alkupäivä"
-          calendarButtonLabel="Avaa alkupäivän kalenteri"
-          value={startDate}
-          onChange={setStartDate}
-          max={startMax}
-        />
-        <DateField
-          {...args}
-          label="Loppupäivä"
-          calendarButtonLabel="Avaa loppupäivän kalenteri"
-          value={endDate}
-          onChange={setEndDate}
-          min={endMin}
-        />
+      // Outer gap keeps the summary close to the field it describes (the same
+      // rhythm TextField uses between its own label/input/helper stack);
+      // the inner gap gives the two independent fields real breathing room.
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: vars.components.input.spacing.verticalSpacing,
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: vars.spacing['3'] }}>
+          <DateField
+            {...args}
+            label="Alkupäivä"
+            calendarButtonLabel="Avaa alkupäivän kalenteri"
+            value={startDate}
+            onChange={setStartDate}
+            max={startMax}
+          />
+          <DateField
+            {...args}
+            label="Loppupäivä"
+            calendarButtonLabel="Avaa loppupäivän kalenteri"
+            value={endDate}
+            onChange={setEndDate}
+            min={endMin}
+          />
+        </div>
         <p>{rangeSummary}</p>
-      </>
+      </div>
     );
   },
   play: async ({ canvasElement }) => {
