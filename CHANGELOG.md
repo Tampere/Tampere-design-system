@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0] - 2026-08-06
 
+**Storybook:** https://tampere.github.io/Tampere-design-system/
+
 ### Upgrade notes
 
 - **New required peer dependencies.** Update your install:
@@ -41,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shade too bright.
 
 ## [0.4.0] - 2026-08-03
+
+**Storybook:** https://tampere.github.io/Tampere-design-system/
 
 Bundles everything merged since `v0.3.1`.
 
