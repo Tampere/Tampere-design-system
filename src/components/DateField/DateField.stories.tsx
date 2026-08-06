@@ -777,21 +777,21 @@ export const ArrowRightBlockedWhenNextMonthOutOfRange: Story = {
 };
 
 export const ArrowRightBlockedWhenTargetDayDisabled: Story = {
-  // min and max keep only August in range; September 1 is beyond the max,
-  // so it's disabled. Crossing must be blocked rather than landing on a
-  // disabled cell.
-  args: { value: new Date(2025, 7, 31), min: new Date(2025, 7, 15), max: new Date(2025, 7, 31) },
+  // max ends the range on 3 September — September is PARTIALLY in range
+  // (1st-3rd), but the ArrowDown target (Aug 28 + 7 days = Sept 4) is not.
+  // Crossing must be blocked rather than landing on a disabled cell.
+  args: { value: new Date(2025, 7, 28), max: new Date(2025, 8, 3) },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const body = within(document.body);
     await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
     const calendar = await body.findByTestId('date-field-calendar');
     await waitFor(() =>
-      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31')
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('28')
     );
-    await userEvent.keyboard('{ArrowRight}');
+    await userEvent.keyboard('{ArrowDown}');
     await new Promise((resolve) => setTimeout(resolve, 50));
-    expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31');
+    expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('28');
     const monthSelect = within(calendar).getByRole('combobox', {
       name: 'Kuukausi',
     }) as HTMLSelectElement;
