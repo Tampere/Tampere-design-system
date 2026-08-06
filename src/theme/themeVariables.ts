@@ -460,8 +460,8 @@ const core = {
   },
 } as const;
 
-const fontFamilyHeader = 'Montserrat, sans-serif';
-const fontFamilyBody = 'Open Sans, sans-serif';
+const fontFamilyHeader = 'Montserrat Variable, sans-serif';
+const fontFamilyBody = 'Open Sans Variable, sans-serif';
 
 // Shared height for single-line controls (buttons, text inputs, selects), responsive per
 // breakpoint. Values come from the Figma `Breakpoint` variable collection and equal

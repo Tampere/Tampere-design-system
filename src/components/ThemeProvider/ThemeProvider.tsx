@@ -2,18 +2,18 @@ import { MantineProvider, createTheme, type MantineProviderProps } from '@mantin
 import '@mantine/core/styles.layer.css';
 import '../../theme/theme.css.ts';
 
-import '@fontsource/montserrat/500.css';
-import '@fontsource/montserrat/600.css';
-import '@fontsource/montserrat/700.css';
-import '@fontsource/montserrat/800.css';
-import '@fontsource/montserrat/900.css';
-import '@fontsource/open-sans/400.css';
-import '@fontsource/open-sans/500.css';
-import '@fontsource/open-sans/600.css';
-import '@fontsource/open-sans/700.css';
+// Variable fonts. Imported as peer-dependency specifiers so they are left
+// external in the built bundle (via peerDependencies + rollup-plugin-peer-deps-external)
+// and resolved/bundled by the consumer's build. Provides the "Montserrat Variable"
+// and "Open Sans Variable" families used below and in themeVariables.ts.
+import '@fontsource-variable/montserrat';
+import '@fontsource-variable/open-sans';
 
 const theme = createTheme({
-  fontFamily: 'Open Sans, sans-serif',
+  fontFamily: 'Open Sans Variable, sans-serif',
+  headings: {
+    fontFamily: 'Montserrat Variable, sans-serif',
+  },
 });
 
 export interface ThemeProviderProps extends MantineProviderProps {}
