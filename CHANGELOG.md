@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (pre-1.0: breaking changes bump the minor version).
 
+## [0.5.0] - 2026-08-06
+
+### Upgrade notes
+
+- **New required peer dependencies.** Update your install:
+  `npm install @tampere/treds@0.5.0 @mantine/dates dayjs`
+- **Visual: form-control borders and label weight changed.** `TextField`,
+  `TextArea`, and `Select` now render a neutral gray resting border (was
+  incorrectly blue) with a blue border only on focus/hover, and field labels
+  are now Semi-Bold (matching Figma; previously an unstyled default weight).
+  Worth a quick visual check if you have snapshot tests or tightly styled
+  forms.
+
+### Added
+
+- **`DateField`** — date input built on `TextField` + a portalled Mantine
+  `Calendar`, Finnish-localized. Controlled/uncontrolled, `min`/`max`, clear
+  button, single-digit Finnish entry (`1.8.2025`), full keyboard navigation
+  including crossing month boundaries with the arrow keys, WCAG 2.1 AA.
+  Customizable labels incl. `yearLabel`/`monthLabel`; distinct invalid vs.
+  out-of-range errors. Exports `DateField`, `DateFieldProps`,
+  `DateFieldClassNames` (#52, #83).
+- `Button` now forwards refs to its underlying element.
+- `TextField` `helperText` now accepts `React.ReactNode` (was `string`).
+
+### Fixed
+
+- `TextField`/`TextArea`/`Select` resting border color corrected to the
+  neutral gray Figma specifies (was reusing the brand-blue interactive
+  color at rest); focus border now explicitly renders blue at 3px instead of
+  relying on that same bug for its color.
+- Error color (border and text) corrected to Figma's darker red — was a
+  shade too bright.
+
 ## [0.4.0] - 2026-08-03
 
 Bundles everything merged since `v0.3.1`.
