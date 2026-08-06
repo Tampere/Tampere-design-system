@@ -234,10 +234,9 @@ export function DateField({
 
   function closeCalendar() {
     // Only steal focus back to the trigger when it's still inside the dialog at
-    // the moment of closing — today that's only Cancel/Confirm, since this
-    // function isn't wired to Escape or outside-click (see Popover usage below).
-    // Guarding on focus location rather than assuming "always" keeps this correct
-    // if/when those paths do start calling closeCalendar.
+    // the moment of closing — that's Cancel/Confirm, plus Escape/outside-click
+    // (wired below via Popover's onChange). Guarding on focus location rather
+    // than assuming "always" keeps this correct across all of those callers.
     const focusStillInDialog = dialogRef.current?.contains(document.activeElement) ?? false;
     setSession({ open: false });
     if (focusStillInDialog) {
@@ -397,7 +396,16 @@ export function DateField({
   return (
     <Popover
       opened={session.open}
-      onClose={closeCalendar}
+      // Popover is fully controlled (`opened`), so Mantine's own Escape/
+      // outside-click handling — which drives the popover's internal setter,
+      // not the `onClose` callback — only reaches us through `onChange`.
+      // `onClose` alone (the previous wiring) is invoked reactively from an
+      // internal effect that watches for `opened` to actually flip, which
+      // never happens on its own in controlled mode: Escape/outside-click
+      // silently no-op instead of calling `closeCalendar`.
+      onChange={(opened) => {
+        if (!opened) closeCalendar();
+      }}
       position="bottom-end"
       // Mantine would otherwise add its own role="dialog" to the dropdown and
       // aria-haspopup/expanded/controls to the (non-interactive) target wrapper,

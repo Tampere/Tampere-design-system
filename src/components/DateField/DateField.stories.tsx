@@ -175,6 +175,30 @@ export const CloseWithCancel: Story = {
   },
 };
 
+export const CloseWithEscape: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
+    // Focus returns to the trigger that opened the calendar (WCAG 2.4.3).
+    await waitFor(() => expect(canvas.getByLabelText('Avaa kalenteri')).toHaveFocus());
+  },
+};
+
+export const CloseOnOutsideClick: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    await body.findByTestId('date-field-calendar');
+    await userEvent.click(document.body);
+    await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
+  },
+};
+
 export const NavigatePrevMonth: Story = {
   args: { value: new Date(2025, 7, 16) }, // August 2025
   play: async ({ canvasElement }) => {
