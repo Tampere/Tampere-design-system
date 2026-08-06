@@ -776,7 +776,7 @@ export const ArrowRightBlockedWhenNextMonthOutOfRange: Story = {
   },
 };
 
-export const ArrowRightBlockedWhenTargetDayDisabled: Story = {
+export const ArrowDownBlockedWhenTargetDayDisabled: Story = {
   // max ends the range on 3 September — September is PARTIALLY in range
   // (1st-3rd), but the ArrowDown target (Aug 28 + 7 days = Sept 4) is not.
   // Crossing must be blocked rather than landing on a disabled cell.
