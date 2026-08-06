@@ -89,7 +89,7 @@ export const nativeSelect = style({
   paddingRight: `calc(${inputVars.padding.horizontal} + ${icon.size.medium} + ${spacing['1']})`,
   cursor: 'pointer',
   selectors: {
-    '&:hover': { border: `${core.strokeWeight} solid ${text.primary}` },
+    '&:hover': { border: `${core.strokeWeight} solid ${core.states.hover}` },
     '&:focus-visible': { ...focusRing },
     '&:disabled': {
       border: `${core.strokeWeight} solid ${core.states.disabled}`,
