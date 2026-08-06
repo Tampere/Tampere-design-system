@@ -619,6 +619,9 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
+      // Contrast variant for a today cell that's also selected (blue background) —
+      // Figma's Components/Date-picker/Today-marker-contrast.
+      todayMarkerContrast: colors.neutral.white,
       // Outer dropdown padding and the gap between header / grid / footer — Figma
       // `Spacing/Medium`, which scales 24→16 across breakpoints.
       padding: breakpoints[bp].spacing.md,

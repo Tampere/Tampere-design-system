@@ -137,6 +137,11 @@ globalStyle(`${calendarGrid} td, ${calendarGrid} th`, {
 });
 
 globalStyle(`${calendarGrid} table button:focus-visible`, {
+  // Figma's plain Focus state also fills with the hover tint (Background/Focus,
+  // same value as Background/Hover) — reuse the same overlay technique as the
+  // hover rule below rather than a flat color, so the two stay visually
+  // consistent. A selected cell's `!important` blue background still wins.
+  background: core.hover.overlay,
   ...focusRing,
 });
 
@@ -157,13 +162,50 @@ export const dayCellStaged = style({
   color: `${core.contrast} !important`,
   // Selected day number is Semi-Bold per design.
   fontWeight: `${typography.subheader.fontWeight} !important`,
+  selectors: {
+    // A selected cell never got hover feedback: the generic hover rule above
+    // explicitly excludes [data-selected]. `&:hover` here has higher
+    // specificity than the plain class rule above, so it wins without needing
+    // its own !important on top of the one above (still needed to beat that
+    // base rule's !important background at equal-or-lower specificity).
+    '&:hover': {
+      background: `${core.states.hover} !important`,
+    },
+  },
 });
 
+// Shared geometry for the today-marker pseudo-element — a dashed border inset
+// from each edge, sized the same regardless of color. Implemented as ::after
+// (not `outline`) so it can coexist with the focus ring below, which uses
+// `outline` on the button itself: two elements, two properties, no clobbering.
+const todayMarkerAfter = {
+  content: '""',
+  position: 'absolute',
+  inset: datePicker.todayMarkerInset,
+  pointerEvents: 'none',
+} as const;
+
 export const dayCellToday = style({
-  // Today marker: dashed outline in the Date-picker today-marker colour, inset from each edge;
-  // the inset is fixed but the resulting cell size varies by breakpoint (Figma today marker).
-  outline: `${core.strokeWeight} dashed ${datePicker.todayMarker}`,
-  outlineOffset: `calc(${datePicker.todayMarkerInset} * -1)`,
+  position: 'relative',
+  selectors: {
+    '&::after': {
+      ...todayMarkerAfter,
+      border: `${core.strokeWeight} dashed ${datePicker.todayMarker}`,
+    },
+  },
+});
+
+// Today AND selected: the marker must stay visible over the blue selected
+// background, so it switches to the contrast (white) color — Figma's
+// "Today & Selected" cell. Applied alongside dayCellStaged, not instead of it.
+export const dayCellTodaySelected = style({
+  position: 'relative',
+  selectors: {
+    '&::after': {
+      ...todayMarkerAfter,
+      border: `${core.strokeWeight} dashed ${datePicker.todayMarkerContrast}`,
+    },
+  },
 });
 
 export const dayCellOutsideMonth = style({

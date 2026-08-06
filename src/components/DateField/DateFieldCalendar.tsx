@@ -17,6 +17,7 @@ import {
   calendarGrid,
   dayCellStaged,
   dayCellToday,
+  dayCellTodaySelected,
   dayCellOutsideMonth,
   dayCellDisabled,
   nativeSelect,
@@ -233,6 +234,10 @@ export function DateFieldCalendar({
               className: cx({
                 [dayCellStaged]: isStaged,
                 [dayCellToday]: isToday && !isStaged,
+                // Today AND selected: keep the marker visible, switched to its
+                // white contrast color over the blue selected background —
+                // Figma's "Today & Selected" cell (see dayCellTodaySelected).
+                [dayCellTodaySelected]: isToday && isStaged,
                 [dayCellOutsideMonth]: isOutside,
                 [dayCellDisabled]: isDisabled,
               }),
