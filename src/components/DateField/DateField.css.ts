@@ -184,6 +184,11 @@ export const dayCellDisabled = style({
   color: `${text.disabled} !important`,
   cursor: 'default !important',
   pointerEvents: 'none',
+  // Same fix as dayCellOutsideMonth above: Mantine's own Day styles apply
+  // opacity: 0.5 to every :disabled/[data-disabled] cell too, making these
+  // read noticeably more washed-out than outside-month cells despite sharing
+  // the same "muted bg + disabled text" design intent. Cancel it.
+  opacity: '1 !important',
 });
 
 export const calendarFooter = style({

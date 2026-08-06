@@ -4,7 +4,7 @@ import { within, userEvent, waitFor, fireEvent } from '@storybook/testing-librar
 import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
-import { dayCellOutsideMonth } from './DateField.css.ts';
+import { dayCellOutsideMonth, dayCellDisabled } from './DateField.css.ts';
 
 const meta = {
   component: DateField,
@@ -72,6 +72,72 @@ export const WithMinMax: Story = {
     min: new Date(2025, 7, 10),
     max: new Date(2025, 7, 20),
     value: new Date(2025, 7, 16),
+  },
+};
+
+export const WithRange: Story = {
+  tags: docExample,
+  // Two independent DateFields composed into a start/end range: each bounds
+  // the other via min/max so the calendar can't stage an inverted range, and
+  // DateField's own out-of-range validation (outOfRangeError) catches typed
+  // input that slips past the calendar (e.g. typing an end date before the
+  // already-committed start date).
+  render: (args) => {
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const startMax = endDate ? dayjs(endDate).subtract(1, 'day').toDate() : undefined;
+    const endMin = startDate ? dayjs(startDate).add(1, 'day').toDate() : undefined;
+    const rangeSummary =
+      startDate && endDate
+        ? `Valittu väli: ${dayjs(startDate).format('DD.MM.YYYY')}–${dayjs(endDate).format('DD.MM.YYYY')}`
+        : 'Ei valittua väliä';
+    return (
+      <>
+        <DateField
+          {...args}
+          label="Alkupäivä"
+          calendarButtonLabel="Avaa alkupäivän kalenteri"
+          value={startDate}
+          onChange={setStartDate}
+          max={startMax}
+        />
+        <DateField
+          {...args}
+          label="Loppupäivä"
+          calendarButtonLabel="Avaa loppupäivän kalenteri"
+          value={endDate}
+          onChange={setEndDate}
+          min={endMin}
+        />
+        <p>{rangeSummary}</p>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const startInput = canvas.getByLabelText('Alkupäivä');
+    const endInput = canvas.getByLabelText('Loppupäivä');
+
+    await userEvent.type(startInput, '16.08.2025');
+    await userEvent.tab();
+
+    // An end date before the (now committed) start date is out of range.
+    await userEvent.type(endInput, '10.08.2025');
+    await userEvent.tab();
+    await expect(
+      await canvas.findByText('Päivämäärä on sallitun välin ulkopuolella')
+    ).toBeInTheDocument();
+
+    // Correcting to a date after the start commits normally.
+    await userEvent.clear(endInput);
+    await userEvent.type(endInput, '20.08.2025');
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(
+        canvas.queryByText('Päivämäärä on sallitun välin ulkopuolella')
+      ).not.toBeInTheDocument()
+    );
+    await expect(canvas.getByText('Valittu väli: 16.08.2025–20.08.2025')).toBeInTheDocument();
   },
 };
 
@@ -1134,6 +1200,34 @@ export const DisabledDayCellClickIsNoOp: Story = {
     await userEvent.click(await body.findByText('Valitse'));
     await waitFor(() => expect(body.queryByTestId('date-field-calendar')).not.toBeInTheDocument());
     await expect(canvas.getByTestId('output').textContent).toBe('16.08.2025');
+  },
+};
+
+export const DisabledDayMeetsContrast: Story = {
+  // Same issue as OutsideMonthDayMeetsContrast, different class: Mantine's own
+  // Day styles apply opacity: 0.5 to every :disabled/[data-disabled] cell too,
+  // which we never cancelled for dayCellDisabled — genuinely out-of-range days
+  // rendered noticeably more washed-out than outside-month cells, even though
+  // both share the same "muted bg + disabled text" design intent.
+  args: {
+    min: new Date(2025, 7, 10),
+    max: new Date(2025, 7, 20),
+  },
+  render: (args) => {
+    const [value, setValue] = useState<Date | null>(new Date(2025, 7, 16)); // 16.08.2025
+    return <DateField {...args} value={value} onChange={setValue} />;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    // Day 25 is after `max` (Aug 20), so it is disabled.
+    const disabledDay = within(calendar)
+      .getAllByRole('button')
+      .find((b) => b.textContent?.trim() === '25' && b.className.includes(dayCellDisabled));
+    await expect(disabledDay).toBeTruthy();
+    await expect(getComputedStyle(disabledDay!).opacity).toBe('1');
   },
 };
 
