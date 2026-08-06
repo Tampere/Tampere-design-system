@@ -667,7 +667,10 @@ export function getComponents(bp: keyof typeof breakpoints) {
         },
         label: {
           fontSize: breakpoints[bp].typography.size.p2,
-          lineHeight: rem('24px'),
+          // Figma uses the same Components/Input/Line-height token for the
+          // label as for the input text itself (see `text` below) — match it
+          // instead of a fixed value.
+          lineHeight: breakpoints[bp].components.input.lineHeight,
         },
         text: {
           fontSize: breakpoints[bp].typography.size.p2,
