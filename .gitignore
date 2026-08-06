@@ -428,3 +428,9 @@ docs/
 
 # macOS
 .DS_Store
+
+# Isolated worktrees for feature work
+.worktrees/
+
+# Playwright MCP debug output
+.playwright-mcp/

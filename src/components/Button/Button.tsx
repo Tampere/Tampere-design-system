@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import { forwardRef, type PropsWithChildren } from 'react';
 import cx from 'clsx';
 import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { variants, content, iconWrapper } from './Button.css.ts';
@@ -12,27 +12,24 @@ export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps, Rea
 }
 
 /** A basic button components with variants. Remember to include aria-label for accessibility if no text is provided as children. */
-export const Button = ({
-  variant = 'filled',
-  children,
-  disabled,
-  leftIcon,
-  rightIcon,
-  onClick,
-  ...props
-}: ButtonProps) => {
-  return (
-    <UnstyledButton
-      {...props}
-      onClick={onClick}
-      disabled={disabled}
-      className={cx(variants[variant], props.className)}
-    >
-      <Flex component="span" className={content}>
-        {leftIcon && <span className={iconWrapper}>{leftIcon}</span>}
-        {children}
-        {rightIcon && <span className={iconWrapper}>{rightIcon}</span>}
-      </Flex>
-    </UnstyledButton>
-  );
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = 'filled', children, disabled, leftIcon, rightIcon, onClick, ...props }, ref) => {
+    return (
+      <UnstyledButton
+        ref={ref}
+        {...props}
+        onClick={onClick}
+        disabled={disabled}
+        className={cx(variants[variant], props.className)}
+      >
+        <Flex component="span" className={content}>
+          {leftIcon && <span className={iconWrapper}>{leftIcon}</span>}
+          {children}
+          {rightIcon && <span className={iconWrapper}>{rightIcon}</span>}
+        </Flex>
+      </UnstyledButton>
+    );
+  }
+);
+
+Button.displayName = 'Button';

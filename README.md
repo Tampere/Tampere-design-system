@@ -80,7 +80,7 @@ Add your GitHub Personal Access Token to your user-level npm config:
 npm install @tampere/treds
 ```
 
-Peer dependencies (`@mantine/core`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
+Peer dependencies (`@mantine/core`, `@mantine/dates`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
 
 ### Setup without NPM-package (Not recommended)
 
@@ -98,7 +98,7 @@ Build Tampere Design System as instructed above, then install it inside your pro
 npm install ../Tampere-design-system
 ```
 
-Peer dependencies (`@mantine/core`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
+Peer dependencies (`@mantine/core`, `@mantine/dates`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
 
 ### Usage
 

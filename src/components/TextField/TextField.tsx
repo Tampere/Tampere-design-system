@@ -23,7 +23,7 @@ export interface TextFieldProps extends TextInputProps, React.AriaAttributes {
    * Label for the input field. If not set, you must provide an aria-label for accessibility.
    */
   inputLabel?: string;
-  helperText?: string;
+  helperText?: React.ReactNode;
   error?: string; // Overrides TextInputProps error to be string for error message. Remove this if custom error components are needed.
   showSearchIcon?: boolean;
   showClearButton?: boolean;

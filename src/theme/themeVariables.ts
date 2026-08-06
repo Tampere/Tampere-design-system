@@ -418,7 +418,7 @@ const core = {
   background: colors.neutral.white,
   backgroundDisabled: colors.neutral['100'],
   contrast: colors.neutral.white,
-  error: colors.red['300'],
+  error: colors.red['400'],
   mainLight: colors.blue['300'],
   main: colors.blue['400'],
   mainDark: colors.blue['500'],
@@ -442,8 +442,14 @@ const core = {
     focus: colors.blue['400'],
     active: colors.blue['300'],
     disabled: colors.neutral['300'],
-    error: colors.red['300'],
+    error: colors.red['400'],
     visited: colors.blue['300'],
+  },
+  // Figma's "Input-states" variable collection — distinct from "Primary-states"
+  // (which `states` above maps to). Form-control borders are neutral at rest;
+  // they only borrow the brand blue from `states` on hover/focus.
+  inputStates: {
+    default: colors.neutral['600'],
   },
   selectionStates: {
     unchecked: {
@@ -470,6 +476,19 @@ const controlHeights = {
   md: '42px',
   sm: '40px',
   xs: '40px',
+} as const satisfies Record<keyof typeof breakpoints, string>;
+
+// Calendar day-cell size. Figma fixes this at 50px from md up (it designed the picker
+// down to a 480px frame, which renders in the md tier). On the narrower sm/xs tiers the
+// fixed 50px grid would overflow a phone, so cells shrink to keep the popover within a
+// ~320px viewport: 7 × 36 + 6 × 4 gap + 2 × 16 padding + borders ≈ 312px.
+const calendarCellSizes = {
+  xxl: '50px',
+  xl: '50px',
+  lg: '50px',
+  md: '50px',
+  sm: '36px',
+  xs: '36px',
 } as const satisfies Record<keyof typeof breakpoints, string>;
 
 export function getComponents(bp: keyof typeof breakpoints) {
@@ -600,6 +619,19 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
+      // Contrast variant for a today cell that's also selected (blue background) —
+      // Figma's Components/Date-picker/Today-marker-contrast.
+      todayMarkerContrast: colors.neutral.white,
+      // Outer dropdown padding and the gap between header / grid / footer — Figma
+      // `Spacing/Medium`, which scales 24→16 across breakpoints.
+      padding: breakpoints[bp].spacing.md,
+      // Day cells follow Figma `Components/Calendar-item/Size` (50) from md up, shrinking on
+      // sm/xs so the grid fits a phone. Inter-cell gap `Spacing/0,5` = 4, header gap
+      // `Spacing/1,5` = 12, today marker inset 4 — all fixed across breakpoints.
+      cellSize: rem(calendarCellSizes[bp]),
+      cellGap: spacing['0,5'],
+      headerGap: spacing['1,5'],
+      todayMarkerInset: spacing['0,5'],
     },
     forms: {
       spacing: spacing['3'],
@@ -644,7 +676,10 @@ export function getComponents(bp: keyof typeof breakpoints) {
         },
         label: {
           fontSize: breakpoints[bp].typography.size.p2,
-          lineHeight: rem('24px'),
+          // Figma uses the same Components/Input/Line-height token for the
+          // label as for the input text itself (see `text` below) — match it
+          // instead of a fixed value.
+          lineHeight: breakpoints[bp].components.input.lineHeight,
         },
         text: {
           fontSize: breakpoints[bp].typography.size.p2,

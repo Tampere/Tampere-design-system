@@ -4,7 +4,7 @@ import { vars } from '../../theme';
 const {
   core,
   font,
-  components: { input: inputVars, textField, controlHeight },
+  components: { input: inputVars, textField, controlHeight, typography },
   text,
   focusRing,
 } = vars;
@@ -57,7 +57,7 @@ export const inputRoot = style({
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
   alignItems: 'center',
   gap: inputVars.spacing.horizontalSpacing,
-  border: `${inputVars.stroke.weight.default} solid ${core.states.default}`,
+  border: `${inputVars.stroke.weight.default} solid ${core.inputStates.default}`,
   background: core.background,
   selectors: {
     '&::placeholder': {
@@ -68,6 +68,7 @@ export const inputRoot = style({
       background: core.background,
     },
     '&:focus-visible': {
+      border: `${inputVars.stroke.weight.focus} solid ${core.states.focus}`,
       background: core.background,
       ...focusRing,
     },
@@ -102,6 +103,9 @@ export const labelRoot = style({
   margin: textField.labelMargin,
   color: text.primary,
   fontSize: inputVars.font.label.fontSize,
+  // Figma's Semi-Bold label style has no dedicated weight token of its own —
+  // reuse typography.subheader.fontWeight, per project convention.
+  fontWeight: typography.subheader.fontWeight,
   lineHeight: inputVars.font.label.lineHeight,
   letterSpacing: font.letterSpacing,
 });
