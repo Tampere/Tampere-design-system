@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.layer.css';
 import dayjs from 'dayjs';
@@ -71,6 +72,24 @@ function isYearInRange(year: number, min?: Date, max?: Date): boolean {
   return true;
 }
 
+// Shared by getDayProps (the currently-rendered day) and the cross-month
+// arrow-key handler below (a day that may not be rendered yet).
+function isDateDisabled(date: dayjs.Dayjs, min?: Date, max?: Date): boolean {
+  return (
+    (min !== undefined && date.isBefore(dayjs(min), 'day')) ||
+    (max !== undefined && date.isAfter(dayjs(max), 'day'))
+  );
+}
+
+// Arrow-key day deltas for the calendar grid: ←/→ move by one day, ↑/↓ by
+// one week (7 days) — matches Mantine's own intra-month grid navigation.
+const ARROW_KEY_DAY_DELTA: Record<string, number> = {
+  ArrowRight: 1,
+  ArrowLeft: -1,
+  ArrowDown: 7,
+  ArrowUp: -7,
+};
+
 export interface DateFieldCalendarProps {
   stagedDate: Date | null;
   calendarMonth: Date;
@@ -127,6 +146,20 @@ export function DateFieldCalendar({
   const todayDisabled =
     (min !== undefined && today.isBefore(dayjs(min), 'day')) ||
     (max !== undefined && today.isAfter(dayjs(max), 'day'));
+
+  // Set by the cross-month arrow-key handler in getDayProps below when it
+  // switches the displayed month; consumed by the effect below once the new
+  // month's grid has rendered and the target day's button actually exists.
+  const pendingFocusDateRef = useRef<Date | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const pendingDate = pendingFocusDateRef.current;
+    if (!pendingDate) return;
+    pendingFocusDateRef.current = null;
+    const iso = dayjs(pendingDate).format('YYYY-MM-DD');
+    gridRef.current?.querySelector<HTMLButtonElement>(`[data-date="${iso}"]`)?.focus();
+  }, [calendarMonth]);
 
   function handleYearChange(e: React.ChangeEvent<HTMLSelectElement>) {
     onMonthChange(dayjs(calendarMonth).year(Number(e.target.value)).toDate());
@@ -203,7 +236,7 @@ export function DateFieldCalendar({
           and convert to a Date before calling onStagedDateChange
         All string↔Date conversion stays inside this component.
       */}
-      <div className={calendarGrid}>
+      <div className={calendarGrid} ref={gridRef}>
         <Calendar
           locale="fi"
           firstDayOfWeek={1}
@@ -220,9 +253,7 @@ export function DateFieldCalendar({
             const isStaged = stagedDate ? day.isSame(dayjs(stagedDate), 'day') : false;
             const isToday = day.isSame(dayjs(), 'day');
             const isOutside = !day.isSame(dayjs(calendarMonth), 'month');
-            const isDisabled =
-              (min !== undefined && day.isBefore(dayjs(min), 'day')) ||
-              (max !== undefined && day.isAfter(dayjs(max), 'day'));
+            const isDisabled = isDateDisabled(day, min, max);
             // Cell that should receive focus when the calendar opens: the staged
             // day, or today when nothing is staged. FocusTrap honours
             // data-autofocus, so focus lands in the grid rather than on the
@@ -254,6 +285,30 @@ export function DateFieldCalendar({
               // too so screen-reader users can identify it (WCAG 1.3.1 / 1.4.1).
               ...(isToday && { 'aria-current': 'date' as const }),
               ...(isFocusTarget && { 'data-autofocus': true }),
+              // Looked up by the deferred-focus effect above once a
+              // cross-month arrow-key move has switched the displayed month.
+              'data-date': dateString,
+              onKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>) => {
+                const delta = ARROW_KEY_DAY_DELTA[event.key];
+                if (delta === undefined) return;
+                const target = day.add(delta, 'day');
+                // Same month: let Mantine's own intra-month handler run.
+                if (target.isSame(dayjs(calendarMonth), 'month')) return;
+                event.preventDefault();
+                // Blocked: either the target month is entirely out of range,
+                // or the target day itself is individually disabled even
+                // though its month is partially in range. Either way, no-op
+                // rather than focusing a disabled (unfocusable) cell —
+                // matches the header prev/next-month arrows' disabled state.
+                if (
+                  !isMonthInRange(target.year(), target.month(), min, max) ||
+                  isDateDisabled(target, min, max)
+                ) {
+                  return;
+                }
+                pendingFocusDateRef.current = target.toDate();
+                onMonthChange(target.toDate());
+              },
               onClick: isDisabled
                 ? undefined
                 : () => {

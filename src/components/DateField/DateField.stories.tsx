@@ -659,6 +659,146 @@ export const ArrowKeysNavigateGrid: Story = {
   },
 };
 
+export const ArrowRightCrossesToNextMonth: Story = {
+  // August 2025 has 31 days; the 31st is the last real day in the grid.
+  // Pressing → there must both focus September 1st and advance the header.
+  args: { value: new Date(2025, 7, 31) }, // 31.08.2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31')
+    );
+    await userEvent.keyboard('{ArrowRight}');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('1')
+    );
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await waitFor(() => expect(monthSelect.value).toBe('8')); // September
+  },
+};
+
+export const ArrowLeftCrossesToPreviousMonth: Story = {
+  // 1 August 2025 is the first real day in its month; ← must land on 31 July.
+  args: { value: new Date(2025, 7, 1) }, // 01.08.2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('1')
+    );
+    await userEvent.keyboard('{ArrowLeft}');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31')
+    );
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await waitFor(() => expect(monthSelect.value).toBe('6')); // July
+  },
+};
+
+export const ArrowDownCrossesToNextMonth: Story = {
+  // August 2025: Monday 25th starts the grid's last full week entirely inside
+  // August (25-31, since the 31st is a Sunday). ↓ from the 25th lands on
+  // September 1st, the first cell of the following row.
+  args: { value: new Date(2025, 7, 25) }, // 25.08.2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('25')
+    );
+    await userEvent.keyboard('{ArrowDown}');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('1')
+    );
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await waitFor(() => expect(monthSelect.value).toBe('8')); // September
+  },
+};
+
+export const ArrowUpCrossesToPreviousMonth: Story = {
+  // 1 August 2025 sits in the grid's first row (Mon 28 Jul - Sun 3 Aug).
+  // ↑ from the 1st goes back 7 days to 25 July, the row above.
+  args: { value: new Date(2025, 7, 1) }, // 01.08.2025
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('1')
+    );
+    await userEvent.keyboard('{ArrowUp}');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('25')
+    );
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    await waitFor(() => expect(monthSelect.value).toBe('6')); // July
+  },
+};
+
+export const ArrowRightBlockedWhenNextMonthOutOfRange: Story = {
+  // max ends the range on 31 August 2025 — September is entirely out of
+  // range, so → from the last day must do nothing (matches the header's
+  // disabled next-month arrow in the same situation).
+  args: { value: new Date(2025, 7, 31), max: new Date(2025, 7, 31) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31')
+    );
+    await userEvent.keyboard('{ArrowRight}');
+    // Give any (incorrect) async focus/month change a chance to happen, then
+    // assert nothing moved.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31');
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    expect(monthSelect.value).toBe('7'); // still August
+  },
+};
+
+export const ArrowRightBlockedWhenTargetDayDisabled: Story = {
+  // min and max keep only August in range; September 1 is beyond the max,
+  // so it's disabled. Crossing must be blocked rather than landing on a
+  // disabled cell.
+  args: { value: new Date(2025, 7, 31), min: new Date(2025, 7, 15), max: new Date(2025, 7, 31) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    await waitFor(() =>
+      expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31')
+    );
+    await userEvent.keyboard('{ArrowRight}');
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect((document.activeElement as HTMLElement)?.textContent?.trim()).toBe('31');
+    const monthSelect = within(calendar).getByRole('combobox', {
+      name: 'Kuukausi',
+    }) as HTMLSelectElement;
+    expect(monthSelect.value).toBe('7'); // still August
+  },
+};
+
 export const TypeInvalidDateThenBlur: Story = {
   render: (args) => {
     const [value, setValue] = useState<Date | null>(new Date(2025, 7, 1));
