@@ -449,7 +449,11 @@ export function DateField({
                 aria-label={calendarButtonLabel}
                 aria-expanded={session.open}
                 aria-haspopup="dialog"
-                aria-controls={dialogId}
+                // Only while open: Popover.Dropdown fully unmounts once its close
+                // transition finishes (no `keepMounted`), so the dialog's id
+                // doesn't exist in the DOM while closed — aria-controls must
+                // reference an existing element (WCAG 4.1.2 / axe aria-valid-attr-value).
+                aria-controls={session.open ? dialogId : undefined}
                 disabled={disabled}
                 onClick={session.open ? closeCalendar : openCalendar}
               >

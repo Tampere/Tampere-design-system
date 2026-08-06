@@ -936,6 +936,20 @@ export const TriggerControlsDialog: Story = {
   },
 };
 
+export const TriggerHasNoAriaControlsWhenClosed: Story = {
+  // Popover.Dropdown fully unmounts once its close transition finishes (no
+  // `keepMounted`), so the dialog's id doesn't exist in the DOM while closed.
+  // aria-controls must reference an existing element (WCAG 4.1.2 / axe
+  // aria-valid-attr-value) — pointing at a nonexistent id while collapsed is
+  // itself a violation, so the attribute must be omitted until the dialog
+  // actually renders.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByLabelText('Avaa kalenteri');
+    await expect(trigger).not.toHaveAttribute('aria-controls');
+  },
+};
+
 export const InitialFocusOnSelectedDay: Story = {
   // Opening the calendar should move focus into the grid onto the selected day
   // (not the previous-month arrow), per the APG date-picker pattern (WCAG 2.4.3).
