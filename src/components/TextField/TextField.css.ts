@@ -57,7 +57,7 @@ export const inputRoot = style({
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
   alignItems: 'center',
   gap: inputVars.spacing.horizontalSpacing,
-  border: `${inputVars.stroke.weight.default} solid ${core.states.default}`,
+  border: `${inputVars.stroke.weight.default} solid ${core.inputStates.default}`,
   background: core.background,
   selectors: {
     '&::placeholder': {
@@ -68,6 +68,7 @@ export const inputRoot = style({
       background: core.background,
     },
     '&:focus-visible': {
+      border: `${inputVars.stroke.weight.focus} solid ${core.states.focus}`,
       background: core.background,
       ...focusRing,
     },

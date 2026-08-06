@@ -74,9 +74,10 @@ export const nativeSelect = style({
   // inputs and buttons; border sits inside the box.
   height: controlHeight,
   boxSizing: 'border-box',
-  // Design: select border uses the neutral secondary-text color, not the interactive
-  // blue used by text inputs.
-  border: `${core.strokeWeight} solid ${text.secondary}`,
+  // Same neutral resting border as TextField/TextArea (core.inputStates.default,
+  // Figma's "Input-states/Default") — form-control borders only borrow the brand
+  // blue (core.states) on hover/focus.
+  border: `${core.strokeWeight} solid ${core.inputStates.default}`,
   background: core.background,
   color: text.primary,
   fontSize: inputVars.font.text.fontSize,
