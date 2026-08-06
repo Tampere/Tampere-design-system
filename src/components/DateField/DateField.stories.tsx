@@ -1179,3 +1179,24 @@ export const ClickOutsideMonthDayNavigatesAndStages: Story = {
     await expect(canvas.getByTestId('output').textContent).toBe('31.07.2025');
   },
 };
+
+export const OutsideMonthDayMeetsContrast: Story = {
+  // Mantine's own Day styles apply `opacity: 0.5` to every [data-outside] cell
+  // regardless of our colors, halving the rendered contrast of the already
+  // AA-passing text.disabled-on-backgroundDisabled pair (4.93:1) down to ~2:1
+  // — these cells stay real, clickable buttons (not `disabled`), so that
+  // dimming isn't exempt from WCAG contrast. Asserts the override that cancels
+  // it (see dayCellOutsideMonth's `opacity: 1 !important`) is in effect.
+  args: { value: new Date(2025, 7, 16) }, // August 2025 — leads with outside July days
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+    const outsideJuly31 = within(calendar)
+      .getAllByRole('button')
+      .find((b) => b.textContent?.trim() === '31' && b.className.includes(dayCellOutsideMonth));
+    await expect(outsideJuly31).toBeTruthy();
+    await expect(getComputedStyle(outsideJuly31!).opacity).toBe('1');
+  },
+};

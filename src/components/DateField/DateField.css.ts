@@ -169,6 +169,14 @@ export const dayCellOutsideMonth = style({
   // Outside-month days read as disabled in the design: muted bg + disabled text.
   background: `${core.backgroundDisabled} !important`,
   color: `${text.disabled} !important`,
+  // Mantine's own Day styles apply `opacity: 0.5` to every [data-outside] cell
+  // (via a zero-specificity `:where()` rule) regardless of our colors. These
+  // cells stay real, non-`disabled` buttons (only genuinely out-of-range days
+  // get the `disabled` attribute — see DateFieldCalendar's getDayProps), so
+  // that extra dimming isn't exempt from WCAG contrast: it halves our already
+  // AA-passing text/background pair (4.93:1) down to ~2:1. Cancel it so the
+  // token colors render at their intended, audited contrast.
+  opacity: '1 !important',
 });
 
 export const dayCellDisabled = style({
