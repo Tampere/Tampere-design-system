@@ -56,6 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     </TableRow>
   ```
 
+- **Breaking: the `red` color palette's internal structure changed.**
+  `colors.red` (exposed via `vars.colors` and the raw `themeVariablesV2`
+  export) now has 3 steps instead of 4, matching Figma. `red['400']` was
+  removed, and the value it held (`#ae1e20`) now lives under `red['300']`
+  instead of the old, non-Figma `red['300']` (`#da2321`). This only affects
+  consumers who referenced the raw `colors` palette directly instead of the
+  semantic `core.error`/`core.states.error` tokens, which resolve to the
+  same corrected color as before (#85).
+
 ## [0.5.0] - 2026-08-06
 
 **Storybook:** https://tampere.github.io/Tampere-design-system/
