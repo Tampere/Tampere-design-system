@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
+import { expect, within } from 'storybook/test';
 import { RadioButton } from './RadioButton';
 
 const meta: Meta<typeof RadioButton> = {
@@ -71,6 +72,13 @@ export const Error: Story = {
       } catch {}
     };
     return <RadioButton {...args} checked={checked} onClick={handleClick} />;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const path = canvas.getByRole('radio').parentElement?.querySelector('svg path');
+    await expect(path).toBeTruthy();
+    // Figma Common/Error = Red/300 (#ae1e20).
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(174, 30, 32)');
   },
 };
 

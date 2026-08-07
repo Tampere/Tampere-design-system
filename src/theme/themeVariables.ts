@@ -343,8 +343,7 @@ const colors = {
   red: {
     '100': '#eb5e58',
     '200': '#c83e36',
-    '300': '#da2321',
-    '400': '#ae1e20',
+    '300': '#ae1e20',
   },
 
   pink: {
@@ -418,7 +417,7 @@ const core = {
   background: colors.neutral.white,
   backgroundDisabled: colors.neutral['100'],
   contrast: colors.neutral.white,
-  error: colors.red['400'],
+  error: colors.red['300'],
   mainLight: colors.blue['300'],
   main: colors.blue['400'],
   mainDark: colors.blue['500'],
@@ -442,7 +441,7 @@ const core = {
     focus: colors.blue['400'],
     active: colors.blue['300'],
     disabled: colors.neutral['300'],
-    error: colors.red['400'],
+    error: colors.red['300'],
     visited: colors.blue['300'],
   },
   // Figma's "Input-states" variable collection — distinct from "Primary-states"
