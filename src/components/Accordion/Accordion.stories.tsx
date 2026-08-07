@@ -42,4 +42,15 @@ export const Primary: Story = {
       </AccordionItem>
     </Accordion>
   ),
+  play: async () => {
+    // Test: Verify that Accordion item uses the corrected dropshadow token (semi-transparent black)
+    const items = document.querySelectorAll('[class*="item"]');
+    for (const item of items) {
+      const shadow = window.getComputedStyle(item).boxShadow;
+      // Assert that the shadow includes rgba(0, 0, 0, 0.5) (semi-transparent black at 50% opacity)
+      if (!shadow.match(/rgba\(0,\s*0,\s*0,\s*0\.5\)/)) {
+        throw new Error(`Accordion item shadow does not match expected value. Got: ${shadow}`);
+      }
+    }
+  },
 };
