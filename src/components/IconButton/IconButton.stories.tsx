@@ -47,7 +47,7 @@ export const Light: Story = {
 
 export const Disabled: Story = {
   render: (args) => (
-    <IconButton disabled variant="light" size="md" {...args}>
+    <IconButton variant="light" size="md" {...args} disabled>
       <SearchIcon fill="gray" />
     </IconButton>
   ),
