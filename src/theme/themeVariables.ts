@@ -641,8 +641,8 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
     icon: {
       size: {
-        extraSmall: rem('12px'),
-        small: rem('16px'),
+        extraSmall: rem('16px'),
+        small: rem('18px'),
         medium: rem('20px'),
         large: rem('24px'),
         extraLarge: rem('28px'),

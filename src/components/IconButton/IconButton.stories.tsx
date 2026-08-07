@@ -1,7 +1,11 @@
 import { Box, Flex } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { within } from '@storybook/testing-library';
+import { expect } from 'storybook/test';
 import { IconButton } from './IconButton';
 import { SearchIcon } from '../../icons/SearchIcon';
+import { themeVariables } from '../../theme/themeVariables';
+import { rem } from '@mantine/core';
 
 const meta = {
   argTypes: {
@@ -69,4 +73,31 @@ export const Colored: Story = {
       </Box>
     </Flex>
   ),
+};
+
+export const SmallSizeIconMatchesToken: Story = {
+  // The rendered icon inside a "sm" IconButton must be sized from
+  // components.icon.size.small (Figma: 18px), not a stale 16px value.
+  render: (args) => (
+    <IconButton {...args} size="sm" variant="light">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const svg = canvas.getByRole('button').querySelector('svg') as SVGElement;
+    await expect(svg).toBeTruthy();
+    const width = getComputedStyle(svg).width;
+    await expect(width).toBe('18px');
+  },
+};
+
+export const ExtraSmallIconTokenMatchesFigma: Story = {
+  // components.icon.size.extraSmall has no rendered consumer yet (no
+  // IconButton "xs" variant exists), so this is a direct token-value check
+  // rather than a DOM assertion.
+  render: (args) => <IconButton {...args} size="md" variant="light" />,
+  play: async () => {
+    await expect(themeVariables.components.icon.size.extraSmall).toBe(rem('16px'));
+  },
 };
