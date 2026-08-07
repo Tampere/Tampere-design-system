@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { DateField } from './DateField';
 import { dayCellOutsideMonth, dayCellDisabled } from './DateField.css.ts';
 import { vars } from '../../theme';
+import { themeVariables } from '../../theme/themeVariables';
 
 const meta = {
   component: DateField,
@@ -1466,5 +1467,13 @@ export const OutsideMonthDayMeetsContrast: Story = {
       .find((b) => b.textContent?.trim() === '31' && b.className.includes(dayCellOutsideMonth));
     await expect(outsideJuly31).toBeTruthy();
     await expect(getComputedStyle(outsideJuly31!).opacity).toBe('1');
+  },
+};
+
+export const HoverOverlayContrastMatchesFigma: Story = {
+  // core.hover.overlayContrast has no rendered consumer yet — direct token check.
+  // Figma Background/Overlay/Contrast (#ffffff1a) is ~10% white, not 5%.
+  play: async () => {
+    await expect(themeVariables.core.hover.overlayContrast).toBe('rgba(255, 255, 255, 0.1000)');
   },
 };

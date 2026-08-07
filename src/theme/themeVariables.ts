@@ -430,7 +430,7 @@ const core = {
   mainExtraDark: colors.blue['700'],
   hover: {
     overlay: 'rgba(0, 0, 0, 0.0300)',
-    overlayContrast: 'rgba(255, 255, 255, 0.0500)',
+    overlayContrast: 'rgba(255, 255, 255, 0.1000)',
   },
   divider: colors.neutral['200'],
   cornerRadius: rem(0),
