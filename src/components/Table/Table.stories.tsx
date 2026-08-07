@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { Stack } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { within, userEvent } from '@storybook/testing-library';
+import { expect } from 'storybook/test';
 import {
   Table,
   TableBody,
@@ -122,5 +125,45 @@ export const Primary: Story = {
         </TableFooter>
       </Stack>
     );
+  },
+};
+
+export const SelectableRows: Story = {
+  render: () => {
+    const SelectableTable = () => {
+      const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+      return (
+        <Table>
+          <TableBody>
+            {['Row one', 'Row two'].map((label, index) => (
+              <TableRow
+                key={label}
+                selected={selectedIndex === index}
+                onSelectedChange={(selected) => setSelectedIndex(selected ? index : null)}
+              >
+                <TableCell>{label}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      );
+    };
+    return <SelectableTable />;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const firstRow = canvas.getByText('Row one').closest('tr') as HTMLElement;
+    const secondRow = canvas.getByText('Row two').closest('tr') as HTMLElement;
+
+    await expect(firstRow.className).not.toMatch(/selected/);
+    await userEvent.click(firstRow);
+    await expect(firstRow.className).toMatch(/selected/);
+
+    // Selecting the second row deselects the first — selection state lives in
+    // React (the story's useState), not in the DOM, so this could not have
+    // worked correctly under the old classList-mutation implementation.
+    await userEvent.click(secondRow);
+    await expect(secondRow.className).toMatch(/selected/);
+    await expect(firstRow.className).not.toMatch(/selected/);
   },
 };

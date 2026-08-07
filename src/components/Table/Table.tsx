@@ -50,24 +50,29 @@ export function TableCell({ children, className, ...props }: ComponentPropsWitho
   );
 }
 
+export interface TableRowProps extends ComponentPropsWithoutRef<'tr'> {
+  /** Whether this row is currently selected. Controlled — the consumer owns this state. */
+  selected?: boolean;
+  /** Called with the new selection state when the row is clicked. */
+  onSelectedChange?: (selected: boolean) => void;
+}
+
 export function TableRow({
   children,
   className,
   onClick,
+  selected,
+  onSelectedChange,
   ...props
-}: ComponentPropsWithoutRef<'tr'>) {
+}: TableRowProps) {
   return (
     <MantineTable.Tr
       {...props}
       onClick={(e) => {
         onClick?.(e);
-        if (e.currentTarget.classList.contains('selected')) {
-          e.currentTarget.classList.remove('selected');
-        } else {
-          e.currentTarget.classList.add('selected');
-        }
+        onSelectedChange?.(!selected);
       }}
-      className={cx([tableRow, className])}
+      className={cx([tableRow, selected && 'selected', className])}
     >
       {children}
     </MantineTable.Tr>
