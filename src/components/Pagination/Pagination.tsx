@@ -1,6 +1,7 @@
 import { Flex, List, UnstyledButton } from '@mantine/core';
 import { IconButton } from '../IconButton/IconButton.tsx';
 import { ChevronLeftIcon } from '../../icons/ChevronLeftIcon.tsx';
+import { ChevronRightIcon } from '../../icons/ChevronRightIcon.tsx';
 import { leftButton, list, listItem, rightButton } from './Pagination.css.ts';
 
 interface Props {
@@ -122,7 +123,7 @@ export function Pagination({
         size="lg"
         variant="dark"
       >
-        <ChevronLeftIcon />
+        <ChevronRightIcon />
       </IconButton>
     </Flex>
   );

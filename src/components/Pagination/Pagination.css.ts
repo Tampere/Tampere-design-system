@@ -75,5 +75,4 @@ export const leftButton = style({
 export const rightButton = style({
   width: pagination.itemWidth,
   height: pagination.itemHeight,
-  transform: 'rotate(180deg)',
 });
