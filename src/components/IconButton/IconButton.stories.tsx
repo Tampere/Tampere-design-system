@@ -12,12 +12,14 @@ const meta = {
     size: { control: { type: 'select' }, options: ['xs', 'sm', 'md', 'lg', 'xl'] },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
+    'aria-label': { control: 'text' },
   },
   args: {
     children: '<Icon />',
     variant: 'light',
     size: 'md',
     disabled: false,
+    'aria-label': 'Search',
   },
   component: IconButton,
 } satisfies Meta<typeof IconButton>;
