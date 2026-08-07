@@ -434,3 +434,6 @@ docs/
 
 # Playwright MCP debug output
 .playwright-mcp/
+
+# Subagent-driven-development scratch workspace (ledgers, briefs, review packages)
+.superpowers/
