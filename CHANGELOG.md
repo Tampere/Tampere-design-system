@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (pre-1.0: breaking changes bump the minor version).
 
+## [Unreleased]
+
+### Fixed
+
+- Token values corrected to match Figma: dropshadow (was a solid grey, now
+  Figma's semi-transparent black), icon xs/sm sizes (12/16px → 16/18px),
+  IconButton contrast-disabled color (neutral/300 → neutral/400), hover
+  overlay contrast opacity (5% → 10%). The red color palette's internal
+  structure was also cleaned up to match Figma's 3-step scale — no visible
+  color change, since the correct value was already reachable under a
+  differently-named key (#85).
+- `SearchField`'s search trigger icon now scales with the responsive control
+  size instead of staying a fixed 24px (#82).
+- Pagination's "next page" chevron now renders the actual right-pointing
+  icon instead of a rotated left-pointing one (no visible change) (#45).
+
+### Changed
+
+- **Breaking:** `TableRow` selection is now a controlled prop
+  (`selected`/`onSelectedChange`) instead of an internal DOM `classList`
+  mutation. Consumers relying on the previous click-to-toggle-automatically
+  behavior must now manage selection state themselves (#48).
+
 ## [0.5.0] - 2026-08-06
 
 **Storybook:** https://tampere.github.io/Tampere-design-system/
