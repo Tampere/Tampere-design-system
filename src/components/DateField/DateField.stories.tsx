@@ -234,7 +234,15 @@ export const OpenCalendar: Story = {
     await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
     // Dropdown portals to document.body, outside canvasElement
     const body = within(document.body);
-    await expect(await body.findByTestId('date-field-calendar')).toBeInTheDocument();
+    const dialog = await body.findByTestId('date-field-calendar');
+    await expect(dialog).toBeInTheDocument();
+
+    // The dropshadow token must match Figma's semi-transparent black
+    // (Effects/Dropshadow = #00000080), not a solid opaque grey.
+    const popover = dialog.closest('[role="dialog"]')?.parentElement;
+    await expect(popover).toBeTruthy();
+    const boxShadow = getComputedStyle(popover as Element).boxShadow;
+    await expect(boxShadow).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.5\)/);
   },
 };
 
