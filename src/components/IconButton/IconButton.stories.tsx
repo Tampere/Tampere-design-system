@@ -4,8 +4,6 @@ import { within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { IconButton } from './IconButton';
 import { SearchIcon } from '../../icons/SearchIcon';
-import { themeVariables } from '../../theme/themeVariables';
-import { rem } from '@mantine/core';
 
 const meta = {
   argTypes: {
@@ -103,15 +101,23 @@ export const SmallSizeIconMatchesToken: Story = {
   },
 };
 
-export const ExtraSmallIconTokenMatchesFigma: Story = {
+export const ExtraSmallSizeIconMatchesToken: Story = {
   // Test-only: carries a `play` assertion, not documentation, so it's hidden
   // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
   tags: ['!dev', '!autodocs'],
-  // components.icon.size.extraSmall has no rendered consumer yet (no
-  // IconButton "xs" variant exists), so this is a direct token-value check
-  // rather than a DOM assertion.
-  render: (args) => <IconButton {...args} size="md" variant="light" />,
-  play: async () => {
-    await expect(themeVariables.components.icon.size.extraSmall).toBe(rem('16px'));
+  // The rendered icon inside an "xs" IconButton must be sized from
+  // components.icon.size.extraSmall (Figma: 16px), not fall back to the raw
+  // icon's own default size for lack of a data-size="xs" style rule.
+  render: (args) => (
+    <IconButton {...args} size="xs" variant="light">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const svg = canvas.getByRole('button').querySelector('svg') as SVGElement;
+    await expect(svg).toBeTruthy();
+    const width = getComputedStyle(svg).width;
+    await expect(width).toBe('16px');
   },
 };
