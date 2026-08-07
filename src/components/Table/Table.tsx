@@ -50,12 +50,16 @@ export function TableCell({ children, className, ...props }: ComponentPropsWitho
   );
 }
 
-export interface TableRowProps extends ComponentPropsWithoutRef<'tr'> {
-  /** Whether this row is currently selected. Controlled — the consumer owns this state. */
-  selected?: boolean;
-  /** Called with the new selection state when the row is clicked. */
-  onSelectedChange?: (selected: boolean) => void;
-}
+type TableRowSelection =
+  | {
+      /** Whether this row is currently selected. Controlled — the consumer owns this state. */
+      selected: boolean;
+      /** Called with the new selection state when the row is clicked. */
+      onSelectedChange: (selected: boolean) => void;
+    }
+  | { selected?: never; onSelectedChange?: never };
+
+export type TableRowProps = ComponentPropsWithoutRef<'tr'> & TableRowSelection;
 
 export function TableRow({
   children,
