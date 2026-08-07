@@ -322,3 +322,27 @@ export const ClearInput: Story = {
     await expect(input).toHaveValue('');
   },
 };
+
+export const TriggerIconTracksControlSize: Story = {
+  // The search trigger icon must scale with the responsive control size (it is
+  // sized to the button's line-height token), not stay a fixed 24px while the
+  // field shrinks on small breakpoints. Mirrors DateField's identical fix.
+  args: {
+    inputLabel: 'Search',
+    data: [],
+    clearButtonLabel: 'Clear',
+    onSearch: () => {},
+    onChange: () => {},
+    searchButtonProps: { 'aria-label': 'Etsi' },
+  },
+  render: (args) => <SearchField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByLabelText('Etsi');
+    const icon = trigger.querySelector('svg') as SVGElement;
+    await expect(icon).toBeTruthy();
+    const lineHeightPx = parseFloat(getComputedStyle(trigger).lineHeight);
+    const iconWidth = icon.getBoundingClientRect().width;
+    await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
+  },
+};
