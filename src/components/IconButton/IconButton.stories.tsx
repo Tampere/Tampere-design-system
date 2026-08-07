@@ -51,6 +51,14 @@ export const Disabled: Story = {
       <SearchIcon fill="gray" />
     </IconButton>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const path = canvas.getByRole('button').querySelector('path') as SVGPathElement;
+    await expect(path).toBeTruthy();
+    // Figma Components/Icon-button/Contrast/Disabled = Neutral/400 (#9999a0),
+    // not Neutral/300 (#c9c9ce).
+    await expect(getComputedStyle(path).fill).toBe('rgb(153, 153, 160)');
+  },
 };
 
 export const Colored: Story = {
