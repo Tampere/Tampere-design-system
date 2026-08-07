@@ -324,6 +324,9 @@ export const ClearInput: Story = {
 };
 
 export const TriggerIconTracksControlSize: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
   // The search trigger icon must scale with the responsive control size (it is
   // sized to the button's line-height token), not stay a fixed 24px while the
   // field shrinks on small breakpoints. Mirrors DateField's identical fix.

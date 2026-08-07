@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Upgrade notes
+
+- **Visual: Accordion item shadow changed.** The drop shadow under each
+  `Accordion` item is now Figma's semi-transparent black (was an opaque
+  grey). Worth a quick visual check if you have snapshot tests.
+- **Visual: DateField calendar popover shadow changed.** Same
+  opaque-grey-to-semi-transparent-black correction as `Accordion`, applied to
+  the calendar popover's drop shadow.
+- **Visual: IconButton `size="sm"` icons are slightly larger.** The rendered
+  icon grows from 16px to 18px to match Figma.
+- **Visual: IconButton contrast-disabled icons are slightly darker.** The
+  disabled icon color moves one shade darker (neutral/300 → neutral/400) to
+  match Figma.
+- **Visual: SearchField's search trigger icon now shrinks at narrow
+  breakpoints** instead of staying a fixed size, matching the control's
+  responsive sizing.
+
 ### Fixed
 
 - Token values corrected to match Figma: dropshadow (was a solid grey, now
@@ -16,7 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   overlay contrast opacity (5% → 10%). The red color palette's internal
   structure was also cleaned up to match Figma's 3-step scale — no visible
   color change, since the correct value was already reachable under a
-  differently-named key (#85).
+  differently-named key (#85). Note: these corrections apply to the
+  library's live CSS/rendered output; the package's raw `themeVariables` JS
+  export still returns the pre-fix values pending
+  [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
 - `SearchField`'s search trigger icon now scales with the responsive control
   size instead of staying a fixed 24px (#82).
 - Pagination's "next page" chevron now renders the actual right-pointing
@@ -28,6 +48,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`selected`/`onSelectedChange`) instead of an internal DOM `classList`
   mutation. Consumers relying on the previous click-to-toggle-automatically
   behavior must now manage selection state themselves (#48).
+
+  ```diff
+  - <TableRow onClick={handleClick}>
+  + <TableRow selected={isSelected} onSelectedChange={setIsSelected}>
+      <TableCell>...</TableCell>
+    </TableRow>
+  ```
 
 ## [0.5.0] - 2026-08-06
 

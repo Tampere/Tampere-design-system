@@ -53,6 +53,9 @@ export const Primary: Story = {
 };
 
 export const ChevronsPointCorrectDirections: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
   args: {
     pageCount: 5,
     activePageIndex: 2,

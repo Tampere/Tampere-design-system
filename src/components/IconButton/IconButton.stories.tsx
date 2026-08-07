@@ -84,6 +84,9 @@ export const Colored: Story = {
 };
 
 export const SmallSizeIconMatchesToken: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
   // The rendered icon inside a "sm" IconButton must be sized from
   // components.icon.size.small (Figma: 18px), not a stale 16px value.
   render: (args) => (
@@ -101,6 +104,9 @@ export const SmallSizeIconMatchesToken: Story = {
 };
 
 export const ExtraSmallIconTokenMatchesFigma: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
   // components.icon.size.extraSmall has no rendered consumer yet (no
   // IconButton "xs" variant exists), so this is a direct token-value check
   // rather than a DOM assertion.
