@@ -18,23 +18,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the calendar popover's drop shadow.
 - **Visual: IconButton `size="sm"` icons are slightly larger.** The rendered
   icon grows from 16px to 18px to match Figma.
+- **Visual: IconButton `size="lg"` is now square.** Because the button's root
+  has no explicit width/height (it sizes to its content), correcting the icon
+  from 24×28 to 24×24 also shrinks the rendered button box to match. This
+  affects `Pagination`'s chevron buttons and `Modal`'s close button — worth a
+  quick visual check.
 - **Visual: IconButton contrast-disabled icons are slightly darker.** The
   disabled icon color moves one shade darker (neutral/300 → neutral/400) to
   match Figma.
 - **Visual: SearchField's search trigger icon now shrinks at narrow
   breakpoints** instead of staying a fixed size, matching the control's
   responsive sizing.
-- **Breaking: `TableRow` selection is now a controlled prop.** See "Breaking
-  changes" under `### Changed` below for the migration.
+- **Breaking: `TableRow` selection is now a controlled prop.** See the
+  **Breaking:** entries under `### Changed` below for the migration.
 - **Breaking: the `red` color palette's internal structure changed** for
-  consumers of the raw `colors`/`themeVariablesV2` palette. See "Breaking
-  changes" under `### Changed` below — semantic token consumers are
-  unaffected.
+  consumers of the raw `colors`/`themeVariablesV2` palette. See the
+  **Breaking:** entries under `### Changed` below — semantic token consumers
+  are unaffected.
 
 ### Added
 
 - `IconButton` now supports `size="xs"`, matching the extra-small variant
   already available on other controls.
+- `TableRow` now sets `aria-selected` to reflect its `selected` state, for
+  assistive technology (#48).
 
 ### Fixed
 
@@ -44,8 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   overlay contrast opacity (5% → 10%). The red color palette's internal
   structure was also cleaned up to match Figma's 3-step scale — no visible
   color change, since the correct value was already reachable under a
-  differently-named key (see "Breaking changes" below for raw-palette
-  consumers) (#85). Note: these corrections apply to the
+  differently-named key (see the **Breaking:** entry under `### Changed`
+  below for raw-palette consumers) (#85). Note: these corrections apply to the
   library's live CSS/rendered output; the package's raw `themeVariables` JS
   export still returns the pre-fix values pending
   [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
@@ -53,6 +60,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   size instead of staying a fixed 24px (#82).
 - Pagination's "next page" chevron now renders the actual right-pointing
   icon instead of a rotated left-pointing one (no visible change) (#45).
+- IconButton's `size="lg"` icon is now square (24×24, was 24×28) to match
+  Figma; since the button's root is content-sized, this also shrinks the
+  rendered button box, affecting `Pagination`'s chevron buttons and `Modal`'s
+  close button (#93, #45).
 
 ### Changed
 
