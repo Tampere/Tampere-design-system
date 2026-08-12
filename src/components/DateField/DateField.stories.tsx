@@ -4,7 +4,7 @@ import { within, userEvent, waitFor, fireEvent } from '@storybook/testing-librar
 import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
-import { dayCellOutsideMonth, dayCellDisabled } from './DateField.css.ts';
+import { dayCellOutsideMonth, dayCellDisabled, popoverContent } from './DateField.css.ts';
 import { vars } from '../../theme';
 import { themeVariables } from '../../theme/themeVariables';
 
@@ -239,8 +239,11 @@ export const OpenCalendar: Story = {
     await expect(dialog).toBeInTheDocument();
 
     // The dropshadow token must match Figma's semi-transparent black
-    // (Effects/Dropshadow = #00000080), not a solid opaque grey.
-    const popover = dialog.closest('[role="dialog"]')?.parentElement;
+    // (Effects/Dropshadow = #00000080), not a solid opaque grey. Query by the
+    // exported style class directly (as Accordion's equivalent test does)
+    // rather than walking Mantine's internal Popover DOM nesting, which is
+    // not a stable public contract.
+    const popover = document.querySelector(`.${popoverContent}`);
     await expect(popover).toBeTruthy();
     const boxShadow = getComputedStyle(popover as Element).boxShadow;
     await expect(boxShadow).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.5\)/);
