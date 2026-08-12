@@ -156,14 +156,18 @@ export const SelectableRows: Story = {
     const secondRow = canvas.getByText('Row two').closest('tr') as HTMLElement;
 
     await expect(firstRow.className).not.toMatch(/selected/);
+    await expect(firstRow).toHaveAttribute('aria-selected', 'false');
     await userEvent.click(firstRow);
     await expect(firstRow.className).toMatch(/selected/);
+    await expect(firstRow).toHaveAttribute('aria-selected', 'true');
 
     // Selecting the second row deselects the first — selection state lives in
     // React (the story's useState), not in the DOM, so this could not have
     // worked correctly under the old classList-mutation implementation.
     await userEvent.click(secondRow);
     await expect(secondRow.className).toMatch(/selected/);
+    await expect(secondRow).toHaveAttribute('aria-selected', 'true');
     await expect(firstRow.className).not.toMatch(/selected/);
+    await expect(firstRow).toHaveAttribute('aria-selected', 'false');
   },
 };

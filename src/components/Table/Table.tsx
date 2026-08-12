@@ -57,6 +57,9 @@ type TableRowSelection =
       /** Called with the new selection state when the row is clicked. */
       onSelectedChange: (selected: boolean) => void;
     }
+  // `never` (not `{}` or `Partial<...>`) is required here — either of those
+  // would silently allow `selected` alone, reopening the "selected but never
+  // togglable" bug this union exists to prevent (#48).
   | { selected?: never; onSelectedChange?: never };
 
 export type TableRowProps = ComponentPropsWithoutRef<'tr'> & TableRowSelection;
@@ -72,6 +75,7 @@ export function TableRow({
   return (
     <MantineTable.Tr
       {...props}
+      aria-selected={selected}
       onClick={(e) => {
         onClick?.(e);
         onSelectedChange?.(!selected);
