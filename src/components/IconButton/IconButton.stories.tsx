@@ -53,7 +53,9 @@ export const Disabled: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const path = canvas.getByRole('button').querySelector('path') as SVGPathElement;
+    const button = canvas.getByRole('button', { name: 'Search' });
+    await expect(button).toBeInTheDocument();
+    const path = button.querySelector('path') as SVGPathElement;
     await expect(path).toBeTruthy();
     // Figma Components/Icon-button/Contrast/Disabled = Neutral/400 (#9999a0),
     // not Neutral/300 (#c9c9ce).
