@@ -70,12 +70,13 @@ export function TableRow({
   onClick,
   selected,
   onSelectedChange,
+  'aria-selected': ariaSelected,
   ...props
 }: TableRowProps) {
   return (
     <MantineTable.Tr
       {...props}
-      aria-selected={selected}
+      aria-selected={selected ?? ariaSelected}
       onClick={(e) => {
         onClick?.(e);
         onSelectedChange?.(!selected);
