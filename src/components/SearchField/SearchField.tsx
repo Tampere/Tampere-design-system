@@ -5,13 +5,13 @@ import { themeVariables } from '../../theme/themeVariables.ts';
 import { Button, ButtonProps } from '../Button';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
-import { dropdown, inputWrapper, listOptions, option } from './SearchField.css.ts';
+import { dropdown, inputWrapper, listOptions, option, triggerIcon } from './SearchField.css.ts';
 
 // Search button component
 const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
   return (
     <Button variant="filled" disabled={disabled} {...restProps}>
-      <SearchIcon {...(!disabled && { fill: 'white' })} />
+      <SearchIcon className={triggerIcon} {...(!disabled && { fill: 'white' })} />
     </Button>
   );
 };

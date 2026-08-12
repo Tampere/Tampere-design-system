@@ -6,7 +6,6 @@ const {
   spacing,
   focusRing,
   core,
-  colors,
   components: { iconButton },
   text,
 } = vars;
@@ -98,5 +97,5 @@ globalStyle(`${input}[data-disabled=true] + svg path`, {
 
 // Error state
 globalStyle(`${input}[data-error=true] + svg path`, {
-  fill: colors.red[400],
+  fill: core.states.error,
 });

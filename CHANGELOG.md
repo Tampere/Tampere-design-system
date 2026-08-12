@@ -6,6 +6,88 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (pre-1.0: breaking changes bump the minor version).
 
+## [Unreleased]
+
+### Upgrade notes
+
+- **Visual: Accordion item shadow changed.** The drop shadow under each
+  `Accordion` item is now Figma's semi-transparent black (was an opaque
+  grey). Worth a quick visual check if you have snapshot tests.
+- **Visual: DateField calendar popover shadow changed.** Same
+  opaque-grey-to-semi-transparent-black correction as `Accordion`, applied to
+  the calendar popover's drop shadow.
+- **Visual: IconButton `size="sm"` icons are slightly larger.** The rendered
+  icon grows from 16px to 18px to match Figma.
+- **Visual: IconButton `size="lg"` is now square.** Because the button's root
+  has no explicit width/height (it sizes to its content), correcting the icon
+  from 24×28 to 24×24 also shrinks the rendered button box to match. This
+  affects `Pagination`'s chevron buttons and `Modal`'s close button — worth a
+  quick visual check.
+- **Visual: IconButton contrast-disabled icons are slightly darker.** The
+  disabled icon color moves one shade darker (neutral/300 → neutral/400) to
+  match Figma.
+- **Visual: SearchField's search trigger icon now shrinks at narrow
+  breakpoints** instead of staying a fixed size, matching the control's
+  responsive sizing.
+- **Breaking: `TableRow` selection is now a controlled prop.** See the
+  **Breaking:** entries under `### Changed` below for the migration.
+- **Breaking: the `red` color palette's internal structure changed** for
+  consumers of the raw `colors`/`themeVariablesV2` palette. See the
+  **Breaking:** entries under `### Changed` below — semantic token consumers
+  are unaffected.
+
+### Added
+
+- `IconButton` now supports `size="xs"`, matching the extra-small variant
+  already available on other controls.
+- `TableRow` now sets `aria-selected` to reflect its `selected` state, for
+  assistive technology (#48).
+
+### Fixed
+
+- Token values corrected to match Figma: dropshadow (was a solid grey, now
+  Figma's semi-transparent black), icon xs/sm sizes (12/16px → 16/18px),
+  IconButton contrast-disabled color (neutral/300 → neutral/400), hover
+  overlay contrast opacity (5% → 10%). The red color palette's internal
+  structure was also cleaned up to match Figma's 3-step scale — no visible
+  color change, since the correct value was already reachable under a
+  differently-named key (see the **Breaking:** entry under `### Changed`
+  below for raw-palette consumers) (#85). Note: these corrections apply to the
+  library's live CSS/rendered output; the package's raw `themeVariables` JS
+  export still returns the pre-fix values pending
+  [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
+- `SearchField`'s search trigger icon now scales with the responsive control
+  size instead of staying a fixed 24px (#82).
+- Pagination's "next page" chevron now renders the actual right-pointing
+  icon instead of a rotated left-pointing one (no visible change) (#45).
+- IconButton's `size="lg"` icon is now square (24×24, was 24×28) to match
+  Figma; since the button's root is content-sized, this also shrinks the
+  rendered button box, affecting `Pagination`'s chevron buttons and `Modal`'s
+  close button (#93, #45).
+
+### Changed
+
+- **Breaking:** `TableRow` selection is now a controlled prop
+  (`selected`/`onSelectedChange`) instead of an internal DOM `classList`
+  mutation. Consumers relying on the previous click-to-toggle-automatically
+  behavior must now manage selection state themselves (#48).
+
+  ```diff
+  - <TableRow onClick={handleClick}>
+  + <TableRow selected={isSelected} onSelectedChange={setIsSelected}>
+      <TableCell>...</TableCell>
+    </TableRow>
+  ```
+
+- **Breaking: the `red` color palette's internal structure changed.**
+  `colors.red` (exposed via `vars.colors` and the raw `themeVariablesV2`
+  export) now has 3 steps instead of 4, matching Figma. `red['400']` was
+  removed, and the value it held (`#ae1e20`) now lives under `red['300']`
+  instead of the old, non-Figma `red['300']` (`#da2321`). This only affects
+  consumers who referenced the raw `colors` palette directly instead of the
+  semantic `core.error`/`core.states.error` tokens, which resolve to the
+  same corrected color as before (#85).
+
 ## [0.5.0] - 2026-08-06
 
 **Storybook:** https://tampere.github.io/Tampere-design-system/

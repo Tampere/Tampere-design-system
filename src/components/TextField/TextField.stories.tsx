@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 // react hooks not required here; story state is managed via Storybook args
 import { useArgs } from '@storybook/client-api';
+import { expect, within } from 'storybook/test';
 import { TextField } from './TextField';
 
 const meta = {
@@ -55,6 +56,12 @@ export const Disabled: Story = {
 export const WithError: Story = {
   args: { inputLabel: 'Email', error: 'Invalid email', placeholder: 'you@example.com' },
   render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('you@example.com');
+    // Figma Common/Error = Red/300 (#ae1e20), reached via the shared core.states.error token.
+    await expect(getComputedStyle(input).borderColor).toBe('rgb(174, 30, 32)');
+  },
 };
 
 export const WithHelperText: Story = {

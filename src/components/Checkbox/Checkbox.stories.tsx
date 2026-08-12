@@ -1,5 +1,6 @@
 import { useArgs } from '@storybook/client-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import { Checkbox } from './Checkbox';
 
 const meta = {
@@ -67,6 +68,13 @@ export const Disabled: Story = {
 export const Error: Story = {
   args: { label: 'Error option', error: true },
   render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const path = canvas.getByRole('checkbox').parentElement?.querySelector('svg path');
+    await expect(path).toBeTruthy();
+    // Figma Common/Error = Red/300 (#ae1e20).
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(174, 30, 32)');
+  },
 };
 
 export const RichLabel: Story = {

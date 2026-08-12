@@ -4,8 +4,9 @@ import { within, userEvent, waitFor, fireEvent } from '@storybook/testing-librar
 import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
-import { dayCellOutsideMonth, dayCellDisabled } from './DateField.css.ts';
+import { dayCellOutsideMonth, dayCellDisabled, popoverContent } from './DateField.css.ts';
 import { vars } from '../../theme';
+import { themeVariables } from '../../theme/themeVariables';
 
 const meta = {
   component: DateField,
@@ -234,7 +235,18 @@ export const OpenCalendar: Story = {
     await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
     // Dropdown portals to document.body, outside canvasElement
     const body = within(document.body);
-    await expect(await body.findByTestId('date-field-calendar')).toBeInTheDocument();
+    const dialog = await body.findByTestId('date-field-calendar');
+    await expect(dialog).toBeInTheDocument();
+
+    // The dropshadow token must match Figma's semi-transparent black
+    // (Effects/Dropshadow = #00000080), not a solid opaque grey. Query by the
+    // exported style class directly (as Accordion's equivalent test does)
+    // rather than walking Mantine's internal Popover DOM nesting, which is
+    // not a stable public contract.
+    const popover = document.querySelector(`.${popoverContent}`);
+    await expect(popover).toBeTruthy();
+    const boxShadow = getComputedStyle(popover as Element).boxShadow;
+    await expect(boxShadow).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.5\)/);
   },
 };
 
@@ -1458,5 +1470,15 @@ export const OutsideMonthDayMeetsContrast: Story = {
       .find((b) => b.textContent?.trim() === '31' && b.className.includes(dayCellOutsideMonth));
     await expect(outsideJuly31).toBeTruthy();
     await expect(getComputedStyle(outsideJuly31!).opacity).toBe('1');
+  },
+};
+
+export const HoverOverlayContrastMatchesFigma: Story = {
+  // core.hover.overlayContrast is now also rendered via
+  // iconButton.states.contrast.overlay; this stays a direct token check since
+  // no story currently asserts on that background visually.
+  // Figma Background/Overlay/Contrast (#ffffff1a) is ~10% white, not 5%.
+  play: async () => {
+    await expect(themeVariables.core.hover.overlayContrast).toBe('rgba(255, 255, 255, 0.1000)');
   },
 };

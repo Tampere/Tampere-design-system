@@ -343,8 +343,7 @@ const colors = {
   red: {
     '100': '#eb5e58',
     '200': '#c83e36',
-    '300': '#da2321',
-    '400': '#ae1e20',
+    '300': '#ae1e20',
   },
 
   pink: {
@@ -418,7 +417,7 @@ const core = {
   background: colors.neutral.white,
   backgroundDisabled: colors.neutral['100'],
   contrast: colors.neutral.white,
-  error: colors.red['400'],
+  error: colors.red['300'],
   mainLight: colors.blue['300'],
   main: colors.blue['400'],
   mainDark: colors.blue['500'],
@@ -430,19 +429,19 @@ const core = {
   mainExtraDark: colors.blue['700'],
   hover: {
     overlay: 'rgba(0, 0, 0, 0.0300)',
-    overlayContrast: 'rgba(255, 255, 255, 0.0500)',
+    overlayContrast: 'rgba(255, 255, 255, 0.1000)',
   },
   divider: colors.neutral['200'],
   cornerRadius: rem(0),
   strokeWeight: rem('2px'),
-  dropshadow: colors.neutral['400'],
+  dropshadow: 'rgba(0, 0, 0, 0.5000)',
   states: {
     default: colors.blue['400'],
     hover: colors.blue['600'],
     focus: colors.blue['400'],
     active: colors.blue['300'],
     disabled: colors.neutral['300'],
-    error: colors.red['400'],
+    error: colors.red['300'],
     visited: colors.blue['300'],
   },
   // Figma's "Input-states" variable collection — distinct from "Primary-states"
@@ -641,8 +640,8 @@ export function getComponents(bp: keyof typeof breakpoints) {
     },
     icon: {
       size: {
-        extraSmall: rem('12px'),
-        small: rem('16px'),
+        extraSmall: rem('16px'),
+        small: rem('18px'),
         medium: rem('20px'),
         large: rem('24px'),
         extraLarge: rem('28px'),
@@ -657,8 +656,8 @@ export function getComponents(bp: keyof typeof breakpoints) {
           hover: colors.neutral['100'],
           focus: colors.neutral['100'],
           active: colors.neutral['200'],
-          disabled: colors.neutral['300'],
-          overlay: 'rgba(255, 255, 255, 0.1000)',
+          disabled: colors.neutral['400'],
+          overlay: core.hover.overlayContrast,
         },
         default: colors.neutral['700'],
         hover: colors.neutral['500'],

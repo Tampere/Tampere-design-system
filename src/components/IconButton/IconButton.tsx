@@ -4,7 +4,7 @@ import { mergeClassNames } from '../../utils';
 import { iconWrapper, iconRoot } from './IconButton.css.ts';
 
 type IconButtonVariant = 'light' | 'dark';
-type IconButtonSize = 'sm' | 'md' | 'lg' | 'xl';
+type IconButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 export interface Props extends ActionIconProps, PropsWithChildren {
   variant?: IconButtonVariant;

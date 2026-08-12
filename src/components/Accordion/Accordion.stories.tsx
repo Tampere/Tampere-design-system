@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 
 import { Accordion, AccordionItem } from './Accordion';
+import { item as accordionItem } from './Accordion.css.ts';
 
 const meta: Meta<typeof Accordion> = {
   argTypes: {
@@ -42,4 +44,13 @@ export const Primary: Story = {
       </AccordionItem>
     </Accordion>
   ),
+  play: async ({ canvasElement }) => {
+    // Test: Verify that Accordion item uses the corrected dropshadow token (semi-transparent black)
+    const items = canvasElement.querySelectorAll(`.${accordionItem}`);
+    await expect(items.length).toBeGreaterThan(0);
+    for (const el of items) {
+      // Assert that the shadow includes rgba(0, 0, 0, 0.5) (semi-transparent black at 50% opacity)
+      await expect(getComputedStyle(el).boxShadow).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.5\)/);
+    }
+  },
 };

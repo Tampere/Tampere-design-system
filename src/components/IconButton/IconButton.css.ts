@@ -27,6 +27,10 @@ export const iconWrapper = style({
   justifyContent: 'center',
 });
 
+globalStyle(`${root}[data-size="xs"] svg`, {
+  width: icon.size.extraSmall,
+  height: icon.size.extraSmall,
+});
 globalStyle(`${root}[data-size="sm"] svg`, {
   width: icon.size.small,
   height: icon.size.small,
@@ -37,7 +41,7 @@ globalStyle(`${root}[data-size="md"] svg`, {
 });
 globalStyle(`${root}[data-size="lg"] svg`, {
   width: icon.size.large,
-  height: icon.size.extraLarge,
+  height: icon.size.large,
 });
 globalStyle(`${root}[data-size="xl"] svg`, {
   width: icon.size.extraLarge,

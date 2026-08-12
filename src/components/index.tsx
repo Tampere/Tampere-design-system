@@ -19,6 +19,7 @@ export {
   TableHeader,
   TableHeaderCell,
   TableRow,
+  type TableRowProps,
 } from './Table/Table';
 export { TextArea } from './TextArea/TextArea';
 export { TextField } from './TextField/TextField';

@@ -50,24 +50,38 @@ export function TableCell({ children, className, ...props }: ComponentPropsWitho
   );
 }
 
+type TableRowSelection =
+  | {
+      /** Whether this row is currently selected. Controlled — the consumer owns this state. */
+      selected: boolean;
+      /** Called with the new selection state when the row is clicked. */
+      onSelectedChange: (selected: boolean) => void;
+    }
+  // `never` (not `{}` or `Partial<...>`) is required here — either of those
+  // would silently allow `selected` alone, reopening the "selected but never
+  // togglable" bug this union exists to prevent (#48).
+  | { selected?: never; onSelectedChange?: never };
+
+export type TableRowProps = ComponentPropsWithoutRef<'tr'> & TableRowSelection;
+
 export function TableRow({
   children,
   className,
   onClick,
+  selected,
+  onSelectedChange,
+  'aria-selected': ariaSelected,
   ...props
-}: ComponentPropsWithoutRef<'tr'>) {
+}: TableRowProps) {
   return (
     <MantineTable.Tr
       {...props}
+      aria-selected={selected ?? ariaSelected}
       onClick={(e) => {
         onClick?.(e);
-        if (e.currentTarget.classList.contains('selected')) {
-          e.currentTarget.classList.remove('selected');
-        } else {
-          e.currentTarget.classList.add('selected');
-        }
+        onSelectedChange?.(!selected);
       }}
-      className={cx([tableRow, className])}
+      className={cx([tableRow, selected && 'selected', className])}
     >
       {children}
     </MantineTable.Tr>

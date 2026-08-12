@@ -4,7 +4,6 @@ import { vars } from '../../theme';
 const {
   core,
   focusRing,
-  colors,
   components: { typography, icon: iconVars, iconButton },
   text,
   spacing,
@@ -86,7 +85,7 @@ globalStyle(`${input}[data-disabled=true] + svg path`, {
 
 // Error state
 globalStyle(`${input}[data-error=true] + svg path`, {
-  fill: colors.red[400],
+  fill: core.states.error,
 });
 
 // Focus ring (shared)

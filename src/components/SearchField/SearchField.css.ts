@@ -70,6 +70,14 @@ export const listOptions = style({
   padding: 0,
 });
 
+// The search trigger icon scales with the responsive control size: its width
+// tracks the button line-height token, so it shrinks with the field instead
+// of staying a fixed 24px. Mirrors DateField.css.ts's identical `triggerIcon`.
+export const triggerIcon = style({
+  width: buttonVars.lineHeight,
+  height: 'auto',
+});
+
 globalStyle(`${option}[data-combobox-selected="true"]`, {
   background: item.background.selected.default,
   fontWeight: item.highlightFontWeight,
