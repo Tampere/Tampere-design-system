@@ -24,6 +24,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Visual: SearchField's search trigger icon now shrinks at narrow
   breakpoints** instead of staying a fixed size, matching the control's
   responsive sizing.
+- **Breaking: `TableRow` selection is now a controlled prop.** See "Breaking
+  changes" under `### Changed` below for the migration.
+- **Breaking: the `red` color palette's internal structure changed** for
+  consumers of the raw `colors`/`themeVariablesV2` palette. See "Breaking
+  changes" under `### Changed` below — semantic token consumers are
+  unaffected.
+
+### Added
+
+- `IconButton` now supports `size="xs"`, matching the extra-small variant
+  already available on other controls.
 
 ### Fixed
 
@@ -33,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   overlay contrast opacity (5% → 10%). The red color palette's internal
   structure was also cleaned up to match Figma's 3-step scale — no visible
   color change, since the correct value was already reachable under a
-  differently-named key (#85). Note: these corrections apply to the
+  differently-named key (see "Breaking changes" below for raw-palette
+  consumers) (#85). Note: these corrections apply to the
   library's live CSS/rendered output; the package's raw `themeVariables` JS
   export still returns the pre-fix values pending
   [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
