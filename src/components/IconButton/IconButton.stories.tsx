@@ -123,3 +123,25 @@ export const ExtraSmallSizeIconMatchesToken: Story = {
     await expect(width).toBe('16px');
   },
 };
+
+export const LargeSizeIconMatchesToken: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
+  // The rendered icon inside a "lg" IconButton must be square, sized from
+  // components.icon.size.large (Figma: 24px) on both axes — not stretched by
+  // pairing a mismatched height token.
+  render: (args) => (
+    <IconButton {...args} size="lg" variant="light">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const svg = canvas.getByRole('button').querySelector('svg') as SVGElement;
+    await expect(svg).toBeTruthy();
+    const { width, height } = getComputedStyle(svg);
+    await expect(width).toBe('24px');
+    await expect(height).toBe('24px');
+  },
+};

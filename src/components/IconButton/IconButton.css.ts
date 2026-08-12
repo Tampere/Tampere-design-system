@@ -41,7 +41,7 @@ globalStyle(`${root}[data-size="md"] svg`, {
 });
 globalStyle(`${root}[data-size="lg"] svg`, {
   width: icon.size.large,
-  height: icon.size.extraLarge,
+  height: icon.size.large,
 });
 globalStyle(`${root}[data-size="xl"] svg`, {
   width: icon.size.extraLarge,
