@@ -657,7 +657,7 @@ export function getComponents(bp: keyof typeof breakpoints) {
           focus: colors.neutral['100'],
           active: colors.neutral['200'],
           disabled: colors.neutral['400'],
-          overlay: 'rgba(255, 255, 255, 0.1000)',
+          overlay: core.hover.overlayContrast,
         },
         default: colors.neutral['700'],
         hover: colors.neutral['500'],
