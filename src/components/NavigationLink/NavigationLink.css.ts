@@ -1,11 +1,13 @@
 import { styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
-const { components, core, focusRing, focusRingInverted, text } = vars;
+const {
+  theme: { components, strokeWeight, states, contrast, focusRing, focusRingInverted, text },
+} = vars;
 
 const linkBase = {
   textDecoration: 'none',
-  borderBottom: `solid ${core.strokeWeight} transparent`,
+  borderBottom: `solid ${strokeWeight} transparent`,
   width: 'fit-content',
 };
 
@@ -24,20 +26,20 @@ const linkMedium = {
 const defaultSelectors = {
   '&:focus-visible': focusRing,
   '&:hover': {
-    borderBottom: `solid ${core.strokeWeight} ${core.states.hover}`,
+    borderBottom: `solid ${strokeWeight} ${states.hover}`,
   },
 };
 
 const invertedSelectors = {
   '&:focus-visible': focusRingInverted,
   '&:hover': {
-    borderBottom: `solid ${core.strokeWeight} ${core.contrast}`,
+    borderBottom: `solid ${strokeWeight} ${contrast}`,
   },
 };
 
 const variants = {
   default: { selectors: defaultSelectors },
-  inverted: { color: core.contrast, selectors: invertedSelectors },
+  inverted: { color: contrast, selectors: invertedSelectors },
 };
 
 export const linkSize = styleVariants({
@@ -52,9 +54,9 @@ export const linkVariant = styleVariants({
 
 export const selected = styleVariants({
   default: {
-    borderBottom: `solid ${core.strokeWeight} ${core.states.hover}`,
+    borderBottom: `solid ${strokeWeight} ${states.hover}`,
   },
   inverted: {
-    borderBottom: `solid ${core.strokeWeight} ${core.contrast}`,
+    borderBottom: `solid ${strokeWeight} ${contrast}`,
   },
 });

@@ -3,11 +3,14 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  spacing,
-  focusRing,
-  core,
-  components: { iconButton },
-  text,
+  primitives: { spacing },
+  theme: {
+    focusRing,
+    states,
+    selectionStates,
+    components: { iconButton },
+    text,
+  },
 } = vars;
 
 export const root = style({
@@ -66,36 +69,36 @@ globalStyle(`${input} + svg path`, {
 });
 
 globalStyle(`${input}:hover + svg path`, {
-  fill: core.selectionStates.unchecked.hover,
+  fill: selectionStates.unchecked.hover,
 });
 
 globalStyle(`${input}:active + svg path`, {
-  fill: core.selectionStates.unchecked.active,
+  fill: selectionStates.unchecked.active,
 });
 
 globalStyle(`${input}:focus-visible + svg path`, {
-  fill: core.selectionStates.unchecked.focus,
+  fill: selectionStates.unchecked.focus,
 });
 
 // Checked state
 globalStyle(`${input}[data-checked=true] + svg path`, {
-  fill: core.states.default,
+  fill: states.default,
 });
 
 globalStyle(`${input}[data-checked=true]:hover + svg path`, {
-  fill: core.states.hover,
+  fill: states.hover,
 });
 
 globalStyle(`${input}[data-checked=true]:active + svg path`, {
-  fill: core.states.active,
+  fill: states.active,
 });
 
 // Disabled state
 globalStyle(`${input}[data-disabled=true] + svg path`, {
-  fill: core.states.disabled,
+  fill: states.disabled,
 });
 
 // Error state
 globalStyle(`${input}[data-error=true] + svg path`, {
-  fill: core.states.error,
+  fill: states.error,
 });

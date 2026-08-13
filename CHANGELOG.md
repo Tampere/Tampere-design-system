@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (pre-1.0: breaking changes bump the minor version).
 
+## [0.7.0] - 2026-08-13
+
+### Upgrade notes
+
+- **Breaking: token API restructured into four tiers.** `vars`/`themeVariables` (and the
+  package's other theme exports) now expose `primitives` (raw color/spacing palette),
+  `brand` (brand-mode color stops, e.g. `brand.blue.main`), `theme` (semantic + component
+  tokens — everything that was under `core`/`text`/`components`/`font`/`highlight`/
+  `focusRing`), and `breakpoint` (the responsive per-breakpoint value tables, renamed
+  singular from `breakpoints`). If you styled against raw tokens (uncommon — most consumers
+  only use component props), update paths per the table in #65's PR description. No visual
+  output changes — this is a pure rename.
+- **Breaking: `breakpointsV2`/`getComponentsV2`/`themeVariablesV2`/`ThemeVariablesV2` removed.**
+  The deprecated pre-Figma-realignment `themeVariables_OLD.ts` and its `V2`-suffixed aliases
+  are gone. Use the unsuffixed `breakpoint`/`themeVariables`/`ThemeVariables` exports.
+- **Breaking: unsuffixed `breakpoints` export removed, renamed to `breakpoint`.** Update
+  imports of `breakpoints` from `@tampere/treds` to the singular `breakpoint`.
+- **Breaking: unsuffixed `getComponents` export removed, replaced by `getTheme`.**
+  `getComponents(bp)` is gone; call `getTheme(bp)` instead — same per-breakpoint lookup,
+  new name to match the `theme` tier introduced by this restructure.
+
+### Fixed
+
+- The package's raw `themeVariables`/`ThemeVariables` JS exports (unsuffixed) now return
+  the corrected, current token values instead of the stale pre-#85 values (opaque grey
+  dropshadow, 5% hover overlay, non-variable fonts, missing `inputStates`). Previously
+  `src/theme/index.ts` re-exported these two names from the deprecated
+  `themeVariables_OLD.ts`, so consumers importing the raw JS export (rather than the
+  Vanilla Extract `vars` CSS variables) still saw pre-fix values even after 0.6.0 corrected
+  the rendered output. Closes
+  [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
+
 ## [0.6.0] - 2026-08-12
 
 **Storybook:** https://tampere.github.io/Tampere-design-system/

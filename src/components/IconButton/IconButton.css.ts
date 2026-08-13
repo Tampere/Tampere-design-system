@@ -2,9 +2,11 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  core,
-  components: { icon, iconButton },
-  focusRing,
+  theme: {
+    cornerRadius,
+    components: { icon, iconButton },
+    focusRing,
+  },
 } = vars;
 
 // Root style
@@ -55,7 +57,7 @@ const light = style({
       background: iconButton.states.contrast.overlay,
     },
     '&:focus-visible': {
-      borderRadius: core.cornerRadius,
+      borderRadius: cornerRadius,
       ...focusRing,
     },
     '&:active': {
@@ -87,7 +89,7 @@ const dark = style({
       background: iconButton.states.overlay,
     },
     '&:focus-visible': {
-      borderRadius: core.cornerRadius,
+      borderRadius: cornerRadius,
       ...focusRing,
     },
     '&:active': {

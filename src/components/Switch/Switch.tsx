@@ -46,7 +46,7 @@ export function Switch(props: Props) {
           }}
         >
           {props.checked ? (
-            <CheckboxCheckedIcon fill={vars.core.main} className={openIcon} />
+            <CheckboxCheckedIcon fill={vars.brand.blue.main} className={openIcon} />
           ) : (
             <>
               <CheckboxUncheckedIcon className={closeIcon} />

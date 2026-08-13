@@ -2,19 +2,25 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  core,
-  text,
-  focusRing,
-  components: { button: buttonVars, item, input: inputVars, searchField, typography },
+  theme: {
+    states,
+    strokeWeight,
+    focus,
+    divider,
+    background,
+    text,
+    focusRing,
+    components: { button: buttonVars, item, input: inputVars, searchField, typography },
+  },
 } = vars;
 
 export const buttonBase = style({
-  backgroundColor: core.states.default,
-  border: `${core.strokeWeight} solid ${core.states.default}`,
+  backgroundColor: states.default,
+  border: `${strokeWeight} solid ${states.default}`,
   padding: `${buttonVars.padding.vertical} ${buttonVars.padding.horizontal}`,
   selectors: {
     '&:focus-visible': {
-      outline: `${core.strokeWeight} solid ${core.focus.visible}`,
+      outline: `${strokeWeight} solid ${focus.visible}`,
     },
   },
 });
@@ -24,7 +30,7 @@ export const button = styleVariants({
   disabled: [
     buttonBase,
     {
-      border: `${core.strokeWeight} solid ${core.states.disabled}`,
+      border: `${strokeWeight} solid ${states.disabled}`,
       pointerEvents: 'none',
     },
   ],
@@ -36,9 +42,9 @@ export const inputWrapper = style({
 
 export const dropdown = style({
   backgroundColor: item.background.default,
-  borderRight: `${inputVars.stroke.weight.default} solid ${core.divider}`,
-  borderBottom: `${inputVars.stroke.weight.default} solid ${core.divider}`,
-  borderLeft: `${inputVars.stroke.weight.default} solid ${core.divider}`,
+  borderRight: `${inputVars.stroke.weight.default} solid ${divider}`,
+  borderBottom: `${inputVars.stroke.weight.default} solid ${divider}`,
+  borderLeft: `${inputVars.stroke.weight.default} solid ${divider}`,
   maxHeight: searchField.dropDownMaxHeight,
   overflow: 'auto',
 });
@@ -59,7 +65,7 @@ export const option = style({
     },
     '&:focus-visible': {
       ...focusRing,
-      background: core.background,
+      background: background.default,
     },
   },
 });

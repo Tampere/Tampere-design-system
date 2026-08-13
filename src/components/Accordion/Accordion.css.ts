@@ -2,10 +2,14 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  core,
-  spacing,
-  components: { accordion: accordionVars, typography, item: itemVars, iconButton },
-  focusRing,
+  theme: {
+    strokeWeight,
+    divider,
+    dropShadow,
+    components: { accordion: accordionVars, typography, item: itemVars, iconButton },
+    focusRing,
+  },
+  primitives: { spacing },
 } = vars;
 
 const accordionRoot = style({
@@ -37,7 +41,7 @@ export const control = style({
   border: 'none',
   selectors: {
     '&[data-active=true]': {
-      borderBottom: `${core.strokeWeight} solid ${core.divider}`,
+      borderBottom: `${strokeWeight} solid ${divider}`,
     },
     '&:hover': {
       background: itemVars.background.hover,
@@ -74,7 +78,7 @@ export const chevron = style({
 export const item = style({
   display: 'flex',
   flexDirection: 'column',
-  boxShadow: `0px 1px 4px 0px ${core.dropshadow}`,
+  boxShadow: `0px 1px 4px 0px ${dropShadow}`,
 });
 
 export const content = style({

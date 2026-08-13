@@ -2,7 +2,9 @@ import { style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  components: { loadingIndicator },
+  theme: {
+    components: { loadingIndicator },
+  },
 } = vars;
 
 export const LoadingIndicatorStyles = style({

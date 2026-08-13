@@ -2,7 +2,12 @@ import { style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  components: { typography, link, breadcrumbs: bcVars },
+  theme: {
+    components: { typography, link, breadcrumbs: bcVars },
+    text,
+    font,
+  },
+  primitives: { spacing },
 } = vars;
 
 export const mobileWrapper = style({
@@ -22,7 +27,7 @@ export const arrowLeftIcon = style({
 export const breadcrumbs = style({
   display: 'flex',
   alignItems: 'center',
-  gap: vars.spacing[1],
+  gap: spacing[1],
 });
 
 export const breadcrumbsList = style({
@@ -43,7 +48,7 @@ export const breadcrumbItem = style({
   textUnderlinePosition: 'from-font',
   display: 'inline-flex',
   alignItems: 'center',
-  color: vars.text.secondary,
+  color: text.secondary,
 });
 
 export const breadcrumbListItem = style([
@@ -52,7 +57,7 @@ export const breadcrumbListItem = style([
     selectors: {
       '&:last-child': {
         textDecoration: 'none',
-        color: vars.text.primary,
+        color: text.primary,
         fontSize: typography.p2.fontSize,
         fontWeight: bcVars.activePageFontWeight,
         lineHeight: typography.p2.lineHeight,
@@ -64,12 +69,12 @@ export const breadcrumbListItem = style([
 ]);
 
 export const separator = style({
-  margin: `0 ${vars.spacing[1]}`,
-  color: vars.text.secondary,
+  margin: `0 ${spacing[1]}`,
+  color: text.secondary,
   fontFeatureSettings: "'liga' off, 'clig' off",
   fontSize: typography.p2.fontSize,
   fontStyle: 'normal',
   fontWeight: typography.p2.fontWeight,
   lineHeight: typography.p2.lineHeight,
-  letterSpacing: vars.font.letterSpacing,
+  letterSpacing: font.letterSpacing,
 });

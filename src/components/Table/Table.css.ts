@@ -2,9 +2,13 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  spacing,
-  components: { typography, item },
-  core,
+  primitives: { spacing },
+  theme: {
+    components: { typography, item },
+    strokeWeight,
+    states,
+    divider,
+  },
 } = vars;
 
 const cellPadding = `${spacing['1,5']} ${spacing[2]}`;
@@ -28,7 +32,7 @@ export const headerCell = styleVariants({
     ...typography.subheader,
     padding: cellPadding,
     textAlign: 'left',
-    borderRight: `${core.strokeWeight} solid ${core.states.default}`,
+    borderRight: `${strokeWeight} solid ${states.default}`,
   },
 });
 
@@ -39,10 +43,10 @@ export const caption = style({
 });
 
 export const tableRow = style({
-  borderBottom: `${core.strokeWeight} solid ${core.divider}`,
+  borderBottom: `${strokeWeight} solid ${divider}`,
   selectors: {
     '&:last-child': {
-      borderBottom: `${core.strokeWeight} solid ${core.states.default}`,
+      borderBottom: `${strokeWeight} solid ${states.default}`,
     },
     '&:hover': {
       backgroundColor: item.background.hover,

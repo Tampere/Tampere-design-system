@@ -2,9 +2,12 @@ import { globalStyle, style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  colors,
-  components: { typography, switch: switchComponent },
-  focusRing,
+  primitives: { colors },
+  theme: {
+    components: { typography, switch: switchComponent },
+    focusRing,
+    states,
+  },
 } = vars;
 
 export const body = style({
@@ -25,13 +28,13 @@ export const track = style({
   borderRadius: 0,
   width: `calc(${switchComponent.height} * 2)`,
   vars: {
-    '--switch-color': vars.core.states.default,
+    '--switch-color': states.default,
     '--switch-bg': switchComponent.backgroundUnchecked,
   },
   selectors: {
     '&:hover': {
       vars: {
-        '--switch-color': vars.core.states.hover,
+        '--switch-color': states.hover,
       },
     },
   },
@@ -50,7 +53,7 @@ export const thumb = style({
 });
 
 export const label = style({
-  margin: vars.components.typography.margin,
+  margin: vars.theme.components.typography.margin,
   fontSize: typography.p1.fontSize,
   fontWeight: typography.p1.fontWeight,
   lineHeight: typography.p1.lineHeight,
@@ -65,5 +68,5 @@ globalStyle(`${closeIcon}:hover path`, {
 export const openIcon = style({});
 
 globalStyle(`${openIcon}:hover path`, {
-  fill: vars.core.states.hover,
+  fill: states.hover,
 });

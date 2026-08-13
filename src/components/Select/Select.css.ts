@@ -2,11 +2,15 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  spacing,
-  core,
-  text,
-  components: { typography, input, item },
-  focusRing,
+  primitives: { spacing },
+  theme: {
+    states,
+    divider,
+    background,
+    text,
+    components: { typography, input, item },
+    focusRing,
+  },
 } = vars;
 
 export const chevronOpen = style({
@@ -30,7 +34,7 @@ const textBase = style({
 const errorTextBase = style([
   textBase,
   {
-    color: core.states.error,
+    color: states.error,
   },
 ]);
 
@@ -39,7 +43,7 @@ export const label = styleVariants({
   disabled: [
     textBase,
     {
-      color: vars.text.disabled,
+      color: text.disabled,
     },
   ],
   error: [errorTextBase],
@@ -49,13 +53,13 @@ export const helper = styleVariants({
   default: [
     textBase,
     {
-      color: vars.text.secondary,
+      color: text.secondary,
     },
   ],
   disabled: [
     textBase,
     {
-      color: vars.text.disabled,
+      color: text.disabled,
     },
   ],
   error: [errorTextBase],
@@ -64,7 +68,7 @@ export const helper = styleVariants({
 export const errorText = style([errorTextBase, { paddingTop: input.spacing.verticalSpacing }]);
 
 export const dropDown = style({
-  border: `${input.stroke.weight.default} solid ${core.divider}`,
+  border: `${input.stroke.weight.default} solid ${divider}`,
   borderTop: 'none',
 });
 
@@ -93,7 +97,7 @@ export const dropDownOption = style([
       },
       '&:focus-visible': {
         ...focusRing,
-        background: core.background,
+        background: background.default,
       },
     },
   },
