@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   package's other theme exports) now expose `primitives` (raw color/spacing palette),
   `brand` (brand-mode color stops, e.g. `brand.blue.main`), `theme` (semantic + component
   tokens — everything that was under `core`/`text`/`components`/`font`/`highlight`/
-  `focusRing`), and `breakpoint` (the responsive per-breakpoint value tables, renamed
+  `focusRing`, except `core`'s `main*` brand stops, which moved to `brand` instead), and
+  `breakpoint` (the responsive per-breakpoint value tables, renamed
   singular from `breakpoints`). If you styled against raw tokens (uncommon — most consumers
   only use component props), update paths per the table below. No visual output changes —
   this is a pure rename.
@@ -55,6 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   same shape — it returns the full `theme` tier for that breakpoint, with the same
   component tokens now nested one level deeper, under `.components` (e.g.
   `getTheme(bp).components.button`). Update call sites to add the `.components` segment.
+
+### Added
+
+- `getTheme(bp)`, returning the full `theme` tier of tokens for a given breakpoint.
+- `Theme` type, describing the shape returned by `getTheme(bp)`.
+- `Primitives`, `Brand`, `Breakpoint`, and `BreakpointKey` types, describing the
+  `primitives`, `brand`, and `breakpoint` token tiers.
 
 ### Fixed
 
