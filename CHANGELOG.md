@@ -16,16 +16,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tokens — everything that was under `core`/`text`/`components`/`font`/`highlight`/
   `focusRing`), and `breakpoint` (the responsive per-breakpoint value tables, renamed
   singular from `breakpoints`). If you styled against raw tokens (uncommon — most consumers
-  only use component props), update paths per the table in #65's PR description. No visual
-  output changes — this is a pure rename.
+  only use component props), update paths per the table below. No visual output changes —
+  this is a pure rename.
+
+  | Old                               | New                                           |
+  | --------------------------------- | --------------------------------------------- |
+  | `core.background`                 | `theme.background.default`                    |
+  | `core.backgroundDisabled`         | `theme.background.disabled`                   |
+  | `core.contrast`                   | `theme.contrast`                              |
+  | `core.error`                      | `theme.error`                                 |
+  | `core.main*`                      | `brand.blue.*`                                |
+  | `core.focus.*`                    | `theme.focus.*`                               |
+  | `core.hover.*`                    | `theme.hover.*`                               |
+  | `core.divider`                    | `theme.divider`                               |
+  | `core.cornerRadius`               | `theme.cornerRadius`                          |
+  | `core.strokeWeight`               | `theme.strokeWeight`                          |
+  | `core.dropshadow`                 | `theme.dropShadow`                            |
+  | `core.states.*`                   | `theme.states.*`                              |
+  | `core.inputStates.*`              | `theme.inputStates.*`                         |
+  | `core.selectionStates.*`          | `theme.selectionStates.*`                     |
+  | `text.*`                          | `theme.text.*`                                |
+  | `font.letterSpacing`              | `theme.font.letterSpacing`                    |
+  | `highlight.*`                     | `theme.highlight.*`                           |
+  | `focusRing` / `focusRingInverted` | `theme.focusRing` / `theme.focusRingInverted` |
+  | `components.*`                    | `theme.components.*`                          |
+  | `colors.*`                        | `primitives.colors.*`                         |
+  | `spacing[...]`                    | `primitives.spacing[...]`                     |
+  | `breakpoints[...]`                | `breakpoint[...]`                             |
+
 - **Breaking: `breakpointsV2`/`getComponentsV2`/`themeVariablesV2`/`ThemeVariablesV2` removed.**
   The deprecated pre-Figma-realignment `themeVariables_OLD.ts` and its `V2`-suffixed aliases
   are gone. Use the unsuffixed `breakpoint`/`themeVariables`/`ThemeVariables` exports.
 - **Breaking: unsuffixed `breakpoints` export removed, renamed to `breakpoint`.** Update
   imports of `breakpoints` from `@tampere/treds` to the singular `breakpoint`.
 - **Breaking: unsuffixed `getComponents` export removed, replaced by `getTheme`.**
-  `getComponents(bp)` is gone; call `getTheme(bp)` instead — same per-breakpoint lookup,
-  new name to match the `theme` tier introduced by this restructure.
+  `getComponents(bp)` returned per-breakpoint component tokens directly (e.g.
+  `getComponents(bp).button`). `getTheme(bp)` is **not** a drop-in replacement with the
+  same shape — it returns the full `theme` tier for that breakpoint, with the same
+  component tokens now nested one level deeper, under `.components` (e.g.
+  `getTheme(bp).components.button`). Update call sites to add the `.components` segment.
 
 ### Fixed
 
