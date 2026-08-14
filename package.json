@@ -22,8 +22,8 @@
   ],
   "scripts": {
     "eslint": "eslint --fix src",
-    "prettier": "prettier --write \"{src,.storybook}/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "prettier:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "prettier": "prettier --write \"{src,.storybook}/**/*.{ts,tsx,js,jsx,json,css,md}\" \"*.md\"",
+    "prettier:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\" \"*.md\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "build": "rollup -c",
