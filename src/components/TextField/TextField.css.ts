@@ -2,11 +2,16 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  core,
-  font,
-  components: { input: inputVars, textField, controlHeight, typography },
-  text,
-  focusRing,
+  theme: {
+    states,
+    font,
+    components: { input: inputVars, textField, controlHeight, typography },
+    text,
+    focusRing,
+    cornerRadius,
+    background,
+    inputStates,
+  },
 } = vars;
 
 export const root = style({
@@ -46,7 +51,7 @@ globalStyle(`${section}[data-position="right"]`, {
 
 export const inputRoot = style({
   flex: 1,
-  borderRadius: core.cornerRadius,
+  borderRadius: cornerRadius,
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
   letterSpacing: font.letterSpacing,
@@ -57,24 +62,24 @@ export const inputRoot = style({
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
   alignItems: 'center',
   gap: inputVars.spacing.horizontalSpacing,
-  border: `${inputVars.stroke.weight.default} solid ${core.inputStates.default}`,
-  background: core.background,
+  border: `${inputVars.stroke.weight.default} solid ${inputStates.default}`,
+  background: background.default,
   selectors: {
     '&::placeholder': {
       color: text.secondary,
     },
     '&:hover': {
-      border: `${inputVars.stroke.weight.default} solid ${core.states.hover}`,
-      background: core.background,
+      border: `${inputVars.stroke.weight.default} solid ${states.hover}`,
+      background: background.default,
     },
     '&:focus-visible': {
-      border: `${inputVars.stroke.weight.focus} solid ${core.states.focus}`,
-      background: core.background,
+      border: `${inputVars.stroke.weight.focus} solid ${states.focus}`,
+      background: background.default,
       ...focusRing,
     },
     '&:disabled': {
-      border: `${inputVars.stroke.weight.default} solid ${core.states.disabled}`,
-      background: core.backgroundDisabled,
+      border: `${inputVars.stroke.weight.default} solid ${states.disabled}`,
+      background: background.disabled,
     },
     '&:disabled::placeholder': {
       color: text.disabled,
@@ -96,7 +101,7 @@ export const inputPaddingVariant = styleVariants({
 });
 
 globalStyle(`${inputRoot}[data-error="true"]`, {
-  border: `${inputVars.stroke.weight.default} solid ${core.states.error}`,
+  border: `${inputVars.stroke.weight.default} solid ${states.error}`,
 });
 
 export const labelRoot = style({
@@ -128,13 +133,13 @@ export const disabledText = style({
 });
 
 export const errorText = style({
-  color: core.states.error,
+  color: states.error,
 });
 
 export const errorRoot = style({
   fontSize: inputVars.font.helperText.fontSize,
   lineHeight: inputVars.font.helperText.lineHeight,
-  color: core.states.error,
+  color: states.error,
   margin: textField.labelMargin,
 });
 

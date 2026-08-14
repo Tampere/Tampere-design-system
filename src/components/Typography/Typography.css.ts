@@ -1,40 +1,40 @@
 import { styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
-type TypographyKeys = Exclude<keyof typeof vars.components.typography, 'margin'>;
+type TypographyKeys = Exclude<keyof typeof vars.theme.components.typography, 'margin'>;
 type HeaderKeys = Exclude<TypographyKeys, 'subheader' | 'p1' | 'p2' | 'caption'>;
 type ParagraphKeys = Exclude<TypographyKeys, HeaderKeys>;
 
 const textColorMap = {
-  caption: vars.text.secondary,
-  p2: vars.text.secondary,
-  p1: vars.text.primary,
-  subheader: vars.text.header,
-  h1: vars.text.primaryHeader,
-  h2: vars.text.header,
-  h3: vars.text.header,
-  h4: vars.text.header,
-  h5: vars.text.header,
+  caption: vars.theme.text.secondary,
+  p2: vars.theme.text.secondary,
+  p1: vars.theme.text.primary,
+  subheader: vars.theme.text.header,
+  h1: vars.theme.text.primaryHeader,
+  h2: vars.theme.text.header,
+  h3: vars.theme.text.header,
+  h4: vars.theme.text.header,
+  h5: vars.theme.text.header,
 };
 
 function getHeaderStyleObject(variant: HeaderKeys) {
   return {
-    margin: vars.components.typography.margin,
-    fontFamily: vars.components.typography[variant].fontFamily,
-    fontSize: vars.components.typography[variant].fontSize,
-    fontWeight: vars.components.typography[variant].fontWeight,
-    lineHeight: vars.components.typography[variant].lineHeight,
+    margin: vars.theme.components.typography.margin,
+    fontFamily: vars.theme.components.typography[variant].fontFamily,
+    fontSize: vars.theme.components.typography[variant].fontSize,
+    fontWeight: vars.theme.components.typography[variant].fontWeight,
+    lineHeight: vars.theme.components.typography[variant].lineHeight,
     color: textColorMap[variant],
   };
 }
 
 function getParagraphStyleObject(variant: ParagraphKeys) {
   return {
-    margin: vars.components.typography.margin,
-    fontFamily: vars.components.typography[variant].fontFamily,
-    fontSize: vars.components.typography[variant].fontSize,
-    fontWeight: vars.components.typography[variant].fontWeight,
-    lineHeight: vars.components.typography[variant].lineHeight,
+    margin: vars.theme.components.typography.margin,
+    fontFamily: vars.theme.components.typography[variant].fontFamily,
+    fontSize: vars.theme.components.typography[variant].fontSize,
+    fontWeight: vars.theme.components.typography[variant].fontWeight,
+    lineHeight: vars.theme.components.typography[variant].lineHeight,
     color: textColorMap[variant],
   };
 }

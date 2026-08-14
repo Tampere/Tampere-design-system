@@ -1,8 +1,12 @@
 export { vars } from './theme.css.ts';
 export {
-  breakpoints as breakpointsV2,
-  getComponents as getComponentsV2,
-  themeVariables as themeVariablesV2,
-  type ThemeVariables as ThemeVariablesV2,
+  primitives,
+  brand,
+  breakpoint,
+  themeVariables,
+  type ThemeVariables,
 } from './themeVariables';
-export * from './themeVariables_OLD.ts';
+export { getTheme, type Theme } from './tokens/theme';
+export type { Primitives } from './tokens/primitives';
+export type { Brand } from './tokens/brand';
+export type { Breakpoint, BreakpointKey, BreakpointValues } from './tokens/breakpoint';

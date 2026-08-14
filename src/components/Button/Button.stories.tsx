@@ -9,7 +9,7 @@ import { vars } from '../../theme';
 
 // Size in-button icons with the design-system icon.size token (a fixed 20px) rather
 // than an emoji or a hardcoded value.
-const iconSize = vars.components.icon.size.medium;
+const iconSize = vars.theme.components.icon.size.medium;
 const iconProps = { style: { width: iconSize, height: iconSize } };
 
 const meta = {

@@ -2,10 +2,14 @@ import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  core,
-  spacing,
-  components: { pagination },
-  focusRing,
+  theme: {
+    states,
+    contrast,
+    background: { disabled: backgroundDisabled },
+    components: { pagination },
+    focusRing,
+  },
+  primitives: { spacing },
 } = vars;
 
 export const list = style({
@@ -23,40 +27,40 @@ export const itemRoot = {
 };
 
 const itemActive = {
-  color: core.contrast,
-  background: core.states.default,
+  color: contrast,
+  background: states.default,
   selectors: {
     '&:hover': {
-      background: core.states.hover,
+      background: states.hover,
     },
     '&:focus-visible': {
-      background: core.states.focus,
+      background: states.focus,
       ...focusRing,
     },
     '&:active': {
-      background: core.states.active,
+      background: states.active,
     },
     '&:disabled': {
-      color: core.states.disabled,
-      background: core.backgroundDisabled,
+      color: states.disabled,
+      background: backgroundDisabled,
     },
   },
 };
 
 const item = {
-  color: core.states.default,
+  color: states.default,
   selectors: {
     '&:hover': {
-      color: core.states.hover,
+      color: states.hover,
     },
     '&:focus-visible': {
       ...focusRing,
     },
     '&:active': {
-      color: core.states.active,
+      color: states.active,
     },
     '&:disabled': {
-      color: core.states.disabled,
+      color: states.disabled,
     },
   },
 };

@@ -2,10 +2,15 @@ import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  components: { button, controlHeight },
-  font,
-  core,
-  focusRing,
+  theme: {
+    components: { button, controlHeight },
+    font,
+    states,
+    contrast,
+    background: { disabled: backgroundDisabled },
+    strokeWeight,
+    focusRing,
+  },
 } = vars;
 
 const root = style({
@@ -24,66 +29,66 @@ const root = style({
 });
 
 const filled = style({
-  background: core.states.default,
-  color: core.contrast,
+  background: states.default,
+  color: contrast,
   selectors: {
     '&:hover': {
-      background: core.states.hover,
+      background: states.hover,
     },
     '&:focus-visible': {
-      background: core.states.focus,
+      background: states.focus,
       ...focusRing,
     },
     '&:active': {
-      background: core.states.active,
+      background: states.active,
     },
     '&:disabled': {
-      color: core.states.disabled,
-      background: core.backgroundDisabled,
+      color: states.disabled,
+      background: backgroundDisabled,
       cursor: 'default',
     },
   },
 });
 
 const outlined = style({
-  color: core.states.default,
-  border: `${core.strokeWeight} solid ${core.states.default}`,
+  color: states.default,
+  border: `${strokeWeight} solid ${states.default}`,
   selectors: {
     '&:hover': {
-      border: `${core.strokeWeight} solid ${core.states.hover}`,
+      border: `${strokeWeight} solid ${states.hover}`,
     },
     '&:focus-visible': {
       ...focusRing,
     },
     '&:active': {
-      color: core.states.active,
-      border: `${core.strokeWeight} solid ${core.states.active}`,
+      color: states.active,
+      border: `${strokeWeight} solid ${states.active}`,
     },
     '&:disabled': {
-      color: core.states.disabled,
-      border: `${core.strokeWeight} solid ${core.states.disabled}`,
+      color: states.disabled,
+      border: `${strokeWeight} solid ${states.disabled}`,
       cursor: 'default',
     },
   },
 });
 
 const text = style({
-  color: core.states.default,
-  borderBottom: `${core.strokeWeight} solid transparent`,
+  color: states.default,
+  borderBottom: `${strokeWeight} solid transparent`,
   selectors: {
     '&:hover': {
-      borderBottom: `${core.strokeWeight} solid ${core.states.hover}`,
+      borderBottom: `${strokeWeight} solid ${states.hover}`,
     },
     '&:focus-visible': {
-      borderBottom: `${core.strokeWeight} solid ${core.states.hover}`,
+      borderBottom: `${strokeWeight} solid ${states.hover}`,
       ...focusRing,
     },
     '&:active': {
-      borderBottom: `${core.strokeWeight} solid ${core.states.active}`,
-      color: core.states.active,
+      borderBottom: `${strokeWeight} solid ${states.active}`,
+      color: states.active,
     },
     '&:disabled': {
-      color: core.states.disabled,
+      color: states.disabled,
       cursor: 'default',
     },
   },

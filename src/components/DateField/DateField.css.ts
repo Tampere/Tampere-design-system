@@ -2,12 +2,28 @@ import { globalStyle, style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  core,
-  font,
-  spacing,
-  components: { input: inputVars, typography, datePicker, controlHeight, button: buttonVars, icon },
-  text,
-  focusRing,
+  theme: {
+    states,
+    font,
+    components: {
+      input: inputVars,
+      typography,
+      datePicker,
+      controlHeight,
+      button: buttonVars,
+      icon,
+    },
+    text,
+    focusRing,
+    background,
+    strokeWeight,
+    divider,
+    dropShadow,
+    inputStates,
+    hover,
+    contrast,
+  },
+  primitives: { spacing },
 } = vars;
 
 // The calendar trigger icon scales with the responsive control size: its width
@@ -31,9 +47,9 @@ export const inputWithClear = style({
 
 // Dropdown surface. Outer padding scales with the breakpoint (Figma Spacing/Medium, 24→16).
 export const popoverContent = style({
-  background: core.background,
-  border: `${core.strokeWeight} solid ${core.divider}`,
-  boxShadow: `0 4px 12px ${core.dropshadow}`,
+  background: background.default,
+  border: `${strokeWeight} solid ${divider}`,
+  boxShadow: `0 4px 12px ${dropShadow}`,
   padding: datePicker.padding,
 });
 
@@ -74,11 +90,11 @@ export const nativeSelect = style({
   // inputs and buttons; border sits inside the box.
   height: controlHeight,
   boxSizing: 'border-box',
-  // Same neutral resting border as TextField/TextArea (core.inputStates.default,
+  // Same neutral resting border as TextField/TextArea (inputStates.default,
   // Figma's "Input-states/Default") — form-control borders only borrow the brand
-  // blue (core.states) on hover/focus.
-  border: `${core.strokeWeight} solid ${core.inputStates.default}`,
-  background: core.background,
+  // blue (theme.states) on hover/focus.
+  border: `${strokeWeight} solid ${inputStates.default}`,
+  background: background.default,
   color: text.primary,
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
@@ -89,12 +105,12 @@ export const nativeSelect = style({
   paddingRight: `calc(${inputVars.padding.horizontal} + ${icon.size.medium} + ${spacing['1']})`,
   cursor: 'pointer',
   selectors: {
-    '&:hover': { border: `${core.strokeWeight} solid ${core.states.hover}` },
+    '&:hover': { border: `${strokeWeight} solid ${states.hover}` },
     '&:focus-visible': { ...focusRing },
     '&:disabled': {
-      border: `${core.strokeWeight} solid ${core.states.disabled}`,
+      border: `${strokeWeight} solid ${states.disabled}`,
       color: text.disabled,
-      background: core.backgroundDisabled,
+      background: background.disabled,
       cursor: 'default',
     },
   },
@@ -117,7 +133,7 @@ export const nativeSelectIcon = style({
 // Wrapper around Mantine Calendar — used to scope globalStyles below
 export const calendarGrid = style({});
 
-// Day cells follow Figma Calendar-item/Size: 50px from md up, 36px on sm/xs (see themeVariables.datePicker.cellSize).
+// Day cells follow Figma Calendar-item/Size: 50px from md up, 36px on sm/xs (see datePicker.cellSize above, sourced from themeVariables.theme.components.datePicker.cellSize).
 globalStyle(`${calendarGrid} table button`, {
   borderRadius: 0,
   width: datePicker.cellSize,
@@ -141,12 +157,12 @@ globalStyle(`${calendarGrid} table button:focus-visible`, {
   // same value as Background/Hover) — reuse the same overlay technique as the
   // hover rule below rather than a flat color, so the two stay visually
   // consistent. A selected cell's `!important` blue background still wins.
-  background: core.hover.overlay,
+  background: hover.overlay,
   ...focusRing,
 });
 
 globalStyle(`${calendarGrid} table button:hover:not([data-disabled]):not([data-selected])`, {
-  background: core.hover.overlay,
+  background: hover.overlay,
 });
 
 // Weekday header (Ma, Ti, …): P2 size, Subheader (Semi-Bold) weight, secondary colour.
@@ -158,8 +174,8 @@ globalStyle(`${calendarGrid} thead th`, {
 });
 
 export const dayCellStaged = style({
-  background: `${core.states.default} !important`,
-  color: `${core.contrast} !important`,
+  background: `${states.default} !important`,
+  color: `${contrast} !important`,
   // Selected day number is Semi-Bold per design.
   fontWeight: `${typography.subheader.fontWeight} !important`,
   selectors: {
@@ -169,7 +185,7 @@ export const dayCellStaged = style({
     // its own !important on top of the one above (still needed to beat that
     // base rule's !important background at equal-or-lower specificity).
     '&:hover': {
-      background: `${core.states.hover} !important`,
+      background: `${states.hover} !important`,
     },
   },
 });
@@ -190,7 +206,7 @@ export const dayCellToday = style({
   selectors: {
     '&::after': {
       ...todayMarkerAfter,
-      border: `${core.strokeWeight} dashed ${datePicker.todayMarker}`,
+      border: `${strokeWeight} dashed ${datePicker.todayMarker}`,
     },
   },
 });
@@ -203,14 +219,14 @@ export const dayCellTodaySelected = style({
   selectors: {
     '&::after': {
       ...todayMarkerAfter,
-      border: `${core.strokeWeight} dashed ${datePicker.todayMarkerContrast}`,
+      border: `${strokeWeight} dashed ${datePicker.todayMarkerContrast}`,
     },
   },
 });
 
 export const dayCellOutsideMonth = style({
   // Outside-month days read as disabled in the design: muted bg + disabled text.
-  background: `${core.backgroundDisabled} !important`,
+  background: `${background.disabled} !important`,
   color: `${text.disabled} !important`,
   // Mantine's own Day styles apply `opacity: 0.5` to every [data-outside] cell
   // (via a zero-specificity `:where()` rule) regardless of our colors. These
@@ -223,7 +239,7 @@ export const dayCellOutsideMonth = style({
 });
 
 export const dayCellDisabled = style({
-  background: `${core.backgroundDisabled} !important`,
+  background: `${background.disabled} !important`,
   color: `${text.disabled} !important`,
   cursor: 'default !important',
   pointerEvents: 'none',

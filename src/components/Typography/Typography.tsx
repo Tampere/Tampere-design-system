@@ -4,7 +4,7 @@ import type { ComponentPropsWithRef } from 'react';
 import { vars } from '../../theme';
 import { typography } from './Typography.css.ts';
 
-type Variant = Exclude<keyof typeof vars.components.typography, 'margin'>;
+type Variant = Exclude<keyof typeof vars.theme.components.typography, 'margin'>;
 type Component = 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
 
 interface Props extends ComponentPropsWithRef<'div'> {

@@ -6,6 +6,78 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (pre-1.0: breaking changes bump the minor version).
 
+## [0.7.0] - 2026-08-13
+
+### Upgrade notes
+
+- **Breaking: token API restructured into four tiers.** `vars`/`themeVariables` (and the
+  package's other theme exports) now expose `primitives` (raw color/spacing palette),
+  `brand` (brand-mode color stops, e.g. `brand.blue.main`), `theme` (semantic + component
+  tokens — everything that was under `core`/`text`/`components`/`font`/`highlight`/
+  `focusRing`, except `core`'s `main*` brand stops, which moved to `brand` instead), and
+  `breakpoint` (the responsive per-breakpoint value tables, renamed
+  singular from `breakpoints`). If you styled against raw tokens (uncommon — most consumers
+  only use component props), update paths per the table below. This is a pure rename for
+  anyone consuming tokens via `vars` (the Vanilla Extract CSS variables) — no visual output
+  changes. Consumers who imported the raw `breakpoints`/`getComponents` JS exports directly
+  will also see corrected values, not just renamed paths — see **Fixed** below.
+
+  | Old                               | New                                           |
+  | --------------------------------- | --------------------------------------------- |
+  | `core.background`                 | `theme.background.default`                    |
+  | `core.backgroundDisabled`         | `theme.background.disabled`                   |
+  | `core.contrast`                   | `theme.contrast`                              |
+  | `core.error`                      | `theme.error`                                 |
+  | `core.main*`                      | `brand.blue.*`                                |
+  | `core.focus.*`                    | `theme.focus.*`                               |
+  | `core.hover.*`                    | `theme.hover.*`                               |
+  | `core.divider`                    | `theme.divider`                               |
+  | `core.cornerRadius`               | `theme.cornerRadius`                          |
+  | `core.strokeWeight`               | `theme.strokeWeight`                          |
+  | `core.dropshadow`                 | `theme.dropShadow`                            |
+  | `core.states.*`                   | `theme.states.*`                              |
+  | `core.inputStates.*`              | `theme.inputStates.*`                         |
+  | `core.selectionStates.*`          | `theme.selectionStates.*`                     |
+  | `text.*`                          | `theme.text.*`                                |
+  | `font.letterSpacing`              | `theme.font.letterSpacing`                    |
+  | `highlight.*`                     | `theme.highlight.*`                           |
+  | `focusRing` / `focusRingInverted` | `theme.focusRing` / `theme.focusRingInverted` |
+  | `components.*`                    | `theme.components.*`                          |
+  | `colors.*`                        | `primitives.colors.*`                         |
+  | `spacing[...]`                    | `primitives.spacing[...]`                     |
+  | `breakpoints[...]`                | `breakpoint[...]`                             |
+
+- **Breaking: `breakpointsV2`/`getComponentsV2`/`themeVariablesV2`/`ThemeVariablesV2` removed.**
+  The deprecated pre-Figma-realignment `themeVariables_OLD.ts` and its `V2`-suffixed aliases
+  are gone. Use the unsuffixed `breakpoint`/`themeVariables`/`ThemeVariables` exports.
+- **Breaking: unsuffixed `breakpoints` export removed, renamed to `breakpoint`.** Update
+  imports of `breakpoints` from `@tampere/treds` to the singular `breakpoint`.
+- **Breaking: unsuffixed `getComponents` export removed, replaced by `getTheme`.**
+  `getComponents(bp)` returned per-breakpoint component tokens directly (e.g.
+  `getComponents(bp).button`). `getTheme(bp)` is **not** a drop-in replacement with the
+  same shape — it returns the full `theme` tier for that breakpoint, with the same
+  component tokens now nested one level deeper, under `.components` (e.g.
+  `getTheme(bp).components.button`). Update call sites to add the `.components` segment.
+
+### Added
+
+- `getTheme(bp)`, returning the full `theme` tier of tokens for a given breakpoint.
+- `Theme` type, describing the shape returned by `getTheme(bp)`.
+- `Primitives`, `Brand`, `Breakpoint`, and `BreakpointKey` types, describing the
+  `primitives`, `brand`, and `breakpoint` token tiers.
+
+### Fixed
+
+- The package's raw `themeVariables`/`ThemeVariables`, `breakpoints` (now `breakpoint`), and
+  `getComponents` (now `getTheme`) JS exports (unsuffixed) now return the corrected, current
+  token values instead of the stale pre-#85 values (opaque grey dropshadow, 5% hover overlay,
+  non-variable fonts, missing `inputStates`, a missing `xxl` breakpoint tier, and wrong `xl`
+  logo/search-width values). Previously `src/theme/index.ts` re-exported all of these from the
+  deprecated `themeVariables_OLD.ts`, so consumers importing any raw JS export (rather than
+  the Vanilla Extract `vars` CSS variables) still saw pre-fix values even after 0.6.0
+  corrected the rendered output. Closes
+  [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
+
 ## [0.6.0] - 2026-08-12
 
 **Storybook:** https://tampere.github.io/Tampere-design-system/

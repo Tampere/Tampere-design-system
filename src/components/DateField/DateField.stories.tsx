@@ -5,8 +5,7 @@ import { expect, fn } from 'storybook/test';
 import dayjs from 'dayjs';
 import { DateField } from './DateField';
 import { dayCellOutsideMonth, dayCellDisabled, popoverContent } from './DateField.css.ts';
-import { vars } from '../../theme';
-import { themeVariables } from '../../theme/themeVariables';
+import { vars, getTheme } from '../../theme';
 
 const meta = {
   component: DateField,
@@ -101,10 +100,12 @@ export const WithRange: Story = {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: vars.components.input.spacing.verticalSpacing,
+          gap: vars.theme.components.input.spacing.verticalSpacing,
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: vars.spacing['3'] }}>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: vars.primitives.spacing['3'] }}
+        >
           <DateField
             {...args}
             label="Alkupäivä"
@@ -1474,11 +1475,14 @@ export const OutsideMonthDayMeetsContrast: Story = {
 };
 
 export const HoverOverlayContrastMatchesFigma: Story = {
-  // core.hover.overlayContrast is now also rendered via
+  // theme.hover.overlayContrast is now also rendered via
   // iconButton.states.contrast.overlay; this stays a direct token check since
   // no story currently asserts on that background visually.
   // Figma Background/Overlay/Contrast (#ffffff1a) is ~10% white, not 5%.
+  // Compared against the raw token (not `vars`, which is a Vanilla Extract
+  // theme contract and yields a `var(--...)` CSS reference, not the literal
+  // value) — `hover` is breakpoint-invariant, so any breakpoint key works.
   play: async () => {
-    await expect(themeVariables.core.hover.overlayContrast).toBe('rgba(255, 255, 255, 0.1000)');
+    await expect(getTheme('md').hover.overlayContrast).toBe('rgba(255, 255, 255, 0.1000)');
   },
 };
