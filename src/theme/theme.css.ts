@@ -6,12 +6,9 @@ import {
   createThemeContract,
   globalStyle,
 } from '@vanilla-extract/css';
-import { primitives } from './tokens/primitives';
-import { brand } from './tokens/brand';
 import { breakpoint, type BreakpointKey } from './tokens/breakpoint';
 import { getTheme } from './tokens/theme';
-
-const defaultTheme = { primitives, brand, breakpoint, theme: getTheme('md') };
+import { themeVariables as defaultTheme } from './themeVariables';
 
 export const vars = createThemeContract(defaultTheme);
 
