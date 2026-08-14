@@ -3,6 +3,35 @@ import { primitives } from './primitives';
 
 const { spacing } = primitives;
 
+export type BreakpointValues = {
+  typography: {
+    size: {
+      h1: string;
+      h2: string;
+      h3: string;
+      h4: string;
+      h5: string;
+      subheader: string;
+      p1: string;
+      p2: string;
+      caption: string;
+    };
+  };
+  appWidth: string;
+  layout: { columns: string; gutter: string; margin: string };
+  appHeader: {
+    logo: { primaryLogoHeight: string; secondaryLogoHeight: string };
+    search: { maxWidth: string };
+  };
+  components: {
+    button: { lineHeight: string };
+    input: { lineHeight: string };
+    list: { lineHeight: string };
+  };
+  spacing: { xxs: string; xs: string; sm: string; md: string; lg: string; xl: string; xxl: string };
+  footer: { navigationMinWidth: string };
+};
+
 export const breakpoint = {
   xxl: {
     typography: {
@@ -220,11 +249,14 @@ export const breakpoint = {
     },
     footer: { navigationMinWidth: rem('280px') },
   },
-} as const;
+} as const satisfies Record<'xxl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs', BreakpointValues>;
 
 export type Breakpoint = typeof breakpoint;
 export type BreakpointKey = keyof Breakpoint;
 
+// Sorted explicitly by appWidth — do not rely on object key declaration order.
+// That was a prior bug (see commit 58f906c): a reorder/insert in the object
+// above must not silently invert this widest-first ordering.
 export const BREAKPOINT_KEYS_WIDEST_FIRST = (Object.keys(breakpoint) as BreakpointKey[]).sort(
   (a, b) => parseInt(breakpoint[b].appWidth) - parseInt(breakpoint[a].appWidth)
 );

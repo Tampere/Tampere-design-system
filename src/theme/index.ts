@@ -9,4 +9,4 @@ export {
 export { getTheme, type Theme } from './tokens/theme';
 export type { Primitives } from './tokens/primitives';
 export type { Brand } from './tokens/brand';
-export type { Breakpoint, BreakpointKey } from './tokens/breakpoint';
+export type { Breakpoint, BreakpointKey, BreakpointValues } from './tokens/breakpoint';

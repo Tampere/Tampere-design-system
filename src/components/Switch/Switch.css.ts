@@ -53,7 +53,7 @@ export const thumb = style({
 });
 
 export const label = style({
-  margin: vars.theme.components.typography.margin,
+  margin: typography.margin,
   fontSize: typography.p1.fontSize,
   fontWeight: typography.p1.fontWeight,
   lineHeight: typography.p1.lineHeight,

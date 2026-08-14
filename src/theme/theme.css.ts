@@ -21,7 +21,7 @@ function mediaQueryFor(currentBreakpoint: BreakpointKey) {
   // breakpointKeys is widest-first (xxl…xs), so the next-NARROWER key sits at
   // index + 1 — do not "fix" this back to index - 1, that inverts every pairing.
   const lower = breakpointKeys[index + 1];
-  const upper = currentBreakpoint === 'xxl' ? undefined : currentBreakpoint;
+  const upper = currentBreakpoint === breakpointKeys[0] ? undefined : currentBreakpoint;
   if (!lower && upper) return `screen and (max-width: ${breakpoint[upper].appWidth})`;
   if (lower && upper)
     return `screen and (min-width: ${breakpoint[lower].appWidth}) and (max-width: ${breakpoint[upper].appWidth})`;
@@ -33,11 +33,12 @@ globalStyle(':root', {
     // Declare narrowest-first (xs…xxl): globalStyle emits same-specificity :root
     // rules in this order, and at exact boundary widths two ranges match — the
     // widest/catch-all range (xxl) must come last so it wins the tie.
-    [...breakpointKeys]
-      .reverse()
-      .map((currentBreakpoint) => [
-        mediaQueryFor(currentBreakpoint),
-        { vars: assignVars(vars, { ...defaultTheme, theme: getTheme(currentBreakpoint) }) },
-      ])
+    [...breakpointKeys].reverse().map((currentBreakpoint) => [
+      mediaQueryFor(currentBreakpoint),
+      // Only `theme` varies by breakpoint (primitives/brand/breakpoint are
+      // static) — scoping assignVars to just that tier avoids re-declaring
+      // ~230 unchanged custom properties in every one of the six media queries.
+      { vars: assignVars(vars.theme, getTheme(currentBreakpoint)) },
+    ])
   ),
 });

@@ -30,6 +30,9 @@ const states = {
   visited: brand.blue.mainLight,
 } as const;
 
+// Figma's "Input-states" variable collection — distinct from "Primary-states"
+// (which `states` above maps to). Form-control borders are neutral at rest;
+// they only borrow the brand blue from `states` on hover/focus.
 const inputStates = { default: colors.neutral['600'] } as const;
 
 const selectionStates = {
@@ -67,6 +70,7 @@ const fontFamilyHeader = 'Montserrat Variable, sans-serif';
 const fontFamilyBody = 'Open Sans Variable, sans-serif';
 
 // Figma `Breakpoint/Input/Line-height + 2 × Breakpoint/Spacing/Small` per breakpoint. See issue #79.
+// Every button variant and input renders at this height; borders are absorbed via `box-sizing: border-box`.
 const controlHeights = {
   xxl: '52px',
   xl: '52px',
@@ -77,6 +81,7 @@ const controlHeights = {
 } as const satisfies Record<BreakpointKey, string>;
 
 // Calendar day-cell size: 50px from md up, shrinks to 36px on sm/xs to fit a ~320px popover.
+// `cellGap`/`headerGap`/`todayMarkerInset` below are fixed across breakpoints — only the cell size itself scales.
 const calendarCellSizes = {
   xxl: '50px',
   xl: '50px',
@@ -86,8 +91,19 @@ const calendarCellSizes = {
   xs: '36px',
 } as const satisfies Record<BreakpointKey, string>;
 
+/**
+ * Returns the full `theme` tier (semantic + component tokens) for a given breakpoint.
+ * Component tokens are nested under `.components` (e.g. `getTheme(bp).components.button`) —
+ * this is not a drop-in replacement for the old `getComponents(bp)`, which returned the
+ * components object directly one level up.
+ */
 export function getTheme(bp: BreakpointKey) {
   const bpTokens = breakpoint[bp];
+  if (!bpTokens) {
+    throw new Error(
+      `getTheme: invalid breakpoint key "${bp}". Expected one of: ${Object.keys(breakpoint).join(', ')}.`
+    );
+  }
   const components = {
     controlHeight: rem(controlHeights[bp]),
     breadcrumbs: { activePageFontWeight: '600' },
@@ -189,7 +205,11 @@ export function getTheme(bp: BreakpointKey) {
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
+      // Contrast variant for a today cell that's also selected (blue background) —
+      // Figma's Components/Date-picker/Today-marker-contrast.
       todayMarkerContrast: colors.neutral.white,
+      // Outer dropdown padding and the gap between header/grid/footer — Figma
+      // `Spacing/Medium`, which scales 24→16 across breakpoints.
       padding: bpTokens.spacing.md,
       cellSize: rem(calendarCellSizes[bp]),
       cellGap: primitives.spacing['0,5'],
@@ -232,6 +252,8 @@ export function getTheme(bp: BreakpointKey) {
           fontSize: bpTokens.typography.size.p2,
           lineHeight: bpTokens.components.input.lineHeight,
         },
+        // Figma uses the same Components/Input/Line-height token for the label as
+        // for the input text itself — match it instead of a fixed value.
         label: {
           fontSize: bpTokens.typography.size.p2,
           lineHeight: bpTokens.components.input.lineHeight,
