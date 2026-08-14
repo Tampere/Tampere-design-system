@@ -17,8 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `focusRing`, except `core`'s `main*` brand stops, which moved to `brand` instead), and
   `breakpoint` (the responsive per-breakpoint value tables, renamed
   singular from `breakpoints`). If you styled against raw tokens (uncommon — most consumers
-  only use component props), update paths per the table below. No visual output changes —
-  this is a pure rename.
+  only use component props), update paths per the table below. This is a pure rename for
+  anyone consuming tokens via `vars` (the Vanilla Extract CSS variables) — no visual output
+  changes. Consumers who imported the raw `breakpoints`/`getComponents` JS exports directly
+  will also see corrected values, not just renamed paths — see **Fixed** below.
 
   | Old                               | New                                           |
   | --------------------------------- | --------------------------------------------- |
@@ -66,13 +68,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- The package's raw `themeVariables`/`ThemeVariables` JS exports (unsuffixed) now return
-  the corrected, current token values instead of the stale pre-#85 values (opaque grey
-  dropshadow, 5% hover overlay, non-variable fonts, missing `inputStates`). Previously
-  `src/theme/index.ts` re-exported these two names from the deprecated
-  `themeVariables_OLD.ts`, so consumers importing the raw JS export (rather than the
-  Vanilla Extract `vars` CSS variables) still saw pre-fix values even after 0.6.0 corrected
-  the rendered output. Closes
+- The package's raw `themeVariables`/`ThemeVariables`, `breakpoints` (now `breakpoint`), and
+  `getComponents` (now `getTheme`) JS exports (unsuffixed) now return the corrected, current
+  token values instead of the stale pre-#85 values (opaque grey dropshadow, 5% hover overlay,
+  non-variable fonts, missing `inputStates`, a missing `xxl` breakpoint tier, and wrong `xl`
+  logo/search-width values). Previously `src/theme/index.ts` re-exported all of these from the
+  deprecated `themeVariables_OLD.ts`, so consumers importing any raw JS export (rather than
+  the Vanilla Extract `vars` CSS variables) still saw pre-fix values even after 0.6.0
+  corrected the rendered output. Closes
   [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
 
 ## [0.6.0] - 2026-08-12

@@ -59,7 +59,7 @@ export const WithError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByPlaceholderText('you@example.com');
-    // Figma Common/Error = Red/300 (#ae1e20), reached via the shared core.states.error token.
+    // Figma Common/Error = Red/300 (#ae1e20), reached via the shared theme.states.error token.
     await expect(getComputedStyle(input).borderColor).toBe('rgb(174, 30, 32)');
   },
 };
