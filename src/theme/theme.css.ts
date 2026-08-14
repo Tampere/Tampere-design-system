@@ -6,7 +6,7 @@ import {
   createThemeContract,
   globalStyle,
 } from '@vanilla-extract/css';
-import { breakpoint, type BreakpointKey } from './tokens/breakpoint';
+import { breakpoint, type BreakpointKey, BREAKPOINT_KEYS_WIDEST_FIRST } from './tokens/breakpoint';
 import { getTheme } from './tokens/theme';
 import { themeVariables as defaultTheme } from './themeVariables';
 
@@ -14,7 +14,7 @@ export const vars = createThemeContract(defaultTheme);
 
 createGlobalTheme(':root', vars, defaultTheme);
 
-const breakpointKeys = Object.keys(breakpoint) as BreakpointKey[];
+const breakpointKeys = BREAKPOINT_KEYS_WIDEST_FIRST;
 
 function mediaQueryFor(currentBreakpoint: BreakpointKey) {
   const index = breakpointKeys.indexOf(currentBreakpoint);

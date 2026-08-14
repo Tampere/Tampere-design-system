@@ -224,3 +224,7 @@ export const breakpoint = {
 
 export type Breakpoint = typeof breakpoint;
 export type BreakpointKey = keyof Breakpoint;
+
+export const BREAKPOINT_KEYS_WIDEST_FIRST = (Object.keys(breakpoint) as BreakpointKey[]).sort(
+  (a, b) => parseInt(breakpoint[b].appWidth) - parseInt(breakpoint[a].appWidth)
+);

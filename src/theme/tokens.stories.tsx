@@ -5,9 +5,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 // test's snapshot state and is required here; there is no DOM interaction in
 // this test for the storybook-specific expect helpers to add value to anyway.
 import { expect } from 'vitest';
-import { getTheme, type BreakpointKey } from '.';
-
-const BREAKPOINT_KEYS: BreakpointKey[] = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs'];
+import { getTheme } from '.';
+// Internal implementation detail, not part of the public barrel — imported
+// directly the same way theme.css.ts does, rather than re-exporting it.
+import { BREAKPOINT_KEYS_WIDEST_FIRST } from './tokens/breakpoint';
 
 const meta = {
   title: 'Theme/Token regression',
@@ -28,7 +29,7 @@ export const TokenValuesMatchSnapshot: Story = {
   // this test exists to force.
   render: () => <></>,
   play: async () => {
-    for (const bp of BREAKPOINT_KEYS) {
+    for (const bp of BREAKPOINT_KEYS_WIDEST_FIRST) {
       // eslint-disable-next-line storybook/use-storybook-expect -- see import comment above
       await expect(getTheme(bp)).toMatchSnapshot(bp);
     }
