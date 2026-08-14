@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 (pre-1.0: breaking changes bump the minor version).
 
-## [0.7.0] - 2026-08-13
+## [0.7.0] - 2026-08-14
 
 ### Upgrade notes
 
-- **Breaking: token API restructured into four tiers.** `vars`/`themeVariables` (and the
+- **Breaking: token API restructured into four tiers.** Closes
+  [#65](https://github.com/Tampere/Tampere-design-system/issues/65). `vars`/`themeVariables` (and the
   package's other theme exports) now expose `primitives` (raw color/spacing palette),
   `brand` (brand-mode color stops, e.g. `brand.blue.main`), `theme` (semantic + component
   tokens — everything that was under `core`/`text`/`components`/`font`/`highlight`/
@@ -61,10 +62,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `getTheme(bp)`, returning the full `theme` tier of tokens for a given breakpoint.
+- `getTheme(bp)`, returning the full `theme` tier of tokens for a given breakpoint. Throws a
+  clear error if `bp` is not a valid breakpoint key.
 - `Theme` type, describing the shape returned by `getTheme(bp)`.
-- `Primitives`, `Brand`, `Breakpoint`, and `BreakpointKey` types, describing the
-  `primitives`, `brand`, and `breakpoint` token tiers.
+- `Primitives`, `Brand`, `Breakpoint`, `BreakpointKey`, and `BreakpointValues` types,
+  describing the `primitives`, `brand`, and `breakpoint` token tiers.
 
 ### Fixed
 
@@ -77,6 +79,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the Vanilla Extract `vars` CSS variables) still saw pre-fix values even after 0.6.0
   corrected the rendered output. Closes
   [#92](https://github.com/Tampere/Tampere-design-system/issues/92).
+
+### Internal / tooling
+
+- Fixed `.husky/pre-push`'s main-branch guard, which used bash `[[ ]]` syntax under `/bin/sh`
+  and silently failed to block anything (#98).
 
 ## [0.6.0] - 2026-08-12
 
