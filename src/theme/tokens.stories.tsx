@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 // test's snapshot state and is required here; there is no DOM interaction in
 // this test for the storybook-specific expect helpers to add value to anyway.
 import { expect } from 'vitest';
-import { getTheme } from '.';
+import { getTheme, themeVariables } from '.';
 // Internal implementation detail, not part of the public barrel — imported
 // directly the same way theme.css.ts does, rather than re-exporting it.
 import { BREAKPOINT_KEYS_WIDEST_FIRST } from './tokens/breakpoint';
@@ -33,5 +33,11 @@ export const TokenValuesMatchSnapshot: Story = {
       // eslint-disable-next-line storybook/use-storybook-expect -- see import comment above
       await expect(getTheme(bp)).toMatchSnapshot(bp);
     }
+    // Also snapshot themeVariables itself: which breakpoint the :root theme
+    // is pinned to (currently 'md'), plus the primitives/brand tiers and
+    // breakpoint.*.appWidth, none of which the per-breakpoint loop above
+    // touches (see PR #99 review).
+    // eslint-disable-next-line storybook/use-storybook-expect -- see import comment above
+    await expect(themeVariables).toMatchSnapshot('themeVariables');
   },
 };
