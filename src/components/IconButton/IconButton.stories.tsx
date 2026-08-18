@@ -1,6 +1,6 @@
 import { Box, Flex } from '@mantine/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within } from '@storybook/testing-library';
+import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { IconButton } from './IconButton';
 import { SearchIcon } from '../../icons/SearchIcon';
@@ -30,7 +30,7 @@ type Story = StoryObj<typeof meta>;
 export const Dark: Story = {
   render: (args) => (
     <Box style={{ backgroundColor: 'grey', width: 'fit-content' }}>
-      <IconButton variant="dark" size="md" {...args}>
+      <IconButton size="md" {...args} variant="dark">
         <SearchIcon fill="white" />
       </IconButton>
     </Box>
@@ -39,7 +39,7 @@ export const Dark: Story = {
 
 export const Light: Story = {
   render: (args) => (
-    <IconButton variant="light" size="md" {...args}>
+    <IconButton size="md" {...args} variant="light">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -47,7 +47,7 @@ export const Light: Story = {
 
 export const Disabled: Story = {
   render: (args) => (
-    <IconButton variant="light" size="md" {...args} disabled>
+    <IconButton size="md" {...args} variant="light" disabled>
       <SearchIcon fill="gray" />
     </IconButton>
   ),
@@ -67,17 +67,17 @@ export const Colored: Story = {
   render: (args) => (
     <Flex>
       <Box style={{ background: 'red', padding: '1rem' }}>
-        <IconButton variant="light" size="md" {...args}>
+        <IconButton size="md" {...args} variant="light">
           <SearchIcon fill="white" />
         </IconButton>
       </Box>
       <Box style={{ background: 'green', padding: '1rem' }}>
-        <IconButton variant="light" size="md" {...args}>
+        <IconButton size="md" {...args} variant="light">
           <SearchIcon fill="white" />
         </IconButton>
       </Box>
       <Box style={{ background: 'blue', padding: '1rem' }}>
-        <IconButton variant="light" size="md" {...args}>
+        <IconButton size="md" {...args} variant="light">
           <SearchIcon fill="white" />
         </IconButton>
       </Box>
@@ -202,5 +202,30 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
     await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  },
+};
+
+export const DisabledDoesNotShowHoverBackground: Story = {
+  tags: ['!dev', '!autodocs'],
+  // A disabled <button> still matches the CSS `:hover` pseudo-class in
+  // Chromium/Firefox (only pointer *events* are suppressed, not the
+  // pseudo-class), so `stateBlock()`'s `:disabled` selector must explicitly
+  // reset `background: 'none'` or a hovered disabled button would incorrectly
+  // paint the hover overlay. Uses `userEvent.hover()` as a best-effort
+  // trigger — it doesn't reliably simulate real OS-level `:hover` in this
+  // repo's Playwright/Chromium test environment, but the assertion below is
+  // on the CSS rule itself (no background at all on `:disabled`), which
+  // holds regardless of whether `:hover` is also active.
+  render: (args) => (
+    <IconButton {...args} size="md" variant="dark" disabled>
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    await userEvent.hover(button);
+    const style = getComputedStyle(button);
+    await expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
   },
 };

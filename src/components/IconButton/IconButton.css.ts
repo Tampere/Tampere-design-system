@@ -59,7 +59,7 @@ function stateBlock(background: string) {
       '&:hover': { background },
       '&:focus-visible': { background, borderRadius: cornerRadius, ...focusRing },
       '&:active': { background },
-      '&:disabled': { cursor: 'default' },
+      '&:disabled': { background: 'none', cursor: 'default' },
     },
   });
 }
