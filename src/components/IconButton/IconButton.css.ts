@@ -59,6 +59,7 @@ const light = style({
       background: iconButton.states.contrast.overlay,
     },
     '&:focus-visible': {
+      background: iconButton.states.contrast.overlay,
       borderRadius: cornerRadius,
       ...focusRing,
     },
@@ -91,6 +92,7 @@ const dark = style({
       background: iconButton.states.overlay,
     },
     '&:focus-visible': {
+      background: iconButton.states.overlay,
       borderRadius: cornerRadius,
       ...focusRing,
     },

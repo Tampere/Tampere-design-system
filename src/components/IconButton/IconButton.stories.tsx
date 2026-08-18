@@ -183,3 +183,24 @@ export const LargeSizeGrowsPastTouchTarget: Story = {
     await expect(height).toBe('28px');
   },
 };
+
+export const FocusVisibleHasBackgroundAndOutline: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Figma's Focus state binds both an outline AND the same background
+  // overlay used by Hover/Active — verified against the live design file
+  // for #90 (contradicts the outline-only assumption in the earlier design
+  // doc).
+  render: (args) => (
+    <IconButton {...args} size="md" variant="dark">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    button.focus();
+    const style = getComputedStyle(button);
+    await expect(style.outlineStyle).toBe('solid');
+    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  },
+};
