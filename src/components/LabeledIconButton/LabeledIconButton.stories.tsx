@@ -83,14 +83,14 @@ export const InteractionAppliesBackgroundAndColor: Story = {
   tags: ['!dev', '!autodocs'],
   /**
    * Verifies that the background overlay applies during a `userEvent.pointer()`
-   * mouse-down press. This most likely exercises `:focus-visible`, not `:active`
-   * as an earlier version of this comment claimed: `@testing-library/user-event`
-   * calls `focus.focusElement(target)` internally as part of simulating a
-   * pointer press, which focuses the button and can trigger `:focus-visible`
-   * before/instead of a genuine `:active` state. That makes this story a
-   * near-duplicate of `FocusVisibleHasBackgroundAndOutline` below, and leaves
-   * real `:hover`/`:active` coverage as a known gap — `userEvent.hover()` does
-   * not reliably trigger the real `:hover` pseudo-class in this repo's
+   * mouse-down press. This exercises `:focus-visible`, not `:active`:
+   * `@testing-library/user-event` calls `focus.focusElement(target)` internally
+   * as part of simulating a pointer press, which focuses the button and
+   * triggers `:focus-visible` before/instead of a genuine `:active` state.
+   * That makes this story a near-duplicate of
+   * `FocusVisibleHasBackgroundAndOutline` below, and leaves real
+   * `:hover`/`:active` coverage as a known gap — `userEvent.hover()` does not
+   * reliably trigger the real `:hover` pseudo-class in this repo's
    * Playwright/Chromium test environment (synthetic pointer events don't move
    * the OS cursor), and simulating genuine `:active` (mouse held down without
    * moving focus) isn't currently exercised either. Kept as-is rather than
@@ -103,7 +103,10 @@ export const InteractionAppliesBackgroundAndColor: Story = {
     const button = canvas.getByRole('button', { name: 'Label' });
     await userEvent.pointer({ keys: '[MouseLeft>]', target: button });
     const style = getComputedStyle(button);
-    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50']
+    // (iconButton.states.overlay, dark variant) — exact match rather than
+    // "some color", so a light/dark overlay-token swap fails this test.
+    await expect(style.backgroundColor).toBe('rgb(247, 247, 249)');
   },
 };
 
@@ -116,7 +119,12 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
     button.focus();
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
-    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50']
+    // (iconButton.states.overlay, dark variant) — exact match.
+    await expect(style.backgroundColor).toBe('rgb(247, 247, 249)');
+    // `color` is untested elsewhere on LabeledIconButton — dark variant focus
+    // foreground = iconButton.states.focus = colors.neutral['500'] (#686872).
+    await expect(style.color).toBe('rgb(104, 104, 114)');
   },
 };
 
@@ -152,7 +160,15 @@ export const LightVariantFocusVisibleHasBackground: Story = {
     button.focus();
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
-    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    // iconButtonBackground.light = hover.overlayContrast = rgba(255, 255,
+    // 255, 0.1) — `background-color` reports the declared (uncomposited)
+    // rgba value, not a value composited against the backdrop, so this is
+    // an exact match rather than "some color".
+    await expect(style.backgroundColor).toBe('rgba(255, 255, 255, 0.1)');
+    // `color` is untested elsewhere on the light/contrast variant — light
+    // variant focus foreground = iconButton.states.contrast.focus =
+    // colors.neutral['100'] (#f2f2f4).
+    await expect(style.color).toBe('rgb(242, 242, 244)');
   },
 };
 
@@ -176,9 +192,11 @@ export const IconMatchesSizeToken: Story = {
 
 export const DisabledDoesNotShowHoverBackground: Story = {
   tags: ['!dev', '!autodocs'],
-  // A disabled <button> still matches the CSS `:hover` pseudo-class in
-  // Chromium/Firefox (only pointer *events* are suppressed, not the
-  // pseudo-class), so `variantStyle()`'s `:disabled` selector must explicitly
+  // A disabled <button> still matches the CSS `:hover` pseudo-class in this
+  // project's Chromium test environment (a widely-known cross-browser CSS
+  // behavior, but only Chromium is exercised by this suite) — only pointer
+  // *events* are suppressed, not the pseudo-class — so `variantStyle()`'s
+  // `:disabled` selector must explicitly
   // reset `background: 'none'` or a hovered disabled button would incorrectly
   // paint the hover overlay. Uses `userEvent.hover()` as a best-effort
   // trigger — see the docblock on `InteractionAppliesBackgroundAndColor`

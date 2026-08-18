@@ -201,17 +201,22 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
     button.focus();
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
-    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50']
+    // (iconButton.states.overlay) — exact match, not just "some color", so a
+    // future swap of the light/dark overlay tokens would fail this test.
+    await expect(style.backgroundColor).toBe('rgb(247, 247, 249)');
   },
 };
 
 export const DisabledDoesNotShowHoverBackground: Story = {
   tags: ['!dev', '!autodocs'],
-  // A disabled <button> still matches the CSS `:hover` pseudo-class in
-  // Chromium/Firefox (only pointer *events* are suppressed, not the
-  // pseudo-class), so `stateBlock()`'s `:disabled` selector must explicitly
-  // reset `background: 'none'` or a hovered disabled button would incorrectly
-  // paint the hover overlay. Uses `userEvent.hover()` as a best-effort
+  // A disabled <button> still matches the CSS `:hover` pseudo-class in this
+  // project's Chromium test environment (a widely-known cross-browser CSS
+  // behavior, but only Chromium is exercised by this suite) — only pointer
+  // *events* are suppressed, not the pseudo-class — so `stateBlock()`'s
+  // `:disabled` selector must explicitly reset `background: 'none'` or a
+  // hovered disabled button would incorrectly paint the hover overlay. Uses
+  // `userEvent.hover()` as a best-effort
   // trigger — it doesn't reliably simulate real OS-level `:hover` in this
   // repo's Playwright/Chromium test environment, but the assertion below is
   // on the CSS rule itself (no background at all on `:disabled`), which
