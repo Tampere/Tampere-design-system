@@ -37,6 +37,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `IconButton`'s Storybook `Dark` story (now `Inverted`) actually renders the variant it's named after — an explicit prop placed before `{...args}` was previously clobbered by the meta's default args ([#91](https://github.com/Tampere/Tampere-design-system/issues/91)).
 - `Modal`'s close button always has an accessible name now, regardless of what the consumer passes ([#94](https://github.com/Tampere/Tampere-design-system/issues/94)).
 - `Pagination`'s prev/next chevron buttons always have an accessible name now, regardless of what the consumer passes ([#95](https://github.com/Tampere/Tampere-design-system/issues/95)).
+- `LabeledIconButton` no longer lets a consumer's `aria-label`/`aria-labelledby` silently override the visible `label` as the accessible name — TypeScript exempts hyphenated JSX attributes from excess-property checks, so excluding them from the prop type alone didn't stop this at actual call sites; now also stripped at runtime ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+- `LabeledIconButton` now accepts standard button attributes (`id`, `title`, `onFocus`, `onMouseEnter`, etc.) that were previously typed away entirely ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
 
 ## [0.7.0] - 2026-08-14
 
