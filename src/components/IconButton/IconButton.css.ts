@@ -1,5 +1,6 @@
 import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
+import { iconButtonForeground, iconButtonBackground } from './iconButtonState.css.ts';
 
 const {
   theme: {
@@ -52,71 +53,29 @@ globalStyle(`${root}[data-size="xl"] svg`, {
   height: icon.size.extraLarge,
 });
 
-// Light theme states
-const light = style({
-  selectors: {
-    '&:hover': {
-      background: iconButton.states.contrast.overlay,
+function stateBlock(background: string) {
+  return style({
+    selectors: {
+      '&:hover': { background },
+      '&:focus-visible': { background, borderRadius: cornerRadius, ...focusRing },
+      '&:active': { background },
+      '&:disabled': { cursor: 'default' },
     },
-    '&:focus-visible': {
-      background: iconButton.states.contrast.overlay,
-      borderRadius: cornerRadius,
-      ...focusRing,
-    },
-    '&:active': {
-      background: iconButton.states.contrast.overlay,
-    },
-    '&:disabled': {
-      cursor: 'default',
-    },
-  },
-});
+  });
+}
 
-globalStyle(`${light}:hover svg path`, {
-  fill: iconButton.states.contrast.hover,
-});
-globalStyle(`${light}:focus-visible svg path`, {
-  fill: iconButton.states.contrast.focus,
-});
-globalStyle(`${light}:active svg path`, {
-  fill: iconButton.states.contrast.active,
-});
-globalStyle(`${light}:disabled svg path`, {
-  fill: iconButton.states.contrast.disabled,
-});
+const light = stateBlock(iconButtonBackground.light);
+const dark = stateBlock(iconButtonBackground.dark);
 
-// Dark theme states
-const dark = style({
-  selectors: {
-    '&:hover': {
-      background: iconButton.states.overlay,
-    },
-    '&:focus-visible': {
-      background: iconButton.states.overlay,
-      borderRadius: cornerRadius,
-      ...focusRing,
-    },
-    '&:active': {
-      background: iconButton.states.overlay,
-    },
-    '&:disabled': {
-      cursor: 'default',
-    },
-  },
-});
+globalStyle(`${light}:hover svg path`, { fill: iconButtonForeground.light.hover });
+globalStyle(`${light}:focus-visible svg path`, { fill: iconButtonForeground.light.focus });
+globalStyle(`${light}:active svg path`, { fill: iconButtonForeground.light.active });
+globalStyle(`${light}:disabled svg path`, { fill: iconButtonForeground.light.disabled });
 
-globalStyle(`${dark}:hover svg path`, {
-  fill: iconButton.states.hover,
-});
-globalStyle(`${dark}:focus-visible svg path`, {
-  fill: iconButton.states.focus,
-});
-globalStyle(`${dark}:active svg path`, {
-  fill: iconButton.states.active,
-});
-globalStyle(`${dark}:disabled svg path`, {
-  fill: iconButton.states.disabled,
-});
+globalStyle(`${dark}:hover svg path`, { fill: iconButtonForeground.dark.hover });
+globalStyle(`${dark}:focus-visible svg path`, { fill: iconButtonForeground.dark.focus });
+globalStyle(`${dark}:active svg path`, { fill: iconButtonForeground.dark.active });
+globalStyle(`${dark}:disabled svg path`, { fill: iconButtonForeground.dark.disabled });
 
 export const iconRoot = styleVariants({
   light: [root, light],
