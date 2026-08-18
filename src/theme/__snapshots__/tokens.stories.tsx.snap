@@ -88,6 +88,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
     "iconButton": {
       "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+      "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
       "padding": "calc(0.125rem * var(--mantine-scale))",
       "states": {
         "active": "#9999a0",
@@ -103,7 +104,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         "disabled": "#9999a0",
         "focus": "#686872",
         "hover": "#686872",
-        "overlay": "#f1eeeb",
+        "overlay": "#f7f7f9",
       },
     },
     "input": {
@@ -149,6 +150,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         },
       },
       "highlightFontWeight": "600",
+    },
+    "labeledIconButton": {
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
       "spacing": "calc(0.5rem * var(--mantine-scale))",
@@ -403,6 +407,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
     "iconButton": {
       "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+      "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
       "padding": "calc(0.125rem * var(--mantine-scale))",
       "states": {
         "active": "#9999a0",
@@ -418,7 +423,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
         "disabled": "#9999a0",
         "focus": "#686872",
         "hover": "#686872",
-        "overlay": "#f1eeeb",
+        "overlay": "#f7f7f9",
       },
     },
     "input": {
@@ -464,6 +469,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
         },
       },
       "highlightFontWeight": "600",
+    },
+    "labeledIconButton": {
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
       "spacing": "calc(0.25rem * var(--mantine-scale))",
@@ -718,6 +726,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
     "iconButton": {
       "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+      "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
       "padding": "calc(0.125rem * var(--mantine-scale))",
       "states": {
         "active": "#9999a0",
@@ -733,7 +742,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "disabled": "#9999a0",
         "focus": "#686872",
         "hover": "#686872",
-        "overlay": "#f1eeeb",
+        "overlay": "#f7f7f9",
       },
     },
     "input": {
@@ -779,6 +788,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         },
       },
       "highlightFontWeight": "600",
+    },
+    "labeledIconButton": {
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
       "spacing": "calc(0.25rem * var(--mantine-scale))",
@@ -1447,6 +1459,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
       "iconButton": {
         "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+        "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
         "padding": "calc(0.125rem * var(--mantine-scale))",
         "states": {
           "active": "#9999a0",
@@ -1462,7 +1475,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "disabled": "#9999a0",
           "focus": "#686872",
           "hover": "#686872",
-          "overlay": "#f1eeeb",
+          "overlay": "#f7f7f9",
         },
       },
       "input": {
@@ -1508,6 +1521,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           },
         },
         "highlightFontWeight": "600",
+      },
+      "labeledIconButton": {
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "link": {
         "spacing": "calc(0.25rem * var(--mantine-scale))",
@@ -1763,6 +1779,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
     "iconButton": {
       "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+      "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
       "padding": "calc(0.125rem * var(--mantine-scale))",
       "states": {
         "active": "#9999a0",
@@ -1778,7 +1795,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         "disabled": "#9999a0",
         "focus": "#686872",
         "hover": "#686872",
-        "overlay": "#f1eeeb",
+        "overlay": "#f7f7f9",
       },
     },
     "input": {
@@ -1824,6 +1841,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         },
       },
       "highlightFontWeight": "600",
+    },
+    "labeledIconButton": {
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
       "spacing": "calc(0.5rem * var(--mantine-scale))",
@@ -2078,6 +2098,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
     "iconButton": {
       "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+      "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
       "padding": "calc(0.125rem * var(--mantine-scale))",
       "states": {
         "active": "#9999a0",
@@ -2093,7 +2114,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         "disabled": "#9999a0",
         "focus": "#686872",
         "hover": "#686872",
-        "overlay": "#f1eeeb",
+        "overlay": "#f7f7f9",
       },
     },
     "input": {
@@ -2139,6 +2160,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         },
       },
       "highlightFontWeight": "600",
+    },
+    "labeledIconButton": {
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
       "spacing": "calc(0.25rem * var(--mantine-scale))",
@@ -2393,6 +2417,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
     "iconButton": {
       "cornerRadius": "calc(0.25rem * var(--mantine-scale))",
+      "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
       "padding": "calc(0.125rem * var(--mantine-scale))",
       "states": {
         "active": "#9999a0",
@@ -2408,7 +2433,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "disabled": "#9999a0",
         "focus": "#686872",
         "hover": "#686872",
-        "overlay": "#f1eeeb",
+        "overlay": "#f7f7f9",
       },
     },
     "input": {
@@ -2454,6 +2479,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         },
       },
       "highlightFontWeight": "600",
+    },
+    "labeledIconButton": {
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
       "spacing": "calc(0.5rem * var(--mantine-scale))",
