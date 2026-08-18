@@ -4,7 +4,12 @@ import { UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { root, iconWrapper, label as labelStyle, variants } from './LabeledIconButton.css.ts';
 
 export interface LabeledIconButtonProps
-  extends Omit<UnstyledButtonProps, 'children'>, React.AriaAttributes {
+  extends
+    Omit<UnstyledButtonProps, 'children'>,
+    // Excludes 'aria-label'/'aria-labelledby' — the visible `label` prop
+    // below is always this component's accessible name, and letting a
+    // consumer pass either would silently override that invariant.
+    Omit<React.AriaAttributes, 'aria-label' | 'aria-labelledby'> {
   icon: React.ReactNode;
   label: string;
   variant?: 'light' | 'dark';
