@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (pre-1.0: breaking changes bump the minor version).
 
+## [Unreleased]
+
+### Added
+
+- `LabeledIconButton` component — an icon with a text label underneath, sharing `IconButton`'s state-color tokens ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+
+### Fixed
+
+- `IconButton` now guarantees a 24x24px minimum touch target (WCAG 2.2 AA, SC 2.5.8) at every size ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+- `IconButton`'s focus-visible state now shows the same background overlay as hover/active, matching the Figma design (previously outline-only) ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+- Corrected a stale `iconButton` background-overlay token value (`#f1eeeb` → `#f7f7f9`) that didn't match Figma ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+
 ## [0.7.0] - 2026-08-14
 
 ### Upgrade notes

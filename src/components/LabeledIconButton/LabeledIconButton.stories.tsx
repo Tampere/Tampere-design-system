@@ -1,6 +1,7 @@
 import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Box, Flex as MantineFlex } from '@mantine/core';
 import { LabeledIconButton } from './LabeledIconButton';
 import { AddIcon } from '../../icons/AddIcon';
 
@@ -34,6 +35,30 @@ export const Disabled: Story = {
     const button = canvas.getByRole('button', { name: 'Label' });
     await expect(button).toBeDisabled();
   },
+};
+
+export const Dark: Story = {
+  render: (args) => (
+    <Box style={{ backgroundColor: 'grey', width: 'fit-content', padding: '1rem' }}>
+      <LabeledIconButton {...args} variant="dark" icon={<AddIcon />} />
+    </Box>
+  ),
+};
+
+export const Colored: Story = {
+  render: (args) => (
+    <MantineFlex gap="md">
+      <Box style={{ background: 'red', padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} />
+      </Box>
+      <Box style={{ background: 'green', padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} />
+      </Box>
+      <Box style={{ background: 'blue', padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} />
+      </Box>
+    </MantineFlex>
+  ),
 };
 
 export const RendersLabelText: Story = {

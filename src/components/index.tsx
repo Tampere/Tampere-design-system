@@ -3,6 +3,10 @@ export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { Button } from './Button/Button';
 export { Checkbox } from './Checkbox/Checkbox';
 export { IconButton } from './IconButton/IconButton';
+export {
+  LabeledIconButton,
+  type LabeledIconButtonProps,
+} from './LabeledIconButton/LabeledIconButton';
 export { LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { Modal } from './Modal/Modal';
 export { NavigationLink } from './NavigationLink/NavigationLink';
