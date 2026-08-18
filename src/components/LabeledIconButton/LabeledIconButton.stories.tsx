@@ -25,7 +25,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} />,
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" />,
 };
 
 export const Disabled: Story = {
