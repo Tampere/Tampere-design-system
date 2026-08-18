@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
+import { within } from '@storybook/testing-library';
+import { expect } from 'storybook/test';
 import { Modal } from './Modal';
 import { Button } from '../Button';
 
@@ -51,6 +53,29 @@ export const Primary: Story = {
         </Modal>
       </>
     );
+  },
+};
+
+export const CloseButtonHasAccessibleName: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
+  // Regression test for #94: closeButtonProps had no fallback aria-label, so
+  // a consumer that omitted it shipped a close button with no accessible
+  // name — an axe-critical button-name violation. Rendered already-`opened`
+  // (rather than toggled via a click) to avoid depending on Mantine's
+  // mount/transition timing.
+  args: {
+    title: 'Modal title',
+    children: 'Modal content',
+    opened: true,
+    closeButtonProps: { 'aria-label': 'Close modal' },
+    onClose: () => {},
+  },
+  play: async () => {
+    const body = within(document.body);
+    const closeButton = await body.findByRole('button', { name: 'Close modal' });
+    await expect(closeButton).toBeInTheDocument();
   },
 };
 
