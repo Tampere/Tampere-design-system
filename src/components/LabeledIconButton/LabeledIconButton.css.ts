@@ -29,7 +29,15 @@ export const root = style({
   },
 });
 
-export const iconWrapper = style({});
+// Mirrors the `<Flex direction="column" align="center">` this wrapper used
+// to render — a plain <span> is used instead (not Mantine's <Flex>, which
+// defaults to a <div>) because a <div> is invalid inside <button> phrasing
+// content (see Button.tsx's <Flex component="span"> for the same reason).
+export const iconWrapper = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+});
 
 globalStyle(`${iconWrapper} svg`, {
   width: icon.size.large,
@@ -50,7 +58,7 @@ function variantStyle(foreground: (typeof iconButtonForeground)['light'], backgr
       '&:hover': { background, color: foreground.hover },
       '&:focus-visible': { background, color: foreground.focus, ...focusRing },
       '&:active': { background, color: foreground.active },
-      '&:disabled': { color: foreground.disabled },
+      '&:disabled': { background: 'none', color: foreground.disabled },
     },
   });
 }

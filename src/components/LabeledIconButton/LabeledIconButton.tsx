@@ -1,9 +1,10 @@
 import { forwardRef } from 'react';
 import cx from 'clsx';
-import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
+import { UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { root, iconWrapper, label as labelStyle, variants } from './LabeledIconButton.css.ts';
 
-export interface LabeledIconButtonProps extends Omit<UnstyledButtonProps, 'children'> {
+export interface LabeledIconButtonProps
+  extends Omit<UnstyledButtonProps, 'children'>, React.AriaAttributes {
   icon: React.ReactNode;
   label: string;
   variant?: 'light' | 'dark';
@@ -21,9 +22,7 @@ export const LabeledIconButton = forwardRef<HTMLButtonElement, LabeledIconButton
         disabled={disabled}
         className={cx(root, variants[variant], className)}
       >
-        <Flex direction="column" align="center" className={iconWrapper}>
-          {icon}
-        </Flex>
+        <span className={iconWrapper}>{icon}</span>
         <span className={labelStyle}>{label}</span>
       </UnstyledButton>
     );
