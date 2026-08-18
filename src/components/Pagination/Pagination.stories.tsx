@@ -17,6 +17,8 @@ const meta = {
     pageCount: 5,
     activePageIndex: 0,
     maxVisiblePages: 5,
+    leftButtonLabel: 'Edellinen sivu',
+    rightButtonLabel: 'Seuraava sivu',
   },
   component: Pagination,
 } satisfies Meta<typeof Pagination>;
@@ -30,6 +32,8 @@ export const Primary: Story = {
     activePageIndex: 0,
     onPageChange: () => {},
     maxVisiblePages: 5,
+    leftButtonLabel: 'Edellinen sivu',
+    rightButtonLabel: 'Seuraava sivu',
   },
 
   render: (args) => {
@@ -47,6 +51,8 @@ export const Primary: Story = {
         }
         pageCount={args.pageCount}
         maxVisiblePages={args.maxVisiblePages}
+        leftButtonLabel={args.leftButtonLabel}
+        rightButtonLabel={args.rightButtonLabel}
       />
     );
   },
@@ -75,5 +81,31 @@ export const ChevronsPointCorrectDirections: Story = {
     // incidental CSS transform that happens to produce the same pixels.
     await expect(leftPath.getAttribute('d')).toContain('M15.207 20.207');
     await expect(rightPath.getAttribute('d')).toContain('M8.79297 3.79297');
+  },
+};
+
+export const ChevronsHaveAccessibleNames: Story = {
+  // Test-only: carries a `play` assertion, not documentation, so it's hidden
+  // from the sidebar (`!dev`) and autodocs page (`!autodocs`).
+  tags: ['!dev', '!autodocs'],
+  // Regression test for #95: leftButtonLabel/rightButtonLabel were optional
+  // with no fallback, so a consumer that omitted them (like this story's own
+  // Primary previously did) shipped chevrons with no accessible name — an
+  // axe-critical button-name violation. Now required at the type level; this
+  // asserts the runtime behavior actually holds.
+  args: {
+    pageCount: 5,
+    activePageIndex: 2,
+    onPageChange: () => {},
+    leftButtonLabel: 'Edellinen sivu',
+    rightButtonLabel: 'Seuraava sivu',
+  },
+  render: (args) => <Pagination {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const left = canvas.getByLabelText('Edellinen sivu');
+    const right = canvas.getByLabelText('Seuraava sivu');
+    await expect(left).toBeInTheDocument();
+    await expect(right).toBeInTheDocument();
   },
 };

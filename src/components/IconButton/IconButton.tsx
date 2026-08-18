@@ -3,7 +3,7 @@ import { ActionIcon, type ActionIconProps, createPolymorphicComponent } from '@m
 import { mergeClassNames } from '../../utils';
 import { iconWrapper, iconRoot } from './IconButton.css.ts';
 
-type IconButtonVariant = 'light' | 'dark';
+type IconButtonVariant = 'default' | 'inverted';
 type IconButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 export interface Props extends ActionIconProps, PropsWithChildren {
@@ -15,7 +15,7 @@ export interface Props extends ActionIconProps, PropsWithChildren {
   };
 }
 
-function IconButtonComponent({ variant = 'light', size, classNames, ...props }: Props) {
+function IconButtonComponent({ variant = 'default', size, classNames, ...props }: Props) {
   const defaultClassNames = {
     root: iconRoot[variant],
     icon: iconWrapper,

@@ -434,7 +434,7 @@ export function DateField({
               showClear ? (
                 <IconButton
                   size="sm"
-                  variant="dark"
+                  variant="default"
                   aria-label={clearButtonLabel}
                   onClick={handleClear}
                 >

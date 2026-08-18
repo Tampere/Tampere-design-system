@@ -228,7 +228,12 @@ export function getTheme(bp: BreakpointKey) {
     },
     iconButton: {
       padding: rem('2px'),
+      // Unused by IconButton/LabeledIconButton's interactive-state backgrounds —
+      // those correctly use the top-level 0px cornerRadius (verified against
+      // Figma's Effects/Corner-radius/Default = 0 for this component family).
+      // Do not wire this in without re-checking Figma.
       cornerRadius: rem('4px'),
+      minTouchTarget: rem('24px'),
       states: {
         contrast: {
           default: colors.neutral.white,
@@ -243,8 +248,16 @@ export function getTheme(bp: BreakpointKey) {
         focus: colors.neutral['500'],
         active: colors.neutral['400'],
         disabled: colors.neutral['400'],
-        overlay: colors.neutral.warm['100'],
+        // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50'].
+        // (colors.neutral.warm['100'] = #f1eeeb was the wrong token here — that
+        // warm tint belongs to the Select "selected item" highlight instead.)
+        overlay: colors.neutral['50'],
       },
+    },
+    labeledIconButton: {
+      // Figma Spacing/1 = 8, a fixed constant (not per-breakpoint) — same
+      // precedent as forms.fieldset.spacing above.
+      spacing: primitives.spacing['1'],
     },
     input: {
       font: {
