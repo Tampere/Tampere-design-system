@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Upgrade notes
+
+- **Breaking: `IconButton`'s `variant` prop renamed `light`/`dark` → `default`/`inverted`**, matching Figma's own naming and fixing the inverted-from-intuition naming (`variant="light"` rendered a _dark_-surface icon) ([#105](https://github.com/Tampere/Tampere-design-system/issues/105)).
+
+  | Old               | New                  |
+  | ----------------- | -------------------- |
+  | `variant="light"` | `variant="inverted"` |
+  | `variant="dark"`  | `variant="default"`  |
+
+  `LabeledIconButton`'s `variant` prop uses the same `default`/`inverted` naming — no migration needed there, since it was still unreleased.
+
+  Also corrects `IconButton`'s default value: it silently defaulted to the inverted/light-icon variant with no rationale in the code or history, and no internal consumer ever relied on it (every usage in this library passes `variant` explicitly). Both components now default to `variant="default"`. If you render either component without an explicit `variant` and relied on the old (undocumented) light-icon default, pass `variant="inverted"` explicitly.
+
+- **Breaking: `Modal`'s `closeButtonProps` now requires an `'aria-label'`.** Previously optional with no fallback, so a consumer that omitted it shipped a close button with no accessible name — an axe-critical `button-name` violation ([#94](https://github.com/Tampere/Tampere-design-system/issues/94)). Pass `closeButtonProps={{ 'aria-label': '...' }}` explicitly.
+- **Breaking: `Pagination`'s `leftButtonLabel`/`rightButtonLabel` are now required.** Same reasoning as `Modal` above — previously optional with no fallback, so omitting them shipped prev/next chevrons with no accessible name ([#95](https://github.com/Tampere/Tampere-design-system/issues/95)).
+
 ### Added
 
 - `LabeledIconButton` component — an icon with a text label underneath, sharing `IconButton`'s state-color tokens ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
@@ -17,6 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `IconButton`'s focus-visible state now shows the same background overlay as hover/active, matching the Figma design (previously outline-only) ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
 - Corrected a stale `iconButton` background-overlay token value (`#f1eeeb` → `#f7f7f9`) that didn't match Figma ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
 - `IconButton` and `LabeledIconButton` no longer paint the hover background overlay on a disabled button — a disabled `<button>` still matches CSS `:hover` (a widely-known cross-browser behavior, verified here in this project's Chromium test environment), so a hovered disabled button previously showed the hover state ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+- `IconButton`/`LabeledIconButton`'s demo stories now pair each variant with a Figma-accurate background (plain for `default`, a dark strip for `inverted`) — the previous `Dark`/`Light` stories had the pairing backwards, which is what led to filing #105 in the first place ([#105](https://github.com/Tampere/Tampere-design-system/issues/105)).
+- `IconButton`'s Storybook `Dark` story (now `Inverted`) actually renders the variant it's named after — an explicit prop placed before `{...args}` was previously clobbered by the meta's default args ([#91](https://github.com/Tampere/Tampere-design-system/issues/91)).
+- `Modal`'s close button always has an accessible name now, regardless of what the consumer passes ([#94](https://github.com/Tampere/Tampere-design-system/issues/94)).
+- `Pagination`'s prev/next chevron buttons always have an accessible name now, regardless of what the consumer passes ([#95](https://github.com/Tampere/Tampere-design-system/issues/95)).
 
 ## [0.7.0] - 2026-08-14
 
