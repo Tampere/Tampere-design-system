@@ -11,11 +11,16 @@ interface Props {
   /** Function to assign an aria-label to each page button item */
   getAriaLabelForButton?: (pageIndex: number) => string;
   maxVisiblePages?: number;
-  leftButtonLabel?: string;
-  rightButtonLabel?: string;
+  /** Accessible name for the previous-page chevron button. */
+  leftButtonLabel: string;
+  /** Accessible name for the next-page chevron button. */
+  rightButtonLabel: string;
 }
 
-interface ListItemProps extends Props {
+interface ListItemProps extends Pick<
+  Props,
+  'getAriaLabelForButton' | 'activePageIndex' | 'onPageChange'
+> {
   index: number;
 }
 
@@ -102,8 +107,6 @@ export function Pagination({
                 key={index}
                 index={index}
                 getAriaLabelForButton={getAriaLabelForButton}
-                pageCount={pageCount}
-                maxVisiblePages={maxVisiblePages}
                 activePageIndex={activePageIndex}
                 onPageChange={(newPageIndex) => {
                   onPageChange(newPageIndex);
