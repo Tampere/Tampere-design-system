@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `IconButton` now guarantees a 24x24px minimum touch target (WCAG 2.2 AA, SC 2.5.8) at every size ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
 - `IconButton`'s focus-visible state now shows the same background overlay as hover/active, matching the Figma design (previously outline-only) ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
 - Corrected a stale `iconButton` background-overlay token value (`#f1eeeb` → `#f7f7f9`) that didn't match Figma ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
-- `IconButton` and `LabeledIconButton` no longer paint the hover background overlay on a disabled button — a disabled `<button>` still matches CSS `:hover` in Chromium/Firefox, so a hovered disabled button previously showed the hover state ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
+- `IconButton` and `LabeledIconButton` no longer paint the hover background overlay on a disabled button — a disabled `<button>` still matches CSS `:hover` (a widely-known cross-browser behavior, verified here in this project's Chromium test environment), so a hovered disabled button previously showed the hover state ([#90](https://github.com/Tampere/Tampere-design-system/issues/90)).
 
 ## [0.7.0] - 2026-08-14
 
