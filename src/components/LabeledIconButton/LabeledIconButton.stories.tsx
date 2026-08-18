@@ -1,4 +1,4 @@
-import { within } from '@storybook/testing-library';
+import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { LabeledIconButton } from './LabeledIconButton';
@@ -42,5 +42,43 @@ export const RendersLabelText: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText('Favorite')).toBeInTheDocument();
+  },
+};
+
+export const HoverAppliesBackgroundAndColor: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Label' });
+    await userEvent.pointer({ keys: '[MouseLeft>]', target: button });
+    const style = getComputedStyle(button);
+    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  },
+};
+
+export const FocusVisibleHasBackgroundAndOutline: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Label' });
+    button.focus();
+    const style = getComputedStyle(button);
+    await expect(style.outlineStyle).toBe('solid');
+    await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  },
+};
+
+export const MeetsTouchTarget: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Icon + label + padding inherently exceed the 24px AA floor; no min-size needed.
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Label' });
+    const { width, height } = getComputedStyle(button);
+    await expect(parseFloat(width)).toBeGreaterThanOrEqual(24);
+    await expect(parseFloat(height)).toBeGreaterThanOrEqual(24);
   },
 };

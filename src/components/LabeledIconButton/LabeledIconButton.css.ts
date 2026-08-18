@@ -1,11 +1,12 @@
 import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
-import { iconButtonForeground } from '../IconButton/iconButtonState.css.ts';
+import { iconButtonForeground, iconButtonBackground } from '../IconButton/iconButtonState.css.ts';
 
 const {
   theme: {
     cornerRadius,
     components: { icon, typography, labeledIconButton },
+    focusRing,
   },
 } = vars;
 const gap = labeledIconButton.spacing;
@@ -42,18 +43,19 @@ export const label = style({
   lineHeight: '100%',
 });
 
-const light = style({
-  color: iconButtonForeground.light.default,
-  selectors: {
-    '&:disabled': { color: iconButtonForeground.light.disabled },
-  },
-});
+function variantStyle(foreground: (typeof iconButtonForeground)['light'], background: string) {
+  return style({
+    color: foreground.default,
+    selectors: {
+      '&:hover': { background, color: foreground.hover },
+      '&:focus-visible': { background, color: foreground.focus, ...focusRing },
+      '&:active': { background, color: foreground.active },
+      '&:disabled': { color: foreground.disabled },
+    },
+  });
+}
 
-const dark = style({
-  color: iconButtonForeground.dark.default,
-  selectors: {
-    '&:disabled': { color: iconButtonForeground.dark.disabled },
-  },
+export const variants = styleVariants({
+  light: [variantStyle(iconButtonForeground.light, iconButtonBackground.light)],
+  dark: [variantStyle(iconButtonForeground.dark, iconButtonBackground.dark)],
 });
-
-export const variants = styleVariants({ light: [light], dark: [dark] });
