@@ -217,6 +217,30 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
   },
 };
 
+export const InvertedVariantFocusVisibleHasBackground: Story = {
+  tags: ['!dev', '!autodocs'],
+  // The story above only exercises `variant="default"` — the `inverted`
+  // variant's overlay (iconButtonBackground.inverted, shared with
+  // LabeledIconButton) previously had no interactive-state color coverage.
+  render: (args) => (
+    <Box style={{ backgroundColor: vars.brand.blue.mainDark, width: 'fit-content' }}>
+      <IconButton {...args} size="md" variant="inverted">
+        <SearchIcon fill="white" />
+      </IconButton>
+    </Box>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    button.focus();
+    const style = getComputedStyle(button);
+    await expect(style.outlineStyle).toBe('solid');
+    // iconButtonBackground.inverted = iconButton.states.contrast.overlay =
+    // rgba(255, 255, 255, 0.1) — exact match, not just "some color".
+    await expect(style.backgroundColor).toBe('rgba(255, 255, 255, 0.1)');
+  },
+};
+
 export const DisabledDoesNotShowHoverBackground: Story = {
   tags: ['!dev', '!autodocs'],
   // A disabled <button> still matches the CSS `:hover` pseudo-class in this

@@ -217,6 +217,26 @@ export const IconMatchesSizeToken: Story = {
   },
 };
 
+export const AriaLabelPropCannotOverrideVisibleLabel: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Regression test: TypeScript exempts hyphenated JSX attributes
+  // ('aria-label'/'aria-labelledby') from excess-property checks, so this
+  // call site compiles even though LabeledIconButtonProps excludes both —
+  // the type alone can't stop a caller from passing 'aria-label'. The
+  // component must therefore strip it at runtime so the visible `label`
+  // stays the accessible name.
+  render: (args) => (
+    <LabeledIconButton {...args} icon={<AddIcon />} aria-label="Should not be used" />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('button', { name: 'Label' })).toBeInTheDocument();
+    await expect(
+      canvas.queryByRole('button', { name: 'Should not be used' })
+    ).not.toBeInTheDocument();
+  },
+};
+
 export const DisabledDoesNotShowHoverBackground: Story = {
   tags: ['!dev', '!autodocs'],
   // A disabled <button> still matches the CSS `:hover` pseudo-class in this

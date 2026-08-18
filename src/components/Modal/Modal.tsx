@@ -1,10 +1,13 @@
-import { Flex, Modal as MantineModal, type ModalProps } from '@mantine/core';
+import { Flex, Modal as MantineModal, type ModalProps as MantineModalProps } from '@mantine/core';
 import { CloseIcon } from '../../icons/CloseIcon';
 import { mergeClassNames } from '../../utils';
 import { IconButton } from '../IconButton';
 import { header, modalCloseButton, modalHeaderTitle, padding } from './Modal.css';
 
-export interface Props extends Omit<ModalProps, 'withCloseButton' | 'closeButtonProps'> {
+export interface ModalProps extends Omit<
+  MantineModalProps,
+  'withCloseButton' | 'closeButtonProps'
+> {
   // Only 'aria-label' is ever read from this prop below — the full Mantine
   // CloseButtonProps shape isn't forwarded to the rendered IconButton, so the
   // type is narrowed to what's actually used. Required (not optional): this
@@ -15,7 +18,7 @@ export interface Props extends Omit<ModalProps, 'withCloseButton' | 'closeButton
   closeButtonProps: { 'aria-label': string };
 }
 
-export function Modal(props: Props) {
+export function Modal(props: ModalProps) {
   const { classNames, title, children, onClose, closeButtonProps, ...rest } = props;
 
   const defaultClassNames = {
