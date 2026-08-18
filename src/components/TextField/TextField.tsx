@@ -130,7 +130,7 @@ export const TextField = ({
                 onClearButtonClick?.();
               }}
               size={'sm'}
-              variant="dark"
+              variant="default"
             >
               <CloseIcon />
             </IconButton>

@@ -12,13 +12,13 @@ export interface LabeledIconButtonProps
     Omit<React.AriaAttributes, 'aria-label' | 'aria-labelledby'> {
   icon: React.ReactNode;
   label: string;
-  variant?: 'light' | 'dark';
+  variant?: 'default' | 'inverted';
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export const LabeledIconButton = forwardRef<HTMLButtonElement, LabeledIconButtonProps>(
-  ({ icon, label, variant = 'light', disabled, onClick, className, ...props }, ref) => {
+  ({ icon, label, variant = 'default', disabled, onClick, className, ...props }, ref) => {
     return (
       <UnstyledButton
         ref={ref}

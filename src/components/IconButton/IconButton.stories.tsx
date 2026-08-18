@@ -4,11 +4,12 @@ import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { IconButton } from './IconButton';
 import { SearchIcon } from '../../icons/SearchIcon';
+import { vars } from '../../theme';
 
 const meta = {
   argTypes: {
     children: { control: 'text' },
-    variant: { control: 'text' },
+    variant: { control: { type: 'select' }, options: ['default', 'inverted'] },
     size: { control: { type: 'select' }, options: ['xs', 'sm', 'md', 'lg', 'xl'] },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
@@ -16,7 +17,7 @@ const meta = {
   },
   args: {
     children: '<Icon />',
-    variant: 'light',
+    variant: 'default',
     size: 'md',
     disabled: false,
     'aria-label': 'Search',
@@ -27,27 +28,27 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Dark: Story = {
+export const Default: Story = {
   render: (args) => (
-    <Box style={{ backgroundColor: 'grey', width: 'fit-content' }}>
-      <IconButton size="md" {...args} variant="dark">
+    <IconButton size="md" {...args} variant="default">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+};
+
+export const Inverted: Story = {
+  render: (args) => (
+    <Box style={{ backgroundColor: vars.brand.blue.mainDark, width: 'fit-content' }}>
+      <IconButton size="md" {...args} variant="inverted">
         <SearchIcon fill="white" />
       </IconButton>
     </Box>
   ),
 };
 
-export const Light: Story = {
-  render: (args) => (
-    <IconButton size="md" {...args} variant="light">
-      <SearchIcon fill="black" />
-    </IconButton>
-  ),
-};
-
 export const Disabled: Story = {
   render: (args) => (
-    <IconButton size="md" {...args} variant="light" disabled>
+    <IconButton size="md" {...args} variant="inverted" disabled>
       <SearchIcon fill="gray" />
     </IconButton>
   ),
@@ -64,20 +65,28 @@ export const Disabled: Story = {
 };
 
 export const Colored: Story = {
+  // Backgrounds match Figma's Icon-button "Colored" reference frame exactly
+  // (node 13574:322): Blue/500, Turquoise/200, Green/500, Red/200 — not
+  // arbitrary CSS color keywords.
   render: (args) => (
     <Flex>
-      <Box style={{ background: 'red', padding: '1rem' }}>
-        <IconButton size="md" {...args} variant="light">
+      <Box style={{ background: vars.primitives.colors.blue['500'], padding: '1rem' }}>
+        <IconButton size="md" {...args} variant="inverted">
           <SearchIcon fill="white" />
         </IconButton>
       </Box>
-      <Box style={{ background: 'green', padding: '1rem' }}>
-        <IconButton size="md" {...args} variant="light">
+      <Box style={{ background: vars.primitives.colors.turquoise['200'], padding: '1rem' }}>
+        <IconButton size="md" {...args} variant="inverted">
           <SearchIcon fill="white" />
         </IconButton>
       </Box>
-      <Box style={{ background: 'blue', padding: '1rem' }}>
-        <IconButton size="md" {...args} variant="light">
+      <Box style={{ background: vars.primitives.colors.green['500'], padding: '1rem' }}>
+        <IconButton size="md" {...args} variant="inverted">
+          <SearchIcon fill="white" />
+        </IconButton>
+      </Box>
+      <Box style={{ background: vars.primitives.colors.red['200'], padding: '1rem' }}>
+        <IconButton size="md" {...args} variant="inverted">
           <SearchIcon fill="white" />
         </IconButton>
       </Box>
@@ -92,7 +101,7 @@ export const SmallSizeIconMatchesToken: Story = {
   // The rendered icon inside a "sm" IconButton must be sized from
   // components.icon.size.small (Figma: 18px), not a stale 16px value.
   render: (args) => (
-    <IconButton {...args} size="sm" variant="light">
+    <IconButton {...args} size="sm" variant="inverted">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -113,7 +122,7 @@ export const ExtraSmallSizeIconMatchesToken: Story = {
   // components.icon.size.extraSmall (Figma: 16px), not fall back to the raw
   // icon's own default size for lack of a data-size="xs" style rule.
   render: (args) => (
-    <IconButton {...args} size="xs" variant="light">
+    <IconButton {...args} size="xs" variant="inverted">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -134,7 +143,7 @@ export const LargeSizeIconMatchesToken: Story = {
   // components.icon.size.large (Figma: 24px) on both axes — not stretched by
   // pairing a mismatched height token.
   render: (args) => (
-    <IconButton {...args} size="lg" variant="light">
+    <IconButton {...args} size="lg" variant="inverted">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -153,7 +162,7 @@ export const ExtraSmallSizeMeetsTouchTarget: Story = {
   // WCAG 2.2 AA (SC 2.5.8): the rendered button box must be >= 24x24 CSS px
   // even though the "xs" glyph itself is only 16px.
   render: (args) => (
-    <IconButton {...args} size="xs" variant="light">
+    <IconButton {...args} size="xs" variant="inverted">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -171,7 +180,7 @@ export const LargeSizeGrowsPastTouchTarget: Story = {
   // "lg" (24px glyph + 2x2px padding = 28px) must render at 28x28, not be
   // clamped down to the 24px floor.
   render: (args) => (
-    <IconButton {...args} size="lg" variant="light">
+    <IconButton {...args} size="lg" variant="inverted">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -191,7 +200,7 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
   // for #90 (contradicts the outline-only assumption in the earlier design
   // doc).
   render: (args) => (
-    <IconButton {...args} size="md" variant="dark">
+    <IconButton {...args} size="md" variant="default">
       <SearchIcon fill="black" />
     </IconButton>
   ),
@@ -203,7 +212,7 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
     await expect(style.outlineStyle).toBe('solid');
     // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50']
     // (iconButton.states.overlay) — exact match, not just "some color", so a
-    // future swap of the light/dark overlay tokens would fail this test.
+    // future swap of the default/inverted overlay tokens would fail this test.
     await expect(style.backgroundColor).toBe('rgb(247, 247, 249)');
   },
 };
@@ -222,7 +231,7 @@ export const DisabledDoesNotShowHoverBackground: Story = {
   // on the CSS rule itself (no background at all on `:disabled`), which
   // holds regardless of whether `:hover` is also active.
   render: (args) => (
-    <IconButton {...args} size="md" variant="dark" disabled>
+    <IconButton {...args} size="md" variant="default" disabled>
       <SearchIcon fill="black" />
     </IconButton>
   ),

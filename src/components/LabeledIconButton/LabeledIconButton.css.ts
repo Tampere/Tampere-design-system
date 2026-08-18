@@ -51,7 +51,7 @@ export const label = style({
   lineHeight: '100%',
 });
 
-function variantStyle(foreground: (typeof iconButtonForeground)['light'], background: string) {
+function variantStyle(foreground: (typeof iconButtonForeground)['default'], background: string) {
   return style({
     color: foreground.default,
     selectors: {
@@ -64,6 +64,6 @@ function variantStyle(foreground: (typeof iconButtonForeground)['light'], backgr
 }
 
 export const variants = styleVariants({
-  light: [variantStyle(iconButtonForeground.light, iconButtonBackground.light)],
-  dark: [variantStyle(iconButtonForeground.dark, iconButtonBackground.dark)],
+  inverted: [variantStyle(iconButtonForeground.inverted, iconButtonBackground.inverted)],
+  default: [variantStyle(iconButtonForeground.default, iconButtonBackground.default)],
 });

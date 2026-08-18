@@ -64,20 +64,24 @@ function stateBlock(background: string) {
   });
 }
 
-const light = stateBlock(iconButtonBackground.light);
-const dark = stateBlock(iconButtonBackground.dark);
+const inverted = stateBlock(iconButtonBackground.inverted);
+const defaultVariant = stateBlock(iconButtonBackground.default);
 
-globalStyle(`${light}:hover svg path`, { fill: iconButtonForeground.light.hover });
-globalStyle(`${light}:focus-visible svg path`, { fill: iconButtonForeground.light.focus });
-globalStyle(`${light}:active svg path`, { fill: iconButtonForeground.light.active });
-globalStyle(`${light}:disabled svg path`, { fill: iconButtonForeground.light.disabled });
+globalStyle(`${inverted}:hover svg path`, { fill: iconButtonForeground.inverted.hover });
+globalStyle(`${inverted}:focus-visible svg path`, { fill: iconButtonForeground.inverted.focus });
+globalStyle(`${inverted}:active svg path`, { fill: iconButtonForeground.inverted.active });
+globalStyle(`${inverted}:disabled svg path`, { fill: iconButtonForeground.inverted.disabled });
 
-globalStyle(`${dark}:hover svg path`, { fill: iconButtonForeground.dark.hover });
-globalStyle(`${dark}:focus-visible svg path`, { fill: iconButtonForeground.dark.focus });
-globalStyle(`${dark}:active svg path`, { fill: iconButtonForeground.dark.active });
-globalStyle(`${dark}:disabled svg path`, { fill: iconButtonForeground.dark.disabled });
+globalStyle(`${defaultVariant}:hover svg path`, { fill: iconButtonForeground.default.hover });
+globalStyle(`${defaultVariant}:focus-visible svg path`, {
+  fill: iconButtonForeground.default.focus,
+});
+globalStyle(`${defaultVariant}:active svg path`, { fill: iconButtonForeground.default.active });
+globalStyle(`${defaultVariant}:disabled svg path`, {
+  fill: iconButtonForeground.default.disabled,
+});
 
 export const iconRoot = styleVariants({
-  light: [root, light],
-  dark: [root, dark],
+  default: [root, defaultVariant],
+  inverted: [root, inverted],
 });

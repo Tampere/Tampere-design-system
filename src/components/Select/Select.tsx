@@ -62,13 +62,18 @@ function SelectRightSection({
   return (
     <Flex className={rightSectionContainer}>
       {displayClearButton && (
-        <IconButton aria-label={clearButtonLabel} variant="dark" onClick={onClearClick} size={'sm'}>
+        <IconButton
+          aria-label={clearButtonLabel}
+          variant="default"
+          onClick={onClearClick}
+          size={'sm'}
+        >
           <CloseIcon />
         </IconButton>
       )}
       <IconButton
         aria-label={dropDownOpened ? collapseButtonLabel : expandButtonLabel}
-        variant="dark"
+        variant="default"
         onMouseDown={(e) => e.nativeEvent.stopPropagation()}
         onClick={toggleDropdown}
         size={'sm'}

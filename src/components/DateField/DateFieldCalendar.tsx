@@ -174,7 +174,7 @@ export function DateFieldCalendar({
       <div className={calendarHeader}>
         <IconButton
           aria-label={prevMonthLabel}
-          variant="dark"
+          variant="default"
           size="sm"
           disabled={prevDisabled}
           onClick={() => {
@@ -217,7 +217,7 @@ export function DateFieldCalendar({
         </div>
         <IconButton
           aria-label={nextMonthLabel}
-          variant="dark"
+          variant="default"
           size="sm"
           disabled={nextDisabled}
           onClick={() => {

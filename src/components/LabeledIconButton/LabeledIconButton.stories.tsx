@@ -4,24 +4,28 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box, Flex as MantineFlex } from '@mantine/core';
 import { LabeledIconButton } from './LabeledIconButton';
 import { AddIcon } from '../../icons/AddIcon';
+import { EditIcon } from '../../icons/EditIcon';
+import { DownloadIcon } from '../../icons/DownloadIcon';
+import { TrashcanIcon } from '../../icons/TrashcanIcon';
+import { vars } from '../../theme';
 
 const meta = {
   argTypes: {
     icon: { control: false },
     label: { control: 'text' },
-    variant: { control: { type: 'select' }, options: ['light', 'dark'] },
+    variant: { control: { type: 'select' }, options: ['default', 'inverted'] },
     disabled: { control: 'boolean' },
   },
   args: {
     icon: <AddIcon />,
     label: 'Label',
-    // 'dark' so the Default story is legible against Storybook's default
-    // light canvas background (see LabeledIconButton.tsx: the 'light' variant
-    // is meant for use on dark/colored surfaces) — Task 8 previously
-    // hardcoded `variant="dark"` directly in Default's render function
-    // instead, which made the Controls panel's variant selector inert for
-    // that story. Setting it here keeps Controls live.
-    variant: 'dark',
+    // 'default' so the Default story is legible against Storybook's default
+    // light canvas background (see LabeledIconButton.tsx: the 'default'
+    // variant is meant for use on plain light surfaces) — Task 8 previously
+    // hardcoded the variant directly in Default's render function instead,
+    // which made the Controls panel's variant selector inert for that story.
+    // Setting it here keeps Controls live.
+    variant: 'default',
     disabled: false,
   },
   component: LabeledIconButton,
@@ -34,6 +38,16 @@ export const Default: Story = {
   render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} />,
 };
 
+export const Inverted: Story = {
+  render: (args) => (
+    <Box
+      style={{ backgroundColor: vars.brand.blue.mainDark, width: 'fit-content', padding: '1rem' }}
+    >
+      <LabeledIconButton {...args} variant="inverted" icon={<AddIcon />} />
+    </Box>
+  ),
+};
+
 export const Disabled: Story = {
   render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} disabled />,
   play: async ({ canvasElement }) => {
@@ -43,29 +57,41 @@ export const Disabled: Story = {
   },
 };
 
-export const Dark: Story = {
+export const Colored: Story = {
   render: (args) => (
-    <Box style={{ backgroundColor: 'grey', width: 'fit-content', padding: '1rem' }}>
-      <LabeledIconButton {...args} variant="dark" icon={<AddIcon />} />
-    </Box>
+    // Demos the 'inverted' variant specifically (legible against saturated
+    // backgrounds) — explicit here since `meta.args.variant` defaults to
+    // 'default' (see Default's comment above). Backgrounds match Figma's
+    // Icon-button "Colored" reference frame exactly (node 13574:322):
+    // Blue/500, Turquoise/200, Green/500, Red/200 — not arbitrary CSS color
+    // keywords.
+    <MantineFlex gap="md">
+      <Box style={{ background: vars.primitives.colors.blue['500'], padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} variant="inverted" />
+      </Box>
+      <Box style={{ background: vars.primitives.colors.turquoise['200'], padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} variant="inverted" />
+      </Box>
+      <Box style={{ background: vars.primitives.colors.green['500'], padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} variant="inverted" />
+      </Box>
+      <Box style={{ background: vars.primitives.colors.red['200'], padding: '1rem' }}>
+        <LabeledIconButton {...args} icon={<AddIcon />} variant="inverted" />
+      </Box>
+    </MantineFlex>
   ),
 };
 
-export const Colored: Story = {
-  render: (args) => (
-    // Demos the 'light' variant specifically (legible against saturated
-    // backgrounds) — explicit here since `meta.args.variant` defaults to
-    // 'dark' (see Default's comment above).
+export const ActionToolbar: Story = {
+  // Real-world composition matching Figma's "Action toolbar" reference frame
+  // (node 13576:340): a row of `default`-variant LabeledIconButtons, each
+  // with its own icon and label rather than the meta's shared `AddIcon`/
+  // 'Label' args.
+  render: () => (
     <MantineFlex gap="md">
-      <Box style={{ background: 'red', padding: '1rem' }}>
-        <LabeledIconButton {...args} icon={<AddIcon />} variant="light" />
-      </Box>
-      <Box style={{ background: 'green', padding: '1rem' }}>
-        <LabeledIconButton {...args} icon={<AddIcon />} variant="light" />
-      </Box>
-      <Box style={{ background: 'blue', padding: '1rem' }}>
-        <LabeledIconButton {...args} icon={<AddIcon />} variant="light" />
-      </Box>
+      <LabeledIconButton variant="default" icon={<EditIcon />} label="Edit" />
+      <LabeledIconButton variant="default" icon={<DownloadIcon />} label="Download" />
+      <LabeledIconButton variant="default" icon={<TrashcanIcon />} label="Delete" />
     </MantineFlex>
   ),
 };
@@ -97,22 +123,22 @@ export const InteractionAppliesBackgroundAndColor: Story = {
    * removed since it still asserts the background-overlay behavior end to end
    * via a different interaction path than the sibling focus-visible story.
    */
-  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" />,
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="default" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Label' });
     await userEvent.pointer({ keys: '[MouseLeft>]', target: button });
     const style = getComputedStyle(button);
     // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50']
-    // (iconButton.states.overlay, dark variant) — exact match rather than
-    // "some color", so a light/dark overlay-token swap fails this test.
+    // (iconButton.states.overlay, default variant) — exact match rather than
+    // "some color", so a default/inverted overlay-token swap fails this test.
     await expect(style.backgroundColor).toBe('rgb(247, 247, 249)');
   },
 };
 
 export const FocusVisibleHasBackgroundAndOutline: Story = {
   tags: ['!dev', '!autodocs'],
-  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" />,
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="default" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Label' });
@@ -120,10 +146,11 @@ export const FocusVisibleHasBackgroundAndOutline: Story = {
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
     // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50']
-    // (iconButton.states.overlay, dark variant) — exact match.
+    // (iconButton.states.overlay, default variant) — exact match.
     await expect(style.backgroundColor).toBe('rgb(247, 247, 249)');
-    // `color` is untested elsewhere on LabeledIconButton — dark variant focus
-    // foreground = iconButton.states.focus = colors.neutral['500'] (#686872).
+    // `color` is untested elsewhere on LabeledIconButton — default variant
+    // focus foreground = iconButton.states.focus = colors.neutral['500']
+    // (#686872).
     await expect(style.color).toBe('rgb(104, 104, 114)');
   },
 };
@@ -141,17 +168,17 @@ export const MeetsTouchTarget: Story = {
   },
 };
 
-export const LightVariantFocusVisibleHasBackground: Story = {
+export const InvertedVariantFocusVisibleHasBackground: Story = {
   tags: ['!dev', '!autodocs'],
-  // All of the interactive-state stories above exercise `variant="dark"`
-  // only — the entire `light` variant (`iconButtonBackground.light` =
-  // rgba(255,255,255,0.1), `iconButtonForeground.light.*`) previously had no
-  // interactive-state coverage at all. Rendered against a dark-ish backdrop
-  // so the (semi-transparent white) overlay is meaningful, mirroring the
-  // `Dark`/`Colored` stories' pattern above.
+  // All of the interactive-state stories above exercise `variant="default"`
+  // only — the entire `inverted` variant (`iconButtonBackground.inverted` =
+  // rgba(255,255,255,0.1), `iconButtonForeground.inverted.*`) previously had
+  // no interactive-state coverage at all. Rendered against a dark-ish
+  // backdrop so the (semi-transparent white) overlay is meaningful,
+  // mirroring the `Inverted`/`Colored` stories' pattern above.
   render: (args) => (
     <Box style={{ backgroundColor: 'grey', width: 'fit-content', padding: '1rem' }}>
-      <LabeledIconButton {...args} icon={<AddIcon />} variant="light" />
+      <LabeledIconButton {...args} icon={<AddIcon />} variant="inverted" />
     </Box>
   ),
   play: async ({ canvasElement }) => {
@@ -160,13 +187,13 @@ export const LightVariantFocusVisibleHasBackground: Story = {
     button.focus();
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
-    // iconButtonBackground.light = hover.overlayContrast = rgba(255, 255,
+    // iconButtonBackground.inverted = hover.overlayContrast = rgba(255, 255,
     // 255, 0.1) — `background-color` reports the declared (uncomposited)
     // rgba value, not a value composited against the backdrop, so this is
     // an exact match rather than "some color".
     await expect(style.backgroundColor).toBe('rgba(255, 255, 255, 0.1)');
-    // `color` is untested elsewhere on the light/contrast variant — light
-    // variant focus foreground = iconButton.states.contrast.focus =
+    // `color` is untested elsewhere on the inverted/contrast variant —
+    // inverted variant focus foreground = iconButton.states.contrast.focus =
     // colors.neutral['100'] (#f2f2f4).
     await expect(style.color).toBe('rgb(242, 242, 244)');
   },
@@ -203,7 +230,7 @@ export const DisabledDoesNotShowHoverBackground: Story = {
   // above for why real `:hover` isn't reliably reproduced in this repo's
   // Playwright/Chromium environment — but the assertion is on the CSS rule
   // itself (no background at all on `:disabled`), which holds regardless.
-  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" disabled />,
+  render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="default" disabled />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Label' });

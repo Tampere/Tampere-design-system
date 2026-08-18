@@ -80,7 +80,7 @@ export function Pagination({
         }}
         className={leftButton}
         size="lg"
-        variant="dark"
+        variant="default"
       >
         <ChevronLeftIcon />
       </IconButton>
@@ -121,7 +121,7 @@ export function Pagination({
         }}
         className={rightButton}
         size="lg"
-        variant="dark"
+        variant="default"
       >
         <ChevronRightIcon />
       </IconButton>
