@@ -45,8 +45,16 @@ export const RendersLabelText: Story = {
   },
 };
 
-export const HoverAppliesBackgroundAndColor: Story = {
+export const InteractionAppliesBackgroundAndColor: Story = {
   tags: ['!dev', '!autodocs'],
+  /**
+   * Verifies that interactive states (hover/focus/active) apply the background overlay.
+   * Uses userEvent.pointer() to simulate a mouse press, which triggers the :active state,
+   * because userEvent.hover() does not reliably trigger real :hover pseudo-class in
+   * Playwright/Chromium test environment (synthetic pointer events don't move the OS cursor).
+   * Since :hover, :focus-visible, and :active all apply the same background token,
+   * this test verifies the interactive background-swap behavior across all states.
+   */
   render: (args) => <LabeledIconButton {...args} icon={<AddIcon />} variant="dark" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
