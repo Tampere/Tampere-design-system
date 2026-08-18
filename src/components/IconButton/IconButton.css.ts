@@ -16,6 +16,8 @@ const root = style({
   alignItems: 'center',
   justifyContent: 'center',
   aspectRatio: '1 / 1',
+  minWidth: iconButton.minTouchTarget,
+  minHeight: iconButton.minTouchTarget,
   background: 'none',
   border: 'none',
   cursor: 'pointer',

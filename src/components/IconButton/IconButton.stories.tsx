@@ -147,3 +147,39 @@ export const LargeSizeIconMatchesToken: Story = {
     await expect(height).toBe('24px');
   },
 };
+
+export const ExtraSmallSizeMeetsTouchTarget: Story = {
+  tags: ['!dev', '!autodocs'],
+  // WCAG 2.2 AA (SC 2.5.8): the rendered button box must be >= 24x24 CSS px
+  // even though the "xs" glyph itself is only 16px.
+  render: (args) => (
+    <IconButton {...args} size="xs" variant="light">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    const { width, height } = getComputedStyle(button);
+    await expect(parseFloat(width)).toBeGreaterThanOrEqual(24);
+    await expect(parseFloat(height)).toBeGreaterThanOrEqual(24);
+  },
+};
+
+export const LargeSizeGrowsPastTouchTarget: Story = {
+  tags: ['!dev', '!autodocs'],
+  // "lg" (24px glyph + 2x2px padding = 28px) must render at 28x28, not be
+  // clamped down to the 24px floor.
+  render: (args) => (
+    <IconButton {...args} size="lg" variant="light">
+      <SearchIcon fill="black" />
+    </IconButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    const { width, height } = getComputedStyle(button);
+    await expect(width).toBe('28px');
+    await expect(height).toBe('28px');
+  },
+};
