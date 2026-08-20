@@ -8,9 +8,16 @@ const {
 export const externalIcon = style({
   display: 'inline-block',
   verticalAlign: 'middle',
+  // Nudges the icon up to visually balance it against the underline — the
+  // icon's viewBox has no internal padding, so at `middle` alignment its
+  // bottom edge otherwise hangs below the underline. `position: relative`
+  // shifts it purely visually; the element still reserves its original box
+  // for layout, so line-height is unaffected even in wrapped paragraphs.
+  position: 'relative',
+  top: '-0.2em',
   width: '1em',
   height: '1em',
-  marginLeft: components.link.spacing,
+  marginLeft: components.link.iconSpacing,
 });
 
 type Size = Exclude<keyof typeof components.typography, 'margin'>;

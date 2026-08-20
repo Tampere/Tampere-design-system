@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
-import { TextLink } from './TextLink';
+import { Typography } from '../Typography';
+import { TextLink, type TextLinkSize } from './TextLink';
 
 const meta = {
   component: TextLink,
@@ -65,8 +66,9 @@ export const Visited: Story = {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Tekstilinkki' });
     const style = getComputedStyle(link);
-    // Figma "Default, visited" = text/link-visited = #5f93c6 = states.visited
-    await expect(style.color).toBe('rgb(95, 147, 198)');
+    // states.visited = brand.blue.mainExtraDark = #172f5a (darkened from
+    // Figma's #5f93c6 to meet WCAG AA contrast — see theme.ts)
+    await expect(style.color).toBe('rgb(23, 47, 90)');
     await expect(style.textDecorationLine).toBe('underline');
   },
 };
@@ -83,27 +85,44 @@ export const OpenExternal: Story = {
   },
 };
 
+const ALL_SIZES = [
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'subheader',
+  'p1',
+  'p2',
+  'caption',
+] as const satisfies readonly TextLinkSize[];
+
 export const Sizes: Story = {
   tags: docExample,
   render: (args) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
-      <TextLink {...args} size="h1" href="#h1">
-        Heading-sized link
-      </TextLink>
-      <TextLink {...args} size="caption" href="#caption">
-        Caption-sized link
-      </TextLink>
+      {ALL_SIZES.map((size) => (
+        <TextLink {...args} key={size} size={size} openExternal href={`#${size}`}>
+          {size.toUpperCase()} sized link
+        </TextLink>
+      ))}
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const h1Link = canvas.getByRole('link', { name: 'Heading-sized link' });
-    const captionLink = canvas.getByRole('link', { name: 'Caption-sized link' });
-    const h1Size = parseFloat(getComputedStyle(h1Link).fontSize);
-    const captionSize = parseFloat(getComputedStyle(captionLink).fontSize);
-    // h1 must render larger than caption at the same breakpoint — proves
-    // `size` actually drives the typography token rather than a fixed value.
-    await expect(h1Size).toBeGreaterThan(captionSize);
+    const fontSizes: number[] = [];
+    for (const size of ALL_SIZES) {
+      const link = canvas.getByRole('link', { name: `${size.toUpperCase()} sized link` });
+      await expect(link.querySelector('svg')).not.toBeNull();
+      fontSizes.push(parseFloat(getComputedStyle(link).fontSize));
+    }
+    // Every size must render no larger than the previous one — proves `size`
+    // drives the typography token across the whole scale (not just the two
+    // extremes) and that the icon renders at each of them. Non-strict: e.g.
+    // `subheader` and `p1` share a font size by design at every breakpoint.
+    for (let i = 1; i < fontSizes.length; i++) {
+      await expect(fontSizes[i]).toBeLessThanOrEqual(fontSizes[i - 1]);
+    }
   },
 };
 
@@ -126,6 +145,115 @@ export const WithCustomLink: Story = {
     const style = getComputedStyle(link);
     // The renderLink escape hatch still receives TextLink's link styling.
     await expect(style.color).toBe('rgb(41, 84, 154)');
+  },
+};
+
+export const InParagraph: Story = {
+  tags: docExample,
+  render: (args) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 480 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Typography variant="p1">
+          Tampereen kaupungin palveluista, kuten varhaiskasvatuksesta, terveyspalveluista ja
+          asumisen tuista, löydät ajantasaista tietoa kootusti{' '}
+          <TextLink {...args} size="p1" href="#lisatietoa">
+            verkkosivuiltamme
+          </TextLink>
+          , joilta voit myös varata ajan asiointiin, seurata kaupungin päätöksentekoa ja lähettää
+          palautetta suoraan vastuuvirkailijalle.
+        </Typography>
+        <Typography variant="p2">
+          Jos tarvitset henkilökohtaista opastusta esimerkiksi asumistuen hakemisessa tai
+          rakennusluvan täyttämisessä, voit helposti{' '}
+          <TextLink {...args} size="p2" href="#varaa-aika">
+            varata ajan neuvontapalveluun
+          </TextLink>{' '}
+          arkisin kello 9–16 välillä, jolloin asiantuntijamme auttaa sinua täyttämään tarvittavat
+          lomakkeet ja vastaa kysymyksiisi.
+        </Typography>
+        <Typography variant="caption">
+          Ennen yhteydenottoa asiakaspalveluun kannattaa aina tarkistaa ensin, löytyykö vastaus
+          kysymykseesi jo kootusti sivustomme{' '}
+          <TextLink {...args} size="caption" href="#ukk">
+            usein kysytyt kysymykset
+          </TextLink>{' '}
+          -osiosta, johon on koottu vastaukset asumiseen, varhaiskasvatukseen ja terveyspalveluihin
+          liittyviin yleisimpiin kysymyksiin.
+        </Typography>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Typography variant="p1">
+          Kaupungin osallistumis- ja vaikuttamismahdollisuuksista, kuten asukasraadeista, kyselyistä
+          ja osallistuvasta budjetoinnista, kerrotaan tarkemmin{' '}
+          <TextLink {...args} size="p1" openExternal href="https://tampere.fi">
+            Tampere.fi-sivustolla
+          </TextLink>
+          , jonne on koottu myös ohjeet oman aloitteen jättämiseen ja kaupungin päätöksenteon
+          seuraamiseen.
+        </Typography>
+        <Typography variant="p2">
+          Tarkemmat ohjeet lomakkeiden täyttämiseen, liitteiden lisäämiseen ja hakemuksen tilan
+          seurantaan löydät kaupungin{' '}
+          <TextLink {...args} size="p2" openExternal href="https://tampere.fi/asiointi">
+            asiointipalvelusta
+          </TextLink>
+          , jonka kautta hoidat suurimman osan asioinneista ilman erillistä käyntiä virastossa.
+        </Typography>
+        <Typography variant="caption">
+          Palvelun käyttöehdot, tietosuojaseloste ja saavutettavuusseloste löytyvät
+          kokonaisuudessaan{' '}
+          <TextLink {...args} size="caption" openExternal href="https://tampere.fi/kayttoehdot">
+            Tampere.fi-sivuilta
+          </TextLink>
+          , joilta löydät myös ohjeet mahdollisen saavutettavuuspalautteen jättämiseen.
+        </Typography>
+      </div>
+      <Typography variant="p1">
+        Jos olet jo aiemmin tutustunut palveluun ja täyttänyt tarvittavat esitiedot, voit jatkaa
+        asiointia suoraan sieltä, mistä jäit, tai{' '}
+        <TextLink {...args} size="p1" visited href="#palvelu">
+          palaa palvelun etusivulle
+        </TextLink>{' '}
+        nähdäksesi kaikki saatavilla olevat vaihtoehdot ja aloittaaksesi uuden asian käsittelyn
+        alusta.
+      </Typography>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Every link's size must match its surrounding paragraph's typography
+    // scale, across both regular and external links, at every body-copy size.
+    const regularLinkNames = [
+      'verkkosivuiltamme',
+      'varata ajan neuvontapalveluun',
+      'usein kysytyt kysymykset',
+    ];
+    for (const name of regularLinkNames) {
+      const link = canvas.getByRole('link', { name });
+      const paragraph = link.closest('p');
+      await expect(paragraph).not.toBeNull();
+      await expect(getComputedStyle(link).fontSize).toBe(getComputedStyle(paragraph!).fontSize);
+    }
+
+    const externalLinkNames = [
+      'Tampere.fi-sivustolla',
+      'asiointipalvelusta',
+      'Tampere.fi-sivuilta',
+    ];
+    for (const name of externalLinkNames) {
+      const link = canvas.getByRole('link', { name });
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link.querySelector('svg')).not.toBeNull();
+      const paragraph = link.closest('p');
+      await expect(paragraph).not.toBeNull();
+      await expect(getComputedStyle(link).fontSize).toBe(getComputedStyle(paragraph!).fontSize);
+    }
+
+    const visitedLink = canvas.getByRole('link', { name: 'palaa palvelun etusivulle' });
+    // states.visited = brand.blue.mainExtraDark = #172f5a (darkened from
+    // Figma's #5f93c6 to meet WCAG AA contrast — see theme.ts)
+    await expect(getComputedStyle(visitedLink).color).toBe('rgb(23, 47, 90)');
   },
 };
 

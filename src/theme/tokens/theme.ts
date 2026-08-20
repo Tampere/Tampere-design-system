@@ -27,7 +27,10 @@ const states = {
   active: brand.blue.mainLight,
   disabled: colors.neutral['300'],
   error: colors.red['300'],
-  visited: brand.blue.mainLight,
+  // Figma's "text/link-visited" (brand.blue.mainLight, #5f93c6) only reaches
+  // 3.24:1 against white — fails WCAG AA (4.5:1) for normal text. Uses the
+  // darkest blue brand stop instead, which clears AA with margin to spare.
+  visited: brand.blue.mainExtraDark,
 } as const;
 
 // Figma's "Input-states" variable collection — distinct from "Primary-states"
@@ -294,7 +297,13 @@ export function getTheme(bp: BreakpointKey) {
         disabled: colors.neutral['50'],
       },
     },
-    link: { spacing: bpTokens.spacing.xxs },
+    link: {
+      spacing: bpTokens.spacing.xxs,
+      // em-based (not breakpoint-driven, unlike `spacing` above) because
+      // TextLink's `size` spans the full Typography scale (h1…caption), so
+      // the icon gap must scale with whatever size is in use, not just bp.
+      iconSpacing: '0.25em',
+    },
     list: {
       fontSize: bpTokens.typography.size.p1,
       lineHeight: bpTokens.components.list.lineHeight,

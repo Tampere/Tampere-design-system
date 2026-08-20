@@ -155,6 +155,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "iconSpacing": "0.25em",
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "list": {
@@ -306,7 +307,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -474,6 +475,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "iconSpacing": "0.25em",
       "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "list": {
@@ -625,7 +627,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -793,6 +795,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "iconSpacing": "0.25em",
       "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "list": {
@@ -944,7 +947,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -1526,6 +1529,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "link": {
+        "iconSpacing": "0.25em",
         "spacing": "calc(0.25rem * var(--mantine-scale))",
       },
       "list": {
@@ -1677,7 +1681,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       "error": "#ae1e20",
       "focus": "#29549a",
       "hover": "#1d3a6c",
-      "visited": "#5f93c6",
+      "visited": "#172f5a",
     },
     "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
     "text": {
@@ -1846,6 +1850,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "iconSpacing": "0.25em",
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "list": {
@@ -1997,7 +2002,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -2165,6 +2170,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "iconSpacing": "0.25em",
       "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "list": {
@@ -2316,7 +2322,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -2484,6 +2490,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "iconSpacing": "0.25em",
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "list": {
@@ -2635,7 +2642,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
