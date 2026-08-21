@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within } from '@storybook/testing-library';
+import { within, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { Typography } from '../Typography';
 import { TextLink, type TextLinkSize } from './TextLink';
@@ -56,6 +56,7 @@ export const Default: Story = {
     // Figma "Default, unvisited" = text/link = #29549a = states.default
     await expect(style.color).toBe('rgb(41, 84, 154)');
     await expect(style.textDecorationLine).toBe('underline');
+    await expect(link).toHaveAttribute('href', '#');
   },
 };
 
@@ -66,8 +67,7 @@ export const Visited: Story = {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Tekstilinkki' });
     const style = getComputedStyle(link);
-    // states.visited = brand.blue.mainExtraDark = #172f5a (darkened from
-    // Figma's #5f93c6 to meet WCAG AA contrast — see theme.ts)
+    // states.visited — see theme.ts for the WCAG AA contrast rationale.
     await expect(style.color).toBe('rgb(23, 47, 90)');
     await expect(style.textDecorationLine).toBe('underline');
   },
@@ -78,10 +78,11 @@ export const OpenExternal: Story = {
   args: { openExternal: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const link = canvas.getByRole('link', { name: 'Tekstilinkki' });
+    const link = canvas.getByRole('link', { name: /^Tekstilinkki/ });
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     await expect(link.querySelector('svg')).not.toBeNull();
+    await expect(link).toHaveAccessibleName(/avautuu uuteen välilehteen/);
   },
 };
 
@@ -112,7 +113,9 @@ export const Sizes: Story = {
     const canvas = within(canvasElement);
     const fontSizes: number[] = [];
     for (const size of ALL_SIZES) {
-      const link = canvas.getByRole('link', { name: `${size.toUpperCase()} sized link` });
+      const link = canvas.getByRole('link', {
+        name: new RegExp(`^${size.toUpperCase()} sized link`),
+      });
       await expect(link.querySelector('svg')).not.toBeNull();
       fontSizes.push(parseFloat(getComputedStyle(link).fontSize));
     }
@@ -242,7 +245,7 @@ export const InParagraph: Story = {
       'Tampere.fi-sivuilta',
     ];
     for (const name of externalLinkNames) {
-      const link = canvas.getByRole('link', { name });
+      const link = canvas.getByRole('link', { name: new RegExp(`^${name}`) });
       await expect(link).toHaveAttribute('target', '_blank');
       await expect(link.querySelector('svg')).not.toBeNull();
       const paragraph = link.closest('p');
@@ -251,8 +254,7 @@ export const InParagraph: Story = {
     }
 
     const visitedLink = canvas.getByRole('link', { name: 'palaa palvelun etusivulle' });
-    // states.visited = brand.blue.mainExtraDark = #172f5a (darkened from
-    // Figma's #5f93c6 to meet WCAG AA contrast — see theme.ts)
+    // states.visited — see theme.ts for the WCAG AA contrast rationale.
     await expect(getComputedStyle(visitedLink).color).toBe('rgb(23, 47, 90)');
   },
 };
@@ -269,5 +271,75 @@ export const FocusVisible: Story = {
     await expect(style.color).toBe('rgb(41, 84, 154)');
     await expect(style.textDecorationLine).toBe('underline');
     await expect(style.outlineStyle).toBe('solid');
+  },
+};
+
+// ── Dev-warning tests (verifies the console.error guards in TextLink.tsx) ────
+
+// Captures console.error calls for the dev-warning tests below.
+let capturedConsoleErrors: string[] = [];
+
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  const original = console.error;
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+  };
+  return () => {
+    console.error = original;
+  };
+};
+
+export const WarnsWithoutDestination: Story = {
+  // Neither `href` nor `renderLink` given — the link has no destination.
+  args: { href: undefined },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(
+        capturedConsoleErrors.some((m) => /provide either `href` or `renderLink`/.test(m))
+      ).toBe(true)
+    );
+  },
+};
+
+export const WarnsWhenHrefIgnoredByRenderLink: Story = {
+  // Both `href` and `renderLink` given — `href` is silently dropped.
+  render: (args) => (
+    <TextLink
+      {...args}
+      renderLink={(className) => (
+        <a href="#custom" className={className}>
+          Custom link component
+        </a>
+      )}
+    />
+  ),
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /`href` is ignored/.test(m))).toBe(true)
+    );
+  },
+};
+
+export const WarnsWhenOpenExternalIgnoredByRenderLink: Story = {
+  // `openExternal` + `renderLink` given — target/rel/icon are silently dropped.
+  args: { openExternal: true },
+  render: (args) => (
+    <TextLink
+      {...args}
+      renderLink={(className) => (
+        <a href="#custom" className={className}>
+          Custom link component
+        </a>
+      )}
+    />
+  ),
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /`openExternal` has no effect/.test(m))).toBe(true)
+    );
   },
 };

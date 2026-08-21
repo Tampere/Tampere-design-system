@@ -14,15 +14,29 @@ export const externalIcon = style({
   // shifts it purely visually; the element still reserves its original box
   // for layout, so line-height is unaffected even in wrapped paragraphs.
   position: 'relative',
-  top: '-0.2em',
-  width: '1em',
-  height: '1em',
+  top: components.link.iconVerticalOffset,
+  width: components.link.iconSize,
+  height: components.link.iconSize,
   marginLeft: components.link.iconSpacing,
 });
 
-type Size = Exclude<keyof typeof components.typography, 'margin'>;
+// Screen-reader-only text — visually hidden but still announced. Mirrors
+// DateField.css.ts's `visuallyHidden` (no shared helper exists yet).
+export const visuallyHidden = style({
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: '0',
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  border: '0',
+});
 
-function sizeStyle(size: Size) {
+export type TextLinkSize = Exclude<keyof typeof components.typography, 'margin'>;
+
+function sizeStyle(size: TextLinkSize) {
   const { fontFamily, fontSize, fontWeight, lineHeight } = components.typography[size];
   return { fontFamily, fontSize, fontWeight, lineHeight };
 }
@@ -46,17 +60,37 @@ export const link = styleVariants({
   unvisited: {
     color: states.default,
     textDecoration: 'underline',
+    textDecorationThickness: components.link.underlineThickness,
     selectors: {
-      '&:hover': { color: states.hover, textDecoration: 'none' },
-      '&:focus-visible': { ...focusRing, color: states.focus, textDecoration: 'underline' },
+      '&:hover': {
+        color: states.hover,
+        textDecoration: 'underline',
+        textDecorationThickness: components.link.hoverUnderlineThickness,
+      },
+      '&:focus-visible': {
+        ...focusRing,
+        color: states.focus,
+        textDecoration: 'underline',
+        textDecorationThickness: components.link.hoverUnderlineThickness,
+      },
     },
   },
   visited: {
     color: states.visited,
     textDecoration: 'underline',
+    textDecorationThickness: components.link.underlineThickness,
     selectors: {
-      '&:hover': { color: states.visited, textDecoration: 'none' },
-      '&:focus-visible': { ...focusRing, color: states.visited, textDecoration: 'underline' },
+      '&:hover': {
+        color: states.visited,
+        textDecoration: 'underline',
+        textDecorationThickness: components.link.hoverUnderlineThickness,
+      },
+      '&:focus-visible': {
+        ...focusRing,
+        color: states.visited,
+        textDecoration: 'underline',
+        textDecorationThickness: components.link.hoverUnderlineThickness,
+      },
     },
   },
 });
