@@ -203,7 +203,15 @@ export function getTheme(bp: BreakpointKey) {
     chip: {
       spacing: bpTokens.spacing.xs,
       cornerRadius: rem('20px'),
-      font: { lineHeight: bpTokens.components.input.lineHeight, size: bpTokens.typography.size.p2 },
+      // Figma's "Chip/Label" composite token: Caption's own size/family/line-height,
+      // but Subheader-style Semi-Bold weight rather than Caption's own Regular —
+      // matches `typography.caption` above except for that one deliberate override.
+      label: {
+        fontFamily: fontFamilyBody,
+        fontSize: bpTokens.typography.size.caption,
+        fontWeight: '600',
+        lineHeight: '150%',
+      },
       padding: { horizontal: bpTokens.spacing.sm, vertical: bpTokens.spacing.xs },
     },
     datePicker: {
