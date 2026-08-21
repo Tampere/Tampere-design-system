@@ -10,9 +10,7 @@ export const externalIcon = style({
   verticalAlign: 'middle',
   // Nudges the icon up to visually balance it against the underline — the
   // icon's viewBox has no internal padding, so at `middle` alignment its
-  // bottom edge otherwise hangs below the underline. `position: relative`
-  // shifts it purely visually; the element still reserves its original box
-  // for layout, so line-height is unaffected even in wrapped paragraphs.
+  // bottom edge otherwise hangs below the underline.
   position: 'relative',
   top: components.link.iconVerticalOffset,
   width: components.link.iconSize,
@@ -34,7 +32,17 @@ export const visuallyHidden = style({
   border: '0',
 });
 
-export type TextLinkSize = Exclude<keyof typeof components.typography, 'margin'>;
+// Typography scale keys shaped like a font style (excludes e.g. `margin`,
+// which is a bare spacing value, not a font record) — structural rather than
+// naming `margin` explicitly, so a future non-font-style key is excluded
+// automatically instead of silently becoming a valid TextLink size.
+export type TextLinkSize = {
+  [K in keyof typeof components.typography]: (typeof components.typography)[K] extends {
+    fontFamily: string;
+  }
+    ? K
+    : never;
+}[keyof typeof components.typography];
 
 function sizeStyle(size: TextLinkSize) {
   const { fontFamily, fontSize, fontWeight, lineHeight } = components.typography[size];

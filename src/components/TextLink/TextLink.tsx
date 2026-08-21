@@ -18,11 +18,13 @@ export interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   visited?: boolean;
   openExternal?: boolean;
   className?: string;
+  /** Visually-hidden suffix announced when `openExternal` is set. */
+  openExternalLabel?: string;
   /**
    * Escape hatch for router-integrated links (e.g. React Router's `Link`).
    * When provided, it fully replaces the rendered `<a>` — `href`,
-   * `openExternal` (and the target/rel/icon it would otherwise add), and any
-   * other anchor props are NOT applied. Add them to the custom element
+   * `openExternal` (and the target/rel/icon it would otherwise add), `children`,
+   * and any other anchor props are NOT applied. Add them to the custom element
    * yourself if you need them.
    */
   renderLink?: (className: string) => ReactElement;
@@ -33,6 +35,7 @@ export function TextLink({
   size = 'p1',
   visited = false,
   openExternal = false,
+  openExternalLabel = ' (avautuu uuteen välilehteen)',
   children,
   className,
   renderLink,
@@ -44,25 +47,35 @@ export function TextLink({
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') return;
+
     if (!href && !renderLink) {
       console.error(
         'TextLink: provide either `href` or `renderLink` so the link has a destination.'
       );
     }
-    if (href && renderLink) {
-      console.error(
-        'TextLink: `href` is ignored when `renderLink` is provided — remove one of them.'
-      );
-    }
-  }, [href, renderLink]);
 
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && openExternal && renderLink) {
+    if (renderLink) {
+      if (href) {
+        console.error(
+          'TextLink: `href` is ignored when `renderLink` is provided — remove one of them.'
+        );
+      }
+      if (openExternal) {
+        console.error(
+          'TextLink: `openExternal` has no effect when `renderLink` is provided — target, rel, and the external-link icon are only applied to the default `<a>` render. Add them to your custom link element instead.'
+        );
+      }
+      if (children != null || target || rel || Object.keys(props).length > 0) {
+        console.error(
+          'TextLink: `children` and other anchor props are ignored when `renderLink` is provided — add them to your custom link element instead.'
+        );
+      }
+    } else if (openExternal && target) {
       console.error(
-        'TextLink: `openExternal` has no effect when `renderLink` is provided — target, rel, and the external-link icon are only applied to the default `<a>` render. Add them to your custom link element instead.'
+        'TextLink: `target` is ignored when `openExternal` is set — openExternal always opens the link in a new tab.'
       );
     }
-  }, [openExternal, renderLink]);
+  }, [href, renderLink, openExternal, children, target, rel, props]);
 
   if (renderLink) {
     return renderLink(classes);
@@ -73,7 +86,7 @@ export function TextLink({
       href={href}
       className={classes}
       target={openExternal ? '_blank' : target}
-      rel={openExternal ? 'noopener noreferrer' : rel}
+      rel={openExternal ? cx('noopener noreferrer', rel) : rel}
       {...props}
     >
       {children}
@@ -83,7 +96,7 @@ export function TextLink({
               line, separate from the last word of link text. */}
           {'⁠'}
           <OpenExternalLinkIcon aria-hidden className={externalIcon} />
-          <span className={visuallyHidden}> (avautuu uuteen välilehteen)</span>
+          <span className={visuallyHidden}>{openExternalLabel}</span>
         </>
       )}
     </a>

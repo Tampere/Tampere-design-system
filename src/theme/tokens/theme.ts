@@ -309,12 +309,12 @@ export function getTheme(bp: BreakpointKey) {
       iconSize: '1em',
       iconVerticalOffset: '-0.2em',
       // Same reasoning as iconSpacing: em-based, and set explicitly rather
-      // than left at the browser's auto/from-font default, because that
-      // default scales with font *weight* as well as size — on the bold
-      // h1…h5 styles it's already fairly thick, which made the hover/focus
-      // increase below barely register. Fixing the rest-state thickness
-      // keeps the hover/focus increase visually consistent across every
-      // size and weight in the scale.
+      // than left at the browser's auto/from-font default — empirically,
+      // the auto thickness appeared heavier on the bold h1…h5 weights than
+      // on p1/p2/caption, which made the hover/focus increase below barely
+      // register. Fixing the rest-state thickness keeps the hover/focus
+      // increase visually consistent across every size and weight in the
+      // scale.
       underlineThickness: '0.1em',
       hoverUnderlineThickness: '0.125em',
     },

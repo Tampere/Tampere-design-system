@@ -86,6 +86,26 @@ export const OpenExternal: Story = {
   },
 };
 
+export const MergesRelWithOpenExternal: Story = {
+  // `openExternal` adds `noopener noreferrer` without discarding a caller's `rel`.
+  args: { openExternal: true, rel: 'nofollow' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: /^Tekstilinkki/ });
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer nofollow');
+  },
+};
+
+export const ForwardsAnchorProps: Story = {
+  // Arbitrary anchor props (not just href/size/visited/openExternal) reach the DOM.
+  args: { 'aria-label': 'Custom label', id: 'custom-link' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Custom label' });
+    await expect(link).toHaveAttribute('id', 'custom-link');
+  },
+};
+
 const ALL_SIZES = [
   'h1',
   'h2',
@@ -112,12 +132,15 @@ export const Sizes: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const fontSizes: number[] = [];
+    const iconWidths: number[] = [];
     for (const size of ALL_SIZES) {
       const link = canvas.getByRole('link', {
         name: new RegExp(`^${size.toUpperCase()} sized link`),
       });
-      await expect(link.querySelector('svg')).not.toBeNull();
+      const icon = link.querySelector('svg');
+      await expect(icon).not.toBeNull();
       fontSizes.push(parseFloat(getComputedStyle(link).fontSize));
+      iconWidths.push(parseFloat(getComputedStyle(icon!).width));
     }
     // Every size must render no larger than the previous one — proves `size`
     // drives the typography token across the whole scale (not just the two
@@ -126,11 +149,20 @@ export const Sizes: Story = {
     for (let i = 1; i < fontSizes.length; i++) {
       await expect(fontSizes[i]).toBeLessThanOrEqual(fontSizes[i - 1]);
     }
+    // Icon is em-sized, so it must scale down alongside the text (this was
+    // the bug fixed in 0ab5efa — the icon used to stay a fixed pixel size).
+    for (let i = 1; i < iconWidths.length; i++) {
+      await expect(iconWidths[i]).toBeLessThanOrEqual(iconWidths[i - 1]);
+    }
   },
 };
 
 export const WithCustomLink: Story = {
   tags: docExample,
+  // renderLink fully replaces the rendered `<a>`, so `href`/`children` (both
+  // set by meta.args for the other doc examples) would otherwise trip
+  // TextLink's own dev warnings about ignored props — see WarnsWhen* below.
+  args: { href: undefined, children: undefined },
   render: (args) => (
     <TextLink
       {...args}
@@ -294,12 +326,19 @@ export const WarnsWithoutDestination: Story = {
   // Neither `href` nor `renderLink` given — the link has no destination.
   args: { href: undefined },
   beforeEach: captureConsoleErrors,
-  play: async () => {
+  play: async ({ canvasElement }) => {
     await waitFor(() =>
       expect(
         capturedConsoleErrors.some((m) => /provide either `href` or `renderLink`/.test(m))
       ).toBe(true)
     );
+    // Document the actual (broken) resulting DOM: an `<a>` with no `href`
+    // has no accessible "link" role and isn't keyboard-focusable.
+    const canvas = within(canvasElement);
+    await expect(canvas.queryByRole('link')).toBeNull();
+    const anchor = canvasElement.querySelector('a');
+    await expect(anchor).not.toBeNull();
+    await expect(anchor).not.toHaveAttribute('href');
   },
 };
 
@@ -308,6 +347,7 @@ export const WarnsWhenHrefIgnoredByRenderLink: Story = {
   render: (args) => (
     <TextLink
       {...args}
+      children={undefined}
       renderLink={(className) => (
         <a href="#custom" className={className}>
           Custom link component
@@ -329,6 +369,36 @@ export const WarnsWhenOpenExternalIgnoredByRenderLink: Story = {
   render: (args) => (
     <TextLink
       {...args}
+      href={undefined}
+      children={undefined}
+      renderLink={(className) => (
+        <a href="#custom" className={className}>
+          Custom link component
+        </a>
+      )}
+    />
+  ),
+  beforeEach: captureConsoleErrors,
+  play: async ({ canvasElement }) => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /`openExternal` has no effect/.test(m))).toBe(true)
+    );
+    // The custom element really doesn't get target/rel/icon applied to it.
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Custom link component' });
+    await expect(link).not.toHaveAttribute('target');
+    await expect(link).not.toHaveAttribute('rel');
+    await expect(link.querySelector('svg')).toBeNull();
+  },
+};
+
+export const WarnsWhenExtrasIgnoredByRenderLink: Story = {
+  // `children` (and other spread anchor props) given alongside `renderLink`
+  // — silently dropped, since renderLink fully replaces the rendered `<a>`.
+  render: (args) => (
+    <TextLink
+      {...args}
+      href={undefined}
       renderLink={(className) => (
         <a href="#custom" className={className}>
           Custom link component
@@ -339,7 +409,18 @@ export const WarnsWhenOpenExternalIgnoredByRenderLink: Story = {
   beforeEach: captureConsoleErrors,
   play: async () => {
     await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => /`openExternal` has no effect/.test(m))).toBe(true)
+      expect(capturedConsoleErrors.some((m) => /other anchor props are ignored/.test(m))).toBe(true)
+    );
+  },
+};
+
+export const WarnsWhenTargetIgnoredByOpenExternal: Story = {
+  // `openExternal` + explicit `target` given — `openExternal` always wins.
+  args: { openExternal: true, target: '_self' },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /`target` is ignored/.test(m))).toBe(true)
     );
   },
 };
