@@ -47,6 +47,17 @@ export const filterLabel = style({
       backgroundColor: components.item.background.selected.default,
       color: text.primary,
     },
+    // Neither `:hover` nor `:active` is asserted in tests — synthetic
+    // pointer/mouse events (userEvent.pointer, fireEvent.mouseDown) don't
+    // produce genuine browser hover/active state in this repo's
+    // Playwright/Chromium test environment (verified: both were tried and
+    // neither changes the computed style). Documented gap, same as
+    // TextLink/LabeledIconButton's `:hover`.
+    '&:not([data-disabled]):hover': { border: `${strokeWeight} solid ${states.hover}` },
+    '&[data-checked]:not([data-disabled]):hover': {
+      backgroundColor: components.item.background.selected.hover,
+    },
+    '&:not([data-disabled]):active': { border: `${strokeWeight} solid ${states.active}` },
     '&[data-disabled]': {
       border: `${strokeWeight} solid ${states.disabled}`,
       color: text.disabled,

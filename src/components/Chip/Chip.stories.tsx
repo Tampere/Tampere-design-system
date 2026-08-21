@@ -22,6 +22,67 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Re-adds the visibility tags that `meta` strips, marking a story as a
+// documentation example shown in both the sidebar and the autodocs page.
+const docExample = ['dev', 'autodocs'];
+
+// ── Documentation examples (visible in sidebar + autodocs) ───────────────────
+// These cover every distinct visual state; the interactive behaviours (focus,
+// keyboard toggle/removal) are discoverable by interacting with them, so the
+// behavioural/a11y stories further down stay test-only to keep docs focused.
+
+export const Default: Story = {
+  tags: docExample,
+  render: () => (
+    <Chip checked={false} onChange={() => {}}>
+      Bussit
+    </Chip>
+  ),
+};
+
+export const Selected: Story = {
+  tags: docExample,
+  render: () => (
+    <Chip checked onChange={() => {}}>
+      Ratikat
+    </Chip>
+  ),
+};
+
+export const WithLeadingIcon: Story = {
+  tags: docExample,
+  render: () => (
+    <Chip checked={false} onChange={() => {}} icon={<StarFilledIcon />}>
+      Suosikki
+    </Chip>
+  ),
+};
+
+export const RemovableTag: Story = {
+  tags: docExample,
+  render: () => (
+    <Chip onRemove={() => {}} removeLabel="Poista Hervanta">
+      Hervanta
+    </Chip>
+  ),
+};
+
+export const Disabled: Story = {
+  tags: docExample,
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <Chip checked={false} onChange={() => {}} disabled>
+        Bussit
+      </Chip>
+      <Chip onRemove={() => {}} removeLabel="Poista Hervanta" disabled>
+        Hervanta
+      </Chip>
+    </div>
+  ),
+};
+
+// ── Test-only specs (hidden from sidebar/autodocs, still run as browser tests) ─
+
 export const FilterChipTogglesOnClick: Story = {
   render: () => {
     function Wrapper() {
@@ -230,6 +291,29 @@ export const FilterChipColors: Story = {
   },
 };
 
+export const FilterChipHeightTracksLabelFontSize: Story = {
+  // Same viewport-independent relationship check as the tag-role equivalent
+  // below — `--chip-size` is fed from the same `components.chip.height`
+  // formula, not a fixed Mantine size step.
+  render: () => (
+    <Chip checked={false} onChange={() => {}}>
+      Bussit
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const label = canvas
+      .getByRole('checkbox', { name: 'Bussit' })
+      .closest('div')
+      ?.querySelector('label');
+    await expect(label).not.toBeNull();
+    const style = getComputedStyle(label!);
+    const fontSize = parseFloat(style.fontSize);
+    const height = parseFloat(style.height);
+    await expect(height).toBeCloseTo(2 * 4 + fontSize * 1.5, 0);
+  },
+};
+
 export const FilterChipIsFullyRounded: Story = {
   render: () => (
     <Chip checked={false} onChange={() => {}}>
@@ -265,5 +349,29 @@ export const TagChipColors: Story = {
     // Neutral/100 tint (#f2f2f4), Text/Primary label (#2d2d32).
     await expect(getComputedStyle(root!).backgroundColor).toBe('rgb(242, 242, 244)');
     await expect(getComputedStyle(label).color).toBe('rgb(45, 45, 50)');
+  },
+};
+
+// Height is `components.chip.height` — a formula derived from the same
+// breakpoint-varying label font-size used to render the text (see theme.ts),
+// not a hardcoded literal. Asserting the formula holds at whatever
+// breakpoint the test runs proves the wiring stays correct at every other
+// breakpoint too, without needing to actually resize the viewport (same
+// viewport-independent pattern as DateField's TriggerIconTracksControlSize).
+export const TagChipHeightTracksLabelFontSize: Story = {
+  render: () => (
+    <Chip onRemove={() => {}} removeLabel="Poista Hervanta">
+      Hervanta
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const root = canvas.getByText('Hervanta').closest('span');
+    await expect(root).not.toBeNull();
+    const style = getComputedStyle(root!);
+    const fontSize = parseFloat(style.fontSize);
+    const height = parseFloat(style.height);
+    // 2 × 4px vertical padding + 150% line-height of the label font size.
+    await expect(height).toBeCloseTo(2 * 4 + fontSize * 1.5, 0);
   },
 };
