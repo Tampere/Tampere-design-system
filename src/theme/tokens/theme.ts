@@ -212,7 +212,14 @@ export function getTheme(bp: BreakpointKey) {
         fontWeight: '600',
         lineHeight: '150%',
       },
-      padding: { horizontal: bpTokens.spacing.sm, vertical: bpTokens.spacing.xs },
+      // Vertical padding is a fixed constant (not per-breakpoint, unlike
+      // `horizontal` below) — Figma's Spacing/0,5 = 4px at every breakpoint.
+      // Combined with `label`'s breakpoint-varying Caption size/line-height,
+      // this gives the spec's 32px total height at the lg/xl/xxl tier
+      // (4 + 150%*16px + 4 = 32) and a correspondingly smaller height on
+      // narrower breakpoints as Caption itself shrinks — same "reference
+      // height at the largest breakpoint" pattern used elsewhere in TREDS.
+      padding: { horizontal: bpTokens.spacing.sm, vertical: primitives.spacing['0,5'] },
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
