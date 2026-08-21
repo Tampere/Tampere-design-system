@@ -40,6 +40,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
     "chip": {
       "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+      "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(1rem * var(--mantine-scale)) * 1.5)",
       "label": {
         "fontFamily": "Open Sans Variable, sans-serif",
         "fontSize": "calc(1rem * var(--mantine-scale))",
@@ -51,6 +52,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         "vertical": "calc(0.25rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+      "tagFill": "#f2f2f4",
     },
     "controlHeight": "calc(3.25rem * var(--mantine-scale))",
     "datePicker": {
@@ -366,6 +368,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
     "chip": {
       "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+      "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(0.875rem * var(--mantine-scale)) * 1.5)",
       "label": {
         "fontFamily": "Open Sans Variable, sans-serif",
         "fontSize": "calc(0.875rem * var(--mantine-scale))",
@@ -377,6 +380,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
         "vertical": "calc(0.25rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
+      "tagFill": "#f2f2f4",
     },
     "controlHeight": "calc(2.625rem * var(--mantine-scale))",
     "datePicker": {
@@ -692,6 +696,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
     "chip": {
       "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+      "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(0.75rem * var(--mantine-scale)) * 1.5)",
       "label": {
         "fontFamily": "Open Sans Variable, sans-serif",
         "fontSize": "calc(0.75rem * var(--mantine-scale))",
@@ -703,6 +708,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "vertical": "calc(0.25rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
+      "tagFill": "#f2f2f4",
     },
     "controlHeight": "calc(2.5rem * var(--mantine-scale))",
     "datePicker": {
@@ -1432,6 +1438,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
       "chip": {
         "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+        "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(0.875rem * var(--mantine-scale)) * 1.5)",
         "label": {
           "fontFamily": "Open Sans Variable, sans-serif",
           "fontSize": "calc(0.875rem * var(--mantine-scale))",
@@ -1443,6 +1450,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "vertical": "calc(0.25rem * var(--mantine-scale))",
         },
         "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "tagFill": "#f2f2f4",
       },
       "controlHeight": "calc(2.625rem * var(--mantine-scale))",
       "datePicker": {
@@ -1759,6 +1767,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
     "chip": {
       "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+      "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(1rem * var(--mantine-scale)) * 1.5)",
       "label": {
         "fontFamily": "Open Sans Variable, sans-serif",
         "fontSize": "calc(1rem * var(--mantine-scale))",
@@ -1770,6 +1779,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         "vertical": "calc(0.25rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+      "tagFill": "#f2f2f4",
     },
     "controlHeight": "calc(3.25rem * var(--mantine-scale))",
     "datePicker": {
@@ -2085,6 +2095,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
     "chip": {
       "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+      "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(0.75rem * var(--mantine-scale)) * 1.5)",
       "label": {
         "fontFamily": "Open Sans Variable, sans-serif",
         "fontSize": "calc(0.75rem * var(--mantine-scale))",
@@ -2096,6 +2107,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         "vertical": "calc(0.25rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
+      "tagFill": "#f2f2f4",
     },
     "controlHeight": "calc(2.5rem * var(--mantine-scale))",
     "datePicker": {
@@ -2411,6 +2423,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
     "chip": {
       "cornerRadius": "calc(1.25rem * var(--mantine-scale))",
+      "height": "calc(calc(0.25rem * var(--mantine-scale)) * 2 + calc(1rem * var(--mantine-scale)) * 1.5)",
       "label": {
         "fontFamily": "Open Sans Variable, sans-serif",
         "fontSize": "calc(1rem * var(--mantine-scale))",
@@ -2422,6 +2435,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "vertical": "calc(0.25rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+      "tagFill": "#f2f2f4",
     },
     "controlHeight": "calc(3.25rem * var(--mantine-scale))",
     "datePicker": {

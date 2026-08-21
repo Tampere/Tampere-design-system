@@ -220,6 +220,18 @@ export function getTheme(bp: BreakpointKey) {
       // narrower breakpoints as Caption itself shrinks — same "reference
       // height at the largest breakpoint" pattern used elsewhere in TREDS.
       padding: { horizontal: bpTokens.spacing.sm, vertical: primitives.spacing['0,5'] },
+      // Total pill height = 2×vertical padding + 150% line-height of the
+      // label's font size. Mantine's Chip has no vertical-padding concept
+      // of its own (it sets height directly via --chip-size), so this is
+      // computed once here and fed to both the Mantine-wrapped filter role
+      // and the bespoke removable-tag role, keeping their heights identical.
+      height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * 1.5)`,
+      // Figma's "Neutral/100" tag fill — distinct from `background.disabled`
+      // even though the raw value is the same, since that token means
+      // something unrelated (a disabled-state background, not a tag chip's
+      // resting fill) — see the TextLink review lesson on not reusing a
+      // semantically-mismatched token just because its value happens to match.
+      tagFill: colors.neutral['100'],
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
