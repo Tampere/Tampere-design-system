@@ -155,7 +155,12 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "hoverUnderlineThickness": "0.125em",
+      "iconSize": "1em",
+      "iconSpacing": "0.25em",
+      "iconVerticalOffset": "-0.2em",
       "spacing": "calc(0.5rem * var(--mantine-scale))",
+      "underlineThickness": "0.1em",
     },
     "list": {
       "fontSize": "calc(1.25rem * var(--mantine-scale))",
@@ -306,7 +311,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -474,7 +479,12 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "hoverUnderlineThickness": "0.125em",
+      "iconSize": "1em",
+      "iconSpacing": "0.25em",
+      "iconVerticalOffset": "-0.2em",
       "spacing": "calc(0.25rem * var(--mantine-scale))",
+      "underlineThickness": "0.1em",
     },
     "list": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
@@ -625,7 +635,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -793,7 +803,12 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "hoverUnderlineThickness": "0.125em",
+      "iconSize": "1em",
+      "iconSpacing": "0.25em",
+      "iconVerticalOffset": "-0.2em",
       "spacing": "calc(0.25rem * var(--mantine-scale))",
+      "underlineThickness": "0.1em",
     },
     "list": {
       "fontSize": "calc(1rem * var(--mantine-scale))",
@@ -944,7 +959,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -1526,7 +1541,12 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "link": {
+        "hoverUnderlineThickness": "0.125em",
+        "iconSize": "1em",
+        "iconSpacing": "0.25em",
+        "iconVerticalOffset": "-0.2em",
         "spacing": "calc(0.25rem * var(--mantine-scale))",
+        "underlineThickness": "0.1em",
       },
       "list": {
         "fontSize": "calc(1.125rem * var(--mantine-scale))",
@@ -1677,7 +1697,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       "error": "#ae1e20",
       "focus": "#29549a",
       "hover": "#1d3a6c",
-      "visited": "#5f93c6",
+      "visited": "#172f5a",
     },
     "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
     "text": {
@@ -1846,7 +1866,12 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "hoverUnderlineThickness": "0.125em",
+      "iconSize": "1em",
+      "iconSpacing": "0.25em",
+      "iconVerticalOffset": "-0.2em",
       "spacing": "calc(0.5rem * var(--mantine-scale))",
+      "underlineThickness": "0.1em",
     },
     "list": {
       "fontSize": "calc(1.25rem * var(--mantine-scale))",
@@ -1997,7 +2022,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -2165,7 +2190,12 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "hoverUnderlineThickness": "0.125em",
+      "iconSize": "1em",
+      "iconSpacing": "0.25em",
+      "iconVerticalOffset": "-0.2em",
       "spacing": "calc(0.25rem * var(--mantine-scale))",
+      "underlineThickness": "0.1em",
     },
     "list": {
       "fontSize": "calc(1rem * var(--mantine-scale))",
@@ -2316,7 +2346,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {
@@ -2484,7 +2514,12 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
+      "hoverUnderlineThickness": "0.125em",
+      "iconSize": "1em",
+      "iconSpacing": "0.25em",
+      "iconVerticalOffset": "-0.2em",
       "spacing": "calc(0.5rem * var(--mantine-scale))",
+      "underlineThickness": "0.1em",
     },
     "list": {
       "fontSize": "calc(1.25rem * var(--mantine-scale))",
@@ -2635,7 +2670,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     "error": "#ae1e20",
     "focus": "#29549a",
     "hover": "#1d3a6c",
-    "visited": "#5f93c6",
+    "visited": "#172f5a",
   },
   "strokeWeight": "calc(0.125rem * var(--mantine-scale))",
   "text": {

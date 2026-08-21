@@ -30,3 +30,4 @@ export { TextField } from './TextField/TextField';
 export { ThemeProvider, type ThemeProviderProps } from './ThemeProvider';
 export { Typography } from './Typography/Typography';
 export { DateField, type DateFieldProps, type DateFieldClassNames } from './DateField';
+export { TextLink, type TextLinkProps, type TextLinkSize } from './TextLink/TextLink';
