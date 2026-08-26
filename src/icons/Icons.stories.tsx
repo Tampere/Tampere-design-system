@@ -17,6 +17,7 @@ import { CartRemoveIcon } from './CartRemoveIcon';
 import { CheckboxCheckedIcon } from './CheckboxCheckedIcon';
 import { CheckboxIndeterminateIcon } from './CheckboxIndeterminateIcon';
 import { CheckboxUncheckedIcon } from './CheckboxUncheckedIcon';
+import { CheckmarkIcon } from './CheckmarkIcon';
 import { ChevronDownIcon } from './ChevronDownIcon';
 import { ChevronLeftIcon } from './ChevronLeftIcon';
 import { ChevronRightIcon } from './ChevronRightIcon';
@@ -113,6 +114,7 @@ const icons: {
   { name: 'CheckboxChecked', Component: CheckboxCheckedIcon },
   { name: 'CheckboxIndeterminate', Component: CheckboxIndeterminateIcon },
   { name: 'CheckboxUnchecked', Component: CheckboxUncheckedIcon },
+  { name: 'Checkmark', Component: CheckmarkIcon },
   { name: 'ChevronDown', Component: ChevronDownIcon },
   { name: 'ChevronLeft', Component: ChevronLeftIcon },
   { name: 'ChevronRight', Component: ChevronRightIcon },

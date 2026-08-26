@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { StarFilledIcon } from '../../icons/StarFilledIcon';
+import { FavouritesOutlinedIcon } from '../../icons/FavouritesOutlinedIcon';
 import { Chip } from './Chip';
 
 // `ChipProps` is a discriminated union (filter role vs. tag role), which
@@ -52,7 +53,7 @@ export const Selected: Story = {
 export const WithLeadingIcon: Story = {
   tags: docExample,
   render: () => (
-    <Chip checked={false} onChange={() => {}} icon={<StarFilledIcon />}>
+    <Chip checked={false} onChange={() => {}} icon={<FavouritesOutlinedIcon />}>
       Suosikki
     </Chip>
   ),
@@ -76,6 +77,22 @@ export const Disabled: Story = {
       </Chip>
       <Chip onRemove={() => {}} removeLabel="Poista Hervanta" disabled>
         Hervanta
+      </Chip>
+    </div>
+  ),
+};
+
+// Visible in the sidebar for manual comparison, but not a canonical
+// documented state, so it's kept out of the autodocs page.
+export const SelectedVsWithLeadingIcon: Story = {
+  tags: ['dev'],
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <Chip checked onChange={() => {}}>
+        Ratikat
+      </Chip>
+      <Chip checked={false} onChange={() => {}} icon={<FavouritesOutlinedIcon />}>
+        Suosikki
       </Chip>
     </div>
   ),
@@ -198,6 +215,77 @@ export const FilterChipDisabledBlocksToggle: Story = {
   },
 };
 
+export const FilterChipCheckedDisabledColors: Story = {
+  render: () => (
+    <Chip checked onChange={() => {}} disabled>
+      Valittu ja poissa käytöstä
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const label = canvas
+      .getByRole('checkbox', { name: 'Valittu ja poissa käytöstä' })
+      .closest('div')
+      ?.querySelector('label');
+    await expect(label).not.toBeNull();
+    const style = getComputedStyle(label!);
+    // Figma's checked+disabled ("Default"+"Disabled") is a flat
+    // States/Disabled fill (#c9c9ce) with NO border — distinct from
+    // unchecked+disabled, which keeps a white background with a gray
+    // border instead (see `Disabled` story above).
+    await expect(style.backgroundColor).toBe('rgb(201, 201, 206)');
+    await expect(style.borderStyle).toBe('none');
+    await expect(style.color).toBe('rgb(104, 104, 114)');
+  },
+};
+
+export const FilterChipLeadingIconMatchesTextColor: Story = {
+  render: () => (
+    <Chip
+      checked={false}
+      onChange={() => {}}
+      icon={<FavouritesOutlinedIcon data-testid="leading-icon" />}
+    >
+      Suosikki
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const label = canvas
+      .getByRole('checkbox', { name: 'Suosikki' })
+      .closest('div')
+      ?.querySelector('label');
+    const icon = canvasElement.querySelector('[data-testid="leading-icon"]')?.parentElement;
+    await expect(label).not.toBeNull();
+    await expect(icon).not.toBeNull();
+    // The leading icon is rendered outside `label` (see `filterIconOverlay`
+    // in Chip.css.ts) so it can't just inherit the text's `currentColor` —
+    // its color is restated to track the same states.* progression as the
+    // label text, resting-state here.
+    await expect(getComputedStyle(icon!).color).toBe(getComputedStyle(label!).color);
+  },
+};
+
+const leadingIconDisabledSpy = fn();
+export const FilterChipLeadingIconDisabledColor: Story = {
+  render: () => (
+    <Chip
+      checked={false}
+      onChange={leadingIconDisabledSpy}
+      disabled
+      icon={<FavouritesOutlinedIcon data-testid="leading-icon" />}
+    >
+      Poissa käytöstä
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const icon = canvasElement.querySelector('[data-testid="leading-icon"]')?.parentElement;
+    await expect(icon).not.toBeNull();
+    // Text/Disabled (#686872) — matches the label's own disabled text color.
+    await expect(getComputedStyle(icon!).color).toBe('rgb(104, 104, 114)');
+  },
+};
+
 export const TagChipRendersLabelAndDismiss: Story = {
   render: () => (
     <Chip onRemove={() => {}} removeLabel="Poista Hervanta">
@@ -282,12 +370,18 @@ export const FilterChipColors: Story = {
       ?.querySelector('label');
     await expect(unselectedLabel).not.toBeNull();
     await expect(selectedLabel).not.toBeNull();
-    // Unselected: outline only — Input-states/Default (neutral 600, #52525b).
-    await expect(getComputedStyle(unselectedLabel!).borderColor).toBe('rgb(82, 82, 91)');
-    // Selected: brand-blue border (Primary-states/Default, #29549a) + tinted fill
-    // (Background/Selected/Default, warm neutral #f1eeeb).
+    // Unselected ("Outlined" in Figma): border AND text both track
+    // Primary-states/Default (brand blue, #29549a) — not a neutral gray,
+    // and not the same `text.primary` color the selected chip's text uses.
+    await expect(getComputedStyle(unselectedLabel!).borderColor).toBe('rgb(41, 84, 154)');
+    await expect(getComputedStyle(unselectedLabel!).color).toBe('rgb(41, 84, 154)');
+    // Selected ("Default" in Figma): brand-blue border (Primary-states/Default,
+    // #29549a) + tinted fill (Background/Selected/Default, warm neutral
+    // #f1eeeb) + constant Text/Primary text color (#2d2d32) regardless of
+    // interaction state.
     await expect(getComputedStyle(selectedLabel!).borderColor).toBe('rgb(41, 84, 154)');
     await expect(getComputedStyle(selectedLabel!).backgroundColor).toBe('rgb(241, 238, 235)');
+    await expect(getComputedStyle(selectedLabel!).color).toBe('rgb(45, 45, 50)');
   },
 };
 

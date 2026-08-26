@@ -15,6 +15,7 @@ export * from './CartRemoveIcon';
 export * from './CheckboxCheckedIcon';
 export * from './CheckboxIndeterminateIcon';
 export * from './CheckboxUncheckedIcon';
+export * from './CheckmarkIcon';
 export * from './ChevronDownIcon';
 export * from './ChevronLeftIcon';
 export * from './ChevronRightIcon';

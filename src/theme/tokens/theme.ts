@@ -201,7 +201,14 @@ export function getTheme(bp: BreakpointKey) {
       textContentSpacing: primitives.spacing['1'],
     },
     chip: {
-      spacing: bpTokens.spacing.xs,
+      // Figma's "spacing/2-extra-small" — confirmed against the dedicated
+      // "Breakpoints" reference frame (5870:41586) in the redesign file,
+      // which binds this exact gap (icon↔label, label↔dismiss-button) to
+      // that variable at every breakpoint (8px at xxl/xl/lg, 4px at
+      // md/sm/xs) — not `xs` ("spacing/extra-small", 12px/8px), which an
+      // earlier, apparently-stale example instance elsewhere in the file
+      // used and this token was previously (incorrectly) matched to.
+      spacing: bpTokens.spacing.xxs,
       cornerRadius: rem('20px'),
       // Figma's "Chip/Label" composite token: Caption's own size/family/line-height,
       // but Subheader-style Semi-Bold weight rather than Caption's own Regular —
@@ -232,6 +239,11 @@ export function getTheme(bp: BreakpointKey) {
       // resting fill) — see the TextLink review lesson on not reusing a
       // semantically-mismatched token just because its value happens to match.
       tagFill: colors.neutral['100'],
+      // Fixed constant like `padding.vertical` above, not part of the
+      // responsive scale — Figma's Chip "Icon" slot is a literal 18×18px
+      // square at every breakpoint (verified against the 768/480/320
+      // breakpoint mockups in the redesign file, all identical).
+      iconSize: rem('18px'),
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
