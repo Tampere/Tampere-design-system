@@ -118,6 +118,38 @@ export const FilterChipTogglesOnClick: Story = {
     await expect(chip).not.toBeChecked();
     await userEvent.click(chip);
     await expect(chip).toBeChecked();
+    await userEvent.click(chip);
+    await expect(chip).not.toBeChecked();
+  },
+};
+
+const keyboardToggleSpy = fn();
+export const FilterChipTogglesViaKeyboard: Story = {
+  render: () => {
+    function Wrapper() {
+      const [checked, setChecked] = useState(false);
+      return (
+        <Chip
+          checked={checked}
+          onChange={(next) => {
+            setChecked(next);
+            keyboardToggleSpy(next);
+          }}
+        >
+          Bussit
+        </Chip>
+      );
+    }
+    return <Wrapper />;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const chip = canvas.getByRole('checkbox', { name: 'Bussit' });
+    chip.focus();
+    await expect(chip).toHaveFocus();
+    await userEvent.keyboard(' ');
+    await expect(chip).toBeChecked();
+    await expect(keyboardToggleSpy).toHaveBeenCalledWith(true);
   },
 };
 
@@ -232,9 +264,33 @@ export const FilterChipCheckedDisabledColors: Story = {
     // Figma's checked+disabled ("Default"+"Disabled") is a flat
     // States/Disabled fill (#c9c9ce) with NO border — distinct from
     // unchecked+disabled, which keeps a white background with a gray
-    // border instead (see `Disabled` story above).
+    // border instead (see `FilterChipUncheckedDisabledColors` below).
     await expect(style.backgroundColor).toBe('rgb(201, 201, 206)');
     await expect(style.borderStyle).toBe('none');
+    await expect(style.color).toBe('rgb(104, 104, 114)');
+  },
+};
+
+export const FilterChipUncheckedDisabledColors: Story = {
+  render: () => (
+    <Chip checked={false} onChange={() => {}} disabled>
+      Poissa käytöstä
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const label = canvas
+      .getByRole('checkbox', { name: 'Poissa käytöstä' })
+      .closest('div')
+      ?.querySelector('label');
+    await expect(label).not.toBeNull();
+    const style = getComputedStyle(label!);
+    // Figma's unchecked+disabled ("Outlined"+"Disabled") keeps the white
+    // resting background with just a gray States/Disabled border (#c9c9ce) —
+    // distinct from checked+disabled above, which has no border at all.
+    await expect(style.backgroundColor).toBe('rgb(255, 255, 255)');
+    await expect(style.borderStyle).toBe('solid');
+    await expect(style.borderColor).toBe('rgb(201, 201, 206)');
     await expect(style.color).toBe('rgb(104, 104, 114)');
   },
 };
@@ -299,6 +355,24 @@ export const TagChipRendersLabelAndDismiss: Story = {
   },
 };
 
+export const TagChipWithLeadingIcon: Story = {
+  render: () => (
+    <Chip
+      onRemove={() => {}}
+      removeLabel="Poista Hervanta"
+      icon={<StarFilledIcon data-testid="tag-icon" />}
+    >
+      Hervanta
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvasElement.querySelector('[data-testid="tag-icon"]')).not.toBeNull();
+    await expect(canvas.getByText('Hervanta')).not.toBeNull();
+    await expect(canvas.getByRole('button', { name: 'Poista Hervanta' })).not.toBeNull();
+  },
+};
+
 const onRemoveSpy = fn();
 export const TagChipCallsOnRemove: Story = {
   render: () => (
@@ -344,6 +418,8 @@ export const TagChipDisabledBlocksRemoval: Story = {
     await expect(dismiss).toBeDisabled();
     await userEvent.click(dismiss, { pointerEventsCheck: 0 });
     await expect(tagDisabledSpy).not.toHaveBeenCalled();
+    // Text/Disabled (#686872) — matches the filter role's disabled text color.
+    await expect(getComputedStyle(canvas.getByText('Hervanta')).color).toBe('rgb(104, 104, 114)');
   },
 };
 
@@ -437,12 +513,13 @@ export const TagChipColors: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const label = canvas.getByText('Hervanta');
-    const root = label.closest('span');
-    await expect(root).not.toBeNull();
+    // The label text is a direct child of `tagRoot` (itself a <span>), so
+    // `getByText` already returns the chip's root element — no `.closest()`
+    // walk-up needed.
+    const root = canvas.getByText('Hervanta');
     // Neutral/100 tint (#f2f2f4), Text/Primary label (#2d2d32).
-    await expect(getComputedStyle(root!).backgroundColor).toBe('rgb(242, 242, 244)');
-    await expect(getComputedStyle(label).color).toBe('rgb(45, 45, 50)');
+    await expect(getComputedStyle(root).backgroundColor).toBe('rgb(242, 242, 244)');
+    await expect(getComputedStyle(root).color).toBe('rgb(45, 45, 50)');
   },
 };
 
@@ -460,9 +537,10 @@ export const TagChipHeightTracksLabelFontSize: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const root = canvas.getByText('Hervanta').closest('span');
-    await expect(root).not.toBeNull();
-    const style = getComputedStyle(root!);
+    // See TagChipColors above — the label text's own element is already the
+    // chip's root `tagRoot` <span>.
+    const root = canvas.getByText('Hervanta');
+    const style = getComputedStyle(root);
     const fontSize = parseFloat(style.fontSize);
     const height = parseFloat(style.height);
     // 2 × 4px vertical padding + 150% line-height of the label font size.

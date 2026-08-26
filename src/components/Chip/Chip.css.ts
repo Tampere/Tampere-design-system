@@ -13,8 +13,11 @@ const labelFont = {
 
 // Mantine's Chip sets total height via `--chip-size` directly (no vertical
 // padding of its own) and font-size via `--chip-fz` — these two, plus
-// `--chip-radius`/`--chip-padding`/`--chip-spacing`, apply unconditionally on
-// the base label rule. `--chip-bd`/`--chip-bg`/`--chip-color` do NOT — Mantine
+// `--chip-radius`/`--chip-padding`, apply unconditionally on the base label
+// rule (`--chip-spacing` instead only feeds Mantine's built-in `iconWrapper`
+// child's width calc, not the label itself — set below so that calc lands on
+// our own spacing token rather than Mantine's default).
+// `--chip-bd`/`--chip-bg`/`--chip-color` do NOT apply unconditionally — Mantine
 // only reads those under an explicit `variant` (outline/filled), which we
 // don't use, so border/background/text color are set directly below via
 // `filterLabel`'s own `data-checked`/`data-disabled` selectors instead.
@@ -35,6 +38,11 @@ export const filterRoot = style({
     '--chip-padding': components.chip.padding.horizontal,
     '--chip-checked-padding': components.chip.padding.horizontal,
     '--chip-spacing': components.chip.spacing,
+    // Without this, Mantine's `iconWrapper` (the checkmark/selectedIcon slot)
+    // still derives its `max-width` from Mantine's own unset 12px default,
+    // clipping our 18px icon (`chipIcon`'s width/height override alone isn't
+    // enough — `max-width` is a separate property Mantine sets from this var).
+    '--chip-icon-size': components.chip.iconSize,
   },
 });
 
@@ -59,9 +67,14 @@ export const filterLabel = style({
   gap: components.chip.spacing,
   selectors: {
     // Both attribute selectors below add a class + attribute (0,2,0), which
-    // beats Mantine's own plain `.label` base rule (0,1,0) regardless of
-    // stylesheet order — Mantine wraps its own attribute selectors in
-    // `:where()` specifically so consumer overrides like this always win.
+    // reliably beats Mantine's own plain, unconditional `.label` base rule
+    // (0,1,0) regardless of stylesheet order. The `&[data-checked]` override
+    // specifically is a different case: Mantine's own checked-state rule is
+    // `:not([data-disabled]):where([data-checked])`, which computes to the
+    // same (0,2,0) — a genuine specificity tie, currently broken in our favor
+    // by import order (Mantine's base CSS is imported before this component's
+    // Vanilla Extract styles). That ordering is the fragile part; if it ever
+    // changes, this checked-state override could silently stop winning.
     //
     // Unchecked ("Outlined" in Figma) tracks `states.*` for BOTH border and
     // text/icon color together — Figma's Outlined variant always uses the
@@ -86,6 +99,11 @@ export const filterLabel = style({
     // TextLink/LabeledIconButton's `:hover`.
     '&:not([data-disabled]):hover': { border: `${strokeWeight} solid ${states.hover}` },
     '&:not([data-checked]):not([data-disabled]):hover': { color: states.hover },
+    // `selected.hover` and `selected.default` currently resolve to the same
+    // raw value, so this is a visual no-op today — kept distinct (not
+    // collapsed to `selected.default`) because the two tokens mean different
+    // things and may diverge, same as `tagFill` vs `background.disabled` in
+    // theme.ts.
     '&[data-checked]:not([data-disabled]):hover': {
       backgroundColor: components.item.background.selected.hover,
     },
@@ -135,10 +153,12 @@ export const tagDismissIcon = style({
 // regardless of that icon component's own default width.
 //
 // `inline-flex`/`verticalAlign` (not block `flex`) so this stays correct
-// even outside a flex parent: it's always a direct flex child in practice
-// (Mantine's own flex `label` when checked, `filterIconRow` below when
-// showing a leading icon), but a block-level flex box would break out of
-// plain inline flow and float above the text if that ever weren't true.
+// across all three usage contexts: a genuine flex child of Mantine's own
+// flex `label` (checked case), a genuine flex child of `tagRoot`'s flex row
+// (tag-role leading icon), and — unlike the other two — a child of
+// `filterIconOverlay` below, which is absolutely positioned and therefore
+// not in flex/inline flow at all, making `verticalAlign` inert there but
+// harmless (the overlay's own `top`/`transform` handle its positioning).
 export const chipIcon = style({
   width: components.chip.iconSize,
   height: components.chip.iconSize,

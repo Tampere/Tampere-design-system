@@ -44,20 +44,25 @@ export type ChipProps = ChipCommonProps & (ChipFilterProps | ChipTagProps);
 export function Chip(props: ChipProps) {
   const { children, disabled, className } = props;
 
+  // `onRemove?: never` still permits a filter-chip caller to explicitly pass
+  // `onRemove: undefined`, and `in` returns true for a present-but-undefined
+  // key — the `&& props.onRemove` truthy check is what actually discriminates
+  // the union at runtime (see Table.tsx's TableRowSelection for the same
+  // never-based pattern).
   if ('onRemove' in props && props.onRemove) {
-    const { onRemove, removeLabel, icon } = props as ChipCommonProps & ChipTagProps;
+    const { onRemove, removeLabel, icon } = props;
     return (
       <span className={cx(tagRoot, className)} data-disabled={disabled || undefined}>
         {icon && <span className={chipIcon}>{icon}</span>}
         {children}
-        <IconButton size="xs" onClick={onRemove} disabled={disabled} aria-label={removeLabel}>
+        <IconButton size="sm" onClick={onRemove} disabled={disabled} aria-label={removeLabel}>
           <CloseIcon className={tagDismissIcon} />
         </IconButton>
       </span>
     );
   }
 
-  const { checked, onChange, selectedIcon, icon } = props as ChipCommonProps & ChipFilterProps;
+  const { checked, onChange, selectedIcon, icon } = props;
   const hasLeadingIcon = !checked && !!icon;
 
   const chip = (
@@ -65,7 +70,7 @@ export function Chip(props: ChipProps) {
       checked={checked}
       onChange={onChange}
       disabled={disabled}
-      className={cx(filterRoot, className)}
+      className={hasLeadingIcon ? filterRoot : cx(filterRoot, className)}
       classNames={{
         label: cx(filterLabel, hasLeadingIcon && filterLabelWithLeadingIcon),
         input: filterInput,
@@ -82,7 +87,7 @@ export function Chip(props: ChipProps) {
   }
 
   return (
-    <span className={filterWrapper} data-disabled={disabled || undefined}>
+    <span className={cx(filterWrapper, className)} data-disabled={disabled || undefined}>
       {chip}
       <span className={cx(chipIcon, filterIconOverlay)}>{icon}</span>
     </span>

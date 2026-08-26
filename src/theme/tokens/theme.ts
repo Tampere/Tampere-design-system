@@ -58,6 +58,11 @@ const text = {
 
 const highlight = { fontWeight: '700', backgroundColor: 'transparent' } as const;
 
+// Single source of truth for Chip label's line-height, so `chip.label.lineHeight`
+// and `chip.height`'s calc formula (which derives the same 150% relationship
+// from the label's font size) can't silently desync.
+const chipLineHeightPercent = 150;
+
 const strokeWeight = rem('2px');
 
 const focusRing = {
@@ -217,7 +222,7 @@ export function getTheme(bp: BreakpointKey) {
         fontFamily: fontFamilyBody,
         fontSize: bpTokens.typography.size.caption,
         fontWeight: '600',
-        lineHeight: '150%',
+        lineHeight: `${chipLineHeightPercent}%`,
       },
       // Vertical padding is a fixed constant (not per-breakpoint, unlike
       // `horizontal` below) — Figma's Spacing/0,5 = 4px at every breakpoint.
@@ -227,12 +232,13 @@ export function getTheme(bp: BreakpointKey) {
       // narrower breakpoints as Caption itself shrinks — same "reference
       // height at the largest breakpoint" pattern used elsewhere in TREDS.
       padding: { horizontal: bpTokens.spacing.sm, vertical: primitives.spacing['0,5'] },
-      // Total pill height = 2×vertical padding + 150% line-height of the
-      // label's font size. Mantine's Chip has no vertical-padding concept
-      // of its own (it sets height directly via --chip-size), so this is
-      // computed once here and fed to both the Mantine-wrapped filter role
-      // and the bespoke removable-tag role, keeping their heights identical.
-      height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * 1.5)`,
+      // Total pill height = 2×vertical padding + line-height of the label's
+      // font size (`chipLineHeightPercent`, matching `label.lineHeight`
+      // above). Mantine's Chip has no vertical-padding concept of its own
+      // (it sets height directly via --chip-size), so this is computed once
+      // here and fed to both the Mantine-wrapped filter role and the bespoke
+      // removable-tag role, keeping their heights identical.
+      height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * ${chipLineHeightPercent / 100})`,
       // Figma's "Neutral/100" tag fill — distinct from `background.disabled`
       // even though the raw value is the same, since that token means
       // something unrelated (a disabled-state background, not a tag chip's
