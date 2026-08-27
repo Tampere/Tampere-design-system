@@ -15,8 +15,8 @@ type ButtonBaseProps = PropsWithChildren<UnstyledButtonProps> &
   };
 
 // `iconOnly` has no visible text, so an accessible name can't come from `children` —
-// require `aria-label` at compile time rather than only documenting it (mirrors
-// Chip's discriminated-union idiom for the same class of conditionally-required prop).
+// require `aria-label` at compile time rather than only documenting it, using the
+// same discriminated-union technique as Chip.tsx to make a prop conditionally required.
 export type ButtonProps =
   | (ButtonBaseProps & {
       /**
@@ -29,7 +29,7 @@ export type ButtonProps =
     })
   | (ButtonBaseProps & { iconOnly?: false });
 
-/** A basic button components with variants. Remember to include aria-label for accessibility if no text is provided as children. */
+/** A basic button component with variants. `aria-label` is required — and compiler-enforced — when `iconOnly` is set, since there's no visible text to derive an accessible name from. */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
