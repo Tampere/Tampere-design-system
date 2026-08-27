@@ -161,15 +161,17 @@ export function SearchField<T extends SearchFieldData>({
             }}
             endInstance={
               <SearchButton
-                // Defaults, overridable via searchButtonProps (which can't override
-                // iconOnly/aria-label — see SearchButtonProps).
-                aria-label={searchButtonLabel}
+                // Defaults, overridable via searchButtonProps.
                 disabled={props.disabled ?? false}
                 onClick={() => {
                   const dataItem = data.find((d) => d.label === searchValue);
                   if (dataItem) onSearch(dataItem);
                 }}
                 {...searchButtonProps}
+                // Applied after the spread, unlike the defaults above, so it always wins —
+                // SearchButtonProps excludes aria-label from the type, but a caller could
+                // still smuggle it through a non-literal object; this closes that at runtime.
+                aria-label={searchButtonLabel}
               />
             }
           />
