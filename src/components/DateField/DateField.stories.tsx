@@ -226,7 +226,7 @@ export const TriggerIconTracksControlSize: Story = {
     const iconWidth = icon.getBoundingClientRect().width;
     await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
 
-    // Icon-only trigger must render as a true square (issue #73) — width pinned
+    // Icon-only trigger must render as a true square — width pinned
     // to the same fixed height token, not just uniform padding on an intrinsic
     // width (see Button.css.ts).
     const rect = trigger.getBoundingClientRect();
@@ -238,7 +238,7 @@ export const FooterButtonsUseExpectedVariants: Story = {
   // The footer's Today/Cancel/Confirm buttons use Button's `tertiary`/`secondary`/
   // `primary` variants (DateFieldCalendar.tsx) — asserted directly here rather than
   // relying on the other footer-interaction stories to incidentally catch a bad
-  // variant key after Button's breaking `variant` prop rename (issue #73).
+  // variant key after Button's breaking `variant` prop rename.
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const body = within(document.body);
