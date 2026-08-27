@@ -265,6 +265,20 @@ export const RadiusDefaultsToSharp: Story = {
   },
 };
 
+/** Default (primary) styling stays unaffected when `variant` isn't set. */
+export const VariantDefaultsToPrimary: Story = {
+  // Same rationale as RadiusDefaultsToSharp: meta.args sets variant: 'primary'
+  // explicitly, which would mask a broken destructuring default — override it to
+  // undefined so the default itself is what's under test.
+  render: (args) => <Button {...args} variant={undefined} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Painike' });
+
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(41, 84, 154)');
+  },
+};
+
 /**
  * `iconOnly` and `radius="pill"` compose — both are orthogonal to `variant` — and
  * continue to compose with `disabled`, covered here rather than only pairwise.
@@ -295,6 +309,39 @@ export const IconOnlyRounded: Story = {
       const rect = button.getBoundingClientRect();
       await expect(rect.width).toBe(rect.height);
     }
+  },
+};
+
+/**
+ * `radius="pill"` + `iconOnly` across bordered (secondary) and tertiary variants —
+ * `IconOnlyRounded` above only covers the borderless default. Secondary's border
+ * must not distort the pinned circle (see `IconOnlySquareAcrossVariants`), and
+ * tertiary must stay sharp per the `${tertiary}${pill}` specificity override in
+ * Button.css.ts, same as the labeled case covered by `Rounded`.
+ */
+export const IconOnlyRoundedAcrossVariants: Story = {
+  args: { iconOnly: true, radius: 'pill', 'aria-label': 'Etsi' },
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="secondary" aria-label="Etsi secondary">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} variant="tertiary" aria-label="Etsi tertiary">
+        <SearchIcon {...iconProps} />
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const secondary = canvas.getByRole('button', { name: 'Etsi secondary' });
+    const secondaryStyle = getComputedStyle(secondary);
+    await expect(secondaryStyle.borderRadius).toBe('9999px');
+    const secondaryRect = secondary.getBoundingClientRect();
+    await expect(secondaryRect.width).toBe(secondaryRect.height);
+
+    const tertiary = canvas.getByRole('button', { name: 'Etsi tertiary' });
+    await expect(getComputedStyle(tertiary).borderRadius).toBe('0px');
   },
 };
 
