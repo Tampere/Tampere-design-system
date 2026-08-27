@@ -117,7 +117,7 @@ export const pill = style({ borderRadius: cornerRadius.rounded });
 // underline. Figma doesn't pair `Corner-radius: Rounded` with Tertiary either, so
 // neutralize `pill` specifically for tertiary. The compound selector's specificity
 // (0,2,0) beats `pill`'s single-class (0,1,0) without needing `!important`.
-globalStyle(`${tertiary}${pill}`, { borderRadius: 0 });
+globalStyle(`${tertiary}${pill}`, { borderRadius: cornerRadius.sharp });
 
 // Figma's `Icon-only: Yes` variant uses uniform padding on all sides (`spacing/small`,
 // same value as `button.padding.vertical`) instead of the wider horizontal padding a
