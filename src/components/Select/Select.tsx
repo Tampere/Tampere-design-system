@@ -3,17 +3,15 @@ import { useState } from 'react';
 import { ChevronDownIcon } from '../../icons/ChevronDownIcon.tsx';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
 
-import { mergeClassNames } from '../../utils.ts';
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
 import {
   chevronOpen,
   dropDown,
   dropDownOption,
-  inputField,
+  emptyMessage,
   listOptions,
   rightSectionContainer,
-  root,
 } from './Select.css.ts';
 
 interface Props {
@@ -26,6 +24,10 @@ interface Props {
   clearButtonLabel?: string;
   expandButtonLabel?: string;
   collapseButtonLabel?: string;
+  /**
+   * Message shown in the dropdown when no options match the search. If not set, nothing is shown.
+   */
+  noResultsMessage?: string;
   required?: boolean;
   error?: string;
   disabled?: boolean;
@@ -96,22 +98,28 @@ export function Select({
   clearButtonLabel,
   expandButtonLabel,
   collapseButtonLabel,
+  noResultsMessage,
   classNames,
   ...props
 }: Props) {
-  const combobox = useCombobox();
+  const [search, setSearch] = useState('');
+  const [value, setValue] = useState('');
+  const combobox = useCombobox({
+    // Reset the search filter whenever the dropdown opens (via click, chevron,
+    // or keyboard), so a previous selection doesn't keep the list filtered
+    // down next time it's opened — only actively typing should filter.
+    onDropdownOpen: () => setSearch(''),
+  });
   const { dropdownOpened, toggleDropdown, closeDropdown, openDropdown } = combobox;
 
-  const [value, setValue] = useState('');
-
   const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(value.toLowerCase().trim())
+    item.toLowerCase().includes(search.toLowerCase().trim())
   );
 
   const selectOptions = filteredOptions.map((item, idx) => (
     <Combobox.Option
       aria-description={`${idx + 1} / ${options.length}`}
-      component={'li'}
+      component={'div'}
       className={dropDownOption}
       value={item}
       key={item}
@@ -138,14 +146,7 @@ export function Select({
           tabIndex={0}
           required={required}
           value={props.value ?? value}
-          classNames={mergeClassNames(
-            {
-              root: '',
-              wrapper: root,
-              input: inputField,
-            },
-            classNames
-          )}
+          classNames={classNames}
           helperText={helperText}
           inputLabel={inputLabel}
           placeholder={placeholder}
@@ -155,6 +156,9 @@ export function Select({
             props.onChange?.(e.currentTarget.value);
             setValue(e.currentTarget.value);
             openDropdown();
+            // Set after openDropdown: opening can reset search to '' via
+            // onDropdownOpen, and the typed value should win over that.
+            setSearch(e.currentTarget.value);
             combobox.updateSelectedOptionIndex();
           }}
           onClick={() => {
@@ -178,8 +182,12 @@ export function Select({
         />
       </Combobox.Target>
       <Combobox.Dropdown className={dropDown}>
-        <Combobox.Options component={'ul'} className={listOptions}>
-          {selectOptions}
+        <Combobox.Options component={'div'} className={listOptions}>
+          {selectOptions.length > 0
+            ? selectOptions
+            : noResultsMessage && (
+                <Combobox.Empty className={emptyMessage}>{noResultsMessage}</Combobox.Empty>
+              )}
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox>

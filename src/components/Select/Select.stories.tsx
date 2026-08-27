@@ -10,6 +10,7 @@ const meta = {
     error: { control: 'text' },
     disabled: { control: 'boolean' },
     helperText: { control: 'text' },
+    noResultsMessage: { control: 'text' },
     onChange: { action: 'changed' },
   },
   args: {
@@ -20,6 +21,7 @@ const meta = {
     error: '',
     disabled: false,
     helperText: '',
+    noResultsMessage: '',
   },
   component: Select,
 } satisfies Meta<typeof Select>;
@@ -36,6 +38,7 @@ export const Primary: Story = {
     error: '',
     disabled: false,
     helperText: 'Ohjeteksti tähän',
+    noResultsMessage: 'Ei hakutuloksia',
   },
   render: (args) => <Select {...args} />,
 };
