@@ -15,14 +15,14 @@ const iconProps = { style: { width: iconSize, height: iconSize } };
 const meta = {
   argTypes: {
     children: { control: 'text' },
-    variant: { control: { type: 'select' }, options: ['filled', 'outlined', 'text'] },
+    variant: { control: { type: 'select' }, options: ['primary', 'secondary', 'tertiary'] },
     radius: { control: { type: 'select' }, options: ['sharp', 'pill'] },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
   },
   args: {
     children: 'Button',
-    variant: 'filled',
+    variant: 'primary',
     radius: 'sharp',
     disabled: false,
   },
@@ -32,40 +32,46 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** High-emphasis, primary action. Use at most one filled button per view. */
-export const Filled: Story = {
-  args: { variant: 'filled' },
+/** High-emphasis action. Use at most one primary button per view. */
+export const Primary: Story = {
+  args: { variant: 'primary' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Button' });
+
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(41, 84, 154)');
+  },
 };
 
-/** Medium emphasis — secondary actions placed alongside a filled button. */
-export const Outlined: Story = {
-  args: { variant: 'outlined' },
+/** Medium emphasis — secondary actions placed alongside a primary button. */
+export const Secondary: Story = {
+  args: { variant: 'secondary' },
 };
 
 /** Low emphasis — tertiary or inline actions. */
-export const Text: Story = {
-  args: { variant: 'text' },
+export const Tertiary: Story = {
+  args: { variant: 'tertiary' },
 };
 
 /** Pill-shaped corners (issue #73), one per variant. */
 export const Rounded: Story = {
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="filled" radius="pill">
-        Filled
+      <Button {...args} variant="primary" radius="pill">
+        Primary
       </Button>
-      <Button {...args} variant="outlined" radius="pill">
-        Outlined
+      <Button {...args} variant="secondary" radius="pill">
+        Secondary
       </Button>
-      <Button {...args} variant="text" radius="pill">
-        Text
+      <Button {...args} variant="tertiary" radius="pill">
+        Tertiary
       </Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Filled', 'Outlined', 'Text']) {
+    for (const name of ['Primary', 'Secondary', 'Tertiary']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
     }
@@ -87,21 +93,21 @@ export const RoundedDisabled: Story = {
   args: { radius: 'pill', disabled: true },
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="filled">
-        Filled
+      <Button {...args} variant="primary">
+        Primary
       </Button>
-      <Button {...args} variant="outlined">
-        Outlined
+      <Button {...args} variant="secondary">
+        Secondary
       </Button>
-      <Button {...args} variant="text">
-        Text
+      <Button {...args} variant="tertiary">
+        Tertiary
       </Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Filled', 'Outlined', 'Text']) {
+    for (const name of ['Primary', 'Secondary', 'Tertiary']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
     }
@@ -112,14 +118,14 @@ export const RoundedDisabled: Story = {
 export const Variants: Story = {
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="filled">
-        Filled
+      <Button {...args} variant="primary">
+        Primary
       </Button>
-      <Button {...args} variant="outlined">
-        Outlined
+      <Button {...args} variant="secondary">
+        Secondary
       </Button>
-      <Button {...args} variant="text">
-        Text
+      <Button {...args} variant="tertiary">
+        Tertiary
       </Button>
     </div>
   ),
@@ -130,14 +136,14 @@ export const Disabled: Story = {
   args: { disabled: true },
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="filled">
-        Filled
+      <Button {...args} variant="primary">
+        Primary
       </Button>
-      <Button {...args} variant="outlined">
-        Outlined
+      <Button {...args} variant="secondary">
+        Secondary
       </Button>
-      <Button {...args} variant="text">
-        Text
+      <Button {...args} variant="tertiary">
+        Tertiary
       </Button>
     </div>
   ),
@@ -146,7 +152,7 @@ export const Disabled: Story = {
 
     // Figma's disabled label/icon color is `text/disabled` (#686872), not the
     // `Common/Disabled` (#c9c9ce) token used for the outlined variant's border.
-    for (const name of ['Filled', 'Outlined', 'Text']) {
+    for (const name of ['Primary', 'Secondary', 'Tertiary']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
     }
@@ -230,9 +236,9 @@ export const ControlHeightConsistency: Story = {
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
       <TextField inputLabel="Text input" placeholder="Input" />
       <Select inputLabel="Select picker" options={['One', 'Two']} />
-      <Button variant="filled">Filled</Button>
-      <Button variant="outlined">Outlined</Button>
-      <Button variant="text">Text</Button>
+      <Button variant="primary">Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="tertiary">Tertiary</Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -240,23 +246,23 @@ export const ControlHeightConsistency: Story = {
 
     const textInput = canvas.getByRole('textbox', { name: 'Text input' });
     const selectInput = canvas.getByRole('textbox', { name: 'Select picker' });
-    const filled = canvas.getByRole('button', { name: 'Filled' });
-    const outlined = canvas.getByRole('button', { name: 'Outlined' });
-    const text = canvas.getByRole('button', { name: 'Text' });
-    const controls = [textInput, selectInput, filled, outlined, text];
+    const primary = canvas.getByRole('button', { name: 'Primary' });
+    const secondary = canvas.getByRole('button', { name: 'Secondary' });
+    const tertiary = canvas.getByRole('button', { name: 'Tertiary' });
+    const controls = [textInput, selectInput, primary, secondary, tertiary];
 
     const heightOf = (el: Element) => el.getBoundingClientRect().height;
     const bottomOf = (el: Element) => el.getBoundingClientRect().bottom;
 
-    // Variants reach the same border-box height via different border configs (filled has
-    // none, outlined a full border, text a bottom border), so allow 1px of sub-pixel
+    // Variants reach the same border-box height via different border configs (primary has
+    // none, secondary a full border, tertiary a bottom border), so allow 1px of sub-pixel
     // rounding slack rather than asserting exact equality.
     const TOLERANCE = 1;
 
-    // Filled is the design source of truth: every control matches its height, and
+    // Primary is the design source of truth: every control matches its height, and
     // bottom-alignment puts every bottom border on the same line.
-    const referenceHeight = heightOf(filled);
-    const referenceBottom = bottomOf(filled);
+    const referenceHeight = heightOf(primary);
+    const referenceBottom = bottomOf(primary);
     await expect(referenceHeight).toBeGreaterThan(0);
     for (const control of controls) {
       await expect(Math.abs(heightOf(control) - referenceHeight)).toBeLessThanOrEqual(TOLERANCE);

@@ -4,7 +4,7 @@ import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { variants, pill, content, iconWrapper } from './Button.css.ts';
 
 export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps, React.AriaAttributes {
-  variant?: 'filled' | 'outlined' | 'text';
+  variant?: 'primary' | 'secondary' | 'tertiary';
   /** Corner shape. `'pill'` = fully rounded ends, matching Figma's `Corner-radius: Rounded` variant. */
   radius?: 'sharp' | 'pill';
   disabled?: boolean;
@@ -17,7 +17,7 @@ export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps, Rea
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      variant = 'filled',
+      variant = 'primary',
       radius = 'sharp',
       children,
       disabled,
