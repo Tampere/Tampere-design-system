@@ -82,22 +82,6 @@ export const Disabled: Story = {
   ),
 };
 
-// Visible in the sidebar for manual comparison, but not a canonical
-// documented state, so it's kept out of the autodocs page.
-export const SelectedVsWithLeadingIcon: Story = {
-  tags: ['dev'],
-  render: () => (
-    <div style={{ display: 'flex', gap: 16 }}>
-      <Chip checked onChange={() => {}}>
-        Ratikat
-      </Chip>
-      <Chip checked={false} onChange={() => {}} icon={<FavouritesOutlinedIcon />}>
-        Suosikki
-      </Chip>
-    </div>
-  ),
-};
-
 // ── Test-only specs (hidden from sidebar/autodocs, still run as browser tests) ─
 
 export const FilterChipTogglesOnClick: Story = {
