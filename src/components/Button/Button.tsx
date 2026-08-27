@@ -6,7 +6,11 @@ import { variants, pill, iconOnly as iconOnlyStyle, content, iconWrapper } from 
 type ButtonBaseProps = PropsWithChildren<UnstyledButtonProps> &
   React.AriaAttributes & {
     variant?: 'primary' | 'secondary' | 'tertiary';
-    /** Corner shape. `'pill'` = fully rounded ends, matching Figma's `Corner-radius: Rounded` variant. */
+    /**
+     * Corner shape. `'pill'` = fully rounded ends, matching Figma's `Corner-radius: Rounded`
+     * variant. Not narrowed per `variant` — `pill` is a deliberate no-op on `tertiary` (see
+     * Button.css.ts), a CSS-level tradeoff rather than a type-level one.
+     */
     radius?: 'sharp' | 'pill';
     disabled?: boolean;
     leftIcon?: React.ReactNode;
