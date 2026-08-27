@@ -110,12 +110,15 @@ export const filterLabel = style({
     '&:not([data-disabled]):active': { border: `${strokeWeight} solid ${states.active}` },
     '&:not([data-checked]):not([data-disabled]):active': { color: states.active },
     // Disabled differs by checked state in Figma: checked+disabled is a
-    // flat `states.disabled` fill with no border at all (not a gray border
-    // over the leftover selected-tint background); unchecked+disabled
+    // flat `states.disabled` fill with no *visible* border (not a gray
+    // border over the leftover selected-tint background); unchecked+disabled
     // keeps the white background with just a gray border, same as every
-    // other unchecked state.
+    // other unchecked state. The border here is transparent rather than
+    // `none` — `box-sizing: border-box` means dropping the border entirely
+    // shrinks the pill by 2 × the border width, making a selected chip
+    // visibly narrower the moment it becomes disabled.
     '&[data-checked][data-disabled]': {
-      border: 'none',
+      border: `${strokeWeight} solid transparent`,
       backgroundColor: states.disabled,
       color: text.disabled,
     },

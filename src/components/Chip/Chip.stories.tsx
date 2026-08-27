@@ -153,6 +153,38 @@ export const FilterChipTogglesViaKeyboard: Story = {
   },
 };
 
+// Regression test: a filter chip with a leading `icon` used to swap its root
+// element between `<span>` (unchecked, wrapped for the icon overlay) and a
+// bare `<div>` (checked, no wrapper) on every toggle. React can't reconcile
+// different root element types, so it unmounted and remounted the whole
+// subtree — including the `<input>` — dropping keyboard focus the instant a
+// user pressed Space to select an icon chip.
+export const FilterChipWithLeadingIconKeepsFocusOnToggle: Story = {
+  render: () => {
+    function Wrapper() {
+      const [checked, setChecked] = useState(false);
+      return (
+        <Chip checked={checked} onChange={setChecked} icon={<StarFilledIcon />}>
+          Suosikki
+        </Chip>
+      );
+    }
+    return <Wrapper />;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const chip = canvas.getByRole('checkbox', { name: 'Suosikki' });
+    chip.focus();
+    await expect(chip).toHaveFocus();
+    await userEvent.keyboard(' ');
+    await expect(chip).toBeChecked();
+    await expect(chip).toHaveFocus();
+    await userEvent.keyboard(' ');
+    await expect(chip).not.toBeChecked();
+    await expect(chip).toHaveFocus();
+  },
+};
+
 const onChangeSpy = fn();
 export const FilterChipCallsOnChange: Story = {
   render: () => (
@@ -262,12 +294,49 @@ export const FilterChipCheckedDisabledColors: Story = {
     await expect(label).not.toBeNull();
     const style = getComputedStyle(label!);
     // Figma's checked+disabled ("Default"+"Disabled") is a flat
-    // States/Disabled fill (#c9c9ce) with NO border — distinct from
-    // unchecked+disabled, which keeps a white background with a gray
-    // border instead (see `FilterChipUncheckedDisabledColors` below).
+    // States/Disabled fill (#c9c9ce) with no *visible* border — distinct
+    // from unchecked+disabled, which keeps a white background with a gray
+    // border instead (see `FilterChipUncheckedDisabledColors` below). The
+    // border itself is present but transparent (not `none`), so the pill
+    // keeps the same box size as every other chip — see
+    // `FilterChipCheckedDisabledSizeMatchesEnabled` below.
     await expect(style.backgroundColor).toBe('rgb(201, 201, 206)');
-    await expect(style.borderStyle).toBe('none');
+    await expect(style.borderColor).toBe('rgba(0, 0, 0, 0)');
     await expect(style.color).toBe('rgb(104, 104, 114)');
+  },
+};
+
+// Regression test: checked+disabled previously dropped its border with
+// `border: 'none'` instead of a transparent border, which — combined with
+// `box-sizing: border-box` — shrank the pill by 2 × the border width the
+// moment a selected chip became disabled, visibly narrower than its
+// still-enabled siblings for identical label text.
+export const FilterChipCheckedDisabledSizeMatchesEnabled: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="enabled-wrapper">
+        <Chip checked onChange={() => {}}>
+          Valittu
+        </Chip>
+      </div>
+      <div data-testid="disabled-wrapper">
+        <Chip checked onChange={() => {}} disabled>
+          Valittu
+        </Chip>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const enabledLabel = canvas
+      .getByTestId('enabled-wrapper')
+      .querySelector('label') as HTMLElement;
+    const disabledLabel = canvas
+      .getByTestId('disabled-wrapper')
+      .querySelector('label') as HTMLElement;
+    await expect(enabledLabel).not.toBeNull();
+    await expect(disabledLabel).not.toBeNull();
+    await expect(getComputedStyle(disabledLabel).width).toBe(getComputedStyle(enabledLabel).width);
   },
 };
 
@@ -545,5 +614,90 @@ export const TagChipHeightTracksLabelFontSize: Story = {
     const height = parseFloat(style.height);
     // 2 × 4px vertical padding + 150% line-height of the label font size.
     await expect(height).toBeCloseTo(2 * 4 + fontSize * 1.5, 0);
+  },
+};
+
+// Regression test: `className` used to land on different elements depending
+// on chip state — the outer wrapper `<span>` when a leading icon was shown,
+// but Mantine's own root `<div>` otherwise. Now that the wrapper always
+// renders (see `FilterChipWithLeadingIconKeepsFocusOnToggle` above),
+// `className` always lands on it, regardless of `icon`.
+export const FilterChipClassNameLandsOnWrapper: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="no-icon-wrapper">
+        <Chip checked={false} onChange={() => {}} className="custom-chip">
+          Bussit
+        </Chip>
+      </div>
+      <div data-testid="with-icon-wrapper">
+        <Chip checked={false} onChange={() => {}} icon={<StarFilledIcon />} className="custom-chip">
+          Suosikki
+        </Chip>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const noIconRoot = canvas.getByTestId('no-icon-wrapper').firstElementChild;
+    const withIconRoot = canvas.getByTestId('with-icon-wrapper').firstElementChild;
+    await expect(noIconRoot).not.toBeNull();
+    await expect(withIconRoot).not.toBeNull();
+    await expect(noIconRoot!.tagName).toBe('SPAN');
+    await expect(withIconRoot!.tagName).toBe('SPAN');
+    await expect(noIconRoot!.classList.contains('custom-chip')).toBe(true);
+    await expect(withIconRoot!.classList.contains('custom-chip')).toBe(true);
+  },
+};
+
+export const TagChipClassNameLandsOnRoot: Story = {
+  render: () => (
+    <Chip onRemove={() => {}} removeLabel="Poista Hervanta" className="custom-chip">
+      Hervanta
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const root = canvasElement.querySelector('.custom-chip');
+    await expect(root).not.toBeNull();
+    await expect(root?.textContent).toContain('Hervanta');
+  },
+};
+
+// Regression test: without `--chip-icon-size` wired to `components.chip.iconSize`,
+// Mantine's `iconWrapper` derived its `max-width` from its own unset 12px
+// `sm`-tier default, clipping the 18px checkmark. Pins the rendered SVG size
+// to the token value so a future Mantine upgrade or CSS-variable rename that
+// silently reintroduces the clip is caught.
+export const FilterChipIconMatchesIconSizeToken: Story = {
+  render: () => (
+    <Chip checked onChange={() => {}}>
+      Ratikat
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const icon = canvasElement.querySelector('svg');
+    await expect(icon).not.toBeNull();
+    const style = getComputedStyle(icon!);
+    await expect(style.width).toBe('18px');
+    await expect(style.height).toBe('18px');
+  },
+};
+
+export const TagChipDismissIconMatchesIconSizeToken: Story = {
+  render: () => (
+    <Chip onRemove={() => {}} removeLabel="Poista Hervanta">
+      Hervanta
+    </Chip>
+  ),
+  play: async ({ canvasElement }) => {
+    const dismiss = within(canvasElement).getByRole('button', { name: 'Poista Hervanta' });
+    const icon = dismiss.querySelector('svg');
+    await expect(icon).not.toBeNull();
+    const style = getComputedStyle(icon!);
+    // The dismiss icon isn't wired to `chipIcon`/`--chip-icon-size` directly —
+    // it's sized via `IconButton`'s own `size="sm"` slot (`icon.size.small`),
+    // which happens to equal the same 18px `chip.iconSize` token.
+    await expect(style.width).toBe('18px');
+    await expect(style.height).toBe('18px');
   },
 };
