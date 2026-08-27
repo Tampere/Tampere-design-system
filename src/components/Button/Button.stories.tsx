@@ -181,6 +181,34 @@ export const WithoutText: Story = {
   },
 };
 
+/**
+ * A bordered variant's border must not make an icon-only button wider than tall —
+ * width is pinned to the same fixed control size as height (see Button.css.ts),
+ * since border-box only absorbs a border into an *explicit* size, not an intrinsic
+ * `fit-content` one.
+ */
+export const IconOnlySquareAcrossVariants: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="primary" iconOnly aria-label="Etsi primary">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} variant="secondary" iconOnly aria-label="Etsi secondary">
+        <SearchIcon {...iconProps} />
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Etsi primary', 'Etsi secondary']) {
+      const button = canvas.getByRole('button', { name });
+      const rect = button.getBoundingClientRect();
+      await expect(rect.width).toBe(rect.height);
+    }
+  },
+};
+
 /** Leading, trailing, or both icons alongside the label. */
 export const Icons: Story = {
   tags: docExample,

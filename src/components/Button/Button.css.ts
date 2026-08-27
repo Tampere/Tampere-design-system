@@ -123,7 +123,13 @@ globalStyle(`${tertiary}${pill}`, { borderRadius: 0 });
 // same value as `button.padding.vertical`) instead of the wider horizontal padding a
 // labeled button gets — overrides `root`'s asymmetric padding, defined after it so it
 // wins on source order (same-specificity single-class selectors).
-export const iconOnly = style({ padding: button.padding.vertical });
+//
+// Also pins width to the same fixed `controlHeight` used for height: `root`'s width is
+// `fit-content` (intrinsic), and box-sizing: border-box only changes how an *explicit*
+// width is interpreted, not intrinsic sizing — so a bordered variant's border (e.g.
+// secondary's 2px on every side) would otherwise add to the intrinsic width without
+// adding to the fixed height, making bordered icon-only buttons wider than tall.
+export const iconOnly = style({ padding: button.padding.vertical, width: controlHeight });
 
 export const content = style({
   alignItems: 'center',
