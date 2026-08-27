@@ -255,8 +255,8 @@ export const FooterButtonsUseExpectedVariants: Story = {
     await expect(getComputedStyle(cancel).backgroundColor).toBe('rgba(0, 0, 0, 0)');
     await expect(getComputedStyle(cancel).borderColor).toBe('rgb(41, 84, 154)');
 
-    // Confirm starts disabled (nothing staged) — stage a day so its enabled,
-    // filled-primary background is what's asserted below.
+    // Confirm starts disabled (nothing staged) — stage a day so its enabled
+    // state, primary's filled background, is what's asserted below.
     const allButtons = within(calendar).getAllByRole('button');
     const day16 = allButtons.find(
       (b) => b.textContent?.trim() === '16' && !b.hasAttribute('disabled')

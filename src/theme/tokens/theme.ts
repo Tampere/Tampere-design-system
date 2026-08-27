@@ -293,9 +293,9 @@ export function getTheme(bp: BreakpointKey) {
     iconButton: {
       padding: rem('2px'),
       // Unused by IconButton/LabeledIconButton's interactive-state backgrounds —
-      // those correctly use the top-level 0px cornerRadius (verified against
-      // Figma's Effects/Corner-radius/Default = 0 for this component family).
-      // Do not wire this in without re-checking Figma.
+      // those correctly use the top-level cornerRadius.sharp (0px), verified
+      // against Figma's Effects/Corner-radius/Default = 0 for this component
+      // family. Do not wire this in without re-checking Figma.
       cornerRadius: rem('4px'),
       minTouchTarget: rem('24px'),
       states: {
