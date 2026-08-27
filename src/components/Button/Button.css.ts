@@ -129,7 +129,12 @@ globalStyle(`${tertiary}${pill}`, { borderRadius: cornerRadius.sharp });
 // width is interpreted, not intrinsic sizing — so a bordered variant's border (e.g.
 // secondary's 2px on every side) would otherwise add to the intrinsic width without
 // adding to the fixed height, making bordered icon-only buttons wider than tall.
-export const iconOnly = style({ padding: button.padding.vertical, width: controlHeight });
+export const iconOnly = style({
+  padding: button.padding.vertical,
+  width: controlHeight,
+  minWidth: controlHeight,
+  flexShrink: 0,
+});
 
 export const content = style({
   alignItems: 'center',
