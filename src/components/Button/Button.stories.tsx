@@ -97,7 +97,7 @@ export const Disabled: Story = {
     const canvas = within(canvasElement);
 
     // Figma's disabled label/icon color is `text/disabled` (#686872), not the
-    // `Common/Disabled` (#c9c9ce) token used for the outlined variant's border.
+    // `Common/Disabled` (#c9c9ce) token used for the secondary variant's border.
     for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
@@ -105,7 +105,12 @@ export const Disabled: Story = {
   },
 };
 
-/** Pill-shaped corners (issue #73), one per variant. */
+/**
+ * Pill-shaped corners (issue #73) on primary/secondary. Tertiary has no border box
+ * to round, and Figma doesn't pair `Corner-radius: Rounded` with Tertiary, so
+ * `radius="pill"` is a no-op there — shown here rather than omitted so the
+ * no-op is visible and intentional, not a silent gap.
+ */
 export const Rounded: Story = {
   tags: docExample,
   render: (args) => (
@@ -124,10 +129,15 @@ export const Rounded: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
+    for (const name of ['Tallenna', 'Peruuta']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
     }
+
+    // Tertiary stays sharp — rounding its bottom-only border would bow it into
+    // an arc instead of a straight underline (see Button.css.ts).
+    const tertiaryButton = canvas.getByRole('button', { name: 'Näytä lisää' });
+    await expect(getComputedStyle(tertiaryButton).borderRadius).toBe('0px');
   },
 };
 
@@ -186,7 +196,7 @@ export const RadiusDefaultsToSharp: Story = {
   },
 };
 
-/** Pill corners persist on a disabled button. */
+/** Pill corners persist on a disabled button (tertiary stays sharp, see `Rounded`). */
 export const RoundedDisabled: Story = {
   args: { radius: 'pill', disabled: true },
   render: (args) => (
@@ -205,10 +215,13 @@ export const RoundedDisabled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
+    for (const name of ['Tallenna', 'Peruuta']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
     }
+
+    const tertiaryButton = canvas.getByRole('button', { name: 'Näytä lisää' });
+    await expect(getComputedStyle(tertiaryButton).borderRadius).toBe('0px');
   },
 };
 

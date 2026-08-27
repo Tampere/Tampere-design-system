@@ -1,4 +1,4 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { style, styleVariants, globalStyle } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
@@ -70,8 +70,8 @@ const secondary = style({
       border: `${strokeWeight} solid ${states.active}`,
     },
     '&:disabled': {
-      // Figma's disabled label color is `text/disabled`; the border stays on
-      // `states.disabled` (Figma's `Common/Disabled`) — same value, different token.
+      // Figma's disabled label color is `text/disabled` (#686872) — visibly darker
+      // than the border's `states.disabled` (Figma's `Common/Disabled`, #c9c9ce).
       color: textColors.disabled,
       border: `${strokeWeight} solid ${states.disabled}`,
       cursor: 'default',
@@ -110,6 +110,13 @@ export const variants = styleVariants({
 // Orthogonal to `variants` above — applied alongside a variant class, not instead of it,
 // since corner shape (issue #73) is independent of fill/border treatment in Figma.
 export const pill = style({ borderRadius: cornerRadius.rounded });
+
+// Tertiary has no border box — only a bottom border shown on hover/focus/active — so
+// rounding its corners would bow that border into an arc instead of a straight
+// underline. Figma doesn't pair `Corner-radius: Rounded` with Tertiary either, so
+// neutralize `pill` specifically for tertiary. The compound selector's specificity
+// (0,2,0) beats `pill`'s single-class (0,1,0) without needing `!important`.
+globalStyle(`${tertiary}${pill}`, { borderRadius: 0 });
 
 // Figma's `Icon-only: Yes` variant uses uniform padding on all sides (`spacing/small`,
 // same value as `button.padding.vertical`) instead of the wider horizontal padding a
