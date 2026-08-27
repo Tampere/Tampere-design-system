@@ -11,11 +11,14 @@ type SearchButtonProps = Omit<ButtonProps, 'iconOnly' | 'aria-label' | 'aria-lab
 
 // Search button component. Always icon-only with a required accessible name — all
 // three are excluded from `SearchButtonProps` (not just hardcoded) so a caller's
-// `searchButtonProps` can't smuggle any back in, and are spread onto `Button`
-// after `...restProps` so they win even if one does. `aria-labelledby` must be
-// excluded too, not just `aria-label`: it outranks `aria-label` when computing an
-// element's accessible name, so leaving it in `ButtonProps`' `AriaAttributes`
-// would let a caller override the guaranteed label through the back door.
+// `searchButtonProps` can't smuggle any back in. `iconOnly` and `aria-label` are
+// reasserted here, after `...restProps`, so they win even if `searchButtonProps`
+// sets them. `aria-labelledby` is handled differently: it's excluded from the type
+// but neutralized by the caller (`SearchField`, below) before this component ever
+// receives it — see the comment there. It must be excluded, not just `aria-label`:
+// it outranks `aria-label` when computing an element's accessible name, so leaving
+// it in `ButtonProps`' `AriaAttributes` would let a caller override the guaranteed
+// label through the back door.
 const SearchButton = ({
   disabled,
   'aria-label': ariaLabel,
