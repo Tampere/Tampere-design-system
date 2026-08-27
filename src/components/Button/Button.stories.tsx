@@ -121,11 +121,17 @@ export const Disabled: Story = {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
     }
+
+    // Secondary's disabled border uses the separate `states.disabled` token
+    // (#c9c9ce) — distinct from the label color above — so a token mix-up
+    // between the two wouldn't be caught by the color assertion alone.
+    const secondaryButton = canvas.getByRole('button', { name: 'Peruuta' });
+    await expect(getComputedStyle(secondaryButton).borderColor).toBe('rgb(201, 201, 206)');
   },
 };
 
 /**
- * Pill-shaped corners (issue #73) on primary/secondary. Tertiary has no border box
+ * Pill-shaped corners on primary/secondary. Tertiary has no border box
  * to round, and Figma doesn't pair `Corner-radius: Rounded` with Tertiary, so
  * `radius="pill"` is a no-op there — shown here rather than omitted so the
  * no-op is visible and intentional, not a silent gap.
@@ -246,6 +252,11 @@ export const Icons: Story = {
 
 /** Default (sharp) corners stay unaffected when `radius` isn't set. */
 export const RadiusDefaultsToSharp: Story = {
+  // `meta.args` sets radius: 'sharp' explicitly for the Controls panel, which would
+  // let this story pass even if Button's own `radius = 'sharp'` destructuring
+  // default silently changed — override it to undefined so the destructuring
+  // default is what's actually under test.
+  render: (args) => <Button {...args} radius={undefined} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Painike' });
