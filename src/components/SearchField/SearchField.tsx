@@ -7,10 +7,20 @@ import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
 import { dropdown, inputWrapper, listOptions, option, triggerIcon } from './SearchField.css.ts';
 
-// Search button component
-const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
+// Search button component. Always icon-only, so `iconOnly` isn't part of its own
+// prop surface — it's hardcoded below, not something a caller can override.
+const SearchButton = ({ disabled, ...restProps }: Omit<ButtonProps, 'iconOnly'>) => {
   return (
-    <Button variant="primary" iconOnly disabled={disabled} {...restProps}>
+    <Button
+      variant="primary"
+      iconOnly
+      disabled={disabled}
+      {...restProps}
+      // SearchField.tsx always supplies a default (props.inputLabel) before spreading
+      // searchButtonProps, so an accessible name is guaranteed at runtime even though
+      // `restProps`'s type can't prove it statically (see Button's iconOnly contract).
+      aria-label={restProps['aria-label']!}
+    >
       <SearchIcon className={triggerIcon} {...(!disabled && { fill: 'white' })} />
     </Button>
   );
@@ -50,7 +60,7 @@ export interface SearchFieldProps<T extends SearchFieldData> extends TextFieldPr
   /** Trigger onSearch immediately when an item is selected */
   searchOnItemSelect?: boolean;
   isLoading?: boolean;
-  searchButtonProps?: ButtonProps;
+  searchButtonProps?: Omit<ButtonProps, 'iconOnly'>;
 }
 
 export function SearchField<T extends SearchFieldData>({

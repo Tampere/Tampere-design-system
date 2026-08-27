@@ -3,20 +3,31 @@ import cx from 'clsx';
 import { Flex, UnstyledButton, type UnstyledButtonProps } from '@mantine/core';
 import { variants, pill, iconOnly as iconOnlyStyle, content, iconWrapper } from './Button.css.ts';
 
-export interface ButtonProps extends PropsWithChildren, UnstyledButtonProps, React.AriaAttributes {
-  variant?: 'primary' | 'secondary' | 'tertiary';
-  /** Corner shape. `'pill'` = fully rounded ends, matching Figma's `Corner-radius: Rounded` variant. */
-  radius?: 'sharp' | 'pill';
-  /**
-   * Uniform padding on all sides (Figma's `Icon-only: Yes` variant) instead of the wider
-   * horizontal padding a labeled button uses. Always pair with an `aria-label`.
-   */
-  iconOnly?: boolean;
-  disabled?: boolean;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-}
+type ButtonBaseProps = PropsWithChildren<UnstyledButtonProps> &
+  React.AriaAttributes & {
+    variant?: 'primary' | 'secondary' | 'tertiary';
+    /** Corner shape. `'pill'` = fully rounded ends, matching Figma's `Corner-radius: Rounded` variant. */
+    radius?: 'sharp' | 'pill';
+    disabled?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  };
+
+// `iconOnly` has no visible text, so an accessible name can't come from `children` —
+// require `aria-label` at compile time rather than only documenting it (mirrors
+// Chip's discriminated-union idiom for the same class of conditionally-required prop).
+export type ButtonProps =
+  | (ButtonBaseProps & {
+      /**
+       * Uniform padding on all sides (Figma's `Icon-only: Yes` variant) instead of the
+       * wider horizontal padding a labeled button uses. Requires `aria-label`, since
+       * there's no visible text to derive an accessible name from.
+       */
+      iconOnly: true;
+      'aria-label': string;
+    })
+  | (ButtonBaseProps & { iconOnly?: false });
 
 /** A basic button components with variants. Remember to include aria-label for accessibility if no text is provided as children. */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
