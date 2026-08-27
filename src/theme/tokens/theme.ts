@@ -60,7 +60,7 @@ const highlight = { fontWeight: '700', backgroundColor: 'transparent' } as const
 
 // `sharp` is TREDS's system-wide default (Figma `Effects/Corner-radius/Default`).
 // `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — comfortably larger
-// than half of any built-in control height (max 52px, see controlHeights above), so
+// than half of any built-in control height (max 52px, see controlHeights below), so
 // it clips to a full stadium/pill shape for every control this tier is used on.
 // `rounded` is a plain literal, not `rem(...)` — scaling a pill radius by
 // `--mantine-scale` is meaningless (it already clips to a full stadium/pill).
