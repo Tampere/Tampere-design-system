@@ -68,12 +68,31 @@ export const Primary: Story = {
 export const Secondary: Story = {
   tags: docExample,
   args: { variant: 'secondary', children: 'Peruuta' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Peruuta' });
+    const style = getComputedStyle(button);
+
+    // Bordered, not filled — distinguishes secondary from primary and tertiary.
+    await expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    await expect(style.borderColor).toBe('rgb(41, 84, 154)');
+  },
 };
 
 /** Low emphasis — tertiary or inline actions. */
 export const Tertiary: Story = {
   tags: docExample,
   args: { variant: 'tertiary', children: 'Näytä lisää' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Näytä lisää' });
+    const style = getComputedStyle(button);
+
+    // No border box at rest, unlike secondary's solid border on all sides — only
+    // a bottom border (transparent, but present), unlike primary which has none.
+    await expect(style.borderTopWidth).toBe('0px');
+    await expect(parseFloat(style.borderBottomWidth)).toBeGreaterThan(0);
+  },
 };
 
 /** Disabled appearance for each variant. */
@@ -193,6 +212,24 @@ export const RadiusDefaultsToSharp: Story = {
     const button = canvas.getByRole('button', { name: 'Painike' });
 
     await expect(getComputedStyle(button).borderRadius).toBe('0px');
+  },
+};
+
+/** `iconOnly` and `radius="pill"` compose — both are orthogonal to `variant`. */
+export const IconOnlyRounded: Story = {
+  args: { iconOnly: true, radius: 'pill', 'aria-label': 'Etsi' },
+  render: (args) => (
+    <Button {...args}>
+      <SearchIcon {...iconProps} />
+    </Button>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Etsi' });
+    const style = getComputedStyle(button);
+
+    await expect(style.borderRadius).toBe('9999px');
+    await expect(style.paddingLeft).toBe(style.paddingTop);
   },
 };
 

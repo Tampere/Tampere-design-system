@@ -225,6 +225,11 @@ export const TriggerIconTracksControlSize: Story = {
     const lineHeightPx = parseFloat(getComputedStyle(trigger).lineHeight);
     const iconWidth = icon.getBoundingClientRect().width;
     await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
+
+    // Icon-only trigger must be square (issue #73) — uniform padding, not a
+    // labeled button's wider horizontal padding.
+    const style = getComputedStyle(trigger);
+    await expect(style.paddingLeft).toBe(style.paddingTop);
   },
 };
 
