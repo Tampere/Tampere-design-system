@@ -273,7 +273,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
   },
   "contrast": "#ffffff",
   "cornerRadius": {
-    "rounded": "calc(624.9375rem * var(--mantine-scale))",
+    "rounded": "9999px",
     "sharp": "0rem",
   },
   "divider": "#dedee2",
@@ -605,7 +605,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
   },
   "contrast": "#ffffff",
   "cornerRadius": {
-    "rounded": "calc(624.9375rem * var(--mantine-scale))",
+    "rounded": "9999px",
     "sharp": "0rem",
   },
   "divider": "#dedee2",
@@ -937,7 +937,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
   },
   "contrast": "#ffffff",
   "cornerRadius": {
-    "rounded": "calc(624.9375rem * var(--mantine-scale))",
+    "rounded": "9999px",
     "sharp": "0rem",
   },
   "divider": "#dedee2",
@@ -1683,7 +1683,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
     },
     "contrast": "#ffffff",
     "cornerRadius": {
-      "rounded": "calc(624.9375rem * var(--mantine-scale))",
+      "rounded": "9999px",
       "sharp": "0rem",
     },
     "divider": "#dedee2",
@@ -2016,7 +2016,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
   },
   "contrast": "#ffffff",
   "cornerRadius": {
-    "rounded": "calc(624.9375rem * var(--mantine-scale))",
+    "rounded": "9999px",
     "sharp": "0rem",
   },
   "divider": "#dedee2",
@@ -2348,7 +2348,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
   },
   "contrast": "#ffffff",
   "cornerRadius": {
-    "rounded": "calc(624.9375rem * var(--mantine-scale))",
+    "rounded": "9999px",
     "sharp": "0rem",
   },
   "divider": "#dedee2",
@@ -2680,7 +2680,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
   },
   "contrast": "#ffffff",
   "cornerRadius": {
-    "rounded": "calc(624.9375rem * var(--mantine-scale))",
+    "rounded": "9999px",
     "sharp": "0rem",
   },
   "divider": "#dedee2",

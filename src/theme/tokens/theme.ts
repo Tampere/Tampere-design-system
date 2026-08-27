@@ -394,7 +394,9 @@ export function getTheme(bp: BreakpointKey) {
     // `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — comfortably larger
     // than half of any built-in control height (max 52px, see controlHeight above), so
     // it clips to a full stadium/pill shape for every control this tier is used on.
-    cornerRadius: { sharp: rem(0), rounded: rem('9999px') },
+    // `rounded` is a plain literal, not `rem(...)` — scaling a pill radius by
+    // `--mantine-scale` is meaningless (it already clips to a full stadium/pill).
+    cornerRadius: { sharp: rem(0), rounded: '9999px' },
     strokeWeight,
     dropShadow: 'rgba(0, 0, 0, 0.5000)',
     states,
