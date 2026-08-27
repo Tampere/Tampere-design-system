@@ -349,8 +349,72 @@ export const TriggerIconTracksControlSize: Story = {
     await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
 
     // Icon-only trigger must render as a true square (issue #73) — width pinned
-    // to the same fixed height token, not just uniform padding on an intrinsic width.
+    // to the same fixed height token, not just uniform padding on an intrinsic
+    // width (see Button.css.ts).
     const rect = trigger.getBoundingClientRect();
     await expect(rect.width).toBe(rect.height);
+  },
+};
+
+/**
+ * Clicking the search trigger button must fire `onSearch` for the currently
+ * selected item, and its accessible name must resolve to `searchButtonLabel`
+ * (not the old `inputLabel` fallback this PR replaced) — both asserted via a
+ * single `getByRole('button', { name: searchButtonLabel })` lookup below.
+ */
+export const SearchButtonTriggersOnSearch: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: {
+    inputLabel: 'Search',
+    data: [{ value: 'alpha', label: 'Alpha' }],
+    clearButtonLabel: 'Clear',
+    searchButtonLabel: 'Search',
+    onSearch: fn(),
+    onChange: () => {},
+  },
+  render: (args) => <SearchField {...args} />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.type(input, 'Alpha');
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Alpha' })).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText('Alpha'));
+
+    // Selecting the item alone must not fire onSearch (searchOnItemSelect is unset) —
+    // only the button click below should.
+    expect(args.onSearch).not.toHaveBeenCalled();
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Search' }));
+    expect(args.onSearch).toHaveBeenCalledWith(expect.objectContaining({ label: 'Alpha' }));
+  },
+};
+
+/**
+ * `searchButtonProps` can override defaults like `onClick` — only `iconOnly`/
+ * `aria-label` are locked (see `SearchButtonProps` and the `endInstance` prop
+ * order in SearchField.tsx).
+ */
+export const SearchButtonPropsOverridesDefaultOnClick: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: {
+    inputLabel: 'Search',
+    data: [{ value: 'alpha', label: 'Alpha' }],
+    clearButtonLabel: 'Clear',
+    searchButtonLabel: 'Search',
+    onSearch: fn(),
+    onChange: () => {},
+    searchButtonProps: { onClick: fn() },
+  },
+  render: (args) => <SearchField {...args} />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Search' }));
+
+    expect(args.searchButtonProps?.onClick).toHaveBeenCalled();
+    expect(args.onSearch).not.toHaveBeenCalled();
   },
 };

@@ -199,12 +199,20 @@ export const IconOnlySquareAcrossVariants: Story = {
       <Button {...args} variant="secondary" iconOnly disabled aria-label="Etsi secondary disabled">
         <SearchIcon {...iconProps} />
       </Button>
+      <Button {...args} variant="tertiary" iconOnly aria-label="Etsi tertiary">
+        <SearchIcon {...iconProps} />
+      </Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Etsi primary', 'Etsi secondary', 'Etsi secondary disabled']) {
+    for (const name of [
+      'Etsi primary',
+      'Etsi secondary',
+      'Etsi secondary disabled',
+      'Etsi tertiary',
+    ]) {
       const button = canvas.getByRole('button', { name });
       const rect = button.getBoundingClientRect();
       await expect(rect.width).toBe(rect.height);
@@ -246,25 +254,36 @@ export const RadiusDefaultsToSharp: Story = {
   },
 };
 
-/** `iconOnly` and `radius="pill"` compose — both are orthogonal to `variant`. */
+/**
+ * `iconOnly` and `radius="pill"` compose — both are orthogonal to `variant` — and
+ * continue to compose with `disabled`, covered here rather than only pairwise.
+ */
 export const IconOnlyRounded: Story = {
   args: { iconOnly: true, radius: 'pill', 'aria-label': 'Etsi' },
   render: (args) => (
-    <Button {...args}>
-      <SearchIcon {...iconProps} />
-    </Button>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} aria-label="Etsi">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} disabled aria-label="Etsi disabled">
+        <SearchIcon {...iconProps} />
+      </Button>
+    </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Etsi' });
-    const style = getComputedStyle(button);
 
-    await expect(style.borderRadius).toBe('9999px');
-    await expect(style.paddingLeft).toBe(style.paddingTop);
+    for (const name of ['Etsi', 'Etsi disabled']) {
+      const button = canvas.getByRole('button', { name });
+      const style = getComputedStyle(button);
 
-    // A pill icon-only button must render as a circle, not a stadium.
-    const rect = button.getBoundingClientRect();
-    await expect(rect.width).toBe(rect.height);
+      await expect(style.borderRadius).toBe('9999px');
+      await expect(style.paddingLeft).toBe(style.paddingTop);
+
+      // A pill icon-only button must render as a circle, not a stadium.
+      const rect = button.getBoundingClientRect();
+      await expect(rect.width).toBe(rect.height);
+    }
   },
 };
 
