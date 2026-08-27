@@ -13,7 +13,7 @@ const iconSize = vars.theme.components.icon.size.medium;
 const iconProps = { style: { width: iconSize, height: iconSize } };
 
 const meta = {
-  // Most Button stories below are browser test specs (they have a `play` fn checking
+  // Some Button stories below are browser test specs (they have a `play` fn checking
   // a token-driven style, not a distinct visual state), not documentation. Default
   // every story to test-only: still run by the vitest addon (the `test` tag is
   // untouched) but hidden from the sidebar (`!dev`) and the autodocs page
@@ -276,7 +276,7 @@ export const HorizontalPaddingExceedsVertical: Story = {
   },
 };
 
-/** Figma's button label uses Semi-Bold weight, same override Chip's label uses. */
+/** Figma's button label uses Semi-Bold weight (600), matching Chip's label weight. */
 export const LabelIsSemiBold: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

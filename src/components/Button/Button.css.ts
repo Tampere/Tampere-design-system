@@ -26,7 +26,8 @@ const root = style({
   justifyContent: 'center',
   fontSize: button.fontSize,
   // No dedicated weight token (per project convention) — Figma's button label
-  // reuses Subheader's Semi-Bold weight, same override Chip's label uses.
+  // reuses Subheader's Semi-Bold weight, coincidentally matching Chip's label
+  // weight (Chip hardcodes its own '600' rather than sharing this token).
   fontWeight: typography.subheader.fontWeight,
   lineHeight: button.lineHeight,
   letterSpacing: font.letterSpacing,

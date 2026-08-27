@@ -391,9 +391,9 @@ export function getTheme(bp: BreakpointKey) {
     hover,
     divider: colors.neutral['200'],
     // `sharp` is TREDS's system-wide default (Figma `Effects/Corner-radius/Default`).
-    // `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — a radius larger than
-    // half of any control's height always clips to a full stadium/pill shape, so this one
-    // value works regardless of a consumer's own (possibly responsive) height.
+    // `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — comfortably larger
+    // than half of any built-in control height (max 52px, see controlHeight above), so
+    // it clips to a full stadium/pill shape for every control this tier is used on.
     cornerRadius: { sharp: rem(0), rounded: rem('9999px') },
     strokeWeight,
     dropShadow: 'rgba(0, 0, 0, 0.5000)',
