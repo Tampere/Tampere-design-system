@@ -58,6 +58,11 @@ const text = {
 
 const highlight = { fontWeight: '700', backgroundColor: 'transparent' } as const;
 
+// Single source of truth for Chip label's line-height, so `chip.label.lineHeight`
+// and `chip.height`'s calc formula (which derives the same 150% relationship
+// from the label's font size) can't silently desync.
+const chipLineHeightPercent = 150;
+
 const strokeWeight = rem('2px');
 
 const focusRing = {
@@ -201,10 +206,50 @@ export function getTheme(bp: BreakpointKey) {
       textContentSpacing: primitives.spacing['1'],
     },
     chip: {
-      spacing: bpTokens.spacing.xs,
+      // Figma's "spacing/2-extra-small" — confirmed against the dedicated
+      // "Breakpoints" reference frame (5870:41586) in the redesign file,
+      // which binds this exact gap (icon↔label, label↔dismiss-button) to
+      // that variable at every breakpoint (8px at xxl/xl/lg, 4px at
+      // md/sm/xs) — not `xs` ("spacing/extra-small", 12px/8px), which an
+      // earlier, apparently-stale example instance elsewhere in the file
+      // used and this token was previously (incorrectly) matched to.
+      spacing: bpTokens.spacing.xxs,
       cornerRadius: rem('20px'),
-      font: { lineHeight: bpTokens.components.input.lineHeight, size: bpTokens.typography.size.p2 },
-      padding: { horizontal: bpTokens.spacing.sm, vertical: bpTokens.spacing.xs },
+      // Figma's "Chip/Label" composite token: Caption's own size/family/line-height,
+      // but Subheader-style Semi-Bold weight rather than Caption's own Regular —
+      // matches `typography.caption` above except for that one deliberate override.
+      label: {
+        fontFamily: fontFamilyBody,
+        fontSize: bpTokens.typography.size.caption,
+        fontWeight: '600',
+        lineHeight: `${chipLineHeightPercent}%`,
+      },
+      // Vertical padding is a fixed constant (not per-breakpoint, unlike
+      // `horizontal` below) — Figma's Spacing/0,5 = 4px at every breakpoint.
+      // Combined with `label`'s breakpoint-varying Caption size/line-height,
+      // this gives the spec's 32px total height at the lg/xl/xxl tier
+      // (4 + 150%*16px + 4 = 32) and a correspondingly smaller height on
+      // narrower breakpoints as Caption itself shrinks — same "reference
+      // height at the largest breakpoint" pattern used elsewhere in TREDS.
+      padding: { horizontal: bpTokens.spacing.sm, vertical: primitives.spacing['0,5'] },
+      // Total pill height = 2×vertical padding + line-height of the label's
+      // font size (`chipLineHeightPercent`, matching `label.lineHeight`
+      // above). Mantine's Chip has no vertical-padding concept of its own
+      // (it sets height directly via --chip-size), so this is computed once
+      // here and fed to both the Mantine-wrapped filter role and the bespoke
+      // removable-tag role, keeping their heights identical.
+      height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * ${chipLineHeightPercent / 100})`,
+      // Figma's "Neutral/100" tag fill — distinct from `background.disabled`
+      // even though the raw value is the same, since that token means
+      // something unrelated (a disabled-state background, not a tag chip's
+      // resting fill) — see the TextLink review lesson on not reusing a
+      // semantically-mismatched token just because its value happens to match.
+      tagFill: colors.neutral['100'],
+      // Fixed constant like `padding.vertical` above, not part of the
+      // responsive scale — Figma's Chip "Icon" slot is a literal 18×18px
+      // square at every breakpoint (verified against the 768/480/320
+      // breakpoint mockups in the redesign file, all identical).
+      iconSize: rem('18px'),
     },
     datePicker: {
       todayMarker: colors.neutral['800'],

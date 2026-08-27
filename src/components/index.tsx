@@ -2,6 +2,7 @@ export { Accordion, AccordionItem } from './Accordion/Accordion';
 export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { Button } from './Button/Button';
 export { Checkbox } from './Checkbox/Checkbox';
+export { Chip, type ChipProps } from './Chip/Chip';
 export { IconButton } from './IconButton/IconButton';
 export {
   LabeledIconButton,
