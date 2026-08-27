@@ -4,7 +4,7 @@ import { iconButtonForeground, iconButtonBackground } from './iconButtonState.cs
 
 const {
   theme: {
-    cornerRadius,
+    cornerRadius: { sharp: cornerRadius },
     components: { icon, iconButton },
     focusRing,
   },

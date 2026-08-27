@@ -3,13 +3,15 @@ import { vars } from '../../theme';
 
 const {
   theme: {
-    components: { button, controlHeight },
+    components: { button, controlHeight, typography },
     font,
     states,
+    text: textColors,
     contrast,
     background: { disabled: backgroundDisabled },
     strokeWeight,
     focusRing,
+    cornerRadius,
   },
 } = vars;
 
@@ -23,6 +25,9 @@ const root = style({
   alignItems: 'center',
   justifyContent: 'center',
   fontSize: button.fontSize,
+  // No dedicated weight token (per project convention) — Figma's button label
+  // reuses Subheader's Semi-Bold weight, same override Chip's label uses.
+  fontWeight: typography.subheader.fontWeight,
   lineHeight: button.lineHeight,
   letterSpacing: font.letterSpacing,
   padding: `${button.padding.vertical} ${button.padding.horizontal}`,
@@ -43,7 +48,7 @@ const filled = style({
       background: states.active,
     },
     '&:disabled': {
-      color: states.disabled,
+      color: textColors.disabled,
       background: backgroundDisabled,
       cursor: 'default',
     },
@@ -65,7 +70,9 @@ const outlined = style({
       border: `${strokeWeight} solid ${states.active}`,
     },
     '&:disabled': {
-      color: states.disabled,
+      // Figma's disabled label color is `text/disabled`; the border stays on
+      // `states.disabled` (Figma's `Common/Disabled`) — same value, different token.
+      color: textColors.disabled,
       border: `${strokeWeight} solid ${states.disabled}`,
       cursor: 'default',
     },
@@ -88,7 +95,7 @@ const text = style({
       color: states.active,
     },
     '&:disabled': {
-      color: states.disabled,
+      color: textColors.disabled,
       cursor: 'default',
     },
   },
@@ -99,6 +106,10 @@ export const variants = styleVariants({
   outlined: [root, outlined],
   text: [root, text],
 });
+
+// Orthogonal to `variants` above — applied alongside a variant class, not instead of it,
+// since corner shape (issue #73) is independent of fill/border treatment in Figma.
+export const pill = style({ borderRadius: cornerRadius.rounded });
 
 export const content = style({
   alignItems: 'center',

@@ -4,7 +4,7 @@ import { iconButtonForeground, iconButtonBackground } from '../IconButton/iconBu
 
 const {
   theme: {
-    cornerRadius,
+    cornerRadius: { sharp: cornerRadius },
     components: { icon, typography, labeledIconButton },
     focusRing,
   },

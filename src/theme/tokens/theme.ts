@@ -198,7 +198,9 @@ export function getTheme(bp: BreakpointKey) {
       fontSize: bpTokens.typography.size.p2,
       lineHeight: bpTokens.components.button.lineHeight,
       spacing: bpTokens.spacing.xs,
-      padding: { horizontal: bpTokens.spacing.sm, vertical: bpTokens.spacing.sm },
+      // Figma splits these across two different spacing tokens — `spacing/medium`
+      // horizontal, `spacing/small` vertical — not the same value on both axes.
+      padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.sm },
     },
     card: {
       padding: bpTokens.spacing.sm,
@@ -388,7 +390,11 @@ export function getTheme(bp: BreakpointKey) {
     focus,
     hover,
     divider: colors.neutral['200'],
-    cornerRadius: rem(0),
+    // `sharp` is TREDS's system-wide default (Figma `Effects/Corner-radius/Default`).
+    // `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — a radius larger than
+    // half of any control's height always clips to a full stadium/pill shape, so this one
+    // value works regardless of a consumer's own (possibly responsive) height.
+    cornerRadius: { sharp: rem(0), rounded: rem('9999px') },
     strokeWeight,
     dropShadow: 'rgba(0, 0, 0, 0.5000)',
     states,

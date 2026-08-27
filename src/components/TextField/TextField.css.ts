@@ -8,7 +8,7 @@ const {
     components: { input: inputVars, textField, controlHeight, typography },
     text,
     focusRing,
-    cornerRadius,
+    cornerRadius: { sharp: cornerRadius },
     background,
     inputStates,
   },

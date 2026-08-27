@@ -16,12 +16,14 @@ const meta = {
   argTypes: {
     children: { control: 'text' },
     variant: { control: { type: 'select' }, options: ['filled', 'outlined', 'text'] },
+    radius: { control: { type: 'select' }, options: ['sharp', 'pill'] },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
   },
   args: {
     children: 'Button',
     variant: 'filled',
+    radius: 'sharp',
     disabled: false,
   },
   component: Button,
@@ -43,6 +45,67 @@ export const Outlined: Story = {
 /** Low emphasis — tertiary or inline actions. */
 export const Text: Story = {
   args: { variant: 'text' },
+};
+
+/** Pill-shaped corners (issue #73), one per variant. */
+export const Rounded: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="filled" radius="pill">
+        Filled
+      </Button>
+      <Button {...args} variant="outlined" radius="pill">
+        Outlined
+      </Button>
+      <Button {...args} variant="text" radius="pill">
+        Text
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Filled', 'Outlined', 'Text']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).borderRadius).toBe('9999px');
+    }
+  },
+};
+
+/** Default (sharp) corners stay unaffected when `radius` isn't set. */
+export const RadiusDefaultsToSharp: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Button' });
+
+    await expect(getComputedStyle(button).borderRadius).toBe('0px');
+  },
+};
+
+/** Pill corners persist on a disabled button. */
+export const RoundedDisabled: Story = {
+  args: { radius: 'pill', disabled: true },
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="filled">
+        Filled
+      </Button>
+      <Button {...args} variant="outlined">
+        Outlined
+      </Button>
+      <Button {...args} variant="text">
+        Text
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Filled', 'Outlined', 'Text']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).borderRadius).toBe('9999px');
+    }
+  },
 };
 
 /** All three variants side by side, sharing the same control height (issue #79). */
@@ -78,6 +141,40 @@ export const Disabled: Story = {
       </Button>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Figma's disabled label/icon color is `text/disabled` (#686872), not the
+    // `Common/Disabled` (#c9c9ce) token used for the outlined variant's border.
+    for (const name of ['Filled', 'Outlined', 'Text']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
+    }
+  },
+};
+
+/**
+ * Figma splits horizontal/vertical padding across two different spacing tokens
+ * (`spacing/medium` horizontal, `spacing/small` vertical) — they must differ.
+ */
+export const HorizontalPaddingExceedsVertical: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Button' });
+    const style = getComputedStyle(button);
+
+    await expect(parseFloat(style.paddingLeft)).toBeGreaterThan(parseFloat(style.paddingTop));
+  },
+};
+
+/** Figma's button label uses Semi-Bold weight, same override Chip's label uses. */
+export const LabelIsSemiBold: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Button' });
+
+    await expect(getComputedStyle(button).fontWeight).toBe('600');
+  },
 };
 
 /** Leading TREDS icon. */
