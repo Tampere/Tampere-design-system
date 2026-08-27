@@ -196,12 +196,15 @@ export const IconOnlySquareAcrossVariants: Story = {
       <Button {...args} variant="secondary" iconOnly aria-label="Etsi secondary">
         <SearchIcon {...iconProps} />
       </Button>
+      <Button {...args} variant="secondary" iconOnly disabled aria-label="Etsi secondary disabled">
+        <SearchIcon {...iconProps} />
+      </Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Etsi primary', 'Etsi secondary']) {
+    for (const name of ['Etsi primary', 'Etsi secondary', 'Etsi secondary disabled']) {
       const button = canvas.getByRole('button', { name });
       const rect = button.getBoundingClientRect();
       await expect(rect.width).toBe(rect.height);
@@ -258,6 +261,10 @@ export const IconOnlyRounded: Story = {
 
     await expect(style.borderRadius).toBe('9999px');
     await expect(style.paddingLeft).toBe(style.paddingTop);
+
+    // A pill icon-only button must render as a circle, not a stadium.
+    const rect = button.getBoundingClientRect();
+    await expect(rect.width).toBe(rect.height);
   },
 };
 
