@@ -7,12 +7,15 @@ import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
 import { dropdown, inputWrapper, listOptions, option, triggerIcon } from './SearchField.css.ts';
 
-type SearchButtonProps = Omit<ButtonProps, 'iconOnly' | 'aria-label'>;
+type SearchButtonProps = Omit<ButtonProps, 'iconOnly' | 'aria-label' | 'aria-labelledby'>;
 
-// Search button component. Always icon-only with a required accessible name —
-// both are excluded from `SearchButtonProps` (not just hardcoded) so a caller's
-// `searchButtonProps` can't smuggle either back in, and are spread onto `Button`
-// after `...restProps` so they win even if one does.
+// Search button component. Always icon-only with a required accessible name — all
+// three are excluded from `SearchButtonProps` (not just hardcoded) so a caller's
+// `searchButtonProps` can't smuggle any back in, and are spread onto `Button`
+// after `...restProps` so they win even if one does. `aria-labelledby` must be
+// excluded too, not just `aria-label`: it outranks `aria-label` when computing an
+// element's accessible name, so leaving it in `ButtonProps`' `AriaAttributes`
+// would let a caller override the guaranteed label through the back door.
 const SearchButton = ({
   disabled,
   'aria-label': ariaLabel,
@@ -168,10 +171,13 @@ export function SearchField<T extends SearchFieldData>({
                   if (dataItem) onSearch(dataItem);
                 }}
                 {...searchButtonProps}
-                // Applied after the spread, unlike the defaults above, so it always wins —
-                // SearchButtonProps excludes aria-label from the type, but a caller could
-                // still smuggle it through a non-literal object; this closes that at runtime.
+                // Applied after the spread, unlike the defaults above, so they always win —
+                // SearchButtonProps excludes aria-label/aria-labelledby from the type, but a
+                // caller could still smuggle either through a non-literal object; this closes
+                // that at runtime. aria-labelledby is cleared rather than just left alone,
+                // since it would otherwise outrank aria-label for the accessible name.
                 aria-label={searchButtonLabel}
+                aria-labelledby={undefined}
               />
             }
           />

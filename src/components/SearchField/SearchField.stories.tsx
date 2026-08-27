@@ -348,7 +348,7 @@ export const TriggerIconTracksControlSize: Story = {
     const iconWidth = icon.getBoundingClientRect().width;
     await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
 
-    // Icon-only trigger must render as a true square (issue #73) — width pinned
+    // Icon-only trigger must render as a true square — width pinned
     // to the same fixed height token, not just uniform padding on an intrinsic
     // width (see Button.css.ts).
     const rect = trigger.getBoundingClientRect();
@@ -359,8 +359,9 @@ export const TriggerIconTracksControlSize: Story = {
 /**
  * Clicking the search trigger button must fire `onSearch` for the currently
  * selected item, and its accessible name must resolve to `searchButtonLabel`
- * (not the old `inputLabel` fallback this PR replaced) — both asserted via a
- * single `getByRole('button', { name: searchButtonLabel })` lookup below.
+ * (not `inputLabel`, which SearchButton no longer falls back to) — both
+ * asserted via a single `getByRole('button', { name: searchButtonLabel })`
+ * lookup below.
  */
 export const SearchButtonTriggersOnSearch: Story = {
   tags: ['!dev', '!autodocs'],
@@ -394,8 +395,8 @@ export const SearchButtonTriggersOnSearch: Story = {
 
 /**
  * `searchButtonProps` can override defaults like `onClick` — only `iconOnly`/
- * `aria-label` are locked (see `SearchButtonProps` and the `endInstance` prop
- * order in SearchField.tsx).
+ * `aria-label`/`aria-labelledby` are locked (see `SearchButtonProps` and the
+ * `endInstance` prop order in SearchField.tsx).
  */
 export const SearchButtonPropsOverridesDefaultOnClick: Story = {
   tags: ['!dev', '!autodocs'],
@@ -416,5 +417,35 @@ export const SearchButtonPropsOverridesDefaultOnClick: Story = {
 
     expect(args.searchButtonProps?.onClick).toHaveBeenCalled();
     expect(args.onSearch).not.toHaveBeenCalled();
+  },
+};
+
+/**
+ * `searchButtonProps` cannot smuggle in a different accessible name via either
+ * `aria-label` or `aria-labelledby` — both are excluded from `SearchButtonProps`
+ * at the type level and stripped again at runtime in `endInstance` (see
+ * SearchField.tsx), so `searchButtonLabel` always wins. `as any` simulates a
+ * caller bypassing the type-level exclusion, since a literal wouldn't compile.
+ */
+export const SearchButtonPropsCannotOverrideAccessibleName: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: {
+    inputLabel: 'Search',
+    data: [{ value: 'alpha', label: 'Alpha' }],
+    clearButtonLabel: 'Clear',
+    searchButtonLabel: 'Search',
+    onSearch: fn(),
+    onChange: () => {},
+    searchButtonProps: {
+      'aria-label': 'Smuggled label',
+      'aria-labelledby': 'smuggled-id',
+    } as any,
+  },
+  render: (args) => <SearchField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('button', { name: 'Search' })).toBeInTheDocument();
+    await expect(canvas.queryByRole('button', { name: 'Smuggled label' })).not.toBeInTheDocument();
   },
 };
