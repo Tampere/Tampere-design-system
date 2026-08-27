@@ -6,7 +6,7 @@ const {
     components: { button, controlHeight },
     font,
     states,
-    text: textColors,
+    text,
     contrast,
     background: { disabled: backgroundDisabled },
     strokeWeight,
@@ -46,7 +46,7 @@ const primary = style({
       background: states.active,
     },
     '&:disabled': {
-      color: textColors.disabled,
+      color: text.disabled,
       background: backgroundDisabled,
       cursor: 'default',
     },
@@ -70,7 +70,8 @@ const secondary = style({
     '&:disabled': {
       // Figma's disabled label color is `text/disabled` (#686872) — visibly darker
       // than the border's `states.disabled` (Figma's `Common/Disabled`, #c9c9ce).
-      color: textColors.disabled,
+      // Same `text.disabled` label color applies across all three variants.
+      color: text.disabled,
       border: `${strokeWeight} solid ${states.disabled}`,
       cursor: 'default',
     },
@@ -93,7 +94,7 @@ const tertiary = style({
       color: states.active,
     },
     '&:disabled': {
-      color: textColors.disabled,
+      color: text.disabled,
       cursor: 'default',
     },
   },
@@ -106,7 +107,7 @@ export const variants = styleVariants({
 });
 
 // Orthogonal to `variants` above — applied alongside a variant class, not instead of it,
-// since corner shape (issue #73) is independent of fill/border treatment in Figma.
+// since corner shape is independent of fill/border treatment in Figma.
 export const pill = style({ borderRadius: cornerRadius.rounded });
 
 // Tertiary has no border box — only a bottom border shown on hover/focus/active — so
