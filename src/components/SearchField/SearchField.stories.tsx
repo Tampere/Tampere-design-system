@@ -26,6 +26,7 @@ const meta: Meta<typeof SearchField> = {
     showSearchIcon: { control: 'boolean', description: 'Show left search icon' },
     showClearButton: { control: 'boolean', description: 'Show clear button when non-empty' },
     clearButtonLabel: { control: 'text', description: 'aria-label for clear button' },
+    searchButtonLabel: { control: 'text', description: 'aria-label for search trigger button' },
   },
   args: {
     data: [],
@@ -38,6 +39,7 @@ const meta: Meta<typeof SearchField> = {
     showSearchIcon: false,
     showClearButton: false,
     clearButtonLabel: 'Clear',
+    searchButtonLabel: 'Search',
   },
   component: SearchField,
 };
@@ -114,6 +116,7 @@ export const GithubSearch: Story = {
     inputLabel: 'Search GitHub Users and Repositories',
     placeholder: 'Type at least 3 characters to search...',
     clearButtonLabel: 'Clear',
+    searchButtonLabel: 'Search GitHub users and repositories',
   },
   render: (args) => {
     const [searchData, setData] = useState<SearchResult[]>([]);
@@ -221,9 +224,6 @@ export const GithubSearch: Story = {
         onClearClick={() => setData([])}
         isLoading={isLoading}
         error={error}
-        searchButtonProps={{
-          'aria-label': 'Search GitHub users and repositories',
-        }}
       />
     );
   },
@@ -334,9 +334,9 @@ export const TriggerIconTracksControlSize: Story = {
     inputLabel: 'Search',
     data: [],
     clearButtonLabel: 'Clear',
+    searchButtonLabel: 'Etsi',
     onSearch: () => {},
     onChange: () => {},
-    searchButtonProps: { 'aria-label': 'Etsi' },
   },
   render: (args) => <SearchField {...args} />,
   play: async ({ canvasElement }) => {
@@ -348,9 +348,9 @@ export const TriggerIconTracksControlSize: Story = {
     const iconWidth = icon.getBoundingClientRect().width;
     await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
 
-    // Icon-only trigger must be square (issue #73) — uniform padding, not a
-    // labeled button's wider horizontal padding.
-    const style = getComputedStyle(trigger);
-    await expect(style.paddingLeft).toBe(style.paddingTop);
+    // Icon-only trigger must render as a true square (issue #73) — width pinned
+    // to the same fixed height token, not just uniform padding on an intrinsic width.
+    const rect = trigger.getBoundingClientRect();
+    await expect(rect.width).toBe(rect.height);
   },
 };

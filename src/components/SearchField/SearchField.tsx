@@ -7,20 +7,19 @@ import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
 import { dropdown, inputWrapper, listOptions, option, triggerIcon } from './SearchField.css.ts';
 
-// Search button component. Always icon-only, so `iconOnly` isn't part of its own
-// prop surface — it's hardcoded below, not something a caller can override.
-const SearchButton = ({ disabled, ...restProps }: Omit<ButtonProps, 'iconOnly'>) => {
+type SearchButtonProps = Omit<ButtonProps, 'iconOnly' | 'aria-label'>;
+
+// Search button component. Always icon-only with a required accessible name —
+// both are excluded from `SearchButtonProps` (not just hardcoded) so a caller's
+// `searchButtonProps` can't smuggle either back in, and are spread onto `Button`
+// after `...restProps` so they win even if one does.
+const SearchButton = ({
+  disabled,
+  'aria-label': ariaLabel,
+  ...restProps
+}: SearchButtonProps & { 'aria-label': string }) => {
   return (
-    <Button
-      variant="primary"
-      iconOnly
-      disabled={disabled}
-      {...restProps}
-      // SearchField.tsx always supplies a default (props.inputLabel) before spreading
-      // searchButtonProps, so an accessible name is guaranteed at runtime even though
-      // `restProps`'s type can't prove it statically (see Button's iconOnly contract).
-      aria-label={restProps['aria-label']!}
-    >
+    <Button variant="primary" disabled={disabled} {...restProps} iconOnly aria-label={ariaLabel}>
       <SearchIcon className={triggerIcon} {...(!disabled && { fill: 'white' })} />
     </Button>
   );
@@ -57,10 +56,12 @@ export interface SearchFieldProps<T extends SearchFieldData> extends TextFieldPr
   onClearClick?: () => void;
   fillAvailableSpace?: boolean;
   clearButtonLabel: string;
+  /** aria-label for the search trigger button */
+  searchButtonLabel: string;
   /** Trigger onSearch immediately when an item is selected */
   searchOnItemSelect?: boolean;
   isLoading?: boolean;
-  searchButtonProps?: Omit<ButtonProps, 'iconOnly'>;
+  searchButtonProps?: SearchButtonProps;
 }
 
 export function SearchField<T extends SearchFieldData>({
@@ -71,6 +72,7 @@ export function SearchField<T extends SearchFieldData>({
   placeholder,
   fillAvailableSpace,
   clearButtonLabel,
+  searchButtonLabel,
   searchOnItemSelect,
   isLoading = false,
   searchButtonProps,
@@ -159,14 +161,14 @@ export function SearchField<T extends SearchFieldData>({
             }}
             endInstance={
               <SearchButton
-                // set default bahaviout for some properties
-                aria-label={props.inputLabel}
+                // Defaults, overridable via searchButtonProps (which can't override
+                // iconOnly/aria-label — see SearchButtonProps).
+                aria-label={searchButtonLabel}
                 disabled={props.disabled ?? false}
                 onClick={() => {
                   const dataItem = data.find((d) => d.label === searchValue);
                   if (dataItem) onSearch(dataItem);
                 }}
-                // Allow overriding other props
                 {...searchButtonProps}
               />
             }
