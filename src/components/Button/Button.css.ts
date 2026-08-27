@@ -3,7 +3,7 @@ import { vars } from '../../theme';
 
 const {
   theme: {
-    components: { button, controlHeight, typography },
+    components: { button, controlHeight },
     font,
     states,
     text: textColors,
@@ -25,10 +25,7 @@ const root = style({
   alignItems: 'center',
   justifyContent: 'center',
   fontSize: button.fontSize,
-  // No dedicated weight token (per project convention) — Figma's button label
-  // reuses Subheader's Semi-Bold weight, coincidentally matching Chip's label
-  // weight (Chip hardcodes its own '600' rather than sharing this token).
-  fontWeight: typography.subheader.fontWeight,
+  fontWeight: button.fontWeight,
   lineHeight: button.lineHeight,
   letterSpacing: font.letterSpacing,
   padding: `${button.padding.vertical} ${button.padding.horizontal}`,

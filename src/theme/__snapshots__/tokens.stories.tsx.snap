@@ -26,6 +26,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
     "button": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.25rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
@@ -358,6 +359,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
     "button": {
       "fontSize": "calc(1rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.125rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
@@ -690,6 +692,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
     "button": {
       "fontSize": "calc(0.875rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
@@ -1436,6 +1439,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
       "button": {
         "fontSize": "calc(1rem * var(--mantine-scale))",
+        "fontWeight": "600",
         "lineHeight": "calc(1.125rem * var(--mantine-scale))",
         "padding": {
           "horizontal": "calc(1rem * var(--mantine-scale))",
@@ -1769,6 +1773,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
     "button": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.25rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
@@ -2101,6 +2106,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
     "button": {
       "fontSize": "calc(0.875rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
@@ -2433,6 +2439,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
     "button": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.25rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
