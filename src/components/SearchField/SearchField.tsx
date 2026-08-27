@@ -10,7 +10,7 @@ import { dropdown, inputWrapper, listOptions, option, triggerIcon } from './Sear
 // Search button component
 const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
   return (
-    <Button variant="primary" disabled={disabled} {...restProps}>
+    <Button variant="primary" iconOnly disabled={disabled} {...restProps}>
       <SearchIcon className={triggerIcon} {...(!disabled && { fill: 'white' })} />
     </Button>
   );

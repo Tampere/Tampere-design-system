@@ -111,6 +111,12 @@ export const variants = styleVariants({
 // since corner shape (issue #73) is independent of fill/border treatment in Figma.
 export const pill = style({ borderRadius: cornerRadius.rounded });
 
+// Figma's `Icon-only: Yes` variant uses uniform padding on all sides (`spacing/small`,
+// same value as `button.padding.vertical`) instead of the wider horizontal padding a
+// labeled button gets — overrides `root`'s asymmetric padding, defined after it so it
+// wins on source order (same-specificity single-class selectors).
+export const iconOnly = style({ padding: button.padding.vertical });
+
 export const content = style({
   alignItems: 'center',
   gap: button.spacing,

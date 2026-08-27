@@ -17,6 +17,7 @@ const meta = {
     children: { control: 'text' },
     variant: { control: { type: 'select' }, options: ['primary', 'secondary', 'tertiary'] },
     radius: { control: { type: 'select' }, options: ['sharp', 'pill'] },
+    iconOnly: { control: 'boolean' },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
   },
@@ -24,6 +25,7 @@ const meta = {
     children: 'Button',
     variant: 'primary',
     radius: 'sharp',
+    iconOnly: false,
     disabled: false,
   },
   component: Button,
@@ -214,13 +216,24 @@ export const BothIcons: Story = {
   ),
 };
 
-/** Icon-only button. Always provide an aria-label for accessibility. */
+/**
+ * Icon-only button (Figma's `Icon-only: Yes` variant) — uniform padding on all
+ * sides instead of the wider horizontal padding a labeled button uses.
+ * Always provide an aria-label for accessibility.
+ */
 export const WithoutText: Story = {
   render: (args) => (
-    <Button {...args} aria-label="Search">
+    <Button {...args} iconOnly aria-label="Search">
       <SearchIcon {...iconProps} />
     </Button>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Search' });
+    const style = getComputedStyle(button);
+
+    await expect(style.paddingLeft).toBe(style.paddingTop);
+  },
 };
 
 /**
