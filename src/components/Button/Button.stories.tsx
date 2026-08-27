@@ -13,6 +13,13 @@ const iconSize = vars.theme.components.icon.size.medium;
 const iconProps = { style: { width: iconSize, height: iconSize } };
 
 const meta = {
+  // Most Button stories below are browser test specs (they have a `play` fn checking
+  // a token-driven style, not a distinct visual state), not documentation. Default
+  // every story to test-only: still run by the vitest addon (the `test` tag is
+  // untouched) but hidden from the sidebar (`!dev`) and the autodocs page
+  // (`!autodocs`) so the docs stay a small, curated set. The documentation examples
+  // below opt back in with `tags: docExample`.
+  tags: ['!dev', '!autodocs'],
   argTypes: {
     children: { control: 'text' },
     variant: { control: { type: 'select' }, options: ['primary', 'secondary', 'tertiary'] },
@@ -22,7 +29,9 @@ const meta = {
     onClick: { action: 'clicked' },
   },
   args: {
-    children: 'Button',
+    // Figma's own Button component default label ("Button" in Finnish) — real
+    // content examples below override this with task-specific copy instead.
+    children: 'Painike',
     variant: 'primary',
     radius: 'sharp',
     iconOnly: false,
@@ -34,12 +43,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Re-adds the visibility tags that `meta` strips, marking a story as a
+// documentation example shown in both the sidebar and the autodocs page.
+const docExample = ['dev', 'autodocs'];
+
+// ── Documentation examples (visible in sidebar + autodocs) ───────────────────
+// Real Finnish task copy (matching this repo's convention elsewhere — DateField's
+// "Peruuta", Chip's "Poista Hervanta", SearchField's "Etsi" — rather than generic
+// English placeholders), covering every distinct visual state a reader needs.
+
 /** High-emphasis action. Use at most one primary button per view. */
 export const Primary: Story = {
-  args: { variant: 'primary' },
+  tags: docExample,
+  args: { variant: 'primary', children: 'Tallenna' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Button' });
+    const button = canvas.getByRole('button', { name: 'Tallenna' });
 
     await expect(getComputedStyle(button).backgroundColor).toBe('rgb(41, 84, 154)');
   },
@@ -47,44 +66,121 @@ export const Primary: Story = {
 
 /** Medium emphasis — secondary actions placed alongside a primary button. */
 export const Secondary: Story = {
-  args: { variant: 'secondary' },
+  tags: docExample,
+  args: { variant: 'secondary', children: 'Peruuta' },
 };
 
 /** Low emphasis — tertiary or inline actions. */
 export const Tertiary: Story = {
-  args: { variant: 'tertiary' },
+  tags: docExample,
+  args: { variant: 'tertiary', children: 'Näytä lisää' },
 };
 
-/** Pill-shaped corners (issue #73), one per variant. */
-export const Rounded: Story = {
+/** Disabled appearance for each variant. */
+export const Disabled: Story = {
+  tags: docExample,
+  args: { disabled: true },
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="primary" radius="pill">
-        Primary
+      <Button {...args} variant="primary">
+        Tallenna
       </Button>
-      <Button {...args} variant="secondary" radius="pill">
-        Secondary
+      <Button {...args} variant="secondary">
+        Peruuta
       </Button>
-      <Button {...args} variant="tertiary" radius="pill">
-        Tertiary
+      <Button {...args} variant="tertiary">
+        Näytä lisää
       </Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Primary', 'Secondary', 'Tertiary']) {
+    // Figma's disabled label/icon color is `text/disabled` (#686872), not the
+    // `Common/Disabled` (#c9c9ce) token used for the outlined variant's border.
+    for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
+    }
+  },
+};
+
+/** Pill-shaped corners (issue #73), one per variant. */
+export const Rounded: Story = {
+  tags: docExample,
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="primary" radius="pill">
+        Tallenna
+      </Button>
+      <Button {...args} variant="secondary" radius="pill">
+        Peruuta
+      </Button>
+      <Button {...args} variant="tertiary" radius="pill">
+        Näytä lisää
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
     }
   },
 };
 
+/**
+ * Icon-only button (Figma's `Icon-only: Yes` variant) — uniform padding on all
+ * sides instead of the wider horizontal padding a labeled button uses.
+ * Always provide an aria-label for accessibility.
+ */
+export const WithoutText: Story = {
+  tags: docExample,
+  render: (args) => (
+    <Button {...args} iconOnly aria-label="Etsi">
+      <SearchIcon {...iconProps} />
+    </Button>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Etsi' });
+    const style = getComputedStyle(button);
+
+    await expect(style.paddingLeft).toBe(style.paddingTop);
+  },
+};
+
+/** Leading, trailing, or both icons alongside the label. */
+export const Icons: Story = {
+  tags: docExample,
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} leftIcon={<SearchIcon {...iconProps} />}>
+        Etsi
+      </Button>
+      <Button {...args} rightIcon={<ArrowRightIcon {...iconProps} />}>
+        Seuraava
+      </Button>
+      <Button
+        {...args}
+        leftIcon={<SearchIcon {...iconProps} />}
+        rightIcon={<ArrowRightIcon {...iconProps} />}
+      >
+        Jatka
+      </Button>
+    </div>
+  ),
+};
+
+// ── Test-only specs (hidden from sidebar + autodocs, still run as browser tests) ──
+
 /** Default (sharp) corners stay unaffected when `radius` isn't set. */
 export const RadiusDefaultsToSharp: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Button' });
+    const button = canvas.getByRole('button', { name: 'Painike' });
 
     await expect(getComputedStyle(button).borderRadius).toBe('0px');
   },
@@ -96,67 +192,22 @@ export const RoundedDisabled: Story = {
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
       <Button {...args} variant="primary">
-        Primary
+        Tallenna
       </Button>
       <Button {...args} variant="secondary">
-        Secondary
+        Peruuta
       </Button>
       <Button {...args} variant="tertiary">
-        Tertiary
+        Näytä lisää
       </Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    for (const name of ['Primary', 'Secondary', 'Tertiary']) {
+    for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
       const button = canvas.getByRole('button', { name });
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
-    }
-  },
-};
-
-/** All three variants side by side, sharing the same control height (issue #79). */
-export const Variants: Story = {
-  render: (args) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="primary">
-        Primary
-      </Button>
-      <Button {...args} variant="secondary">
-        Secondary
-      </Button>
-      <Button {...args} variant="tertiary">
-        Tertiary
-      </Button>
-    </div>
-  ),
-};
-
-/** Disabled appearance for each variant. */
-export const Disabled: Story = {
-  args: { disabled: true },
-  render: (args) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="primary">
-        Primary
-      </Button>
-      <Button {...args} variant="secondary">
-        Secondary
-      </Button>
-      <Button {...args} variant="tertiary">
-        Tertiary
-      </Button>
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Figma's disabled label/icon color is `text/disabled` (#686872), not the
-    // `Common/Disabled` (#c9c9ce) token used for the outlined variant's border.
-    for (const name of ['Primary', 'Secondary', 'Tertiary']) {
-      const button = canvas.getByRole('button', { name });
-      await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
     }
   },
 };
@@ -168,7 +219,7 @@ export const Disabled: Story = {
 export const HorizontalPaddingExceedsVertical: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Button' });
+    const button = canvas.getByRole('button', { name: 'Painike' });
     const style = getComputedStyle(button);
 
     await expect(parseFloat(style.paddingLeft)).toBeGreaterThan(parseFloat(style.paddingTop));
@@ -179,60 +230,9 @@ export const HorizontalPaddingExceedsVertical: Story = {
 export const LabelIsSemiBold: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Button' });
+    const button = canvas.getByRole('button', { name: 'Painike' });
 
     await expect(getComputedStyle(button).fontWeight).toBe('600');
-  },
-};
-
-/** Leading TREDS icon. */
-export const LeftIcon: Story = {
-  render: (args) => (
-    <Button {...args} leftIcon={<SearchIcon {...iconProps} />}>
-      Search
-    </Button>
-  ),
-};
-
-/** Trailing TREDS icon. */
-export const RightIcon: Story = {
-  render: (args) => (
-    <Button {...args} rightIcon={<ArrowRightIcon {...iconProps} />}>
-      Next
-    </Button>
-  ),
-};
-
-/** Leading and trailing TREDS icons. */
-export const BothIcons: Story = {
-  render: (args) => (
-    <Button
-      {...args}
-      leftIcon={<SearchIcon {...iconProps} />}
-      rightIcon={<ArrowRightIcon {...iconProps} />}
-    >
-      Search Next
-    </Button>
-  ),
-};
-
-/**
- * Icon-only button (Figma's `Icon-only: Yes` variant) — uniform padding on all
- * sides instead of the wider horizontal padding a labeled button uses.
- * Always provide an aria-label for accessibility.
- */
-export const WithoutText: Story = {
-  render: (args) => (
-    <Button {...args} iconOnly aria-label="Search">
-      <SearchIcon {...iconProps} />
-    </Button>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Search' });
-    const style = getComputedStyle(button);
-
-    await expect(style.paddingLeft).toBe(style.paddingTop);
   },
 };
 
