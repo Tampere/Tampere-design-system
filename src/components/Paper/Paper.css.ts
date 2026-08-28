@@ -22,7 +22,9 @@ export const root = style({
 
 export const backgroundVariants = styleVariants({
   default: { backgroundColor: background.default },
-  inverted: { backgroundColor: paper.background.inverted },
+  turquoise: { backgroundColor: paper.background.turquoise },
+  blue: { backgroundColor: paper.background.blue },
+  pink: { backgroundColor: paper.background.pink },
 });
 
 export const paddingVariants = styleVariants({

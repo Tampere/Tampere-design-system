@@ -202,7 +202,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
     "paper": {
       "background": {
-        "inverted": "#0074a4",
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
       },
       "padding": {
         "large": "calc(4rem * var(--mantine-scale))",
@@ -543,7 +545,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
     "paper": {
       "background": {
-        "inverted": "#0074a4",
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
       },
       "padding": {
         "large": "calc(3rem * var(--mantine-scale))",
@@ -884,7 +888,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
     "paper": {
       "background": {
-        "inverted": "#0074a4",
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
       },
       "padding": {
         "large": "calc(2.5rem * var(--mantine-scale))",
@@ -1639,7 +1645,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
       "paper": {
         "background": {
-          "inverted": "#0074a4",
+          "blue": "#22437b",
+          "pink": "#ad3963",
+          "turquoise": "#0074a4",
         },
         "padding": {
           "large": "calc(3rem * var(--mantine-scale))",
@@ -1981,7 +1989,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
     "paper": {
       "background": {
-        "inverted": "#0074a4",
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
       },
       "padding": {
         "large": "calc(4rem * var(--mantine-scale))",
@@ -2322,7 +2332,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
     "paper": {
       "background": {
-        "inverted": "#0074a4",
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
       },
       "padding": {
         "large": "calc(2.5rem * var(--mantine-scale))",
@@ -2663,7 +2675,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
     "paper": {
       "background": {
-        "inverted": "#0074a4",
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
       },
       "padding": {
         "large": "calc(4rem * var(--mantine-scale))",

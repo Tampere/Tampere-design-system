@@ -38,14 +38,38 @@ export const NoShadow: Story = {
   },
 };
 
-export const InvertedBackground: Story = {
+export const TurquoiseBackground: Story = {
   tags: docExample,
-  args: { background: 'inverted' },
+  args: { background: 'turquoise' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await expect(getComputedStyle(canvas.getByTestId('paper')).backgroundColor).toBe(
       'rgb(0, 116, 164)'
+    );
+  },
+};
+
+export const BlueBackground: Story = {
+  tags: docExample,
+  args: { background: 'blue' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByTestId('paper')).backgroundColor).toBe(
+      'rgb(34, 67, 123)'
+    );
+  },
+};
+
+export const PinkBackground: Story = {
+  tags: docExample,
+  args: { background: 'pink' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByTestId('paper')).backgroundColor).toBe(
+      'rgb(173, 57, 99)'
     );
   },
 };

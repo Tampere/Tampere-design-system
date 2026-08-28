@@ -14,7 +14,14 @@ import {
 export type PaperProps = PropsWithChildren<
   Omit<MantinePaperProps, 'shadow' | 'radius' | 'withBorder' | 'bg' | 'p'>
 > & {
-  background?: 'default' | 'inverted';
+  /**
+   * `'default'` is white. The other three are Figma's own "color override" examples
+   * (confirmed by pixel-sampling a real rendered instance of each, since Figma's
+   * reference codegen only reports the base component's default binding, not
+   * per-instance fill overrides). `'red' | 'yellow' | 'green'` aren't included yet —
+   * no confirmed Figma example backs a specific shade for those.
+   */
+  background?: 'default' | 'turquoise' | 'blue' | 'pink';
   /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
   radius?: 'sharp' | 'pill';
   withBorder?: boolean;

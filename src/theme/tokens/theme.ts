@@ -229,13 +229,17 @@ export function getTheme(bp: BreakpointKey) {
         medium: bpTokens.spacing.xl,
         large: bpTokens.spacing.xxl,
       },
+      // Figma's Card "color override" examples — confirmed by pixel-sampling a
+      // real rendered instance of each (Figma's own reference codegen only
+      // reports the base component's default binding, not per-instance fill
+      // overrides, so this couldn't be read from `get_design_context` alone).
+      // Only these three are wired up because only these three have a real
+      // Figma example backing the exact shade — `red`/`yellow`/`green` aren't
+      // included since guessing an untested shade risks a contrast mismatch.
       background: {
-        // Figma's Card "Inverted" surface — `turquoise/300`, confirmed via
-        // `get_variable_defs` on a real inverted Card instance. Deliberately
-        // not `brand.blue.main` (a different color, #29549a) — `turquoise`
-        // isn't wired into `brand.ts` as its own brand-mode tier since this
-        // is currently a single one-off stop, not a general brand accent.
-        inverted: colors.turquoise['300'],
+        turquoise: colors.turquoise['300'],
+        blue: colors.blue['500'],
+        pink: colors.pink['200'],
       },
     },
     chip: {
