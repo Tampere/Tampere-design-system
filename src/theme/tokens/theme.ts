@@ -58,6 +58,14 @@ const text = {
 
 const highlight = { fontWeight: '700', backgroundColor: 'transparent' } as const;
 
+// `sharp` is TREDS's system-wide default (Figma `Effects/Corner-radius/Default`).
+// `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — comfortably larger
+// than half of any built-in control height (max 52px, see controlHeights below), so
+// it clips to a full stadium/pill shape for every control this tier is used on.
+// `rounded` is a plain literal, not `rem(...)` — scaling a pill radius by
+// `--mantine-scale` is meaningless (it already clips to a full stadium/pill).
+const cornerRadius = { sharp: rem(0), rounded: '9999px' } as const;
+
 // Single source of truth for Chip label's line-height, so `chip.label.lineHeight`
 // and `chip.height`'s calc formula (which derives the same 150% relationship
 // from the label's font size) can't silently desync.
@@ -196,9 +204,17 @@ export function getTheme(bp: BreakpointKey) {
     },
     button: {
       fontSize: bpTokens.typography.size.p2,
+      // Figma's button label reuses Subheader's Semi-Bold weight rather than P2's
+      // own Regular — same "borrow a heavier style's weight" pattern as Chip's
+      // `chip.label.fontWeight` below, kept as its own token (not a reference to
+      // `typography.subheader.fontWeight`) so a future Subheader change can't
+      // silently restyle every button.
+      fontWeight: '600',
       lineHeight: bpTokens.components.button.lineHeight,
       spacing: bpTokens.spacing.xs,
-      padding: { horizontal: bpTokens.spacing.sm, vertical: bpTokens.spacing.sm },
+      // Figma splits these across two different spacing tokens — `spacing/medium`
+      // horizontal, `spacing/small` vertical — not the same value on both axes.
+      padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.sm },
     },
     card: {
       padding: bpTokens.spacing.sm,
@@ -277,9 +293,9 @@ export function getTheme(bp: BreakpointKey) {
     iconButton: {
       padding: rem('2px'),
       // Unused by IconButton/LabeledIconButton's interactive-state backgrounds —
-      // those correctly use the top-level 0px cornerRadius (verified against
-      // Figma's Effects/Corner-radius/Default = 0 for this component family).
-      // Do not wire this in without re-checking Figma.
+      // those correctly use the top-level cornerRadius.sharp (0px), verified
+      // against Figma's Effects/Corner-radius/Default = 0 for this component
+      // family. Do not wire this in without re-checking Figma.
       cornerRadius: rem('4px'),
       minTouchTarget: rem('24px'),
       states: {
@@ -388,7 +404,7 @@ export function getTheme(bp: BreakpointKey) {
     focus,
     hover,
     divider: colors.neutral['200'],
-    cornerRadius: rem(0),
+    cornerRadius,
     strokeWeight,
     dropShadow: 'rgba(0, 0, 0, 0.5000)',
     states,

@@ -445,7 +445,8 @@ export function DateField({
             endInstance={
               <Button
                 ref={calendarButtonRef}
-                variant="filled"
+                variant="primary"
+                iconOnly
                 aria-label={calendarButtonLabel}
                 aria-expanded={session.open}
                 aria-haspopup="dialog"

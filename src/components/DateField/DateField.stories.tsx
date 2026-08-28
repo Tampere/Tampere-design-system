@@ -225,6 +225,48 @@ export const TriggerIconTracksControlSize: Story = {
     const lineHeightPx = parseFloat(getComputedStyle(trigger).lineHeight);
     const iconWidth = icon.getBoundingClientRect().width;
     await expect(iconWidth).toBeCloseTo(lineHeightPx, 0);
+
+    // Icon-only trigger must render as a true square — width pinned
+    // to the same fixed height token, not just uniform padding on an intrinsic
+    // width (see Button.css.ts).
+    const rect = trigger.getBoundingClientRect();
+    await expect(rect.width).toBe(rect.height);
+  },
+};
+
+export const FooterButtonsUseExpectedVariants: Story = {
+  // The footer's Today/Cancel/Confirm buttons use Button's `tertiary`/`secondary`/
+  // `primary` variants (DateFieldCalendar.tsx) — asserted directly here rather than
+  // relying on the other footer-interaction stories to incidentally catch a bad
+  // variant key after Button's breaking `variant` prop rename.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    await userEvent.click(canvas.getByLabelText('Avaa kalenteri'));
+    const calendar = await body.findByTestId('date-field-calendar');
+
+    const today = within(calendar).getByRole('button', { name: 'Tänään' });
+    // Tertiary: no background, no border box — only a bottom border shown on hover/focus.
+    await expect(getComputedStyle(today).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    await expect(getComputedStyle(today).borderTopWidth).toBe('0px');
+
+    const cancel = within(calendar).getByRole('button', { name: 'Peruuta' });
+    // Secondary: bordered, not filled.
+    await expect(getComputedStyle(cancel).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    await expect(getComputedStyle(cancel).borderColor).toBe('rgb(41, 84, 154)');
+
+    // Confirm starts disabled (nothing staged) — stage a day so its enabled
+    // state, primary's filled background, is what's asserted below.
+    const allButtons = within(calendar).getAllByRole('button');
+    const day16 = allButtons.find(
+      (b) => b.textContent?.trim() === '16' && !b.hasAttribute('disabled')
+    );
+    await expect(day16).toBeTruthy();
+    await userEvent.click(day16!);
+
+    const confirm = within(calendar).getByRole('button', { name: 'Valitse' });
+    // Primary: filled background.
+    await expect(getComputedStyle(confirm).backgroundColor).toBe('rgb(41, 84, 154)');
   },
 };
 

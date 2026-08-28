@@ -325,14 +325,14 @@ export function DateFieldCalendar({
 
       {/* Footer: Today on the left, cancel + confirm grouped on the right (Figma layout). */}
       <div className={calendarFooter}>
-        <Button variant="text" onClick={onToday} disabled={todayDisabled}>
+        <Button variant="tertiary" onClick={onToday} disabled={todayDisabled}>
           {todayLabel}
         </Button>
         <div className={footerActions}>
-          <Button variant="outlined" onClick={onCancel}>
+          <Button variant="secondary" onClick={onCancel}>
             {cancelLabel}
           </Button>
-          <Button variant="filled" onClick={onConfirm} disabled={confirmDisabled}>
+          <Button variant="primary" onClick={onConfirm} disabled={confirmDisabled}>
             {confirmLabel}
           </Button>
         </div>

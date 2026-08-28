@@ -7,10 +7,25 @@ import { LoadingSpinner } from '../LoadingSpinner';
 import { TextField, TextFieldProps } from '../TextField/';
 import { dropdown, inputWrapper, listOptions, option, triggerIcon } from './SearchField.css.ts';
 
-// Search button component
-const SearchButton = ({ disabled, ...restProps }: ButtonProps) => {
+type SearchButtonProps = Omit<ButtonProps, 'iconOnly' | 'aria-label' | 'aria-labelledby'>;
+
+// Search button component. Always icon-only with a required accessible name — all
+// three are excluded from `SearchButtonProps` (not just hardcoded) so a caller's
+// `searchButtonProps` can't smuggle any back in. `iconOnly` and `aria-label` are
+// reasserted here, after `...restProps`, so they win even if `searchButtonProps`
+// sets them. `aria-labelledby` is handled differently: it's excluded from the type
+// but neutralized by the caller (`SearchField`, below) before this component ever
+// receives it — see the comment there. It must be excluded, not just `aria-label`:
+// it outranks `aria-label` when computing an element's accessible name, so leaving
+// it in `ButtonProps`' `AriaAttributes` would let a caller override the guaranteed
+// label through the back door.
+const SearchButton = ({
+  disabled,
+  'aria-label': ariaLabel,
+  ...restProps
+}: SearchButtonProps & { 'aria-label': string }) => {
   return (
-    <Button variant="filled" disabled={disabled} {...restProps}>
+    <Button variant="primary" disabled={disabled} {...restProps} iconOnly aria-label={ariaLabel}>
       <SearchIcon className={triggerIcon} {...(!disabled && { fill: 'white' })} />
     </Button>
   );
@@ -47,10 +62,12 @@ export interface SearchFieldProps<T extends SearchFieldData> extends TextFieldPr
   onClearClick?: () => void;
   fillAvailableSpace?: boolean;
   clearButtonLabel: string;
+  /** aria-label for the search trigger button */
+  searchButtonLabel: string;
   /** Trigger onSearch immediately when an item is selected */
   searchOnItemSelect?: boolean;
   isLoading?: boolean;
-  searchButtonProps?: ButtonProps;
+  searchButtonProps?: SearchButtonProps;
 }
 
 export function SearchField<T extends SearchFieldData>({
@@ -61,6 +78,7 @@ export function SearchField<T extends SearchFieldData>({
   placeholder,
   fillAvailableSpace,
   clearButtonLabel,
+  searchButtonLabel,
   searchOnItemSelect,
   isLoading = false,
   searchButtonProps,
@@ -149,15 +167,20 @@ export function SearchField<T extends SearchFieldData>({
             }}
             endInstance={
               <SearchButton
-                // set default bahaviout for some properties
-                aria-label={props.inputLabel}
+                // Defaults, overridable via searchButtonProps.
                 disabled={props.disabled ?? false}
                 onClick={() => {
                   const dataItem = data.find((d) => d.label === searchValue);
                   if (dataItem) onSearch(dataItem);
                 }}
-                // Allow overriding other props
                 {...searchButtonProps}
+                // Applied after the spread, unlike the defaults above, so they always win —
+                // SearchButtonProps excludes aria-label/aria-labelledby from the type, but a
+                // caller could still smuggle either through a non-literal object; this closes
+                // that at runtime. aria-labelledby is cleared rather than just left alone,
+                // since it would otherwise outrank aria-label for the accessible name.
+                aria-label={searchButtonLabel}
+                aria-labelledby={undefined}
               />
             }
           />

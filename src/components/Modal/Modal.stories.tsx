@@ -152,7 +152,7 @@ export const WithFooter: Story = {
       <div>
         <p>Modal body</p>
         <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-          <Button variant="outlined">Cancel</Button>
+          <Button variant="secondary">Cancel</Button>
           <Button>Confirm</Button>
         </div>
       </div>

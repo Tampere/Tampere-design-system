@@ -26,9 +26,10 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
     "button": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.25rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
@@ -272,7 +273,10 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
   },
   "contrast": "#ffffff",
-  "cornerRadius": "0rem",
+  "cornerRadius": {
+    "rounded": "9999px",
+    "sharp": "0rem",
+  },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
@@ -355,9 +359,10 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
     "button": {
       "fontSize": "calc(1rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.125rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
@@ -601,7 +606,10 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
   },
   "contrast": "#ffffff",
-  "cornerRadius": "0rem",
+  "cornerRadius": {
+    "rounded": "9999px",
+    "sharp": "0rem",
+  },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
@@ -684,9 +692,10 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
     "button": {
       "fontSize": "calc(0.875rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
@@ -930,7 +939,10 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
   },
   "contrast": "#ffffff",
-  "cornerRadius": "0rem",
+  "cornerRadius": {
+    "rounded": "9999px",
+    "sharp": "0rem",
+  },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
@@ -1427,9 +1439,10 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
       "button": {
         "fontSize": "calc(1rem * var(--mantine-scale))",
+        "fontWeight": "600",
         "lineHeight": "calc(1.125rem * var(--mantine-scale))",
         "padding": {
-          "horizontal": "calc(0.75rem * var(--mantine-scale))",
+          "horizontal": "calc(1rem * var(--mantine-scale))",
           "vertical": "calc(0.75rem * var(--mantine-scale))",
         },
         "spacing": "calc(0.5rem * var(--mantine-scale))",
@@ -1673,7 +1686,10 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
     },
     "contrast": "#ffffff",
-    "cornerRadius": "0rem",
+    "cornerRadius": {
+      "rounded": "9999px",
+      "sharp": "0rem",
+    },
     "divider": "#dedee2",
     "dropShadow": "rgba(0, 0, 0, 0.5000)",
     "error": "#ae1e20",
@@ -1757,9 +1773,10 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
     "button": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.25rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
@@ -2003,7 +2020,10 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
   },
   "contrast": "#ffffff",
-  "cornerRadius": "0rem",
+  "cornerRadius": {
+    "rounded": "9999px",
+    "sharp": "0rem",
+  },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
@@ -2086,9 +2106,10 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
     "button": {
       "fontSize": "calc(0.875rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
@@ -2332,7 +2353,10 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
   },
   "contrast": "#ffffff",
-  "cornerRadius": "0rem",
+  "cornerRadius": {
+    "rounded": "9999px",
+    "sharp": "0rem",
+  },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
@@ -2415,9 +2439,10 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
     "button": {
       "fontSize": "calc(1.125rem * var(--mantine-scale))",
+      "fontWeight": "600",
       "lineHeight": "calc(1.25rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
@@ -2661,7 +2686,10 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
   },
   "contrast": "#ffffff",
-  "cornerRadius": "0rem",
+  "cornerRadius": {
+    "rounded": "9999px",
+    "sharp": "0rem",
+  },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",

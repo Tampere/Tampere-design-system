@@ -13,15 +13,28 @@ const iconSize = vars.theme.components.icon.size.medium;
 const iconProps = { style: { width: iconSize, height: iconSize } };
 
 const meta = {
+  // Some Button stories below are browser test specs (they have a `play` fn checking
+  // a token-driven style, not a distinct visual state), not documentation. Default
+  // every story to test-only: still run by the vitest addon (the `test` tag is
+  // untouched) but hidden from the sidebar (`!dev`) and the autodocs page
+  // (`!autodocs`) so the docs stay a small, curated set. The documentation examples
+  // below opt back in with `tags: docExample`.
+  tags: ['!dev', '!autodocs'],
   argTypes: {
     children: { control: 'text' },
-    variant: { control: { type: 'select' }, options: ['filled', 'outlined', 'text'] },
+    variant: { control: { type: 'select' }, options: ['primary', 'secondary', 'tertiary'] },
+    radius: { control: { type: 'select' }, options: ['sharp', 'pill'] },
+    iconOnly: { control: 'boolean' },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
   },
   args: {
-    children: 'Button',
-    variant: 'filled',
+    // Figma's own Button component default label ("Button" in Finnish) — real
+    // content examples below override this with task-specific copy instead.
+    children: 'Painike',
+    variant: 'primary',
+    radius: 'sharp',
+    iconOnly: false,
     disabled: false,
   },
   component: Button,
@@ -30,94 +43,359 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** High-emphasis, primary action. Use at most one filled button per view. */
-export const Filled: Story = {
-  args: { variant: 'filled' },
+// Re-adds the visibility tags that `meta` strips, marking a story as a
+// documentation example shown in both the sidebar and the autodocs page.
+const docExample = ['dev', 'autodocs'];
+
+// ── Documentation examples (visible in sidebar + autodocs) ───────────────────
+// Real Finnish task copy (matching this repo's convention elsewhere — DateField's
+// "Peruuta", Chip's "Poista Hervanta", SearchField's "Etsi" — rather than generic
+// English placeholders), covering every distinct visual state a reader needs.
+
+/** High-emphasis action. Use at most one primary button per view. */
+export const Primary: Story = {
+  tags: docExample,
+  args: { variant: 'primary', children: 'Tallenna' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Tallenna' });
+
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(41, 84, 154)');
+  },
 };
 
-/** Medium emphasis — secondary actions placed alongside a filled button. */
-export const Outlined: Story = {
-  args: { variant: 'outlined' },
+/** Medium emphasis — secondary actions placed alongside a primary button. */
+export const Secondary: Story = {
+  tags: docExample,
+  args: { variant: 'secondary', children: 'Peruuta' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Peruuta' });
+    const style = getComputedStyle(button);
+
+    // Bordered, not filled — distinguishes secondary from primary and tertiary.
+    await expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    await expect(style.borderColor).toBe('rgb(41, 84, 154)');
+  },
 };
 
 /** Low emphasis — tertiary or inline actions. */
-export const Text: Story = {
-  args: { variant: 'text' },
-};
+export const Tertiary: Story = {
+  tags: docExample,
+  args: { variant: 'tertiary', children: 'Näytä lisää' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Näytä lisää' });
+    const style = getComputedStyle(button);
 
-/** All three variants side by side, sharing the same control height (issue #79). */
-export const Variants: Story = {
-  render: (args) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="filled">
-        Filled
-      </Button>
-      <Button {...args} variant="outlined">
-        Outlined
-      </Button>
-      <Button {...args} variant="text">
-        Text
-      </Button>
-    </div>
-  ),
+    // No border box at rest, unlike secondary's solid border on all sides — only
+    // a bottom border (transparent, but present), unlike primary which has none.
+    await expect(style.borderTopWidth).toBe('0px');
+    await expect(parseFloat(style.borderBottomWidth)).toBeGreaterThan(0);
+  },
 };
 
 /** Disabled appearance for each variant. */
 export const Disabled: Story = {
+  tags: docExample,
   args: { disabled: true },
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <Button {...args} variant="filled">
-        Filled
+      <Button {...args} variant="primary">
+        Tallenna
       </Button>
-      <Button {...args} variant="outlined">
-        Outlined
+      <Button {...args} variant="secondary">
+        Peruuta
       </Button>
-      <Button {...args} variant="text">
-        Text
+      <Button {...args} variant="tertiary">
+        Näytä lisää
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Figma's disabled label/icon color is `text/disabled` (#686872), not the
+    // `Common/Disabled` (#c9c9ce) token used for the secondary variant's border.
+    for (const name of ['Tallenna', 'Peruuta', 'Näytä lisää']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).color).toBe('rgb(104, 104, 114)');
+    }
+
+    // Secondary's disabled border uses the separate `states.disabled` token
+    // (#c9c9ce) — distinct from the label color above — so a token mix-up
+    // between the two wouldn't be caught by the color assertion alone.
+    const secondaryButton = canvas.getByRole('button', { name: 'Peruuta' });
+    await expect(getComputedStyle(secondaryButton).borderColor).toBe('rgb(201, 201, 206)');
+  },
+};
+
+/**
+ * Pill-shaped corners on primary/secondary. Tertiary has no border box
+ * to round, and Figma doesn't pair `Corner-radius: Rounded` with Tertiary, so
+ * `radius="pill"` is a no-op there — shown here rather than omitted so the
+ * no-op is visible and intentional, not a silent gap.
+ */
+export const Rounded: Story = {
+  tags: docExample,
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="primary" radius="pill">
+        Tallenna
+      </Button>
+      <Button {...args} variant="secondary" radius="pill">
+        Peruuta
+      </Button>
+      <Button {...args} variant="tertiary" radius="pill">
+        Näytä lisää
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Tallenna', 'Peruuta']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).borderRadius).toBe('9999px');
+    }
+
+    // Tertiary stays sharp — rounding its bottom-only border would bow it into
+    // an arc instead of a straight underline (see Button.css.ts).
+    const tertiaryButton = canvas.getByRole('button', { name: 'Näytä lisää' });
+    await expect(getComputedStyle(tertiaryButton).borderRadius).toBe('0px');
+  },
+};
+
+/**
+ * Icon-only button (Figma's `Icon-only: Yes` variant) — uniform padding on all
+ * sides instead of the wider horizontal padding a labeled button uses.
+ * Always provide an aria-label for accessibility.
+ */
+export const WithoutText: Story = {
+  tags: docExample,
+  render: (args) => (
+    <Button {...args} iconOnly aria-label="Etsi">
+      <SearchIcon {...iconProps} />
+    </Button>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Etsi' });
+    const style = getComputedStyle(button);
+
+    await expect(style.paddingLeft).toBe(style.paddingTop);
+  },
+};
+
+/**
+ * A bordered variant's border must not make an icon-only button wider than tall —
+ * width is pinned to the same fixed control size as height (see Button.css.ts),
+ * since border-box only absorbs a border into an *explicit* size, not an intrinsic
+ * `fit-content` one.
+ */
+export const IconOnlySquareAcrossVariants: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="primary" iconOnly aria-label="Etsi primary">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} variant="secondary" iconOnly aria-label="Etsi secondary">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} variant="secondary" iconOnly disabled aria-label="Etsi secondary disabled">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} variant="tertiary" iconOnly aria-label="Etsi tertiary">
+        <SearchIcon {...iconProps} />
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of [
+      'Etsi primary',
+      'Etsi secondary',
+      'Etsi secondary disabled',
+      'Etsi tertiary',
+    ]) {
+      const button = canvas.getByRole('button', { name });
+      const rect = button.getBoundingClientRect();
+      await expect(rect.width).toBe(rect.height);
+    }
+  },
+};
+
+/** Leading, trailing, or both icons alongside the label. */
+export const Icons: Story = {
+  tags: docExample,
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} leftIcon={<SearchIcon {...iconProps} />}>
+        Etsi
+      </Button>
+      <Button {...args} rightIcon={<ArrowRightIcon {...iconProps} />}>
+        Seuraava
+      </Button>
+      <Button
+        {...args}
+        leftIcon={<SearchIcon {...iconProps} />}
+        rightIcon={<ArrowRightIcon {...iconProps} />}
+      >
+        Jatka
       </Button>
     </div>
   ),
 };
 
-/** Leading TREDS icon. */
-export const LeftIcon: Story = {
-  render: (args) => (
-    <Button {...args} leftIcon={<SearchIcon {...iconProps} />}>
-      Search
-    </Button>
-  ),
+// ── Test-only specs (hidden from sidebar + autodocs, still run as browser tests) ──
+
+/** Default (sharp) corners stay unaffected when `radius` isn't set. */
+export const RadiusDefaultsToSharp: Story = {
+  // `meta.args` sets radius: 'sharp' explicitly for the Controls panel, which would
+  // let this story pass even if Button's own `radius = 'sharp'` destructuring
+  // default silently changed — override it to undefined so the destructuring
+  // default is what's actually under test.
+  render: (args) => <Button {...args} radius={undefined} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Painike' });
+
+    await expect(getComputedStyle(button).borderRadius).toBe('0px');
+  },
 };
 
-/** Trailing TREDS icon. */
-export const RightIcon: Story = {
-  render: (args) => (
-    <Button {...args} rightIcon={<ArrowRightIcon {...iconProps} />}>
-      Next
-    </Button>
-  ),
+/** Default (primary) styling stays unaffected when `variant` isn't set. */
+export const VariantDefaultsToPrimary: Story = {
+  // Same rationale as RadiusDefaultsToSharp: meta.args sets variant: 'primary'
+  // explicitly, which would mask a broken destructuring default — override it to
+  // undefined so the default itself is what's under test.
+  render: (args) => <Button {...args} variant={undefined} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Painike' });
+
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(41, 84, 154)');
+  },
 };
 
-/** Leading and trailing TREDS icons. */
-export const BothIcons: Story = {
+/**
+ * `iconOnly` and `radius="pill"` compose — both are orthogonal to `variant` — and
+ * continue to compose with `disabled`, covered here rather than only pairwise.
+ */
+export const IconOnlyRounded: Story = {
+  args: { iconOnly: true, radius: 'pill', 'aria-label': 'Etsi' },
   render: (args) => (
-    <Button
-      {...args}
-      leftIcon={<SearchIcon {...iconProps} />}
-      rightIcon={<ArrowRightIcon {...iconProps} />}
-    >
-      Search Next
-    </Button>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} aria-label="Etsi">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} disabled aria-label="Etsi disabled">
+        <SearchIcon {...iconProps} />
+      </Button>
+    </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Etsi', 'Etsi disabled']) {
+      const button = canvas.getByRole('button', { name });
+      const style = getComputedStyle(button);
+
+      await expect(style.borderRadius).toBe('9999px');
+      await expect(style.paddingLeft).toBe(style.paddingTop);
+
+      // A pill icon-only button must render as a circle, not a stadium.
+      const rect = button.getBoundingClientRect();
+      await expect(rect.width).toBe(rect.height);
+    }
+  },
 };
 
-/** Icon-only button. Always provide an aria-label for accessibility. */
-export const WithoutText: Story = {
+/**
+ * `radius="pill"` + `iconOnly` across bordered (secondary) and tertiary variants —
+ * `IconOnlyRounded` above only covers the borderless default. Secondary's border
+ * must not distort the pinned circle (see `IconOnlySquareAcrossVariants`), and
+ * tertiary must stay sharp per the `${tertiary}${pill}` specificity override in
+ * Button.css.ts, same as the labeled case covered by `Rounded`.
+ */
+export const IconOnlyRoundedAcrossVariants: Story = {
+  args: { iconOnly: true, radius: 'pill', 'aria-label': 'Etsi' },
   render: (args) => (
-    <Button {...args} aria-label="Search">
-      <SearchIcon {...iconProps} />
-    </Button>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="secondary" aria-label="Etsi secondary">
+        <SearchIcon {...iconProps} />
+      </Button>
+      <Button {...args} variant="tertiary" aria-label="Etsi tertiary">
+        <SearchIcon {...iconProps} />
+      </Button>
+    </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const secondary = canvas.getByRole('button', { name: 'Etsi secondary' });
+    const secondaryStyle = getComputedStyle(secondary);
+    await expect(secondaryStyle.borderRadius).toBe('9999px');
+    const secondaryRect = secondary.getBoundingClientRect();
+    await expect(secondaryRect.width).toBe(secondaryRect.height);
+
+    const tertiary = canvas.getByRole('button', { name: 'Etsi tertiary' });
+    await expect(getComputedStyle(tertiary).borderRadius).toBe('0px');
+  },
+};
+
+/** Pill corners persist on a disabled button (tertiary stays sharp, see `Rounded`). */
+export const RoundedDisabled: Story = {
+  args: { radius: 'pill', disabled: true },
+  render: (args) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Button {...args} variant="primary">
+        Tallenna
+      </Button>
+      <Button {...args} variant="secondary">
+        Peruuta
+      </Button>
+      <Button {...args} variant="tertiary">
+        Näytä lisää
+      </Button>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ['Tallenna', 'Peruuta']) {
+      const button = canvas.getByRole('button', { name });
+      await expect(getComputedStyle(button).borderRadius).toBe('9999px');
+    }
+
+    const tertiaryButton = canvas.getByRole('button', { name: 'Näytä lisää' });
+    await expect(getComputedStyle(tertiaryButton).borderRadius).toBe('0px');
+  },
+};
+
+/**
+ * Figma splits horizontal/vertical padding across two different spacing tokens
+ * (`spacing/medium` horizontal, `spacing/small` vertical) — they must differ.
+ */
+export const HorizontalPaddingExceedsVertical: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Painike' });
+    const style = getComputedStyle(button);
+
+    await expect(parseFloat(style.paddingLeft)).toBeGreaterThan(parseFloat(style.paddingTop));
+  },
+};
+
+/** Figma's button label uses Semi-Bold weight (600), matching Chip's label weight. */
+export const LabelIsSemiBold: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Painike' });
+
+    await expect(getComputedStyle(button).fontWeight).toBe('600');
+  },
 };
 
 /**
@@ -133,9 +411,9 @@ export const ControlHeightConsistency: Story = {
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
       <TextField inputLabel="Text input" placeholder="Input" />
       <Select inputLabel="Select picker" options={['One', 'Two']} />
-      <Button variant="filled">Filled</Button>
-      <Button variant="outlined">Outlined</Button>
-      <Button variant="text">Text</Button>
+      <Button variant="primary">Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="tertiary">Tertiary</Button>
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -143,23 +421,23 @@ export const ControlHeightConsistency: Story = {
 
     const textInput = canvas.getByRole('textbox', { name: 'Text input' });
     const selectInput = canvas.getByRole('textbox', { name: 'Select picker' });
-    const filled = canvas.getByRole('button', { name: 'Filled' });
-    const outlined = canvas.getByRole('button', { name: 'Outlined' });
-    const text = canvas.getByRole('button', { name: 'Text' });
-    const controls = [textInput, selectInput, filled, outlined, text];
+    const primary = canvas.getByRole('button', { name: 'Primary' });
+    const secondary = canvas.getByRole('button', { name: 'Secondary' });
+    const tertiary = canvas.getByRole('button', { name: 'Tertiary' });
+    const controls = [textInput, selectInput, primary, secondary, tertiary];
 
     const heightOf = (el: Element) => el.getBoundingClientRect().height;
     const bottomOf = (el: Element) => el.getBoundingClientRect().bottom;
 
-    // Variants reach the same border-box height via different border configs (filled has
-    // none, outlined a full border, text a bottom border), so allow 1px of sub-pixel
+    // Variants reach the same border-box height via different border configs (primary has
+    // none, secondary a full border, tertiary a bottom border), so allow 1px of sub-pixel
     // rounding slack rather than asserting exact equality.
     const TOLERANCE = 1;
 
-    // Filled is the design source of truth: every control matches its height, and
+    // Primary is the design source of truth: every control matches its height, and
     // bottom-alignment puts every bottom border on the same line.
-    const referenceHeight = heightOf(filled);
-    const referenceBottom = bottomOf(filled);
+    const referenceHeight = heightOf(primary);
+    const referenceBottom = bottomOf(primary);
     await expect(referenceHeight).toBeGreaterThan(0);
     for (const control of controls) {
       await expect(Math.abs(heightOf(control) - referenceHeight)).toBeLessThanOrEqual(TOLERANCE);

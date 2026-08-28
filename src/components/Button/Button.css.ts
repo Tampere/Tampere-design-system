@@ -1,4 +1,4 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { style, styleVariants, globalStyle } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
@@ -6,29 +6,32 @@ const {
     components: { button, controlHeight },
     font,
     states,
+    text,
     contrast,
     background: { disabled: backgroundDisabled },
     strokeWeight,
     focusRing,
+    cornerRadius,
   },
 } = vars;
 
 const root = style({
   width: 'fit-content',
   // Fixed, responsive height shared with inputs; border-box absorbs each variant's border
-  // so filled/outlined/text render identical heights (issue #79).
+  // so primary/secondary/tertiary render identical heights (issue #79).
   height: controlHeight,
   boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   fontSize: button.fontSize,
+  fontWeight: button.fontWeight,
   lineHeight: button.lineHeight,
   letterSpacing: font.letterSpacing,
   padding: `${button.padding.vertical} ${button.padding.horizontal}`,
 });
 
-const filled = style({
+const primary = style({
   background: states.default,
   color: contrast,
   selectors: {
@@ -43,14 +46,14 @@ const filled = style({
       background: states.active,
     },
     '&:disabled': {
-      color: states.disabled,
+      color: text.disabled,
       background: backgroundDisabled,
       cursor: 'default',
     },
   },
 });
 
-const outlined = style({
+const secondary = style({
   color: states.default,
   border: `${strokeWeight} solid ${states.default}`,
   selectors: {
@@ -65,14 +68,17 @@ const outlined = style({
       border: `${strokeWeight} solid ${states.active}`,
     },
     '&:disabled': {
-      color: states.disabled,
+      // Figma's disabled label color is `text/disabled` (#686872) — visibly darker
+      // than the border's `states.disabled` (Figma's `Common/Disabled`, #c9c9ce).
+      // Same `text.disabled` label color applies across all three variants.
+      color: text.disabled,
       border: `${strokeWeight} solid ${states.disabled}`,
       cursor: 'default',
     },
   },
 });
 
-const text = style({
+const tertiary = style({
   color: states.default,
   borderBottom: `${strokeWeight} solid transparent`,
   selectors: {
@@ -88,16 +94,44 @@ const text = style({
       color: states.active,
     },
     '&:disabled': {
-      color: states.disabled,
+      color: text.disabled,
       cursor: 'default',
     },
   },
 });
 
 export const variants = styleVariants({
-  filled: [root, filled],
-  outlined: [root, outlined],
-  text: [root, text],
+  primary: [root, primary],
+  secondary: [root, secondary],
+  tertiary: [root, tertiary],
+});
+
+// Orthogonal to `variants` above — applied alongside a variant class, not instead of it,
+// since corner shape is independent of fill/border treatment in Figma.
+export const pill = style({ borderRadius: cornerRadius.rounded });
+
+// Tertiary has no border box — only a bottom border shown on hover/focus/active — so
+// rounding its corners would bow that border into an arc instead of a straight
+// underline. Figma doesn't pair `Corner-radius: Rounded` with Tertiary either, so
+// neutralize `pill` specifically for tertiary. The compound selector's specificity
+// (0,2,0) beats `pill`'s single-class (0,1,0) without needing `!important`.
+globalStyle(`${tertiary}${pill}`, { borderRadius: cornerRadius.sharp });
+
+// Figma's `Icon-only: Yes` variant uses uniform padding on all sides (`spacing/small`,
+// same value as `button.padding.vertical`) instead of the wider horizontal padding a
+// labeled button gets — overrides `root`'s asymmetric padding, defined after it so it
+// wins on source order (same-specificity single-class selectors).
+//
+// Also pins width to the same fixed `controlHeight` used for height: `root`'s width is
+// `fit-content` (intrinsic), and box-sizing: border-box only changes how an *explicit*
+// width is interpreted, not intrinsic sizing — so a bordered variant's border (e.g.
+// secondary's 2px on every side) would otherwise add to the intrinsic width without
+// adding to the fixed height, making bordered icon-only buttons wider than tall.
+export const iconOnly = style({
+  padding: button.padding.vertical,
+  width: controlHeight,
+  minWidth: controlHeight,
+  flexShrink: 0,
 });
 
 export const content = style({
