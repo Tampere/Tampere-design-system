@@ -55,7 +55,7 @@ export function Card({
       {...props}
     >
       {media && <div className={mediaClass}>{media}</div>}
-      <div className={cx(content, contentPaddingVariants[size])}>
+      <div className={cx(content, contentPaddingVariants[size])} data-testid="card-content">
         <div className={cx(textBlock, inverted && invertedMarker)}>
           {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
           <Typography variant={headingVariant[size]}>{title}</Typography>

@@ -21,6 +21,13 @@ type Story = StoryObj<typeof meta>;
 
 const docExample = ['dev', 'autodocs'];
 
+// A 1x1 GIF has no real intrinsic size, so it can't catch the media wrapper
+// collapsing to 0 height in the default (column) layout — this SVG has real
+// width/height and stands in for a real photo in that regression check.
+const sizedMediaImage = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="260" height="195"><rect width="260" height="195" fill="#ccc"/></svg>'
+)}`;
+
 export const Default: Story = {
   tags: docExample,
   play: async ({ canvasElement }) => {
@@ -49,7 +56,6 @@ export const MediumSize: Story = {
 };
 
 export const SmallSize: Story = {
-  tags: docExample,
   args: { size: 'small' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -58,7 +64,7 @@ export const SmallSize: Story = {
   },
 };
 
-export const MediumPaddingSmallerThanLarge: Story = {
+export const RootHasNoPadding: Story = {
   render: () => (
     <>
       <Card title="Suuri" size="large" data-testid="large" />
@@ -78,6 +84,25 @@ export const MediumPaddingSmallerThanLarge: Story = {
   },
 };
 
+export const PaddingScalesWithSize: Story = {
+  render: () => (
+    <>
+      <Card title="Suuri" size="large" />
+      <Card title="Keskikokoinen" size="medium" />
+      <Card title="Pieni" size="small" />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const [large, medium, small] = canvas
+      .getAllByTestId('card-content')
+      .map((el) => parseFloat(getComputedStyle(el).padding));
+
+    await expect(small).toBeLessThan(medium);
+    await expect(medium).toBeLessThan(large);
+  },
+};
+
 export const WithEyebrow: Story = {
   tags: docExample,
   args: { eyebrow: 'Lisätietoa' },
@@ -90,13 +115,17 @@ export const WithEyebrow: Story = {
 
 export const WithMediaTop: Story = {
   tags: docExample,
-  args: { media: <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" /> },
+  args: { media: <img alt="" src={sizedMediaImage} /> },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const media = canvas.getByRole('img');
     const mediaWrapper = media.parentElement as HTMLElement;
 
     await expect(getComputedStyle(mediaWrapper).padding).toBe('0px');
+    // Regression: the wrapper must size to the image, not collapse to 0 height
+    // in the default column layout (only the `left` row layout should split
+    // the wrapper 50/50 with `content` via `flex: 1 0 0`).
+    await expect(mediaWrapper.getBoundingClientRect().height).toBeGreaterThanOrEqual(190);
   },
 };
 
@@ -125,10 +154,12 @@ export const WithActions: Story = {
   },
 };
 
+const handleActionsClick = fn();
+
 export const ActionsRemainClickable: Story = {
   args: {
     actions: (
-      <Button variant="secondary" onClick={fn()}>
+      <Button variant="secondary" onClick={handleActionsClick}>
         Toiminto
       </Button>
     ),
@@ -138,6 +169,7 @@ export const ActionsRemainClickable: Story = {
     const button = canvas.getByRole('button', { name: 'Toiminto' });
 
     await userEvent.click(button);
+    await expect(handleActionsClick).toHaveBeenCalledOnce();
     await expect(button).toHaveFocus();
   },
 };
@@ -161,7 +193,6 @@ export const WithInlineTextLink: Story = {
 };
 
 export const WithExternalTextLink: Story = {
-  tags: docExample,
   args: {
     children: (
       <>
@@ -189,6 +220,21 @@ export const TurquoiseBackgroundTextLinkUsesContrastText: Story = {
     const canvas = within(canvasElement);
 
     await expect(getComputedStyle(canvas.getByRole('link')).color).toBe('rgb(255, 255, 255)');
+  },
+};
+
+export const TurquoiseBackgroundButtonInChildrenKeepsOwnColors: Story = {
+  args: {
+    background: 'turquoise',
+    children: <Button variant="secondary">Toiminto</Button>,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Unlike Typography/TextLink, a Button nested in `children` must keep its
+    // own color pairing rather than being force-inverted along with the rest
+    // of the text block — this is the same guarantee `actions` already has.
+    await expect(getComputedStyle(canvas.getByRole('button')).color).not.toBe('rgb(255, 255, 255)');
   },
 };
 
