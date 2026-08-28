@@ -14,7 +14,6 @@ const {
 } = vars;
 
 export const root = style({
-  backgroundColor: background.default,
   borderRadius: cornerRadius.sharp,
   border: 'none',
   boxShadow: 'none',
@@ -43,6 +42,8 @@ export const borderColorVariants = styleVariants({
   brand: { borderColor: states.default },
 });
 
-// Matches the shape Accordion/DateField already use for this same token — confirmed
-// against Figma's Card dropshadow spec (offset 0/1, blur 4, spread 0).
+// Matches the shape Accordion already uses for this same token — confirmed
+// against Figma's Card dropshadow spec (offset 0/1, blur 4, spread 0). DateField's
+// shadow uses a different, larger shape (its own floating popover surface, not a
+// tile) — not a match to compare against.
 export const withShadow = style({ boxShadow: `0px 1px 4px 0px ${dropShadow}` });

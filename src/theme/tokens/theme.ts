@@ -225,8 +225,9 @@ export function getTheme(bp: BreakpointKey) {
     paper: {
       // Figma's "Card static content" padding scale (spacing/medium,
       // spacing/extra-large, spacing/2-extra-large) — confirmed responsive
-      // (e.g. `small` is 24px at xxl/xl/lg but drops to 16px at the 480
-      // breakpoint, same as every other `bpTokens.spacing` consumer).
+      // (e.g. `small` is 24px at xxl/xl/lg but drops to 16px from the `md`
+      // (768px) breakpoint down through `xs`, same as every other
+      // `bpTokens.spacing` consumer).
       padding: {
         small: bpTokens.spacing.md,
         medium: bpTokens.spacing.xl,

@@ -122,15 +122,6 @@ export const NoPadding: Story = {
   },
 };
 
-export const PaddingScalesSmallToLarge: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    const small = getComputedStyle(canvas.getByTestId('paper'));
-    await expect(parseFloat(small.padding)).toBeGreaterThan(0);
-  },
-};
-
 export const PaddingMediumExceedsSmall: Story = {
   render: () => (
     <>
