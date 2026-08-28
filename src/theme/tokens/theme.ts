@@ -217,9 +217,26 @@ export function getTheme(bp: BreakpointKey) {
       padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.sm },
     },
     card: {
-      padding: bpTokens.spacing.sm,
-      spacing: bpTokens.spacing.sm,
       textContentSpacing: primitives.spacing['1'],
+    },
+    paper: {
+      // Figma's "Card static content" padding scale (spacing/medium,
+      // spacing/extra-large, spacing/2-extra-large) — confirmed responsive
+      // (e.g. `small` is 24px at xxl/xl/lg but drops to 16px at the 480
+      // breakpoint, same as every other `bpTokens.spacing` consumer).
+      padding: {
+        small: bpTokens.spacing.md,
+        medium: bpTokens.spacing.xl,
+        large: bpTokens.spacing.xxl,
+      },
+      background: {
+        // Figma's Card "Inverted" surface — `turquoise/300`, confirmed via
+        // `get_variable_defs` on a real inverted Card instance. Deliberately
+        // not `brand.blue.main` (a different color, #29549a) — `turquoise`
+        // isn't wired into `brand.ts` as its own brand-mode tier since this
+        // is currently a single one-off stop, not a general brand accent.
+        inverted: colors.turquoise['300'],
+      },
     },
     chip: {
       // Figma's "spacing/2-extra-small" — confirmed against the dedicated

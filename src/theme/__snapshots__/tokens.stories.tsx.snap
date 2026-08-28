@@ -35,8 +35,6 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(1rem * var(--mantine-scale))",
-      "spacing": "calc(1rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -201,6 +199,16 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+    },
+    "paper": {
+      "background": {
+        "inverted": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(4rem * var(--mantine-scale))",
+        "medium": "calc(3rem * var(--mantine-scale))",
+        "small": "calc(1.5rem * var(--mantine-scale))",
+      },
     },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
@@ -368,8 +376,6 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(0.75rem * var(--mantine-scale))",
-      "spacing": "calc(0.75rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -534,6 +540,16 @@ exports[`Token Values Match Snapshot > md 1`] = `
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+    },
+    "paper": {
+      "background": {
+        "inverted": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(3rem * var(--mantine-scale))",
+        "medium": "calc(2.5rem * var(--mantine-scale))",
+        "small": "calc(1rem * var(--mantine-scale))",
+      },
     },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
@@ -701,8 +717,6 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(0.75rem * var(--mantine-scale))",
-      "spacing": "calc(0.75rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -867,6 +881,16 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+    },
+    "paper": {
+      "background": {
+        "inverted": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(2.5rem * var(--mantine-scale))",
+        "medium": "calc(2rem * var(--mantine-scale))",
+        "small": "calc(1rem * var(--mantine-scale))",
+      },
     },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
@@ -1448,8 +1472,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "card": {
-        "padding": "calc(0.75rem * var(--mantine-scale))",
-        "spacing": "calc(0.75rem * var(--mantine-scale))",
         "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "chip": {
@@ -1614,6 +1636,16 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       "pagination": {
         "itemHeight": "calc(2.5rem * var(--mantine-scale))",
         "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "paper": {
+        "background": {
+          "inverted": "#0074a4",
+        },
+        "padding": {
+          "large": "calc(3rem * var(--mantine-scale))",
+          "medium": "calc(2.5rem * var(--mantine-scale))",
+          "small": "calc(1rem * var(--mantine-scale))",
+        },
       },
       "searchField": {
         "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
@@ -1782,8 +1814,6 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(1rem * var(--mantine-scale))",
-      "spacing": "calc(1rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -1948,6 +1978,16 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+    },
+    "paper": {
+      "background": {
+        "inverted": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(4rem * var(--mantine-scale))",
+        "medium": "calc(3rem * var(--mantine-scale))",
+        "small": "calc(1.5rem * var(--mantine-scale))",
+      },
     },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
@@ -2115,8 +2155,6 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(0.75rem * var(--mantine-scale))",
-      "spacing": "calc(0.75rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -2281,6 +2319,16 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+    },
+    "paper": {
+      "background": {
+        "inverted": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(2.5rem * var(--mantine-scale))",
+        "medium": "calc(2rem * var(--mantine-scale))",
+        "small": "calc(1rem * var(--mantine-scale))",
+      },
     },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
@@ -2448,8 +2496,6 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(1rem * var(--mantine-scale))",
-      "spacing": "calc(1rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -2614,6 +2660,16 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
+    },
+    "paper": {
+      "background": {
+        "inverted": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(4rem * var(--mantine-scale))",
+        "medium": "calc(3rem * var(--mantine-scale))",
+        "small": "calc(1.5rem * var(--mantine-scale))",
+      },
     },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
