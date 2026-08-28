@@ -4,6 +4,7 @@ import { expect, fn } from 'storybook/test';
 import { Card } from './Card';
 import { Button } from '../Button';
 import { Typography } from '../Typography';
+import { TextLink } from '../TextLink';
 
 const meta = {
   component: Card,
@@ -138,6 +139,56 @@ export const ActionsRemainClickable: Story = {
 
     await userEvent.click(button);
     await expect(button).toHaveFocus();
+  },
+};
+
+export const WithInlineTextLink: Story = {
+  tags: docExample,
+  args: {
+    children: (
+      <>
+        <Typography variant="p1">Kuvaava teksti</Typography>
+        <TextLink href="#">Lue lisää</TextLink>
+      </>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Lue lisää' });
+
+    await expect(link).toHaveAttribute('href', '#');
+  },
+};
+
+export const WithExternalTextLink: Story = {
+  tags: docExample,
+  args: {
+    children: (
+      <>
+        <Typography variant="p1">Kuvaava teksti</Typography>
+        <TextLink href="https://tampere.fi" openExternal>
+          Tampereen verkkosivut
+        </TextLink>
+      </>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link');
+
+    await expect(link).toHaveAttribute('target', '_blank');
+  },
+};
+
+export const TurquoiseBackgroundTextLinkUsesContrastText: Story = {
+  args: {
+    background: 'turquoise',
+    children: <TextLink href="#">Lue lisää</TextLink>,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByRole('link')).color).toBe('rgb(255, 255, 255)');
   },
 };
 
