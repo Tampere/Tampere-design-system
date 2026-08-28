@@ -9,7 +9,7 @@ import {
   content,
   contentPaddingVariants,
   textBlock,
-  contrastText,
+  inverted as invertedMarker,
 } from './Card.css';
 
 export interface CardProps {
@@ -56,18 +56,9 @@ export function Card({
     >
       {media && <div className={mediaClass}>{media}</div>}
       <div className={cx(content, contentPaddingVariants[size])}>
-        <div className={textBlock}>
-          {eyebrow && (
-            <Typography variant="p2" className={inverted ? contrastText : undefined}>
-              {eyebrow}
-            </Typography>
-          )}
-          <Typography
-            variant={headingVariant[size]}
-            className={inverted ? contrastText : undefined}
-          >
-            {title}
-          </Typography>
+        <div className={cx(textBlock, inverted && invertedMarker)}>
+          {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
+          <Typography variant={headingVariant[size]}>{title}</Typography>
           {children}
         </div>
         {actions}

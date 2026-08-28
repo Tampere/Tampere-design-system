@@ -1,4 +1,4 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { style, styleVariants, globalStyle } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
@@ -33,8 +33,16 @@ export const textBlock = style({
   gap: card.textContentSpacing,
 });
 
-// Typography's `h2`/`h3`/`p2` variants set `color` directly on their own class, so a
-// parent-level color doesn't inherit through — this needs to win at equal specificity
-// against Typography's own class, same technique DateField already uses for the same
-// class of problem (see DateField.css.ts's `contrast`-token `!important` overrides).
-export const contrastText = style({ color: `${contrast} !important` });
+// Marker class, toggled on `textBlock` when `background !== 'default'` — no rule of
+// its own, just a hook for the `globalStyle` selector below.
+export const inverted = style({});
+
+// Typography's `h2`/`h3`/`p2` variants (and any Typography a consumer nests inside
+// `children`) set `color` directly on their own class, so a parent-level color
+// doesn't inherit through. `*` inside `textBlock` reaches eyebrow/title *and*
+// arbitrary body content alike, without touching `actions` (a sibling, outside
+// `textBlock` — its own Button styling must never be forced white). `!important` is
+// needed even with the compound selector, since `.textBlock.inverted *` carries no
+// more specificity than Typography's own single class (`*` contributes none) — same
+// technique DateField already uses for the same class of problem.
+globalStyle(`${textBlock}${inverted} *`, { color: `${contrast} !important` });

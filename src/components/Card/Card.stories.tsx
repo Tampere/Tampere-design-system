@@ -3,11 +3,16 @@ import { within, userEvent } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { Card } from './Card';
 import { Button } from '../Button';
+import { Typography } from '../Typography';
 
 const meta = {
   component: Card,
   tags: ['!dev', '!autodocs'],
-  args: { title: 'Otsikko', 'data-testid': 'card' },
+  args: {
+    title: 'Otsikko',
+    'data-testid': 'card',
+    children: <Typography variant="p1">Kuvaava teksti</Typography>,
+  },
 } satisfies Meta<typeof Card>;
 
 export default meta;
@@ -146,5 +151,10 @@ export const TurquoiseBackgroundUsesContrastText: Story = {
       'rgb(255, 255, 255)'
     );
     await expect(getComputedStyle(canvas.getByText('Lisätietoa')).color).toBe('rgb(255, 255, 255)');
+    // `children` is arbitrary consumer content, not something Card renders itself —
+    // this must also flip to contrast color, not just the eyebrow/title Card owns.
+    await expect(getComputedStyle(canvas.getByText('Kuvaava teksti')).color).toBe(
+      'rgb(255, 255, 255)'
+    );
   },
 };
