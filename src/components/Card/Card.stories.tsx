@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { Card } from './Card';
+import { Button } from '../Button';
 
 const meta = {
   component: Card,
@@ -108,7 +109,7 @@ export const WithMediaLeft: Story = {
 
 export const WithActions: Story = {
   tags: docExample,
-  args: { actions: <button type="button">Lue lisää</button> },
+  args: { actions: <Button variant="secondary">Lue lisää</Button> },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Lue lisää' });
@@ -121,9 +122,9 @@ export const WithActions: Story = {
 export const ActionsRemainClickable: Story = {
   args: {
     actions: (
-      <button type="button" onClick={fn()}>
+      <Button variant="secondary" onClick={fn()}>
         Toiminto
-      </button>
+      </Button>
     ),
   },
   play: async ({ canvasElement }) => {
