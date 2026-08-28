@@ -62,7 +62,7 @@ export const PillRadius: Story = {
 
 export const WithBorder: Story = {
   tags: docExample,
-  args: { withBorder: true },
+  args: { withBorder: true, withShadow: false },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const style = getComputedStyle(canvas.getByTestId('paper'));
@@ -70,6 +70,7 @@ export const WithBorder: Story = {
     await expect(style.borderStyle).toBe('solid');
     await expect(style.borderWidth).toBe('2px');
     await expect(style.borderColor).toBe('rgb(222, 222, 226)');
+    await expect(style.boxShadow).toBe('none');
   },
 };
 
