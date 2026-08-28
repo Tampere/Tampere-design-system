@@ -113,6 +113,15 @@ export const WithBorderBrandColor: Story = {
 // Hidden test-only stories below — pure regression checks, no unique visual
 // state beyond what the docs-visible stories above already show.
 
+export const NoPadding: Story = {
+  args: { padding: 'none' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByTestId('paper')).padding).toBe('0px');
+  },
+};
+
 export const PaddingScalesSmallToLarge: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

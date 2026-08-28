@@ -28,6 +28,7 @@ export const backgroundVariants = styleVariants({
 });
 
 export const paddingVariants = styleVariants({
+  none: { padding: 0 },
   small: { padding: paper.padding.small },
   medium: { padding: paper.padding.medium },
   large: { padding: paper.padding.large },

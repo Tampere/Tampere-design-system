@@ -218,6 +218,9 @@ export function getTheme(bp: BreakpointKey) {
     },
     card: {
       textContentSpacing: primitives.spacing['1'],
+      // Figma's "Card static content" top-level gap (spacing/medium) — between the
+      // text-content block (eyebrow/title/body) and the actions slot.
+      spacing: bpTokens.spacing.md,
     },
     paper: {
       // Figma's "Card static content" padding scale (spacing/medium,

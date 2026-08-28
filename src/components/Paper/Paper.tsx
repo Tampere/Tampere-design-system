@@ -29,7 +29,7 @@ export type PaperProps = PropsWithChildren<
   borderColor?: 'divider' | 'brand';
   /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
   withShadow?: boolean;
-  padding?: 'small' | 'medium' | 'large';
+  padding?: 'none' | 'small' | 'medium' | 'large';
   /** Polymorphic root element, e.g. `component="section"`. */
   component?: React.ElementType;
   'data-testid'?: string;
