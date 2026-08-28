@@ -2,12 +2,11 @@ import { globalStyle, style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  primitives: { spacing },
   theme: {
     divider,
     background,
     text,
-    components: { typography, input, item },
+    components: { typography, input, item, select },
     focusRing,
   },
 } = vars;
@@ -28,7 +27,7 @@ export const dropDown = style({
 });
 
 export const listOptions = style({
-  maxHeight: 220,
+  maxHeight: select.dropDownMaxHeight,
   overflowY: 'auto',
 });
 
@@ -77,7 +76,3 @@ export const emptyMessage = style([
     color: text.secondary,
   },
 ]);
-
-export const rightSectionContainer = style({
-  gap: spacing[1],
-});

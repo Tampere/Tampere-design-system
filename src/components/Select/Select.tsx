@@ -1,18 +1,11 @@
-import { Combobox, Flex, useCombobox } from '@mantine/core';
+import { Combobox, useCombobox } from '@mantine/core';
 import { useState } from 'react';
 import { ChevronDownIcon } from '../../icons/ChevronDownIcon.tsx';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
 
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
-import {
-  chevronOpen,
-  dropDown,
-  dropDownOption,
-  emptyMessage,
-  listOptions,
-  rightSectionContainer,
-} from './Select.css.ts';
+import { chevronOpen, dropDown, dropDownOption, emptyMessage, listOptions } from './Select.css.ts';
 
 interface Props {
   /**
@@ -40,50 +33,6 @@ interface Props {
     wrapper?: string;
     input?: string;
   };
-}
-
-interface SelectRightSectionProps {
-  toggleDropdown: () => void;
-  onClearClick: () => void;
-  dropDownOpened: boolean;
-  displayClearButton?: boolean;
-  expandButtonLabel?: string;
-  collapseButtonLabel?: string;
-  clearButtonLabel?: string;
-}
-
-function SelectRightSection({
-  toggleDropdown,
-  displayClearButton,
-  onClearClick,
-  dropDownOpened,
-  expandButtonLabel,
-  collapseButtonLabel,
-  clearButtonLabel,
-}: SelectRightSectionProps) {
-  return (
-    <Flex className={rightSectionContainer}>
-      {displayClearButton && (
-        <IconButton
-          aria-label={clearButtonLabel}
-          variant="default"
-          onClick={onClearClick}
-          size={'sm'}
-        >
-          <CloseIcon />
-        </IconButton>
-      )}
-      <IconButton
-        aria-label={dropDownOpened ? collapseButtonLabel : expandButtonLabel}
-        variant="default"
-        onMouseDown={(e) => e.nativeEvent.stopPropagation()}
-        onClick={toggleDropdown}
-        size={'sm'}
-      >
-        <ChevronDownIcon className={dropDownOpened ? chevronOpen : undefined} />
-      </IconButton>
-    </Flex>
-  );
 }
 
 export function Select({
@@ -118,7 +67,7 @@ export function Select({
 
   const selectOptions = filteredOptions.map((item, idx) => (
     <Combobox.Option
-      aria-description={`${idx + 1} / ${options.length}`}
+      aria-description={`${idx + 1} / ${filteredOptions.length}`}
       component={'div'}
       className={dropDownOption}
       value={item}
@@ -128,6 +77,38 @@ export function Select({
       {item}
     </Combobox.Option>
   ));
+
+  // Array so TextField can count the icons itself and size its reserved
+  // padding accordingly — see TextField's `getRightSectionSize`.
+  const rightSectionIcons = [
+    !!value && (
+      <IconButton
+        key="clear"
+        aria-label={clearButtonLabel}
+        variant="default"
+        disabled={disabled}
+        onClick={() => {
+          props.onChange?.('');
+          setValue('');
+          closeDropdown();
+        }}
+        size={'sm'}
+      >
+        <CloseIcon />
+      </IconButton>
+    ),
+    <IconButton
+      key="chevron"
+      aria-label={dropdownOpened ? collapseButtonLabel : expandButtonLabel}
+      variant="default"
+      disabled={disabled}
+      onMouseDown={(e) => e.nativeEvent.stopPropagation()}
+      onClick={() => toggleDropdown()}
+      size={'sm'}
+    >
+      <ChevronDownIcon className={dropdownOpened ? chevronOpen : undefined} />
+    </IconButton>,
+  ].filter(Boolean);
 
   return (
     <Combobox
@@ -145,6 +126,7 @@ export function Select({
           unstyled
           tabIndex={0}
           required={required}
+          disabled={disabled}
           value={props.value ?? value}
           classNames={classNames}
           helperText={helperText}
@@ -165,20 +147,7 @@ export function Select({
             toggleDropdown();
           }}
           showSearchIcon={showSearchIcon}
-          rightSection={
-            <SelectRightSection
-              expandButtonLabel={expandButtonLabel}
-              collapseButtonLabel={collapseButtonLabel}
-              dropDownOpened={dropdownOpened}
-              toggleDropdown={toggleDropdown}
-              displayClearButton={!!value}
-              onClearClick={() => {
-                props.onChange?.('');
-                setValue('');
-                closeDropdown();
-              }}
-            />
-          }
+          rightSection={rightSectionIcons}
         />
       </Combobox.Target>
       <Combobox.Dropdown className={dropDown}>

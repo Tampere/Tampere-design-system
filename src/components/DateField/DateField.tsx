@@ -11,7 +11,7 @@ import { IconButton } from '../IconButton';
 import { CalendarIcon } from '../../icons/CalendarIcon';
 import { CloseIcon } from '../../icons/CloseIcon';
 import { DateFieldCalendar } from './DateFieldCalendar';
-import { popoverContent, visuallyHidden, triggerIcon, inputWithClear } from './DateField.css.ts';
+import { popoverContent, visuallyHidden, triggerIcon } from './DateField.css.ts';
 
 dayjs.extend(customParseFormat);
 // Needed for the `LL` token (used for the fi-locale day-level live announcement
@@ -377,9 +377,6 @@ export function DateField({
   const fieldClassNames = {
     root: classNames?.root,
     wrapper: classNames?.input,
-    // Reserve right padding for the clear button so the typed date can't slide
-    // under it; only while the button is shown, so the empty field keeps full width.
-    input: showClear ? inputWithClear : undefined,
     // With no visible helper text, take the description wrapper out of the flex
     // flow (visuallyHidden is position:absolute) so the format hint is announced
     // without adding a gap below the input.

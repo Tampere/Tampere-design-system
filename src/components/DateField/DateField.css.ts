@@ -35,16 +35,6 @@ export const triggerIcon = style({
   height: 'auto',
 });
 
-// When the clear (✕) button is shown it sits in the input's right section,
-// absolutely positioned at `right: Input/padding.horizontal`. Reserve matching
-// right padding on the input so the typed date never runs under the icon. The
-// `* 3` factor mirrors TextField's own section padding variant (padding + icon
-// + gap). `!important` outranks TextField's base `input` class regardless of
-// stylesheet insertion order (same single-class specificity otherwise).
-export const inputWithClear = style({
-  paddingRight: `calc(${inputVars.padding.horizontal} * 3) !important`,
-});
-
 // Dropdown surface. Outer padding scales with the breakpoint (Figma Spacing/Medium, 24→16).
 export const popoverContent = style({
   background: background.default,
