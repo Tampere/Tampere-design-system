@@ -17,10 +17,12 @@ export type PaperProps = PropsWithChildren<
   /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
   radius?: 'sharp' | 'pill';
   withBorder?: boolean;
+  /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
   withShadow?: boolean;
   padding?: 'small' | 'medium' | 'large';
   /** Polymorphic root element, e.g. `component="section"`. */
   component?: React.ElementType;
+  'data-testid'?: string;
 };
 
 /** A bare surface container — background, corner radius, optional border, optional shadow, and padding. No behaviour of its own. */
@@ -30,7 +32,7 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
       background = 'default',
       radius = 'sharp',
       withBorder: hasBorder = false,
-      withShadow: hasShadow = false,
+      withShadow: hasShadow = true,
       padding = 'medium',
       children,
       ...props

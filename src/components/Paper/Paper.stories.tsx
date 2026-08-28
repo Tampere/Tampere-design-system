@@ -6,7 +6,7 @@ import { Paper } from './Paper';
 const meta = {
   component: Paper,
   tags: ['!dev', '!autodocs'],
-  args: { children: 'Paperi' },
+  args: { 'data-testid': 'paper' },
 } satisfies Meta<typeof Paper>;
 
 export default meta;
@@ -18,13 +18,23 @@ export const Default: Story = {
   tags: docExample,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const paper = canvas.getByText('Paperi');
+    const paper = canvas.getByTestId('paper');
     const style = getComputedStyle(paper);
 
     await expect(style.backgroundColor).toBe('rgb(255, 255, 255)');
     await expect(style.borderRadius).toBe('0px');
     await expect(style.borderStyle).toBe('none');
-    await expect(style.boxShadow).toBe('none');
+    await expect(style.boxShadow).not.toBe('none');
+  },
+};
+
+export const NoShadow: Story = {
+  tags: docExample,
+  args: { withShadow: false },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByTestId('paper')).boxShadow).toBe('none');
   },
 };
 
@@ -33,9 +43,10 @@ export const InvertedBackground: Story = {
   args: { background: 'inverted' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const paper = canvas.getByText('Paperi');
 
-    await expect(getComputedStyle(paper).backgroundColor).toBe('rgb(0, 116, 164)');
+    await expect(getComputedStyle(canvas.getByTestId('paper')).backgroundColor).toBe(
+      'rgb(0, 116, 164)'
+    );
   },
 };
 
@@ -44,9 +55,8 @@ export const PillRadius: Story = {
   args: { radius: 'pill' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const paper = canvas.getByText('Paperi');
 
-    await expect(getComputedStyle(paper).borderRadius).toBe('9999px');
+    await expect(getComputedStyle(canvas.getByTestId('paper')).borderRadius).toBe('9999px');
   },
 };
 
@@ -55,23 +65,11 @@ export const WithBorder: Story = {
   args: { withBorder: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const paper = canvas.getByText('Paperi');
-    const style = getComputedStyle(paper);
+    const style = getComputedStyle(canvas.getByTestId('paper'));
 
     await expect(style.borderStyle).toBe('solid');
     await expect(style.borderWidth).toBe('2px');
     await expect(style.borderColor).toBe('rgb(222, 222, 226)');
-  },
-};
-
-export const WithShadow: Story = {
-  tags: docExample,
-  args: { withShadow: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const paper = canvas.getByText('Paperi');
-
-    await expect(getComputedStyle(paper).boxShadow).not.toBe('none');
   },
 };
 
@@ -82,7 +80,7 @@ export const PaddingScalesSmallToLarge: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const small = getComputedStyle(canvas.getByText('Paperi'));
+    const small = getComputedStyle(canvas.getByTestId('paper'));
     await expect(parseFloat(small.padding)).toBeGreaterThan(0);
   },
 };
@@ -90,15 +88,9 @@ export const PaddingScalesSmallToLarge: Story = {
 export const PaddingMediumExceedsSmall: Story = {
   render: () => (
     <>
-      <Paper padding="small" data-testid="small">
-        Pieni
-      </Paper>
-      <Paper padding="medium" data-testid="medium">
-        Keski
-      </Paper>
-      <Paper padding="large" data-testid="large">
-        Suuri
-      </Paper>
+      <Paper padding="small" data-testid="small" />
+      <Paper padding="medium" data-testid="medium" />
+      <Paper padding="large" data-testid="large" />
     </>
   ),
   play: async ({ canvasElement }) => {
@@ -113,11 +105,10 @@ export const PaddingMediumExceedsSmall: Story = {
 };
 
 export const PolymorphicComponent: Story = {
-  render: () => <Paper component="section">Paperi</Paper>,
+  render: () => <Paper component="section" data-testid="paper" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const paper = canvas.getByText('Paperi');
 
-    await expect(paper.tagName).toBe('SECTION');
+    await expect(canvas.getByTestId('paper').tagName).toBe('SECTION');
   },
 };
