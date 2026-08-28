@@ -74,6 +74,18 @@ export const WithBorder: Story = {
   },
 };
 
+export const WithBorderBrandColor: Story = {
+  tags: docExample,
+  args: { withBorder: true, withShadow: false, borderColor: 'brand' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByTestId('paper')).borderColor).toBe(
+      'rgb(41, 84, 154)'
+    );
+  },
+};
+
 // Hidden test-only stories below — pure regression checks, no unique visual
 // state beyond what the docs-visible stories above already show.
 

@@ -9,6 +9,7 @@ const {
     strokeWeight,
     divider,
     dropShadow,
+    states,
   },
 } = vars;
 
@@ -32,7 +33,12 @@ export const paddingVariants = styleVariants({
 
 export const pill = style({ borderRadius: cornerRadius.rounded });
 
-export const withBorder = style({ border: `${strokeWeight} solid ${divider}` });
+export const withBorder = style({ borderWidth: strokeWeight, borderStyle: 'solid' });
+
+export const borderColorVariants = styleVariants({
+  divider: { borderColor: divider },
+  brand: { borderColor: states.default },
+});
 
 // Matches the shape Accordion/DateField already use for this same token — confirmed
 // against Figma's Card dropshadow spec (offset 0/1, blur 4, spread 0).

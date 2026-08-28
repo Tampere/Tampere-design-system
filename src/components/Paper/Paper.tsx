@@ -7,6 +7,7 @@ import {
   paddingVariants,
   pill,
   withBorder,
+  borderColorVariants,
   withShadow,
 } from './Paper.css';
 
@@ -17,6 +18,8 @@ export type PaperProps = PropsWithChildren<
   /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
   radius?: 'sharp' | 'pill';
   withBorder?: boolean;
+  /** Only applied when `withBorder` is set. Default `'divider'` (neutral). */
+  borderColor?: 'divider' | 'brand';
   /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
   withShadow?: boolean;
   padding?: 'small' | 'medium' | 'large';
@@ -32,6 +35,7 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
       background = 'default',
       radius = 'sharp',
       withBorder: hasBorder = false,
+      borderColor = 'divider',
       withShadow: hasShadow = true,
       padding = 'medium',
       children,
@@ -53,6 +57,7 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
           paddingVariants[padding],
           radius === 'pill' && pill,
           hasBorder && withBorder,
+          hasBorder && borderColorVariants[borderColor],
           hasShadow && withShadow,
           props.className
         )}
