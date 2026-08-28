@@ -110,6 +110,29 @@ export const WithBorderBrandColor: Story = {
   },
 };
 
+export const WithBorderAndShadow: Story = {
+  // Both default to on independently — verifies they don't clobber each other
+  // when combined, unlike the docs-visible stories above which each isolate
+  // one by explicitly turning the other off.
+  args: { withBorder: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const style = getComputedStyle(canvas.getByTestId('paper'));
+
+    await expect(style.borderStyle).toBe('solid');
+    await expect(style.boxShadow).not.toBe('none');
+  },
+};
+
+export const CustomClassNameIsPreserved: Story = {
+  args: { className: 'consumer-custom-class' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByTestId('paper').className).toContain('consumer-custom-class');
+  },
+};
+
 // Hidden test-only stories below — pure regression checks, no unique visual
 // state beyond what the docs-visible stories above already show.
 
@@ -125,9 +148,9 @@ export const NoPadding: Story = {
 export const PaddingMediumExceedsSmall: Story = {
   render: () => (
     <>
-      <Paper padding="small" data-testid="small" />
-      <Paper padding="medium" data-testid="medium" />
-      <Paper padding="large" data-testid="large" />
+      <Paper padding="sm" data-testid="small" />
+      <Paper padding="md" data-testid="medium" />
+      <Paper padding="lg" data-testid="large" />
     </>
   ),
   play: async ({ canvasElement }) => {

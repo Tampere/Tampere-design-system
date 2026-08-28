@@ -12,7 +12,28 @@ import {
 } from './Paper.css';
 
 export type PaperProps = PropsWithChildren<
-  Omit<MantinePaperProps, 'shadow' | 'radius' | 'withBorder' | 'bg' | 'p'>
+  Omit<
+    MantinePaperProps,
+    // The curated props below (`radius`/`withBorder`/`padding`) each replace a
+    // Mantine style prop of the same effect — omit both the renamed key and
+    // every same-effect alias (`bd`/`bdrs` for border, `p*` for padding), or a
+    // consumer could bypass the curated API entirely via the Mantine original.
+    | 'shadow'
+    | 'radius'
+    | 'bdrs'
+    | 'withBorder'
+    | 'bd'
+    | 'bg'
+    | 'p'
+    | 'px'
+    | 'py'
+    | 'pt'
+    | 'pb'
+    | 'pl'
+    | 'pr'
+    | 'ps'
+    | 'pe'
+  >
 > & {
   /**
    * `'default'` is white. The other three are Figma's own "color override" examples
@@ -24,12 +45,14 @@ export type PaperProps = PropsWithChildren<
   background?: 'default' | 'turquoise' | 'blue' | 'pink';
   /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
   radius?: 'sharp' | 'pill';
+  /** Default `false`. */
   withBorder?: boolean;
   /** Only applied when `withBorder` is set. Default `'divider'` (neutral). */
   borderColor?: 'divider' | 'brand';
   /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
   withShadow?: boolean;
-  padding?: 'none' | 'small' | 'medium' | 'large';
+  /** Default `'md'`. */
+  padding?: 'none' | 'sm' | 'md' | 'lg';
   /** Polymorphic root element, e.g. `component="section"`. */
   component?: React.ElementType;
   'data-testid'?: string;
@@ -44,7 +67,7 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
       withBorder: hasBorder = false,
       borderColor = 'divider',
       withShadow: hasShadow = true,
-      padding = 'medium',
+      padding = 'md',
       children,
       ...props
     },

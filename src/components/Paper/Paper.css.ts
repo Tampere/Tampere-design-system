@@ -26,11 +26,14 @@ export const backgroundVariants = styleVariants({
   pink: { backgroundColor: paper.background.pink },
 });
 
+// Prop values (`sm`/`md`/`lg`) match the rest of the library's size scale
+// convention (IconButton, NavigationLink); the underlying token keys
+// (`paper.padding.small/medium/large` in theme.ts) stay as Figma's own names.
 export const paddingVariants = styleVariants({
   none: { padding: 0 },
-  small: { padding: paper.padding.small },
-  medium: { padding: paper.padding.medium },
-  large: { padding: paper.padding.large },
+  sm: { padding: paper.padding.small },
+  md: { padding: paper.padding.medium },
+  lg: { padding: paper.padding.large },
 });
 
 export const pill = style({ borderRadius: cornerRadius.rounded });

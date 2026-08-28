@@ -5,6 +5,7 @@ import { Card } from './Card';
 import { Button } from '../Button';
 import { Typography } from '../Typography';
 import { TextLink } from '../TextLink';
+import { Chip } from '../Chip';
 
 const meta = {
   component: Card,
@@ -47,7 +48,7 @@ export const Default: Story = {
 
 export const MediumSize: Story = {
   tags: docExample,
-  args: { size: 'medium' },
+  args: { size: 'md' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -56,7 +57,7 @@ export const MediumSize: Story = {
 };
 
 export const SmallSize: Story = {
-  args: { size: 'small' },
+  args: { size: 'sm' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -67,8 +68,8 @@ export const SmallSize: Story = {
 export const RootHasNoPadding: Story = {
   render: () => (
     <>
-      <Card title="Suuri" size="large" data-testid="large" />
-      <Card title="Pieni" size="small" data-testid="small" />
+      <Card title="Suuri" size="lg" data-testid="large" />
+      <Card title="Pieni" size="sm" data-testid="small" />
     </>
   ),
   play: async ({ canvasElement }) => {
@@ -87,19 +88,53 @@ export const RootHasNoPadding: Story = {
 export const PaddingScalesWithSize: Story = {
   render: () => (
     <>
-      <Card title="Suuri" size="large" />
-      <Card title="Keskikokoinen" size="medium" />
-      <Card title="Pieni" size="small" />
+      <Card title="Suuri" size="lg" data-testid="lg" />
+      <Card title="Keskikokoinen" size="md" data-testid="md" />
+      <Card title="Pieni" size="sm" data-testid="sm" />
     </>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const [large, medium, small] = canvas
-      .getAllByTestId('card-content')
-      .map((el) => parseFloat(getComputedStyle(el).padding));
+    const large = parseFloat(getComputedStyle(canvas.getByTestId('lg-content')).padding);
+    const medium = parseFloat(getComputedStyle(canvas.getByTestId('md-content')).padding);
+    const small = parseFloat(getComputedStyle(canvas.getByTestId('sm-content')).padding);
 
     await expect(small).toBeLessThan(medium);
     await expect(medium).toBeLessThan(large);
+  },
+};
+
+export const WithCustomClassName: Story = {
+  args: { className: 'consumer-custom-class' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByTestId('card').className).toContain('consumer-custom-class');
+  },
+};
+
+export const WithTitleOrderOverride: Story = {
+  args: { size: 'lg', titleOrder: 4 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // `size="lg"` defaults to H2 — an explicit `titleOrder` must win, so a Card
+    // nested under an existing heading level isn't forced to emit a second H2.
+    await expect(canvas.getByRole('heading', { name: 'Otsikko' }).tagName).toBe('H4');
+  },
+};
+
+export const RootHasNoInteractiveAffordance: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const card = canvas.getByTestId('card');
+
+    // Card is a static container — it must never itself become clickable or
+    // focusable, so nested interactive elements (in `actions`/`children`)
+    // stay the only way to interact with it.
+    await expect(card).not.toHaveAttribute('tabindex');
+    await expect(card.getAttribute('role')).not.toBe('button');
+    await expect(card.onclick).toBeNull();
   },
 };
 
@@ -129,6 +164,28 @@ export const WithMediaTop: Story = {
   },
 };
 
+const oversizedMediaImage = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300"><rect width="900" height="300" fill="#ccc"/></svg>'
+)}`;
+
+export const MediaDoesNotOverflowCard: Story = {
+  render: (args) => (
+    <div style={{ width: 320 }}>
+      <Card {...args} />
+    </div>
+  ),
+  args: { media: <img alt="" src={oversizedMediaImage} /> },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const card = canvas.getByTestId('card');
+    const media = canvas.getByRole('img');
+
+    await expect(media.getBoundingClientRect().width).toBeLessThanOrEqual(
+      card.getBoundingClientRect().width
+    );
+  },
+};
+
 export const WithMediaLeft: Story = {
   tags: docExample,
   args: {
@@ -139,6 +196,30 @@ export const WithMediaLeft: Story = {
     const canvas = within(canvasElement);
 
     await expect(getComputedStyle(canvas.getByTestId('card')).flexDirection).toBe('row');
+  },
+};
+
+export const WithMediaLeftSplitsWidthEvenly: Story = {
+  render: (args) => (
+    <div style={{ width: 640 }}>
+      <Card {...args} />
+    </div>
+  ),
+  args: {
+    media: <img alt="" src={oversizedMediaImage} />,
+    mediaPlacement: 'left',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const media = canvas.getByRole('img');
+    const mediaWrapper = media.parentElement as HTMLElement;
+    const content = canvas.getByTestId('card-content');
+
+    // Regression: `flex: 1 0 0` on the media wrapper should split the row
+    // ~50/50 with `content`, not let the (constrained) image size the column.
+    const mediaWidth = mediaWrapper.getBoundingClientRect().width;
+    const contentWidth = content.getBoundingClientRect().width;
+    await expect(Math.abs(mediaWidth - contentWidth)).toBeLessThan(2);
   },
 };
 
@@ -235,6 +316,41 @@ export const TurquoiseBackgroundButtonInChildrenKeepsOwnColors: Story = {
     // own color pairing rather than being force-inverted along with the rest
     // of the text block — this is the same guarantee `actions` already has.
     await expect(getComputedStyle(canvas.getByRole('button')).color).not.toBe('rgb(255, 255, 255)');
+  },
+};
+
+export const TurquoiseBackgroundChipInChildrenKeepsOwnColors: Story = {
+  args: {
+    background: 'turquoise',
+    children: (
+      <Chip checked={false} onChange={() => {}}>
+        Suodatin
+      </Chip>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Like Button, Chip has its own light surface — force-inverting its text
+    // to white would make it unreadable against its own background, not the
+    // Card's. Only Card's own text content (Typography/TextLink) should invert.
+    await expect(getComputedStyle(canvas.getByText('Suodatin')).color).not.toBe(
+      'rgb(255, 255, 255)'
+    );
+  },
+};
+
+export const TurquoiseBackgroundActionsTextLinkInverts: Story = {
+  args: {
+    background: 'turquoise',
+    actions: <TextLink href="#">Lue lisää</TextLink>,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Unlike Button, a TextLink in `actions` has no independent surface of its
+    // own — it should invert the same way one nested in `children` already does.
+    await expect(getComputedStyle(canvas.getByRole('link')).color).toBe('rgb(255, 255, 255)');
   },
 };
 
