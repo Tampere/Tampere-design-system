@@ -158,8 +158,8 @@ export const WithMediaTop: Story = {
 
     await expect(getComputedStyle(mediaWrapper).padding).toBe('0px');
     // Regression: the wrapper must size to the image, not collapse to 0 height
-    // in the default column layout (only the `left` row layout should split
-    // the wrapper 50/50 with `content` via `flex: 1 0 0`).
+    // in the default column layout (only the `left` row layout splits the
+    // wrapper 50/50 with `content`, via `flex: 0 0 50%` on each side).
     await expect(mediaWrapper.getBoundingClientRect().height).toBeGreaterThanOrEqual(190);
   },
 };
@@ -215,11 +215,22 @@ export const WithMediaLeftSplitsWidthEvenly: Story = {
     const mediaWrapper = media.parentElement as HTMLElement;
     const content = canvas.getByTestId('card-content');
 
-    // Regression: `flex: 1 0 0` on the media wrapper should split the row
+    // Regression: `flex: 0 0 50%` on the media wrapper should split the row
     // ~50/50 with `content`, not let the (constrained) image size the column.
     const mediaWidth = mediaWrapper.getBoundingClientRect().width;
     const contentWidth = content.getBoundingClientRect().width;
     await expect(Math.abs(mediaWidth - contentWidth)).toBeLessThan(2);
+  },
+};
+
+export const MediaPlacementLeftIgnoredWithoutMedia: Story = {
+  args: { mediaPlacement: 'left' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Documented as "ignored when `media` is omitted" — must stay in the
+    // default column layout, not switch to the row layout with no media to show.
+    await expect(getComputedStyle(canvas.getByTestId('card')).flexDirection).toBe('column');
   },
 };
 
@@ -270,6 +281,12 @@ export const WithInlineTextLink: Story = {
     const link = canvas.getByRole('link', { name: 'Lue lisää' });
 
     await expect(link).toHaveAttribute('href', '#');
+
+    // Card has no onClick of its own — a TextLink in `children` must stay
+    // independently focusable, the same guarantee `WithActions` already
+    // covers for a nested Button.
+    await userEvent.tab();
+    await expect(link).toHaveFocus();
   },
 };
 
@@ -337,6 +354,21 @@ export const TurquoiseBackgroundChipInChildrenKeepsOwnColors: Story = {
     await expect(getComputedStyle(canvas.getByText('Suodatin')).color).not.toBe(
       'rgb(255, 255, 255)'
     );
+  },
+};
+
+export const TurquoiseBackgroundButtonInActionsKeepsOwnColors: Story = {
+  args: {
+    background: 'turquoise',
+    actions: <Button variant="secondary">Toiminto</Button>,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Same guarantee as `TurquoiseBackgroundButtonInChildrenKeepsOwnColors`,
+    // but for the `actions` slot — the inversion allowlist excludes Button
+    // regardless of which slot it's nested in.
+    await expect(getComputedStyle(canvas.getByRole('button')).color).not.toBe('rgb(255, 255, 255)');
   },
 };
 
