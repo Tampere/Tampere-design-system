@@ -8,6 +8,7 @@ const {
   theme: {
     components: { card },
     contrast,
+    focus,
   },
 } = vars;
 
@@ -87,3 +88,14 @@ const invertibleSelectors = [...Object.values(typography), ...Object.values(link
 // class), but is kept defensively in case either ever gains a second class
 // (e.g. a `className` override) that would otherwise tie or exceed it.
 globalStyle(invertibleSelectors, { color: `${contrast} !important` });
+
+// The neutral `focusRing` outline (`focus.visible`, #1e1e22) both TextLink and
+// Typography spread for `:focus-visible` fails WCAG's 3:1 non-text-contrast
+// minimum against Card's colored backgrounds (#116) — override just the color
+// (width/offset already match) to the same inverted tone used above, scoped to
+// `:focus-visible` on the same allowlist so it only fires on colored Cards.
+const invertibleFocusSelectors = [...Object.values(typography), ...Object.values(link)]
+  .map((className) => `${content}${inverted} .${className}:focus-visible`)
+  .join(', ');
+
+globalStyle(invertibleFocusSelectors, { outlineColor: `${focus.visibleInverted} !important` });

@@ -321,6 +321,25 @@ export const TurquoiseBackgroundTextLinkUsesContrastText: Story = {
   },
 };
 
+export const TurquoiseBackgroundTextLinkFocusUsesInvertedOutline: Story = {
+  args: {
+    background: 'turquoise',
+    children: <TextLink href="#">Lue lisää</TextLink>,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link');
+
+    await userEvent.tab();
+    await expect(link).toHaveFocus();
+    // The neutral focusRing outline (`focus.visible`, #1e1e22) fails WCAG's
+    // 3:1 non-text contrast minimum against Card's colored backgrounds — must
+    // use the inverted outline color (`focus.visibleInverted`, white) here
+    // instead, the same allowlist-driven inversion `color` already gets (#116).
+    await expect(getComputedStyle(link).outlineColor).toBe('rgb(255, 255, 255)');
+  },
+};
+
 export const TurquoiseBackgroundButtonInChildrenKeepsOwnColors: Story = {
   args: {
     background: 'turquoise',
