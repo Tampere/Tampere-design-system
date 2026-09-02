@@ -34,29 +34,35 @@ export type PaperProps = PropsWithChildren<
     | 'ps'
     | 'pe'
   >
-> & {
-  /**
-   * `'default'` is white. The other three are Figma's own "color override" examples
-   * (confirmed by pixel-sampling a real rendered instance of each, since Figma's
-   * reference codegen only reports the base component's default binding, not
-   * per-instance fill overrides). `'red' | 'yellow' | 'green'` aren't included yet —
-   * no confirmed Figma example backs a specific shade for those.
-   */
-  background?: 'default' | 'turquoise' | 'blue' | 'pink';
-  /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
-  radius?: 'sharp' | 'pill';
-  /** Default `false`. */
-  withBorder?: boolean;
-  /** Only applied when `withBorder` is set. Default `'divider'` (neutral). */
-  borderColor?: 'divider' | 'brand';
-  /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
-  withShadow?: boolean;
-  /** Default `'md'`. */
-  padding?: 'none' | 'sm' | 'md' | 'lg';
-  /** Polymorphic root element, e.g. `component="section"`. */
-  component?: React.ElementType;
-  'data-testid'?: string;
-};
+> &
+  // Mantine's `PaperProps` only extends `BoxProps`/style props — native attributes
+  // like `id`/`role`/`aria-*` come from the polymorphic factory's element typing,
+  // which a manually-typed wrapper doesn't inherit, so they're added back explicitly.
+  React.AriaAttributes & {
+    id?: string;
+    role?: string;
+    /**
+     * `'default'` is white. The other three are Figma's own "color override" examples
+     * (confirmed by pixel-sampling a real rendered instance of each, since Figma's
+     * reference codegen only reports the base component's default binding, not
+     * per-instance fill overrides). `'red' | 'yellow' | 'green'` aren't included yet —
+     * no confirmed Figma example backs a specific shade for those.
+     */
+    background?: 'default' | 'turquoise' | 'blue' | 'pink';
+    /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
+    radius?: 'sharp' | 'pill';
+    /** Default `false`. */
+    withBorder?: boolean;
+    /** Only applied when `withBorder` is set. Default `'divider'` (neutral). */
+    borderColor?: 'divider' | 'brand';
+    /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
+    withShadow?: boolean;
+    /** Default `'md'`. */
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+    /** Polymorphic root element, e.g. `component="section"`. */
+    component?: React.ElementType;
+    'data-testid'?: string;
+  };
 
 /** A bare surface container — background, corner radius, optional border, optional shadow, and padding. No behaviour of its own. */
 export const Paper = forwardRef<HTMLDivElement, PaperProps>(

@@ -15,14 +15,23 @@ export const root = style({ display: 'flex', flexDirection: 'column' });
 
 export const rootMediaLeft = style({ flexDirection: 'row' });
 
-// Applied unconditionally so the wrapper doesn't zero out in the default
-// column layout, collapsing real media content.
-export const media = style({ minWidth: 0, minHeight: 0 });
+// `minWidth`/`minHeight: 0` let the wrapper shrink below its content's intrinsic
+// size instead of overflowing (needed in the `left` row layout, where `media` is
+// a fixed `flex: 0 0 50%` column — see below). `overflow: hidden` is a second,
+// independent guard: even a correctly-shrunk wrapper doesn't clip an oversized
+// descendant on its own.
+export const media = style({ minWidth: 0, minHeight: 0, overflow: 'hidden' });
 
 // Media content (an `<img>`, or any other element a consumer passes) has no
-// intrinsic constraint of its own — without this, a source image larger than
-// the card overflows both the top (full-width) and left (split-column) layouts.
-globalStyle(`${media} > *`, { display: 'block', maxWidth: '100%', height: 'auto' });
+// intrinsic constraint of its own — without this, a source image larger than the
+// card overflows both the top (full-width) and left (split-column) layouts. A
+// descendant selector (not `> *`) so the constraint reaches the actual media
+// element even when a consumer wraps it (e.g. `<picture><img/></picture>`).
+globalStyle(`${media} img, ${media} video, ${media} svg`, {
+  display: 'block',
+  maxWidth: '100%',
+  height: 'auto',
+});
 
 // Card's size scale (`sm`/`md`/`lg`) is the same padding scale Paper already
 // exposes — reuse it directly rather than re-declaring an identical variant map.
