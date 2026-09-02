@@ -332,7 +332,12 @@ export const TurquoiseBackgroundButtonInChildrenKeepsOwnColors: Story = {
     // Unlike Typography/TextLink, a Button nested in `children` must keep its
     // own color pairing rather than being force-inverted along with the rest
     // of the text block — this is the same guarantee `actions` already has.
-    await expect(getComputedStyle(canvas.getByRole('button')).color).not.toBe('rgb(255, 255, 255)');
+    // Asserted against the concrete `states.default` value (not just
+    // `.not.toBe(white)`) so this can't silently pass for any wrong color —
+    // see the constraint documented on `CardProps['background']`: this pairing
+    // is known to fail contrast on colored backgrounds until #115 ships an
+    // inverted Button variant.
+    await expect(getComputedStyle(canvas.getByRole('button')).color).toBe('rgb(41, 84, 154)');
   },
 };
 
@@ -367,8 +372,9 @@ export const TurquoiseBackgroundButtonInActionsKeepsOwnColors: Story = {
 
     // Same guarantee as `TurquoiseBackgroundButtonInChildrenKeepsOwnColors`,
     // but for the `actions` slot — the inversion allowlist excludes Button
-    // regardless of which slot it's nested in.
-    await expect(getComputedStyle(canvas.getByRole('button')).color).not.toBe('rgb(255, 255, 255)');
+    // regardless of which slot it's nested in. Same concrete-value assertion
+    // for the same reason (see that story's comment, and #115).
+    await expect(getComputedStyle(canvas.getByRole('button')).color).toBe('rgb(41, 84, 154)');
   },
 };
 

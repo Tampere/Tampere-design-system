@@ -15,6 +15,15 @@ import {
 export interface CardProps extends React.AriaAttributes {
   /** `'lg'` → H2 heading + Paper's `lg` padding. `'md'`/`'sm'` → H3 heading + matching padding. */
   size?: 'lg' | 'md' | 'sm';
+  /**
+   * A non-`'default'` background inverts Card's own text (Typography/TextLink)
+   * to a readable contrast color, but nested components with their own light
+   * surface — e.g. `Button`, `Chip` — deliberately keep their own colors (see
+   * `Card.css.ts`'s `invertibleSelectors`) rather than being force-inverted.
+   * That pairing isn't contrast-checked against colored backgrounds yet, so a
+   * `Button` in `children`/`actions` can be unreadable there — keep non-default
+   * backgrounds to text-only content until #115 adds an inverted Button variant.
+   */
   background?: PaperProps['background'];
   media?: ReactNode;
   /** Ignored when `media` is omitted. Default `'top'`. */
