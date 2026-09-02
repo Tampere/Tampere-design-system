@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, userEvent } from '@storybook/testing-library';
+import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { Card } from './Card';
 import { Button } from '../Button';
@@ -400,6 +400,45 @@ export const TurquoiseBackgroundUsesContrastText: Story = {
     // this must also flip to contrast color, not just the eyebrow/title Card owns.
     await expect(getComputedStyle(canvas.getByText('Kuvaava teksti')).color).toBe(
       'rgb(255, 255, 255)'
+    );
+  },
+};
+
+// ── Dev-warning tests (verifies the console.error guards in Card.tsx) ────────
+
+// Captures console.error calls for the dev-warning tests below.
+let capturedConsoleErrors: string[] = [];
+
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  const original = console.error;
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+  };
+  return () => {
+    console.error = original;
+  };
+};
+
+export const WarnsOnInvalidSize: Story = {
+  // `as any` simulates a non-TS consumer passing a value outside the
+  // documented union — must warn rather than silently dropping both the
+  // padding and the heading's typography variant entirely.
+  args: { size: 'invalid' as never },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /invalid `size` value/.test(m))).toBe(true)
+    );
+  },
+};
+
+export const WarnsOnInvalidTitleOrder: Story = {
+  args: { titleOrder: 6 as never },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /invalid `titleOrder` value/.test(m))).toBe(true)
     );
   },
 };

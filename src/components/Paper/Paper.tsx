@@ -1,4 +1,4 @@
-import { forwardRef, type PropsWithChildren } from 'react';
+import { forwardRef, useEffect, type PropsWithChildren } from 'react';
 import cx from 'clsx';
 import { Paper as MantinePaper, type PaperProps as MantinePaperProps } from '@mantine/core';
 import {
@@ -79,6 +79,23 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
     },
     ref
   ) => {
+    // Dev-only guard: an out-of-union value silently resolves to `undefined` in
+    // the `styleVariants` lookups below and drops that piece of styling with no
+    // other signal — same risk class TextLink/DateField already guard elsewhere.
+    useEffect(() => {
+      if (process.env.NODE_ENV === 'production') return;
+
+      if (!(background in backgroundVariants)) {
+        console.error(`Paper: invalid \`background\` value "${background}".`);
+      }
+      if (!(padding in paddingVariants)) {
+        console.error(`Paper: invalid \`padding\` value "${padding}".`);
+      }
+      if (hasBorder && !(borderColor in borderColorVariants)) {
+        console.error(`Paper: invalid \`borderColor\` value "${borderColor}".`);
+      }
+    }, [background, padding, hasBorder, borderColor]);
+
     return (
       // Mantine's `Paper` is polymorphic via a large per-element prop union that a
       // manually-typed `forwardRef` wrapper can't satisfy generically — our own

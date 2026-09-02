@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react';
+import { forwardRef, useEffect, type ReactNode } from 'react';
 import cx from 'clsx';
 import { Paper, type PaperProps } from '../Paper';
 import { Typography } from '../Typography';
@@ -67,6 +67,22 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     // instead of a blanket `!== 'default'` check.
     const inverted = background !== 'default';
     const contentTestId = props['data-testid'] && `${props['data-testid']}-content`;
+
+    // Dev-only guard: an out-of-union `size`/`titleOrder` silently resolves to
+    // `undefined` in the lookups below — `size` drops padding *and* falls back to
+    // Typography's default variant entirely (no heading style at all), and
+    // `titleOrder` silently stops overriding the heading level. `background` isn't
+    // checked here — Paper already guards it, and Card just forwards the value.
+    useEffect(() => {
+      if (process.env.NODE_ENV === 'production') return;
+
+      if (!(size in headingVariant)) {
+        console.error(`Card: invalid \`size\` value "${size}".`);
+      }
+      if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
+        console.error(`Card: invalid \`titleOrder\` value "${titleOrder}".`);
+      }
+    }, [size, titleOrder]);
 
     return (
       <Paper
