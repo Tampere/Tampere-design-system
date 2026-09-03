@@ -35,8 +35,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(1rem * var(--mantine-scale))",
-      "spacing": "calc(1rem * var(--mantine-scale))",
+      "mediaAspectRatio": "3 / 2",
+      "mediaSplit": "50%",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -202,6 +203,18 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
     },
+    "paper": {
+      "background": {
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(4rem * var(--mantine-scale))",
+        "medium": "calc(3rem * var(--mantine-scale))",
+        "small": "calc(1.5rem * var(--mantine-scale))",
+      },
+    },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -279,6 +292,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
   },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
+  "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
   "focus": {
     "visible": "#1e1e22",
@@ -368,8 +382,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(0.75rem * var(--mantine-scale))",
-      "spacing": "calc(0.75rem * var(--mantine-scale))",
+      "mediaAspectRatio": "3 / 2",
+      "mediaSplit": "50%",
+      "spacing": "calc(1rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -535,6 +550,18 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
     },
+    "paper": {
+      "background": {
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(3rem * var(--mantine-scale))",
+        "medium": "calc(2.5rem * var(--mantine-scale))",
+        "small": "calc(1rem * var(--mantine-scale))",
+      },
+    },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -612,6 +639,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
   },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
+  "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
   "focus": {
     "visible": "#1e1e22",
@@ -701,8 +729,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(0.75rem * var(--mantine-scale))",
-      "spacing": "calc(0.75rem * var(--mantine-scale))",
+      "mediaAspectRatio": "3 / 2",
+      "mediaSplit": "50%",
+      "spacing": "calc(1rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -868,6 +897,18 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
     },
+    "paper": {
+      "background": {
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(2.5rem * var(--mantine-scale))",
+        "medium": "calc(2rem * var(--mantine-scale))",
+        "small": "calc(1rem * var(--mantine-scale))",
+      },
+    },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -945,6 +986,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
   },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
+  "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
   "focus": {
     "visible": "#1e1e22",
@@ -1448,8 +1490,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "card": {
-        "padding": "calc(0.75rem * var(--mantine-scale))",
-        "spacing": "calc(0.75rem * var(--mantine-scale))",
+        "mediaAspectRatio": "3 / 2",
+        "mediaSplit": "50%",
+        "spacing": "calc(1rem * var(--mantine-scale))",
         "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "chip": {
@@ -1615,6 +1658,18 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "itemHeight": "calc(2.5rem * var(--mantine-scale))",
         "itemWidth": "calc(2.5rem * var(--mantine-scale))",
       },
+      "paper": {
+        "background": {
+          "blue": "#22437b",
+          "pink": "#ad3963",
+          "turquoise": "#0074a4",
+        },
+        "padding": {
+          "large": "calc(3rem * var(--mantine-scale))",
+          "medium": "calc(2.5rem * var(--mantine-scale))",
+          "small": "calc(1rem * var(--mantine-scale))",
+        },
+      },
       "searchField": {
         "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
         "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -1692,6 +1747,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
     },
     "divider": "#dedee2",
     "dropShadow": "rgba(0, 0, 0, 0.5000)",
+    "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
     "error": "#ae1e20",
     "focus": {
       "visible": "#1e1e22",
@@ -1782,8 +1838,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(1rem * var(--mantine-scale))",
-      "spacing": "calc(1rem * var(--mantine-scale))",
+      "mediaAspectRatio": "3 / 2",
+      "mediaSplit": "50%",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -1949,6 +2006,18 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
     },
+    "paper": {
+      "background": {
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(4rem * var(--mantine-scale))",
+        "medium": "calc(3rem * var(--mantine-scale))",
+        "small": "calc(1.5rem * var(--mantine-scale))",
+      },
+    },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -2026,6 +2095,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
   },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
+  "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
   "focus": {
     "visible": "#1e1e22",
@@ -2115,8 +2185,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(0.75rem * var(--mantine-scale))",
-      "spacing": "calc(0.75rem * var(--mantine-scale))",
+      "mediaAspectRatio": "3 / 2",
+      "mediaSplit": "50%",
+      "spacing": "calc(1rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -2282,6 +2353,18 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
     },
+    "paper": {
+      "background": {
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(2.5rem * var(--mantine-scale))",
+        "medium": "calc(2rem * var(--mantine-scale))",
+        "small": "calc(1rem * var(--mantine-scale))",
+      },
+    },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -2359,6 +2442,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
   },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
+  "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
   "focus": {
     "visible": "#1e1e22",
@@ -2448,8 +2532,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "card": {
-      "padding": "calc(1rem * var(--mantine-scale))",
-      "spacing": "calc(1rem * var(--mantine-scale))",
+      "mediaAspectRatio": "3 / 2",
+      "mediaSplit": "50%",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
       "textContentSpacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "chip": {
@@ -2615,6 +2700,18 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
     },
+    "paper": {
+      "background": {
+        "blue": "#22437b",
+        "pink": "#ad3963",
+        "turquoise": "#0074a4",
+      },
+      "padding": {
+        "large": "calc(4rem * var(--mantine-scale))",
+        "medium": "calc(3rem * var(--mantine-scale))",
+        "small": "calc(1.5rem * var(--mantine-scale))",
+      },
+    },
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
@@ -2692,6 +2789,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
   },
   "divider": "#dedee2",
   "dropShadow": "rgba(0, 0, 0, 0.5000)",
+  "dropShadowTile": "0px 1px 4px 0px rgba(0, 0, 0, 0.5000)",
   "error": "#ae1e20",
   "focus": {
     "visible": "#1e1e22",

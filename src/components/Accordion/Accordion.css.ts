@@ -5,7 +5,7 @@ const {
   theme: {
     strokeWeight,
     divider,
-    dropShadow,
+    dropShadowTile,
     components: { accordion: accordionVars, typography, item: itemVars, iconButton },
     focusRing,
   },
@@ -78,7 +78,7 @@ export const chevron = style({
 export const item = style({
   display: 'flex',
   flexDirection: 'column',
-  boxShadow: `0px 1px 4px 0px ${dropShadow}`,
+  boxShadow: dropShadowTile,
 });
 
 export const content = style({

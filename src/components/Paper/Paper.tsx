@@ -1,0 +1,170 @@
+import { forwardRef, useEffect, type PropsWithChildren } from 'react';
+import cx from 'clsx';
+import { Paper as MantinePaper, type PaperProps as MantinePaperProps } from '@mantine/core';
+import {
+  root,
+  backgroundVariants,
+  paddingVariants,
+  pill,
+  withBorder,
+  borderColorVariants,
+  withShadow,
+} from './Paper.css';
+
+// Mantine style-prop aliases the `Omit` below excludes from `PaperProps` at the
+// type level — stripped again here at runtime so a caller who bypasses the type
+// (plain JS, `as any`, an untyped spread) can't use them to reach the same
+// styling the curated `background`/`radius`/`padding`/`withBorder`/`withShadow`
+// props exist to gate. `radius`/`withBorder` don't need listing: they're already
+// captured by their own destructured names below, so they never reach `...props`.
+const MANTINE_STYLE_PROP_KEYS = [
+  'bg',
+  'p',
+  'px',
+  'py',
+  'pt',
+  'pb',
+  'pl',
+  'pr',
+  'ps',
+  'pe',
+  'shadow',
+  'bd',
+  'bdrs',
+] as const;
+
+// Mantine's `PaperProps` only extends `BoxProps`/style props — native attributes
+// like `id`/`role`/`aria-*` come from the polymorphic factory's element typing,
+// which a manually-typed wrapper doesn't inherit, so they're added back explicitly.
+// Shared with `CardProps` (which builds directly on Paper) so the two don't
+// redeclare — and risk drifting on — the same attribute block independently.
+export type SurfacePrimitiveProps = React.AriaAttributes & {
+  id?: string;
+  role?: React.AriaRole;
+  /** Polymorphic root element, e.g. `component="section"` or `"article"`. */
+  component?: React.ElementType;
+  'data-testid'?: string;
+};
+
+export type PaperProps = PropsWithChildren<
+  Omit<
+    MantinePaperProps,
+    // The curated props below (`radius`/`withBorder`/`padding`) each replace a
+    // Mantine style prop of the same effect — omit both the renamed key and
+    // every same-effect alias (`bd`/`bdrs` for border, `p*` for padding), or a
+    // consumer could bypass the curated API entirely via the Mantine original.
+    | 'shadow'
+    | 'radius'
+    | 'bdrs'
+    | 'withBorder'
+    | 'bd'
+    | 'bg'
+    | 'p'
+    | 'px'
+    | 'py'
+    | 'pt'
+    | 'pb'
+    | 'pl'
+    | 'pr'
+    | 'ps'
+    | 'pe'
+  >
+> &
+  SurfacePrimitiveProps & {
+    /**
+     * `'default'` is white. The other three are Figma's own "color override" examples
+     * (confirmed by pixel-sampling a real rendered instance of each, since Figma's
+     * reference codegen only reports the base component's default binding, not
+     * per-instance fill overrides). `'red' | 'yellow' | 'green'` aren't included yet —
+     * no confirmed Figma example backs a specific shade for those.
+     */
+    background?: 'default' | 'turquoise' | 'blue' | 'pink';
+    /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses. */
+    radius?: 'sharp' | 'pill';
+    /** Default `false`. */
+    withBorder?: boolean;
+    /** Only applied when `withBorder` is set. Default `'divider'` (neutral). */
+    borderColor?: 'divider' | 'brand';
+    /** Default `true` — matches Figma's Card surface, which has a drop shadow (not a border). */
+    withShadow?: boolean;
+    /** Default `'md'`. */
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+  };
+
+/** A bare surface container — background, corner radius, optional border, optional shadow, and padding. No behaviour of its own. */
+export const Paper = forwardRef<HTMLDivElement, PaperProps>(
+  (
+    {
+      background = 'default',
+      radius = 'sharp',
+      withBorder: hasBorder = false,
+      borderColor = 'divider',
+      withShadow: hasShadow = true,
+      padding = 'md',
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    // Dev-only guard: an out-of-union `background`/`padding`/`borderColor` value
+    // silently resolves to `undefined` in the `styleVariants` lookups below and
+    // drops that piece of styling with no other signal — same risk class
+    // TextLink/DateField already guard elsewhere. `radius` isn't a lookup (it's
+    // compared directly against `'pill'`), but an out-of-union value there
+    // silently falls back to the sharp-corner default just as silently.
+    useEffect(() => {
+      if (process.env.NODE_ENV === 'production') return;
+
+      if (!(background in backgroundVariants)) {
+        console.error(`Paper: invalid \`background\` value "${background}".`);
+      }
+      if (!(padding in paddingVariants)) {
+        console.error(`Paper: invalid \`padding\` value "${padding}".`);
+      }
+      if (radius !== 'sharp' && radius !== 'pill') {
+        console.error(`Paper: invalid \`radius\` value "${String(radius)}".`);
+      }
+      if (hasBorder && !(borderColor in borderColorVariants)) {
+        console.error(`Paper: invalid \`borderColor\` value "${borderColor}".`);
+      }
+
+      // A type-bypassing caller (`as any`, untyped JS) can still reach Mantine's
+      // raw style props, which `restProps` below silently drops — warn so that
+      // silent drop has some signal, matching the guards above.
+      const leakedStyleProps = MANTINE_STYLE_PROP_KEYS.filter((key) => key in props);
+      if (leakedStyleProps.length > 0) {
+        console.error(
+          `Paper: prop(s) ${leakedStyleProps.join(', ')} are ignored — use \`background\`/\`padding\`/\`radius\`/\`withBorder\`/\`withShadow\` instead.`
+        );
+      }
+    }, [background, padding, radius, hasBorder, borderColor, props]);
+
+    const restProps: Record<string, unknown> = { ...props };
+    for (const key of MANTINE_STYLE_PROP_KEYS) delete restProps[key];
+
+    return (
+      // Mantine's `Paper` is polymorphic via a large per-element prop union that a
+      // manually-typed `forwardRef` wrapper can't satisfy generically — our own
+      // `component?: React.ElementType` is intentionally looser. Cast at this one
+      // boundary rather than losing type safety on the rest of `PaperProps`.
+      <MantinePaper
+        ref={ref}
+        {...(restProps as MantinePaperProps)}
+        className={cx(
+          root,
+          backgroundVariants[background],
+          paddingVariants[padding],
+          radius === 'pill' && pill,
+          hasBorder && withBorder,
+          hasBorder && borderColorVariants[borderColor],
+          hasShadow && withShadow,
+          props.className
+        )}
+      >
+        {children}
+      </MantinePaper>
+    );
+  }
+);
+
+Paper.displayName = 'Paper';

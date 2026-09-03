@@ -73,6 +73,11 @@ const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
 
+const dropShadow = 'rgba(0, 0, 0, 0.5000)';
+// Figma's Card/Accordion dropshadow spec (offset 0/1, blur 4, spread 0) — shared
+// so the two components' shadows can't drift apart by editing one.
+const dropShadowTile = `0px 1px 4px 0px ${dropShadow}`;
+
 const focusRing = {
   outline: `${strokeWeight} solid ${focus.visible}`,
   outlineOffset: `calc(${strokeWeight} / 2)`,
@@ -217,9 +222,38 @@ export function getTheme(bp: BreakpointKey) {
       padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.sm },
     },
     card: {
-      padding: bpTokens.spacing.sm,
-      spacing: bpTokens.spacing.sm,
       textContentSpacing: primitives.spacing['1'],
+      // Figma's "Card static content" top-level gap (spacing/medium) — between the
+      // text-content block (eyebrow/title/body) and the actions slot.
+      spacing: bpTokens.spacing.md,
+      // Photos' conventional crop ratio, used for `top`-placement media.
+      mediaAspectRatio: '3 / 2',
+      // `left`-placement media/content column split.
+      mediaSplit: '50%',
+    },
+    paper: {
+      // Figma's "Card static content" padding scale (spacing/medium,
+      // spacing/extra-large, spacing/2-extra-large) — confirmed responsive
+      // (e.g. `small` is 24px at xxl/xl/lg but drops to 16px from the `md`
+      // (768px) breakpoint down through `xs`, same as every other
+      // `bpTokens.spacing` consumer).
+      padding: {
+        small: bpTokens.spacing.md,
+        medium: bpTokens.spacing.xl,
+        large: bpTokens.spacing.xxl,
+      },
+      // Figma's Card "color override" examples — confirmed by pixel-sampling a
+      // real rendered instance of each (Figma's own reference codegen only
+      // reports the base component's default binding, not per-instance fill
+      // overrides, so this couldn't be read from `get_design_context` alone).
+      // Only these three are wired up because only these three have a real
+      // Figma example backing the exact shade — `red`/`yellow`/`green` aren't
+      // included since guessing an untested shade risks a contrast mismatch.
+      background: {
+        turquoise: colors.turquoise['300'],
+        blue: colors.blue['500'],
+        pink: colors.pink['200'],
+      },
     },
     chip: {
       // Figma's "spacing/2-extra-small" — confirmed against the dedicated
@@ -406,7 +440,8 @@ export function getTheme(bp: BreakpointKey) {
     divider: colors.neutral['200'],
     cornerRadius,
     strokeWeight,
-    dropShadow: 'rgba(0, 0, 0, 0.5000)',
+    dropShadow,
+    dropShadowTile,
     states,
     inputStates,
     selectionStates,
