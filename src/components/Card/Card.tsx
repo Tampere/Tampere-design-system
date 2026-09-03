@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, type ReactNode } from 'react';
 import cx from 'clsx';
 import { Paper, type PaperProps } from '../Paper';
+import { backgroundVariants } from '../Paper/Paper.css';
 import { Typography } from '../Typography';
 import {
   root,
@@ -22,7 +23,8 @@ export interface CardProps extends React.AriaAttributes {
    * `Card.css.ts`'s `invertibleSelectors`) rather than being force-inverted.
    * That pairing isn't contrast-checked against colored backgrounds yet, so a
    * `Button` in `children`/`actions` can be unreadable there — keep non-default
-   * backgrounds to text-only content until #115 adds an inverted Button variant.
+   * backgrounds to text-only content until Button gets a contrast-checked
+   * inverted variant.
    */
   background?: PaperProps['background'];
   media?: ReactNode;
@@ -74,33 +76,48 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     // `green` are ever added to `PaperProps['background']` (see Paper.tsx), since
     // a light one would need this to key off a per-background contrast token
     // instead of a blanket `!== 'default'` check.
-    const inverted = background !== 'default';
+    //
+    // Guarded by membership in `backgroundVariants` (not just `!== 'default'`) so
+    // an out-of-union value — which Paper's own guard warns on but still renders
+    // with no background color applied — degrades to non-inverted (dark-on-white)
+    // text instead of force-inverting to unreadable light-on-white text.
+    const inverted = background in backgroundVariants && background !== 'default';
     const contentTestId = props['data-testid'] && `${props['data-testid']}-content`;
 
-    // Dev-only guard: an out-of-union `size`/`titleOrder` silently resolves to
-    // `undefined` in the lookups below — `size` drops padding *and* falls back to
-    // Typography's default variant entirely (no heading style at all), and
-    // `titleOrder` silently stops overriding the heading level. `background` isn't
-    // checked here — Paper already guards it, and Card just forwards the value.
+    // Dev-only guard: an out-of-union `size`/`mediaPlacement`/`titleOrder` silently
+    // resolves to `undefined` in the lookups below — `size` drops padding and
+    // passes `variant={undefined}` to Typography, which has no fallback of its own
+    // (Typography's underlying `Box` falls back to a plain `div`, losing both the
+    // heading style and the heading element), `mediaPlacement` silently falls back
+    // to the `top` layout, and `titleOrder` silently stops overriding the heading
+    // level. `background` isn't checked here — Paper already guards it, and Card
+    // just forwards the value (though Card's own `inverted` derivation below
+    // degrades safely for an invalid value regardless).
     useEffect(() => {
       if (process.env.NODE_ENV === 'production') return;
 
       if (!(size in headingVariant)) {
         console.error(`Card: invalid \`size\` value "${size}".`);
       }
+      if (mediaPlacement !== 'top' && mediaPlacement !== 'left') {
+        console.error(`Card: invalid \`mediaPlacement\` value "${String(mediaPlacement)}".`);
+      }
       if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
         console.error(`Card: invalid \`titleOrder\` value "${titleOrder}".`);
       }
-    }, [size, titleOrder]);
+    }, [size, mediaPlacement, titleOrder]);
 
     return (
       <Paper
         ref={ref}
+        {...props}
+        // Spread after `props` so Card's fixed surface contract always wins,
+        // even if a non-TS caller manages to pass one of these Paper props
+        // through (`CardProps` doesn't declare them, so a typed caller can't).
         background={background}
         radius="sharp"
         withShadow
         padding="none"
-        {...props}
         className={cx(root, media && mediaPlacement === 'left' && rootMediaLeft, className)}
       >
         {media && <div className={mediaClass}>{media}</div>}

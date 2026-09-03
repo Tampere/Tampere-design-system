@@ -11,6 +11,28 @@ import {
   withShadow,
 } from './Paper.css';
 
+// Mantine style-prop aliases the `Omit` below excludes from `PaperProps` at the
+// type level — stripped again here at runtime so a caller who bypasses the type
+// (plain JS, `as any`, an untyped spread) can't use them to reach the same
+// styling the curated `background`/`radius`/`padding`/`withBorder`/`withShadow`
+// props exist to gate. `radius`/`withBorder` don't need listing: they're already
+// captured by their own destructured names below, so they never reach `...props`.
+const MANTINE_STYLE_PROP_KEYS = [
+  'bg',
+  'p',
+  'px',
+  'py',
+  'pt',
+  'pb',
+  'pl',
+  'pr',
+  'ps',
+  'pe',
+  'shadow',
+  'bd',
+  'bdrs',
+] as const;
+
 export type PaperProps = PropsWithChildren<
   Omit<
     MantinePaperProps,
@@ -79,9 +101,12 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
     },
     ref
   ) => {
-    // Dev-only guard: an out-of-union value silently resolves to `undefined` in
-    // the `styleVariants` lookups below and drops that piece of styling with no
-    // other signal — same risk class TextLink/DateField already guard elsewhere.
+    // Dev-only guard: an out-of-union `background`/`padding`/`borderColor` value
+    // silently resolves to `undefined` in the `styleVariants` lookups below and
+    // drops that piece of styling with no other signal — same risk class
+    // TextLink/DateField already guard elsewhere. `radius` isn't a lookup (it's
+    // compared directly against `'pill'`), but an out-of-union value there
+    // silently falls back to the sharp-corner default just as silently.
     useEffect(() => {
       if (process.env.NODE_ENV === 'production') return;
 
@@ -91,10 +116,16 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
       if (!(padding in paddingVariants)) {
         console.error(`Paper: invalid \`padding\` value "${padding}".`);
       }
+      if (radius !== 'sharp' && radius !== 'pill') {
+        console.error(`Paper: invalid \`radius\` value "${String(radius)}".`);
+      }
       if (hasBorder && !(borderColor in borderColorVariants)) {
         console.error(`Paper: invalid \`borderColor\` value "${borderColor}".`);
       }
-    }, [background, padding, hasBorder, borderColor]);
+    }, [background, padding, radius, hasBorder, borderColor]);
+
+    const restProps: Record<string, unknown> = { ...props };
+    for (const key of MANTINE_STYLE_PROP_KEYS) delete restProps[key];
 
     return (
       // Mantine's `Paper` is polymorphic via a large per-element prop union that a
@@ -103,7 +134,7 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
       // boundary rather than losing type safety on the rest of `PaperProps`.
       <MantinePaper
         ref={ref}
-        {...(props as MantinePaperProps)}
+        {...(restProps as MantinePaperProps)}
         className={cx(
           root,
           backgroundVariants[background],
