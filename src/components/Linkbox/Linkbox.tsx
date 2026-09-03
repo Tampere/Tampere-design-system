@@ -41,9 +41,11 @@ export interface LinkboxProps extends AriaAttributes {
   media?: ReactNode;
   /**
    * Ignored when `media` is omitted. Default `'top'`. `'left'` is a 50/50 row
-   * split above the `md` (768px) breakpoint — below that it collapses to the
-   * same stacked layout `'top'` uses, since a row split gets cramped once the
-   * whole card narrows past tablet width.
+   * split once Linkbox's own rendered width passes the `md` (768px)
+   * container-query breakpoint — narrower than that (its own width, not the
+   * viewport — e.g. a narrow grid column on an otherwise wide screen) it
+   * collapses to the same stacked layout `'top'` uses, since a row split gets
+   * cramped past that point.
    */
   mediaPlacement?: 'top' | 'left';
   /** `false` (default) is a white surface with dark text; `true` is a solid Paper `turquoise` surface with contrast text. */
@@ -134,32 +136,42 @@ export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Link
       withShadow={false}
       padding="none"
       className={cx(
-        root,
         media && mediaPlacement === 'left' && leftMarker,
         inverted && invertedMarker,
         linkClass,
         className
       )}
     >
-      {media && <div className={mediaClass}>{media}</div>}
-      <div className={cx(contentClass, contentPadding)}>
-        <div className={textBlock}>
-          {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
-          <Typography variant="h3" component={titleOrder ? titleComponent[titleOrder] : undefined}>
-            {title}
-          </Typography>
-          {description && (
-            <Typography variant="p1" className={descriptionClass}>
-              {description}
+      {/* `root` (the flex row/column layout) lives on this inner wrapper, not
+          the outer element above — a `@container` query can't restyle the
+          same element that establishes the container (see `leftMarker` in
+          Linkbox.css.ts), so the container (outer) and the thing whose
+          `flexDirection` it toggles (this wrapper) have to be different
+          elements. */}
+      <div className={root}>
+        {media && <div className={mediaClass}>{media}</div>}
+        <div className={cx(contentClass, contentPadding)}>
+          <div className={textBlock}>
+            {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
+            <Typography
+              variant="h3"
+              component={titleOrder ? titleComponent[titleOrder] : undefined}
+            >
+              {title}
             </Typography>
-          )}
-        </div>
-        <div className={iconRow}>
-          {external ? (
-            <OpenExternalLinkIcon aria-hidden className={iconClass} />
-          ) : (
-            <ArrowRightIcon aria-hidden className={iconClass} />
-          )}
+            {description && (
+              <Typography variant="p1" className={descriptionClass}>
+                {description}
+              </Typography>
+            )}
+          </div>
+          <div className={iconRow}>
+            {external ? (
+              <OpenExternalLinkIcon aria-hidden className={iconClass} />
+            ) : (
+              <ArrowRightIcon aria-hidden className={iconClass} />
+            )}
+          </div>
         </div>
       </div>
     </Paper>

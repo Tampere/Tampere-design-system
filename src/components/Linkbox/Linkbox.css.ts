@@ -57,13 +57,16 @@ export const inverted = style({});
 
 // Same allowlist-driven inversion technique as Card.css.ts's
 // `invertibleSelectors` — flips Linkbox's own text/icon to the contrast
-// color when `inverted`.
+// color when `inverted`. `inverted` alone (not compounded with `root`) is
+// enough to scope this to Linkbox instances — it's a Linkbox-local marker,
+// and `root` lives on a different (inner) element now (see `leftMarker`
+// below), so the two are no longer ever on the same element.
 const invertibleTextSelectors = Object.values(typography)
-  .map((className) => `${root}${inverted} .${className}`)
+  .map((className) => `${inverted} .${className}`)
   .join(', ');
 
 globalStyle(invertibleTextSelectors, { color: `${contrast} !important` });
-globalStyle(`${root}${inverted} .${iconRow}`, { color: contrast });
+globalStyle(`${inverted} .${iconRow}`, { color: contrast });
 
 // The whole box is a real `<a>` — Paper's `component="a"`. The overlay tint
 // is applied via `backgroundImage` (a same-color-stop linear-gradient), not
@@ -91,43 +94,56 @@ export const link = style({
 // cells (confirmed against the "Card link content" Figma frame), so the
 // outline itself doesn't need an inverted override the way e.g. Card's
 // nested TextLink focus ring does against its own (different) backgrounds.
-globalStyle(`${root}${inverted}.${link}:hover`, {
+globalStyle(`${inverted}.${link}:hover`, {
   backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
 });
-globalStyle(`${root}${inverted}.${link}:focus-visible`, {
+globalStyle(`${inverted}.${link}:focus-visible`, {
   backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
 });
 
 // `left` media placement is a 50/50 row split above the `md` breakpoint —
-// below that, the whole card has narrowed enough that a row split gets
-// cramped, so it collapses to the same stacked layout `top` uses by default
-// (no override needed for the stacked state itself — that's just `root`'s
-// unconditional base `flexDirection: column`).
+// below that, Linkbox's own rendered width has narrowed enough that a row
+// split gets cramped, so it collapses to the same stacked layout `top` uses
+// by default (no override needed for the stacked state itself — that's just
+// `root`'s unconditional base `flexDirection: column`).
 //
-// This is the first component in the repo to use a real `@media` query in
-// its own stylesheet — every other breakpoint-dependent value comes from
+// This is the first component in the repo to use a real `@container` query
+// in its own stylesheet — every other breakpoint-dependent value comes from
 // `vars.theme` swapping at `:root` (theme.css.ts), which works for a value
 // swap but not a structural row↔column switch. Deliberately scoped to this
 // component's own `leftMarker` (never applied to Card's `rootMediaLeft`), so
-// Card's own `left` placement — which stays row at every breakpoint — is
+// Card's own `left` placement — which stays row at every viewport width — is
 // untouched.
 //
-// Viewport-based, not a container query (none exist yet in this repo): a
-// `left`-placed Linkbox squeezed into a narrow grid column on a wide
-// viewport still renders row layout. Known limitation, not a regression —
-// Card's own `left` placement never collapses at all, at any width.
-export const leftMarker = style({});
+// A container query, not a viewport `@media` query: `leftMarker` establishes
+// itself as the query container (`containerType: 'inline-size'`), so the
+// collapse is keyed off Linkbox's own rendered width, not the browser
+// viewport. A `left`-placed Linkbox squeezed into a narrow grid column
+// collapses correctly even on a wide screen — the gap a `@media` version of
+// this rule would have left open (Card's own `left` placement still has that
+// gap, since it never collapses at all, at any width or container size).
+//
+// `leftMarker` is on the outer element (Paper/the `<a>` itself); `root` is
+// the *inner* flex wrapper one level down (see Linkbox.tsx) — deliberately
+// two different elements, because a `@container` query cannot restyle
+// layout-mode properties (like `flexDirection`) on the very element that
+// establishes the container. Querying `leftMarker` from its own rule for its
+// own `flexDirection` silently no-ops in Chromium even though the containment
+// spec doesn't forbid it outright; splitting container and containee avoids
+// the issue entirely, since `root` is a genuine descendant, not the container
+// querying itself.
+export const leftMarker = style({ containerType: 'inline-size' });
 
-const wideEnoughForRowSplit = `screen and (min-width: ${breakpoint.md.appWidth})`;
+const wideEnoughForRowSplit = `(min-width: ${breakpoint.md.appWidth})`;
 
-globalStyle(leftMarker, {
-  '@media': { [wideEnoughForRowSplit]: { flexDirection: 'row' } },
+globalStyle(`${leftMarker} > ${root}`, {
+  '@container': { [wideEnoughForRowSplit]: { flexDirection: 'row' } },
 });
-globalStyle(`${leftMarker} > ${media}`, {
-  '@media': {
+globalStyle(`${leftMarker} ${media}`, {
+  '@container': {
     [wideEnoughForRowSplit]: { aspectRatio: 'auto', flex: `0 0 ${card.mediaSplit}` },
   },
 });
-globalStyle(`${leftMarker} > ${content}`, {
-  '@media': { [wideEnoughForRowSplit]: { flex: `0 0 ${card.mediaSplit}` } },
+globalStyle(`${leftMarker} ${content}`, {
+  '@container': { [wideEnoughForRowSplit]: { flex: `0 0 ${card.mediaSplit}` } },
 });
