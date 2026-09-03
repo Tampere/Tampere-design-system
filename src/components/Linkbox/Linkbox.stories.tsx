@@ -76,6 +76,22 @@ export const FocusVisible: Story = {
   },
 };
 
+export const FocusVisibleKeepsOpaqueBackground: Story = {
+  // Same layering guarantee as `InvertedFocusVisibleKeepsOpaqueBackground`,
+  // asserted on the default (non-inverted) surface too — the hover/focus
+  // tint must stay layered via `backgroundImage`, not replace the white
+  // `backgroundColor` outright.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link');
+
+    (link as HTMLAnchorElement).focus();
+    const style = getComputedStyle(link);
+    await expect(style.backgroundColor).toBe('rgb(255, 255, 255)');
+    await expect(style.backgroundImage).not.toBe('none');
+  },
+};
+
 export const InvertedColor: Story = {
   tags: docExample,
   args: { inverted: true },
@@ -165,6 +181,22 @@ export const WithCustomComponent: Story = {
   },
 };
 
+export const WithCustomComponentAndExternal: Story = {
+  // `external`'s `target`/`rel`/accessible-name contract must still apply
+  // when the root element is swapped via `component` (e.g. a router `Link`),
+  // not just the default `<a>`.
+  args: { component: FakeRouterLink, external: true, href: 'https://tampere.fi' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: /^Otsikko/ });
+
+    await expect(link).toHaveAttribute('data-router-link', 'true');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(link).toHaveAccessibleName(/avautuu uuteen välilehteen/);
+  },
+};
+
 export const WithTitleOrderOverride: Story = {
   args: { titleOrder: 4 },
   play: async ({ canvasElement }) => {
@@ -224,6 +256,20 @@ export const WarnsWhenTargetIgnoredByExternal: Story = {
   play: async () => {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /`target` is ignored/.test(m))).toBe(true)
+    );
+  },
+};
+
+export const WarnsWithInvalidTitleOrder: Story = {
+  // `titleOrder` isn't looked up in a `styleVariants` map (it drives a plain
+  // object lookup passed to `Typography`'s `component` prop), so an
+  // out-of-union value would otherwise silently drop the heading-tag
+  // override with no signal — same risk class Card's identical prop guards.
+  args: { titleOrder: 6 as unknown as 2 | 3 | 4 | 5 },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /invalid `titleOrder`/.test(m))).toBe(true)
     );
   },
 };

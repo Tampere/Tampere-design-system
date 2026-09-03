@@ -1,4 +1,11 @@
-import { useEffect, type AriaAttributes, type AriaRole, type ElementType } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  type AriaAttributes,
+  type AriaRole,
+  type ElementType,
+  type Ref,
+} from 'react';
 import cx from 'clsx';
 import { Paper, type PaperProps } from '../Paper';
 import { Typography } from '../Typography';
@@ -22,7 +29,7 @@ export interface LinkboxProps extends AriaAttributes {
   description?: string;
   /** `false` (default) is a white surface with dark text; `true` is a solid Paper `turquoise` surface with contrast text. */
   inverted?: boolean;
-  /** Swaps the arrow icon, forces `target="_blank"` + `rel="noopener noreferrer"`, and appends `externalLabel` to the accessible name. */
+  /** Swaps the arrow icon, forces `target="_blank"`, prepends `rel="noopener noreferrer"` (merging with any existing `rel`), and appends `externalLabel` to the accessible name. */
   external?: boolean;
   /** Appended to the accessible name when `external` is set. */
   externalLabel?: string;
@@ -39,22 +46,25 @@ export interface LinkboxProps extends AriaAttributes {
 const titleComponent = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5' } as const;
 
 /** A card-shaped link — the whole box navigates to one destination, unlike `Card`, which is never itself a link. */
-export function Linkbox({
-  href,
-  title,
-  titleOrder,
-  eyebrow,
-  description,
-  inverted = false,
-  external = false,
-  externalLabel = ' (avautuu uuteen välilehteen)',
-  component,
-  target,
-  rel,
-  className,
-  ...props
-}: LinkboxProps) {
-  const accessibleName = external ? `${title}${externalLabel}` : title;
+export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Linkbox(
+  {
+    href,
+    title,
+    titleOrder,
+    eyebrow,
+    description,
+    inverted = false,
+    external = false,
+    externalLabel = '(avautuu uuteen välilehteen)',
+    component,
+    target,
+    rel,
+    className,
+    ...props
+  },
+  ref
+) {
+  const accessibleName = external ? `${title} ${externalLabel}` : title;
   const linkTarget = external ? '_blank' : target;
   const linkRel = external ? cx('noopener noreferrer', rel) : rel;
 
@@ -69,7 +79,10 @@ export function Linkbox({
         'Linkbox: `target` is ignored when `external` is set — external links always open in a new tab.'
       );
     }
-  }, [href, external, target]);
+    if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
+      console.error(`Linkbox: invalid \`titleOrder\` value "${titleOrder}".`);
+    }
+  }, [href, external, target, titleOrder]);
 
   // `Paper`'s own type doesn't widen anchor attributes when `component="a"`
   // (its manually-typed wrapper can't infer per-element props the way
@@ -85,6 +98,10 @@ export function Linkbox({
 
   return (
     <Paper
+      // Paper's own forwardRef is typed to `HTMLDivElement` regardless of the
+      // polymorphic `component` it renders as — Linkbox is always an anchor,
+      // so cast at this one boundary the same way `anchorProps` above does.
+      ref={ref as unknown as Ref<HTMLDivElement>}
       {...props}
       component={component ?? 'a'}
       {...anchorProps}
@@ -114,6 +131,6 @@ export function Linkbox({
       </div>
     </Paper>
   );
-}
+});
 
 Linkbox.displayName = 'Linkbox';
