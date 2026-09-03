@@ -150,9 +150,19 @@ export const WithEyebrow: Story = {
 
 export const WithMediaTop: Story = {
   tags: docExample,
+  // Card fills its parent's width by design (no width cap of its own) — a
+  // realistic single-column width here keeps the 3:2 media block from
+  // stretching to Storybook's full canvas width, matching how Card is
+  // actually placed (a grid cell/column), not a bug in the ratio itself.
+  render: (args) => (
+    <div style={{ width: 600 }}>
+      <Card {...args} />
+    </div>
+  ),
   args: { media: <img alt="" src={sizedMediaImage} /> },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const card = canvas.getByTestId('card');
     const media = canvas.getByRole('img');
     const mediaWrapper = media.parentElement as HTMLElement;
 
@@ -161,6 +171,20 @@ export const WithMediaTop: Story = {
     // in the default column layout (only the `left` row layout splits the
     // wrapper 50/50 with `content`, via `flex: 0 0 50%` on each side).
     await expect(mediaWrapper.getBoundingClientRect().height).toBeGreaterThanOrEqual(190);
+
+    // Regression: the image itself must fill the wrapper's full width, not
+    // sit at its own intrinsic size (the 260px placeholder image is narrower
+    // than the card) — the wrapper div already stretches full-width via flex,
+    // so this has to be checked on the `<img>`, not its wrapper.
+    const cardWidth = card.getBoundingClientRect().width;
+    const mediaImgWidth = media.getBoundingClientRect().width;
+    await expect(Math.abs(mediaImgWidth - cardWidth)).toBeLessThan(2);
+
+    // The `top` frame is a fixed 3:2 box — the image crops to fill it rather
+    // than dictating the box's own height.
+    const mediaHeight = mediaWrapper.getBoundingClientRect().height;
+    await expect(Math.abs(cardWidth / mediaHeight - 1.5)).toBeLessThan(0.05);
+    await expect(getComputedStyle(media).objectFit).toBe('cover');
   },
 };
 
@@ -188,8 +212,15 @@ export const MediaDoesNotOverflowCard: Story = {
 
 export const WithMediaLeft: Story = {
   tags: docExample,
+  // Same rationale as `WithMediaTop` — a realistic row width instead of
+  // Storybook's full canvas width.
+  render: (args) => (
+    <div style={{ width: 1200 }}>
+      <Card {...args} />
+    </div>
+  ),
   args: {
-    media: <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" />,
+    media: <img alt="" src={sizedMediaImage} />,
     mediaPlacement: 'left',
   },
   play: async ({ canvasElement }) => {
@@ -220,6 +251,16 @@ export const WithMediaLeftSplitsWidthEvenly: Story = {
     const mediaWidth = mediaWrapper.getBoundingClientRect().width;
     const contentWidth = content.getBoundingClientRect().width;
     await expect(Math.abs(mediaWidth - contentWidth)).toBeLessThan(2);
+
+    // `left` placement has no fixed aspect ratio (unlike `top`) — the media
+    // column instead stretches to match `content`'s height (default flex-row
+    // stretch), and the cropped image must fill that box exactly on both axes.
+    const mediaHeight = mediaWrapper.getBoundingClientRect().height;
+    const contentHeight = content.getBoundingClientRect().height;
+    await expect(Math.abs(mediaHeight - contentHeight)).toBeLessThan(2);
+    await expect(Math.abs(media.getBoundingClientRect().width - mediaWidth)).toBeLessThan(2);
+    await expect(Math.abs(media.getBoundingClientRect().height - mediaHeight)).toBeLessThan(2);
+    await expect(getComputedStyle(media).objectFit).toBe('cover');
   },
 };
 

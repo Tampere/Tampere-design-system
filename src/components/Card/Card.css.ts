@@ -21,17 +21,36 @@ export const rootMediaLeft = style({ flexDirection: 'row' });
 // a fixed `flex: 0 0 50%` column — see below). `overflow: hidden` is a second,
 // independent guard: even a correctly-shrunk wrapper doesn't clip an oversized
 // descendant on its own.
-export const media = style({ minWidth: 0, minHeight: 0, overflow: 'hidden' });
+//
+// `top` placement additionally fixes the wrapper to a 3:2 box (photos'
+// conventional crop ratio) — without it, the wrapper's height is undefined
+// (nothing else in the column layout gives it one) and would collapse to 0 now
+// that the media element itself is sized off the wrapper, not its own intrinsic
+// size (see the `img`/`video`/`svg` rule below). `left` placement doesn't need
+// this: its wrapper already gets a height for free by stretching to match
+// `content`'s row height (default flex align-items: stretch).
+export const media = style({
+  minWidth: 0,
+  minHeight: 0,
+  overflow: 'hidden',
+  aspectRatio: '3 / 2',
+});
+
+globalStyle(`${rootMediaLeft} > ${media}`, { aspectRatio: 'auto' });
 
 // Media content (an `<img>`, or any other element a consumer passes) has no
-// intrinsic constraint of its own — without this, a source image larger than the
-// card overflows both the top (full-width) and left (split-column) layouts. A
-// descendant selector (not `> *`) so the constraint reaches the actual media
-// element even when a consumer wraps it (e.g. `<picture><img/></picture>`).
+// intrinsic constraint of its own — without `width`/`height: 100%`, an image
+// smaller than the wrapper (e.g. a thumbnail narrower than the card) rendered
+// at its own intrinsic size instead of filling the frame, leaving visible gaps
+// beside/below it. `object-fit: cover` crops rather than stretches, so a source
+// image's own aspect ratio never distorts to fit the wrapper's. A descendant
+// selector (not `> *`) so the constraint reaches the actual media element even
+// when a consumer wraps it (e.g. `<picture><img/></picture>`).
 globalStyle(`${media} img, ${media} video, ${media} svg`, {
   display: 'block',
-  maxWidth: '100%',
-  height: 'auto',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
 });
 
 // Card's size scale (`sm`/`md`/`lg`) is the same padding scale Paper already
