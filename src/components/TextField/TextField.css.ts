@@ -2,10 +2,11 @@ import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
+  primitives: { spacing },
   theme: {
     states,
     font,
-    components: { input: inputVars, textField, controlHeight, typography },
+    components: { input: inputVars, textField, controlHeight, typography, iconButton },
     text,
     focusRing,
     cornerRadius: { sharp: cornerRadius },
@@ -13,6 +14,9 @@ const {
     inputStates,
   },
 } = vars;
+
+// Width of one IconButton, as rendered in a section: its min touch target plus its own padding.
+const iconButtonWidth = `calc(${iconButton.minTouchTarget} + ${iconButton.padding} * 2)`;
 
 export const root = style({
   display: 'flex',
@@ -33,12 +37,12 @@ export const inputContainer = style({
   display: 'flex',
 });
 
-// Optional left and right sections
 export const section = style({
   position: 'absolute',
   zIndex: 1,
   display: 'flex',
   alignItems: 'center',
+  gap: spacing[1],
 });
 
 globalStyle(`${section}[data-position="left"]`, {
@@ -87,16 +91,16 @@ export const inputRoot = style({
   },
 });
 
-export const inputPaddingVariant = styleVariants({
-  left: {
-    paddingLeft: `calc(${inputVars.padding.horizontal} * 3)`,
-  },
-  right: {
+export const leftSectionPadding = style({
+  paddingLeft: `calc(${inputVars.padding.horizontal} * 3)`,
+});
+
+export const rightSectionPadding = styleVariants({
+  single: {
     paddingRight: `calc(${inputVars.padding.horizontal} * 3)`,
   },
-  both: {
-    paddingLeft: `calc(${inputVars.padding.horizontal} * 3)`,
-    paddingRight: `calc(${inputVars.padding.horizontal} * 3)`,
+  double: {
+    paddingRight: `calc(${inputVars.padding.horizontal} + ${iconButtonWidth} * 2 + ${spacing[1]} + ${inputVars.spacing.horizontalSpacing})`,
   },
 });
 

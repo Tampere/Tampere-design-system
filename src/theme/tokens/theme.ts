@@ -187,6 +187,7 @@ export function getTheme(bp: BreakpointKey) {
     },
     textField: { labelMargin: rem('0px'), minHeight: rem('52px') },
     searchField: { maxWidth: rem('500px'), dropDownMaxHeight: rem('250px') },
+    select: { dropDownMaxHeight: rem('350px') },
     pagination: { itemWidth: rem('40px'), itemHeight: rem('40px') },
     accordion: {
       spacing: bpTokens.spacing.xs,

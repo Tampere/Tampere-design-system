@@ -1,6 +1,6 @@
 import { TextInput, type TextInputProps } from '@mantine/core';
 import cx from 'clsx';
-import { useState } from 'react';
+import { Children, useEffect, useState } from 'react';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
 import { SearchIcon } from '../../icons/SearchIcon.tsx';
 import { mergeClassNames } from '../../utils.ts';
@@ -11,8 +11,9 @@ import {
   errorText,
   input,
   inputContainer,
-  inputPaddingVariant,
   label,
+  leftSectionPadding,
+  rightSectionPadding,
   root,
   section,
   wrapper,
@@ -40,18 +41,11 @@ const getInputStatus = (error?: TextFieldProps['error'], disabled?: boolean): In
   return 'default';
 };
 
-type SectionStatus = 'left' | 'right' | 'both';
+type SectionSize = 'single' | 'double';
 
-/** Determine which sections are present */
-const getSectionStatus = (
-  showSearchIcon?: boolean,
-  showClearButton?: boolean
-): SectionStatus | null => {
-  if (showSearchIcon && showClearButton) return 'both';
-  if (showSearchIcon) return 'left';
-  if (showClearButton) return 'right';
-  return null;
-};
+/** How much right padding to reserve, based on how many icons the section actually holds. */
+const getRightSectionSize = (iconCount: number): SectionSize =>
+  iconCount >= 2 ? 'double' : 'single';
 
 /** Container for input and endInstance */
 const InputContainer = ({
@@ -88,19 +82,39 @@ export const TextField = ({
   ...props
 }: TextFieldProps) => {
   const inputStatus = getInputStatus(error, disabled);
-  const sectionStatus = getSectionStatus(showSearchIcon, showClearButton);
+
+  const [textValue, setTextValue] = useState('');
+
+  // TextField padding is calculated based on which icons are shown in
+  // right and left sections
+  const hasClearButton = !!showClearButton && textValue.length > 0;
+  const rightIconCount = hasClearButton ? 1 : Children.count(props.rightSection);
+  const hasRightSection = rightIconCount > 0;
+  const hasLeftSection = !!showSearchIcon || !!props.leftSection;
+
+  // Dev-only guard: padding is only sized for up to 2 icons (see
+  // `getRightSectionSize`/`rightSectionPadding`)
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && rightIconCount > 2) {
+      console.error(
+        `TextField: \`rightSection\` has ${rightIconCount} icons, but padding is only reserved for up to 2 — text may run underneath.`
+      );
+    }
+  }, [rightIconCount]);
 
   const defaultClassNames = {
     section: section,
     root: root,
     wrapper: wrapper,
-    input: cx(input[inputStatus], sectionStatus && inputPaddingVariant[sectionStatus]),
+    input: cx(
+      input[inputStatus],
+      hasLeftSection && leftSectionPadding,
+      hasRightSection && rightSectionPadding[getRightSectionSize(rightIconCount)]
+    ),
     label: label[inputStatus],
     description: description[inputStatus],
     error: cx(errorRoot, errorText),
   };
-
-  const [textValue, setTextValue] = useState('');
 
   return (
     <TextInput
@@ -120,22 +134,21 @@ export const TextField = ({
         <InputContainer endInstance={endInstance}>{children}</InputContainer>
       )}
       {...(showSearchIcon && { leftSection: <SearchIcon /> })}
-      {...(showClearButton &&
-        textValue.length > 0 && {
-          rightSection: (
-            <IconButton
-              aria-label={clearButtonLabel}
-              onClick={() => {
-                setTextValue('');
-                onClearButtonClick?.();
-              }}
-              size={'sm'}
-              variant="default"
-            >
-              <CloseIcon />
-            </IconButton>
-          ),
-        })}
+      {...(hasClearButton && {
+        rightSection: (
+          <IconButton
+            aria-label={clearButtonLabel}
+            onClick={() => {
+              setTextValue('');
+              onClearButtonClick?.();
+            }}
+            size={'sm'}
+            variant="default"
+          >
+            <CloseIcon />
+          </IconButton>
+        ),
+      })}
     />
   );
 };

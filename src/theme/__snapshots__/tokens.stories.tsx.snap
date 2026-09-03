@@ -219,6 +219,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
     },
+    "select": {
+      "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
     "switch": {
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
@@ -566,6 +569,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
     },
+    "select": {
+      "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
     "switch": {
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
@@ -912,6 +918,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
+    },
+    "select": {
+      "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -1674,6 +1683,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
         "maxWidth": "calc(31.25rem * var(--mantine-scale))",
       },
+      "select": {
+        "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+      },
       "switch": {
         "backgroundUnchecked": "#dedee2",
         "height": "calc(1.5rem * var(--mantine-scale))",
@@ -2022,6 +2034,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
     },
+    "select": {
+      "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
     "switch": {
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
@@ -2369,6 +2384,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
     },
+    "select": {
+      "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
     "switch": {
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
@@ -2715,6 +2733,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     "searchField": {
       "dropDownMaxHeight": "calc(15.625rem * var(--mantine-scale))",
       "maxWidth": "calc(31.25rem * var(--mantine-scale))",
+    },
+    "select": {
+      "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
