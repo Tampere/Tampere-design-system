@@ -376,7 +376,7 @@ export const TurquoiseBackgroundTextLinkFocusUsesInvertedOutline: Story = {
     // The neutral focusRing outline (`focus.visible`, #1e1e22) fails WCAG's
     // 3:1 non-text contrast minimum against Card's colored backgrounds — must
     // use the inverted outline color (`focus.visibleInverted`, white) here
-    // instead, the same allowlist-driven inversion `color` already gets (#116).
+    // instead, the same allowlist-driven inversion `color` already gets.
     await expect(getComputedStyle(link).outlineColor).toBe('rgb(255, 255, 255)');
   },
 };
@@ -395,8 +395,8 @@ export const TurquoiseBackgroundButtonInChildrenKeepsOwnColors: Story = {
     // Asserted against the concrete `states.default` value (not just
     // `.not.toBe(white)`) so this can't silently pass for any wrong color —
     // see the constraint documented on `CardProps['background']`: this pairing
-    // is known to fail contrast on colored backgrounds until #115 ships an
-    // inverted Button variant.
+    // is known to fail contrast on colored backgrounds until Button ships an
+    // inverted variant.
     await expect(getComputedStyle(canvas.getByRole('button')).color).toBe('rgb(41, 84, 154)');
   },
 };
@@ -433,7 +433,7 @@ export const TurquoiseBackgroundButtonInActionsKeepsOwnColors: Story = {
     // Same guarantee as `TurquoiseBackgroundButtonInChildrenKeepsOwnColors`,
     // but for the `actions` slot — the inversion allowlist excludes Button
     // regardless of which slot it's nested in. Same concrete-value assertion
-    // for the same reason (see that story's comment, and #115).
+    // for the same reason (see that story's comment).
     await expect(getComputedStyle(canvas.getByRole('button')).color).toBe('rgb(41, 84, 154)');
   },
 };
@@ -466,6 +466,23 @@ export const TurquoiseBackgroundUsesContrastText: Story = {
     // this must also flip to contrast color, not just the eyebrow/title Card owns.
     await expect(getComputedStyle(canvas.getByText('Kuvaava teksti')).color).toBe(
       'rgb(255, 255, 255)'
+    );
+  },
+};
+
+export const InvalidBackgroundDegradesToNonInvertedText: Story = {
+  // Paper's own guard warns on this (console.error, not asserted here — see
+  // Paper.stories.tsx's `WarnsOnInvalidBackground`) but still renders with no
+  // background color applied, leaving a white surface. Regression: Card's
+  // `inverted` derivation must key off membership in `backgroundVariants`, not
+  // a blanket `!== 'default'` check, or title/body text would force-invert to
+  // white against that white surface and become unreadable.
+  args: { background: 'invalid' as never },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByRole('heading', { name: 'Otsikko' })).color).toBe(
+      'rgb(30, 30, 34)'
     );
   },
 };

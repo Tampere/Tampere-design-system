@@ -87,8 +87,9 @@ export const textBlock = style({
   gap: card.textContentSpacing,
 });
 
-// Marker class, toggled on `content` when `background !== 'default'` — no rule of
-// its own, just a hook for the `globalStyle` selector below.
+// Marker class, toggled on `content` when Card derives `inverted` (see
+// `Card.tsx`) — no rule of its own, just a hook for the `globalStyle`
+// selectors below.
 export const inverted = style({});
 
 // Typography's variants and TextLink's link states each set `color` directly on
@@ -117,7 +118,7 @@ globalStyle(invertibleSelectors, { color: `${contrast} !important` });
 // match this selector, but it's built from the same allowlist as the color
 // override above for consistency. TextLink's neutral outline (`focus.visible`,
 // #1e1e22) fails WCAG's 3:1 non-text-contrast minimum against Card's colored
-// backgrounds (#116) — override just the color (width/offset already match)
+// backgrounds — override just the color (width/offset already match)
 // to the same inverted tone used above, scoped to `:focus-visible` so it only
 // fires on colored Cards.
 const invertibleFocusSelectors = [...Object.values(typography), ...Object.values(link)]

@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, type ReactNode } from 'react';
 import cx from 'clsx';
-import { Paper, type PaperProps } from '../Paper';
+import { Paper, type PaperProps, type SurfacePrimitiveProps } from '../Paper';
 import { backgroundVariants } from '../Paper/Paper.css';
 import { Typography } from '../Typography';
 import {
@@ -13,7 +13,7 @@ import {
   inverted as invertedMarker,
 } from './Card.css';
 
-export interface CardProps extends React.AriaAttributes {
+export interface CardProps extends SurfacePrimitiveProps {
   /** `'lg'` → H2 heading + Paper's `lg` padding. `'md'`/`'sm'` → H3 heading + matching padding. */
   size?: 'lg' | 'md' | 'sm';
   /**
@@ -49,11 +49,6 @@ export interface CardProps extends React.AriaAttributes {
   /** Body content between the title and `actions` — text, Buttons, other components. */
   children?: ReactNode;
   className?: string;
-  id?: string;
-  role?: string;
-  /** Polymorphic root element, e.g. `component="article"`. */
-  component?: React.ElementType;
-  'data-testid'?: string;
 }
 
 const headingVariant = { lg: 'h2', md: 'h3', sm: 'h3' } as const;
@@ -97,7 +92,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     // heading style and the heading element), `mediaPlacement` silently falls back
     // to the `top` layout, and `titleOrder` silently stops overriding the heading
     // level. `background` isn't checked here — Paper already guards it, and Card
-    // just forwards the value (though Card's own `inverted` derivation below
+    // just forwards the value (though Card's own `inverted` derivation above
     // degrades safely for an invalid value regardless).
     useEffect(() => {
       if (process.env.NODE_ENV === 'production') return;

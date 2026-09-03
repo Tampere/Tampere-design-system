@@ -1,1 +1,1 @@
-export { Paper, type PaperProps } from './Paper';
+export { Paper, type PaperProps, type SurfacePrimitiveProps } from './Paper';

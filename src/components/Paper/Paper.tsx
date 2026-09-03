@@ -33,6 +33,19 @@ const MANTINE_STYLE_PROP_KEYS = [
   'bdrs',
 ] as const;
 
+// Mantine's `PaperProps` only extends `BoxProps`/style props — native attributes
+// like `id`/`role`/`aria-*` come from the polymorphic factory's element typing,
+// which a manually-typed wrapper doesn't inherit, so they're added back explicitly.
+// Shared with `CardProps` (which builds directly on Paper) so the two don't
+// redeclare — and risk drifting on — the same attribute block independently.
+export type SurfacePrimitiveProps = React.AriaAttributes & {
+  id?: string;
+  role?: React.AriaRole;
+  /** Polymorphic root element, e.g. `component="section"` or `"article"`. */
+  component?: React.ElementType;
+  'data-testid'?: string;
+};
+
 export type PaperProps = PropsWithChildren<
   Omit<
     MantinePaperProps,
@@ -57,12 +70,7 @@ export type PaperProps = PropsWithChildren<
     | 'pe'
   >
 > &
-  // Mantine's `PaperProps` only extends `BoxProps`/style props — native attributes
-  // like `id`/`role`/`aria-*` come from the polymorphic factory's element typing,
-  // which a manually-typed wrapper doesn't inherit, so they're added back explicitly.
-  React.AriaAttributes & {
-    id?: string;
-    role?: string;
+  SurfacePrimitiveProps & {
     /**
      * `'default'` is white. The other three are Figma's own "color override" examples
      * (confirmed by pixel-sampling a real rendered instance of each, since Figma's
@@ -71,7 +79,7 @@ export type PaperProps = PropsWithChildren<
      * no confirmed Figma example backs a specific shade for those.
      */
     background?: 'default' | 'turquoise' | 'blue' | 'pink';
-    /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses (#73). */
+    /** Corner shape. `'pill'` matches the same `cornerRadius` tier Button's `radius` prop uses. */
     radius?: 'sharp' | 'pill';
     /** Default `false`. */
     withBorder?: boolean;
@@ -81,9 +89,6 @@ export type PaperProps = PropsWithChildren<
     withShadow?: boolean;
     /** Default `'md'`. */
     padding?: 'none' | 'sm' | 'md' | 'lg';
-    /** Polymorphic root element, e.g. `component="section"`. */
-    component?: React.ElementType;
-    'data-testid'?: string;
   };
 
 /** A bare surface container — background, corner radius, optional border, optional shadow, and padding. No behaviour of its own. */
