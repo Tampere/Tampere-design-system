@@ -1,7 +1,7 @@
+import type { AnchorHTMLAttributes } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, userEvent, waitFor } from '@storybook/testing-library';
-import { expect, fn } from 'storybook/test';
-import { Button } from '../Button';
+import { within, waitFor } from '@storybook/testing-library';
+import { expect } from 'storybook/test';
 import { Linkbox } from './Linkbox';
 
 const meta = {
@@ -40,8 +40,8 @@ export const Default: Story = {
 };
 
 export const AccessibleNameIsTitleOnly: Story = {
-  // Simple mode's whole box is the `<a>` — its accessible name must be just
-  // `title`, not eyebrow+title+description read together as one link name.
+  // The whole box is the `<a>` — its accessible name must be just `title`,
+  // not eyebrow+title+description read together as one link name.
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link');
@@ -100,11 +100,11 @@ export const InvertedFocusVisibleUsesSameOutlineAsDefault: Story = {
 
 export const InvertedFocusVisibleKeepsOpaqueBackground: Story = {
   // Regression: the focus/hover overlay tint was applied via `backgroundColor`
-  // — on the same element as Paper's own opaque turquoise `backgroundColor` in
-  // simple mode, a translucent `rgba(255,255,255,0.1)` override replaced (not
-  // tinted) it, leaving the box ~90% transparent and effectively invisible
-  // against the page. Must stay layered via `backgroundImage` instead, so the
-  // underlying `backgroundColor` is untouched by focus/hover.
+  // — on the same element as Paper's own opaque turquoise `backgroundColor`,
+  // a translucent `rgba(255,255,255,0.1)` override replaced (not tinted) it,
+  // leaving the box ~90% transparent and effectively invisible against the
+  // page. Must stay layered via `backgroundImage` instead, so the underlying
+  // `backgroundColor` is untouched by focus/hover.
   args: { inverted: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -130,90 +130,25 @@ export const External: Story = {
   },
 };
 
-export const WithActions: Story = {
+// A minimal stand-in for a router `Link` component (Next.js `Link`, React
+// Router's `Link`, etc.) — forwards everything through to a real `<a>`.
+function FakeRouterLink({ href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) {
+  return <a href={href} data-router-link="true" {...props} />;
+}
+
+export const WithCustomComponent: Story = {
   tags: docExample,
-  args: {
-    actions: (
-      <Button variant="secondary" onClick={fn()}>
-        Lue lisää
-      </Button>
-    ),
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Nested mode: the box has a covering primary link, AND the Button in
-    // `actions` stays independently reachable/clickable — no nested
-    // anchor-in-anchor (the primary link and the Button are siblings, not
-    // ancestor/descendant), and only one accessible link name for the box.
-    const links = canvas.getAllByRole('link');
-    await expect(links).toHaveLength(1);
-    await expect(links[0]).toHaveAccessibleName('Otsikko');
-    await expect(links[0].querySelector('button')).toBeNull();
-
-    const button = canvas.getByRole('button', { name: 'Lue lisää' });
-    await expect(button.closest('a')).toBeNull();
-  },
-};
-
-export const NestedModeSpacingMatchesSimpleMode: Story = {
-  // Regression: wrapping content in the overlay mode's positioned div
-  // (`positionedContent`) previously stranded the icon row in plain block
-  // flow, losing `root`'s flex gap and leaving the arrow flush against the
-  // description instead of Figma's `card.spacing` (24px) gap — caught
-  // visually in Storybook, not by the other structural assertions above.
-  args: { actions: <Button variant="secondary">Lue lisää</Button> },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const description = canvas.getByText('Kuvaava teksti');
-    const icon = canvas.getByRole('link').parentElement!.querySelector('svg')!;
-
-    const gap = icon.getBoundingClientRect().top - description.getBoundingClientRect().bottom;
-    await expect(gap).toBeGreaterThan(16);
-  },
-};
-
-const handleActionsClick = fn();
-
-export const ActionsRemainClickable: Story = {
-  args: {
-    actions: (
-      <Button variant="secondary" onClick={handleActionsClick}>
-        Toiminto
-      </Button>
-    ),
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Toiminto' });
-
-    await userEvent.click(button);
-    await expect(handleActionsClick).toHaveBeenCalledOnce();
-    await expect(button).toHaveFocus();
-  },
-};
-
-export const WithCustomLink: Story = {
-  args: { href: undefined },
-  render: (args) => (
-    <Linkbox
-      {...args}
-      renderLink={(className) => (
-        <a href="#custom" className={className} aria-label={args.title}>
-          {/* overlay link — no visible content of its own */}
-        </a>
-      )}
-    />
-  ),
+  args: { component: FakeRouterLink },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Otsikko' });
 
-    await expect(link).toHaveAttribute('href', '#custom');
-    // renderLink (like `actions`) switches Linkbox to the overlay structure —
-    // the title text is still rendered as normal visible content, separately
-    // from the link element itself.
-    await expect(canvas.getByText('Otsikko')).not.toBe(link);
+    await expect(link).toHaveAttribute('data-router-link', 'true');
+    await expect(link).toHaveAttribute('href', '#');
+    // Paper's own styling (padding/background/etc.) still applies through
+    // the swapped element, same guarantee Paper's `PolymorphicComponent`
+    // story already gives `<Paper component="section">`.
+    await expect(getComputedStyle(link).backgroundColor).toBe('rgb(255, 255, 255)');
   },
 };
 
@@ -265,9 +200,7 @@ export const WarnsWithoutDestination: Story = {
   beforeEach: captureConsoleErrors,
   play: async () => {
     await waitFor(() =>
-      expect(
-        capturedConsoleErrors.some((m) => /provide either `href` or `renderLink`/.test(m))
-      ).toBe(true)
+      expect(capturedConsoleErrors.some((m) => /provide `href`/.test(m))).toBe(true)
     );
   },
 };
@@ -278,31 +211,6 @@ export const WarnsWhenTargetIgnoredByExternal: Story = {
   play: async () => {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /`target` is ignored/.test(m))).toBe(true)
-    );
-  },
-};
-
-export const WarnsWhenHrefIgnoredByRenderLink: Story = {
-  render: (args) => (
-    <Linkbox {...args} renderLink={(className) => <a href="#custom" className={className} />} />
-  ),
-  beforeEach: captureConsoleErrors,
-  play: async () => {
-    await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => /`href` is ignored/.test(m))).toBe(true)
-    );
-  },
-};
-
-export const WarnsWhenExternalIgnoredByRenderLink: Story = {
-  args: { href: undefined, external: true },
-  render: (args) => (
-    <Linkbox {...args} renderLink={(className) => <a href="#custom" className={className} />} />
-  ),
-  beforeEach: captureConsoleErrors,
-  play: async () => {
-    await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => /`external` has no effect/.test(m))).toBe(true)
     );
   },
 };
