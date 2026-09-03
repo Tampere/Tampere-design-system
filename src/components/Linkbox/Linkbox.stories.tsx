@@ -96,6 +96,25 @@ export const InvertedFocusVisibleUsesInvertedOutline: Story = {
   },
 };
 
+export const InvertedFocusVisibleKeepsOpaqueBackground: Story = {
+  // Regression: the focus/hover overlay tint was applied via `backgroundColor`
+  // — on the same element as Paper's own opaque turquoise `backgroundColor` in
+  // simple mode, a translucent `rgba(255,255,255,0.1)` override replaced (not
+  // tinted) it, leaving the box ~90% transparent and effectively invisible
+  // against the page. Must stay layered via `backgroundImage` instead, so the
+  // underlying `backgroundColor` is untouched by focus/hover.
+  args: { inverted: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link');
+
+    (link as HTMLAnchorElement).focus();
+    const style = getComputedStyle(link);
+    await expect(style.backgroundColor).toBe('rgb(0, 116, 164)');
+    await expect(style.backgroundImage).not.toBe('none');
+  },
+};
+
 export const External: Story = {
   tags: docExample,
   args: { external: true, href: 'https://tampere.fi' },

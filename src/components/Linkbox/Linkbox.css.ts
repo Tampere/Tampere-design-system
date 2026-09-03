@@ -57,18 +57,35 @@ globalStyle(invertibleTextSelectors, { color: `${contrast} !important` });
 globalStyle(`${root}${inverted} .${iconRow}`, { color: contrast });
 
 // ── Simple mode: the root itself is the `<a>` ────────────────────────────
+//
+// The overlay tint is applied via `backgroundImage` (a same-color-stop
+// linear-gradient), not `backgroundColor` — in this mode `link` is on the
+// exact same element as Paper's own `background-color` (white or, when
+// `inverted`, turquoise), so setting `backgroundColor` here would replace
+// that opaque color outright rather than tint over it: a translucent
+// `rgba(255,255,255,0.1)` `backgroundColor` on the turquoise surface erased
+// it down to ~10% opacity, making the whole box nearly disappear against
+// the page behind it. `backgroundImage` paints on top of `backgroundColor`
+// (CSS's own layering order) without touching the color underneath — the
+// nested mode's separate `overlayLink` element below doesn't have this
+// problem, since it has no `backgroundColor` of its own to begin with.
 export const link = style({
   textDecoration: 'none',
   selectors: {
-    '&:hover': { backgroundColor: hover.overlay },
-    '&:focus-visible': { ...focusRing, backgroundColor: hover.overlay },
+    '&:hover': { backgroundImage: `linear-gradient(${hover.overlay}, ${hover.overlay})` },
+    '&:focus-visible': {
+      ...focusRing,
+      backgroundImage: `linear-gradient(${hover.overlay}, ${hover.overlay})`,
+    },
   },
 });
 
-globalStyle(`${root}${inverted}.${link}:hover`, { backgroundColor: hover.overlayContrast });
+globalStyle(`${root}${inverted}.${link}:hover`, {
+  backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
+});
 globalStyle(`${root}${inverted}.${link}:focus-visible`, {
   ...focusRingInverted,
-  backgroundColor: hover.overlayContrast,
+  backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
 });
 
 // ── Nested-interactive mode: a covering overlay `<a>`, plus a positioned
