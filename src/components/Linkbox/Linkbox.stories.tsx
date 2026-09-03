@@ -4,6 +4,40 @@ import { within, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { Linkbox } from './Linkbox';
 
+// A 1x1 GIF has no real intrinsic size, so it can't catch the media wrapper
+// collapsing to 0 height in the default (top) layout — this SVG has real
+// width/height and stands in for a real photo (same fixture Card's own media
+// stories use).
+const sizedMediaImage = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="260" height="195"><rect width="260" height="195" fill="#ccc"/></svg>'
+)}`;
+
+// `vitest/browser`'s `page.viewport` resizes the story's own iframe — the
+// only way to actually exercise a real `@media` breakpoint (Linkbox's
+// `left`-placement collapse is the first such rule in this repo; every other
+// breakpoint behaviour comes from `vars.theme` swapping value at `:root`,
+// which every ambient test already picks up regardless of viewport size).
+//
+// This module throws at evaluation time when loaded outside Vitest Browser
+// Mode — which is exactly what happens when this SAME `.stories.tsx` file is
+// loaded by Storybook's own plain dev server (not the Vitest test runner) to
+// render/browse these stories interactively. A static top-level import would
+// crash that module for the *entire* file, not just the stories that use it.
+// Dynamic-import it lazily instead, and swallow the "not in Browser Mode"
+// case as a no-op — outside Vitest there's no real viewport to resize, and
+// the two stories that need it are tagged test-only (`!dev`/`!autodocs`)
+// precisely because their assertions only hold under an actual resize.
+async function resizeViewport(width: number, height: number) {
+  try {
+    const { page } = await import('vitest/browser');
+    await page.viewport(width, height);
+  } catch {
+    // Not running under Vitest Browser Mode — nothing to resize.
+  }
+}
+
+const WIDE_VIEWPORT = [1024, 768] as const;
+
 const meta = {
   component: Linkbox,
   tags: ['!dev', '!autodocs'],
@@ -143,6 +177,81 @@ export const InvertedFocusVisibleKeepsOpaqueBackground: Story = {
     const style = getComputedStyle(link);
     await expect(style.backgroundColor).toBe('rgb(0, 116, 164)');
     await expect(style.backgroundImage).not.toBe('none');
+  },
+};
+
+export const WithMediaTop: Story = {
+  tags: docExample,
+  render: (args) => (
+    <div style={{ width: 600 }}>
+      <Linkbox {...args} />
+    </div>
+  ),
+  args: { media: <img alt="" src={sizedMediaImage} /> },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Otsikko' });
+    const media = canvas.getByRole('img');
+    const mediaWrapper = media.parentElement as HTMLElement;
+
+    // Media bleeds to the edge — no padding on its own wrapper (Card's same
+    // regression: padding lives on the text-content wrapper, not the root).
+    await expect(getComputedStyle(mediaWrapper).padding).toBe('0px');
+    const linkWidth = link.getBoundingClientRect().width;
+    const mediaHeight = mediaWrapper.getBoundingClientRect().height;
+    // Fixed 3:2 box — the image crops to fill it, not the other way around.
+    await expect(Math.abs(linkWidth / mediaHeight - 1.5)).toBeLessThan(0.05);
+    await expect(getComputedStyle(media).objectFit).toBe('cover');
+  },
+};
+
+export const WithMediaLeft: Story = {
+  // Plain visual example — no viewport manipulation, so it renders correctly
+  // in Storybook's own dev server too (see `resizeViewport` above). Whether
+  // it actually shows the row or the collapsed layout depends on the ambient
+  // canvas width; the two behaviours are asserted precisely (and test-only,
+  // since they need a real resize) by the two stories below.
+  tags: docExample,
+  args: { media: <img alt="" src={sizedMediaImage} />, mediaPlacement: 'left' },
+};
+
+export const WithMediaLeftUsesRowLayoutAtWideViewport: Story = {
+  // Test-only (not `docExample`): needs a real Vitest Browser Mode viewport
+  // resize to mean anything, which `WithMediaLeft` above deliberately avoids.
+  args: { media: <img alt="" src={sizedMediaImage} />, mediaPlacement: 'left' },
+  play: async ({ canvasElement }) => {
+    await resizeViewport(1280, 900);
+    try {
+      const canvas = within(canvasElement);
+      const link = canvas.getByRole('link', { name: 'Otsikko' });
+      await expect(getComputedStyle(link).flexDirection).toBe('row');
+    } finally {
+      await resizeViewport(...WIDE_VIEWPORT);
+    }
+  },
+};
+
+export const WithMediaLeftCollapsesToStackedBelowMdBreakpoint: Story = {
+  // A 50/50 row split gets cramped once the whole card narrows past tablet
+  // width — below the `md` (768px) breakpoint, `left` falls back to the same
+  // stacked layout `top` uses by default.
+  args: { media: <img alt="" src={sizedMediaImage} />, mediaPlacement: 'left' },
+  play: async ({ canvasElement }) => {
+    await resizeViewport(480, 900);
+    try {
+      const canvas = within(canvasElement);
+      const link = canvas.getByRole('link', { name: 'Otsikko' });
+      const media = canvas.getByRole('img');
+      const mediaWrapper = media.parentElement as HTMLElement;
+
+      await expect(getComputedStyle(link).flexDirection).toBe('column');
+      // Genuinely stacked like `top`, not just "not row" — full-width 3:2 box.
+      const linkWidth = link.getBoundingClientRect().width;
+      const mediaHeight = mediaWrapper.getBoundingClientRect().height;
+      await expect(Math.abs(linkWidth / mediaHeight - 1.5)).toBeLessThan(0.05);
+    } finally {
+      await resizeViewport(...WIDE_VIEWPORT);
+    }
   },
 };
 

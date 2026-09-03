@@ -1,7 +1,14 @@
 import { style, globalStyle } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 import { typography } from '../Typography/Typography.css';
-import { textBlock as cardTextBlock } from '../Card/Card.css';
+import {
+  textBlock as cardTextBlock,
+  root as cardRoot,
+  media as cardMedia,
+  content as cardContent,
+  contentPaddingVariants,
+} from '../Card/Card.css';
+import { breakpoint } from '../../theme/tokens/breakpoint';
 
 const {
   theme: {
@@ -17,7 +24,19 @@ const {
 // Linkbox's own eyebrow/title/description stack matches that exactly.
 export const textBlock = cardTextBlock;
 
-export const root = style({ display: 'flex', flexDirection: 'column', gap: card.spacing });
+// Reused wholesale from Card — Linkbox's own root/media/content/padding
+// structure is identical to Card's: `root` is a plain column flex container,
+// `media` is a fixed 3:2 box (or `auto` + a flex-basis split under Card's own
+// `rootMediaLeft`, which Linkbox never imports/applies) that bleeds to the
+// edge, and `content` is the padded text-content block that fills whatever
+// space `media` doesn't take. Only the `left`-placement responsive collapse
+// below is Linkbox-specific — Card's own `left` placement stays row at every
+// breakpoint; that behaviour is untouched since Linkbox never applies Card's
+// `rootMediaLeft` class.
+export const root = cardRoot;
+export const media = cardMedia;
+export const content = cardContent;
+export const contentPadding = contentPaddingVariants.md;
 
 // Figma's "Kuvaava teksti" (P1) is styled with text/secondary, not
 // Typography's own p1 default (text/primary) — only the description needs
@@ -77,4 +96,38 @@ globalStyle(`${root}${inverted}.${link}:hover`, {
 });
 globalStyle(`${root}${inverted}.${link}:focus-visible`, {
   backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
+});
+
+// `left` media placement is a 50/50 row split above the `md` breakpoint —
+// below that, the whole card has narrowed enough that a row split gets
+// cramped, so it collapses to the same stacked layout `top` uses by default
+// (no override needed for the stacked state itself — that's just `root`'s
+// unconditional base `flexDirection: column`).
+//
+// This is the first component in the repo to use a real `@media` query in
+// its own stylesheet — every other breakpoint-dependent value comes from
+// `vars.theme` swapping at `:root` (theme.css.ts), which works for a value
+// swap but not a structural row↔column switch. Deliberately scoped to this
+// component's own `leftMarker` (never applied to Card's `rootMediaLeft`), so
+// Card's own `left` placement — which stays row at every breakpoint — is
+// untouched.
+//
+// Viewport-based, not a container query (none exist yet in this repo): a
+// `left`-placed Linkbox squeezed into a narrow grid column on a wide
+// viewport still renders row layout. Known limitation, not a regression —
+// Card's own `left` placement never collapses at all, at any width.
+export const leftMarker = style({});
+
+const wideEnoughForRowSplit = `screen and (min-width: ${breakpoint.md.appWidth})`;
+
+globalStyle(leftMarker, {
+  '@media': { [wideEnoughForRowSplit]: { flexDirection: 'row' } },
+});
+globalStyle(`${leftMarker} > ${media}`, {
+  '@media': {
+    [wideEnoughForRowSplit]: { aspectRatio: 'auto', flex: `0 0 ${card.mediaSplit}` },
+  },
+});
+globalStyle(`${leftMarker} > ${content}`, {
+  '@media': { [wideEnoughForRowSplit]: { flex: `0 0 ${card.mediaSplit}` } },
 });

@@ -4,6 +4,7 @@ import {
   type AriaAttributes,
   type AriaRole,
   type ElementType,
+  type ReactNode,
   type Ref,
 } from 'react';
 import cx from 'clsx';
@@ -12,13 +13,19 @@ import { Typography } from '../Typography';
 import { ArrowRightIcon, OpenExternalLinkIcon } from '../../icons';
 import {
   root,
+  media as mediaClass,
+  content as contentClass,
+  contentPadding,
   textBlock,
   description as descriptionClass,
   iconRow,
   icon as iconClass,
   inverted as invertedMarker,
   link as linkClass,
+  leftMarker,
 } from './Linkbox.css';
+
+const mediaPlacementValues = { top: true, left: true } as const;
 
 export interface LinkboxProps extends AriaAttributes {
   href?: string;
@@ -27,6 +34,18 @@ export interface LinkboxProps extends AriaAttributes {
   titleOrder?: 2 | 3 | 4 | 5;
   eyebrow?: string;
   description?: string;
+  /**
+   * Rendered in a fixed 3:2 frame that bleeds to the box's edge — an `<img>`,
+   * `<video>`, `<svg>`, or a wrapped element, cropped with `object-fit: cover`.
+   */
+  media?: ReactNode;
+  /**
+   * Ignored when `media` is omitted. Default `'top'`. `'left'` is a 50/50 row
+   * split above the `md` (768px) breakpoint — below that it collapses to the
+   * same stacked layout `'top'` uses, since a row split gets cramped once the
+   * whole card narrows past tablet width.
+   */
+  mediaPlacement?: 'top' | 'left';
   /** `false` (default) is a white surface with dark text; `true` is a solid Paper `turquoise` surface with contrast text. */
   inverted?: boolean;
   /** Swaps the arrow icon, forces `target="_blank"`, prepends `rel="noopener noreferrer"` (merging with any existing `rel`), and appends `externalLabel` to the accessible name. */
@@ -53,6 +72,8 @@ export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Link
     titleOrder,
     eyebrow,
     description,
+    media,
+    mediaPlacement = 'top',
     inverted = false,
     external = false,
     externalLabel = '(avautuu uuteen välilehteen)',
@@ -82,7 +103,10 @@ export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Link
     if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
       console.error(`Linkbox: invalid \`titleOrder\` value "${titleOrder}".`);
     }
-  }, [href, external, target, titleOrder]);
+    if (!(mediaPlacement in mediaPlacementValues)) {
+      console.error(`Linkbox: invalid \`mediaPlacement\` value "${String(mediaPlacement)}".`);
+    }
+  }, [href, external, target, titleOrder, mediaPlacement]);
 
   // `Paper`'s own type doesn't widen anchor attributes when `component="a"`
   // (its manually-typed wrapper can't infer per-element props the way
@@ -108,26 +132,35 @@ export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Link
       background={inverted ? 'turquoise' : 'default'}
       radius="sharp"
       withShadow={false}
-      padding="md"
-      className={cx(root, inverted && invertedMarker, linkClass, className)}
+      padding="none"
+      className={cx(
+        root,
+        media && mediaPlacement === 'left' && leftMarker,
+        inverted && invertedMarker,
+        linkClass,
+        className
+      )}
     >
-      <div className={textBlock}>
-        {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
-        <Typography variant="h3" component={titleOrder ? titleComponent[titleOrder] : undefined}>
-          {title}
-        </Typography>
-        {description && (
-          <Typography variant="p1" className={descriptionClass}>
-            {description}
+      {media && <div className={mediaClass}>{media}</div>}
+      <div className={cx(contentClass, contentPadding)}>
+        <div className={textBlock}>
+          {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
+          <Typography variant="h3" component={titleOrder ? titleComponent[titleOrder] : undefined}>
+            {title}
           </Typography>
-        )}
-      </div>
-      <div className={iconRow}>
-        {external ? (
-          <OpenExternalLinkIcon aria-hidden className={iconClass} />
-        ) : (
-          <ArrowRightIcon aria-hidden className={iconClass} />
-        )}
+          {description && (
+            <Typography variant="p1" className={descriptionClass}>
+              {description}
+            </Typography>
+          )}
+        </div>
+        <div className={iconRow}>
+          {external ? (
+            <OpenExternalLinkIcon aria-hidden className={iconClass} />
+          ) : (
+            <ArrowRightIcon aria-hidden className={iconClass} />
+          )}
+        </div>
       </div>
     </Paper>
   );
