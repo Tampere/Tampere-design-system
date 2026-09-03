@@ -82,17 +82,19 @@ export const InvertedColor: Story = {
   },
 };
 
-export const InvertedFocusVisibleUsesInvertedOutline: Story = {
+export const InvertedFocusVisibleUsesSameOutlineAsDefault: Story = {
+  // Unlike Card's nested TextLink focus ring (which does invert to white
+  // against Card's colored backgrounds), Figma's own "Card link content"
+  // Focus-visible/Outline variable is the same dark #1e1e22 for both the
+  // Default and Inverted focus cells — Linkbox's own box-level focus ring
+  // doesn't get an inverted variant.
   args: { inverted: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link');
 
     (link as HTMLAnchorElement).focus();
-    // Neutral outline (#1e1e22) fails WCAG's 3:1 non-text-contrast minimum
-    // against the turquoise background — must use the white inverted outline,
-    // same guarantee Card already gives nested TextLink focus on colored bg.
-    await expect(getComputedStyle(link).outlineColor).toBe('rgb(255, 255, 255)');
+    await expect(getComputedStyle(link).outlineColor).toBe('rgb(30, 30, 34)');
   },
 };
 

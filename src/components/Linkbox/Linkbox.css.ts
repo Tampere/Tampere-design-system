@@ -9,7 +9,6 @@ const {
     contrast,
     hover,
     focusRing,
-    focusRingInverted,
     components: { card },
   },
 } = vars;
@@ -80,11 +79,15 @@ export const link = style({
   },
 });
 
+// Only the tint differs when `inverted` — Figma's own Focus-visible/Outline
+// variable is the same dark #1e1e22 for both the Default and Inverted focus
+// cells (confirmed against the "Card link content" Figma frame), so the
+// outline itself doesn't need an inverted override the way e.g. Card's
+// nested TextLink focus ring does against its own (different) backgrounds.
 globalStyle(`${root}${inverted}.${link}:hover`, {
   backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
 });
 globalStyle(`${root}${inverted}.${link}:focus-visible`, {
-  ...focusRingInverted,
   backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
 });
 
@@ -103,7 +106,6 @@ export const overlayLink = style({
 
 globalStyle(`${root}${inverted} .${overlayLink}:hover`, { backgroundColor: hover.overlayContrast });
 globalStyle(`${root}${inverted} .${overlayLink}:focus-visible`, {
-  ...focusRingInverted,
   backgroundColor: hover.overlayContrast,
 });
 
