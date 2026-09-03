@@ -5,6 +5,7 @@ export { Card, type CardProps } from './Card/Card';
 export { Checkbox } from './Checkbox/Checkbox';
 export { Chip, type ChipProps } from './Chip/Chip';
 export { IconButton } from './IconButton/IconButton';
+export { Linkbox, type LinkboxProps } from './Linkbox/Linkbox';
 export {
   LabeledIconButton,
   type LabeledIconButtonProps,
