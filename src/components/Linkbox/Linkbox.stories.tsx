@@ -50,6 +50,19 @@ export const AccessibleNameIsTitleOnly: Story = {
   },
 };
 
+export const RespectsConsumerAriaLabelOverride: Story = {
+  // Regression: `aria-label` is a valid prop (via `AriaAttributes`) that used
+  // to land in the rest-spread and then get silently overwritten by the
+  // `title`-derived one — a consumer's accessibility override must win.
+  args: { 'aria-label': 'Mukautettu nimi' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link');
+
+    await expect(link).toHaveAccessibleName('Mukautettu nimi');
+  },
+};
+
 export const FocusVisible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

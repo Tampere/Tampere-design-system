@@ -9,7 +9,7 @@ const {
     contrast,
     hover,
     focusRing,
-    components: { card },
+    components: { card, icon: iconTokens },
   },
 } = vars;
 
@@ -28,7 +28,7 @@ export const description = style({ color: text.secondary });
 // Icon row sits below the text block, matching Figma's arrow position.
 export const iconRow = style({ display: 'flex', alignItems: 'center', color: text.header });
 
-export const icon = style({ width: '1.5rem', height: '1.5rem' });
+export const icon = style({ width: iconTokens.size.large, height: iconTokens.size.large });
 
 // Marker class toggled when `inverted` — no rule of its own (the background
 // color itself comes from Paper's `background="turquoise"`), just a hook for

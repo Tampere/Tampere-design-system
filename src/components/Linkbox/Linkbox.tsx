@@ -78,7 +78,7 @@ export function Linkbox({
   // rather than losing type safety on the rest of `LinkboxProps`.
   const anchorProps = {
     href,
-    'aria-label': accessibleName,
+    'aria-label': props['aria-label'] ?? accessibleName,
     target: linkTarget,
     rel: linkRel,
   } as unknown as PaperProps;
