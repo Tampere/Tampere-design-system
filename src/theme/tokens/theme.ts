@@ -73,6 +73,11 @@ const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
 
+const dropShadow = 'rgba(0, 0, 0, 0.5000)';
+// Figma's Card/Accordion dropshadow spec (offset 0/1, blur 4, spread 0) — shared
+// so the two components' shadows can't drift apart by editing one.
+const dropShadowTile = `0px 1px 4px 0px ${dropShadow}`;
+
 const focusRing = {
   outline: `${strokeWeight} solid ${focus.visible}`,
   outlineOffset: `calc(${strokeWeight} / 2)`,
@@ -221,6 +226,10 @@ export function getTheme(bp: BreakpointKey) {
       // Figma's "Card static content" top-level gap (spacing/medium) — between the
       // text-content block (eyebrow/title/body) and the actions slot.
       spacing: bpTokens.spacing.md,
+      // Photos' conventional crop ratio, used for `top`-placement media.
+      mediaAspectRatio: '3 / 2',
+      // `left`-placement media/content column split.
+      mediaSplit: '50%',
     },
     paper: {
       // Figma's "Card static content" padding scale (spacing/medium,
@@ -431,7 +440,8 @@ export function getTheme(bp: BreakpointKey) {
     divider: colors.neutral['200'],
     cornerRadius,
     strokeWeight,
-    dropShadow: 'rgba(0, 0, 0, 0.5000)',
+    dropShadow,
+    dropShadowTile,
     states,
     inputStates,
     selectionStates,

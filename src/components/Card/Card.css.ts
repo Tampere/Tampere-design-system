@@ -33,10 +33,8 @@ export const media = style({
   minWidth: 0,
   minHeight: 0,
   overflow: 'hidden',
-  aspectRatio: '3 / 2',
+  aspectRatio: card.mediaAspectRatio,
 });
-
-globalStyle(`${rootMediaLeft} > ${media}`, { aspectRatio: 'auto' });
 
 // Media content (an `<img>`, or any other element a consumer passes) has no
 // intrinsic constraint of its own — without `width`/`height: 100%`, an image
@@ -75,8 +73,11 @@ export const content = style({
 // distributed. `flex: 0 0 50%` sidesteps that: each side's final width is the
 // fixed value itself, not a computed target, so the split is exact regardless
 // of either side's padding.
-globalStyle(`${rootMediaLeft} > ${media}`, { flex: '0 0 50%' });
-globalStyle(`${rootMediaLeft} > ${content}`, { flex: '0 0 50%' });
+globalStyle(`${rootMediaLeft} > ${media}`, {
+  aspectRatio: 'auto',
+  flex: `0 0 ${card.mediaSplit}`,
+});
+globalStyle(`${rootMediaLeft} > ${content}`, { flex: `0 0 ${card.mediaSplit}` });
 
 export const textBlock = style({
   display: 'flex',
@@ -104,15 +105,19 @@ const invertibleSelectors = [...Object.values(typography), ...Object.values(link
 
 // `!important` isn't required to beat Typography/TextLink's own class on
 // specificity (a two-class ancestor selector already outranks their single
-// class), but is kept defensively in case either ever gains a second class
-// (e.g. a `className` override) that would otherwise tie or exceed it.
+// class), but is kept defensively against a same-specificity rule declared
+// later in source order (e.g. a consumer `className` override), which would
+// otherwise win the cascade regardless of specificity.
 globalStyle(invertibleSelectors, { color: `${contrast} !important` });
 
-// The neutral `focusRing` outline (`focus.visible`, #1e1e22) both TextLink and
-// Typography spread for `:focus-visible` fails WCAG's 3:1 non-text-contrast
-// minimum against Card's colored backgrounds (#116) — override just the color
-// (width/offset already match) to the same inverted tone used above, scoped to
-// `:focus-visible` on the same allowlist so it only fires on colored Cards.
+// TextLink is the only one of the two that spreads `focusRing` for
+// `:focus-visible` — Typography elements aren't natively focusable and never
+// match this selector, but it's built from the same allowlist as the color
+// override above for consistency. TextLink's neutral outline (`focus.visible`,
+// #1e1e22) fails WCAG's 3:1 non-text-contrast minimum against Card's colored
+// backgrounds (#116) — override just the color (width/offset already match)
+// to the same inverted tone used above, scoped to `:focus-visible` so it only
+// fires on colored Cards.
 const invertibleFocusSelectors = [...Object.values(typography), ...Object.values(link)]
   .map((className) => `${content}${inverted} .${className}:focus-visible`)
   .join(', ');
