@@ -27,6 +27,12 @@ export interface CardProps extends React.AriaAttributes {
    * inverted variant.
    */
   background?: PaperProps['background'];
+  /**
+   * Rendered in a fixed 3:2 frame (`top` placement) or a 50/50 column (`left`
+   * placement), cropped with `object-fit: cover` so its own aspect ratio never
+   * distorts to fit — an `<img>`, `<video>`, `<svg>`, `<iframe>`/`<canvas>`
+   * embed, or a wrapped element (e.g. `<picture><img/></picture>`).
+   */
   media?: ReactNode;
   /** Ignored when `media` is omitted. Default `'top'`. */
   mediaPlacement?: 'top' | 'left';

@@ -122,7 +122,17 @@ export const Paper = forwardRef<HTMLDivElement, PaperProps>(
       if (hasBorder && !(borderColor in borderColorVariants)) {
         console.error(`Paper: invalid \`borderColor\` value "${borderColor}".`);
       }
-    }, [background, padding, radius, hasBorder, borderColor]);
+
+      // A type-bypassing caller (`as any`, untyped JS) can still reach Mantine's
+      // raw style props, which `restProps` below silently drops — warn so that
+      // silent drop has some signal, matching the guards above.
+      const leakedStyleProps = MANTINE_STYLE_PROP_KEYS.filter((key) => key in props);
+      if (leakedStyleProps.length > 0) {
+        console.error(
+          `Paper: prop(s) ${leakedStyleProps.join(', ')} are ignored — use \`background\`/\`padding\`/\`radius\`/\`withBorder\`/\`withShadow\` instead.`
+        );
+      }
+    }, [background, padding, radius, hasBorder, borderColor, props]);
 
     const restProps: Record<string, unknown> = { ...props };
     for (const key of MANTINE_STYLE_PROP_KEYS) delete restProps[key];

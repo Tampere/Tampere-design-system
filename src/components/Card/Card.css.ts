@@ -43,8 +43,10 @@ export const media = style({
 // beside/below it. `object-fit: cover` crops rather than stretches, so a source
 // image's own aspect ratio never distorts to fit the wrapper's. A descendant
 // selector (not `> *`) so the constraint reaches the actual media element even
-// when a consumer wraps it (e.g. `<picture><img/></picture>`).
-globalStyle(`${media} img, ${media} video, ${media} svg`, {
+// when a consumer wraps it (e.g. `<picture><img/></picture>`). `iframe`/`canvas`
+// are listed alongside `img`/`video`/`svg` for the same reason — an embedded
+// video (YouTube/Vimeo) or canvas has its own intrinsic/default size too.
+globalStyle(`${media} img, ${media} video, ${media} svg, ${media} iframe, ${media} canvas`, {
   display: 'block',
   width: '100%',
   height: '100%',

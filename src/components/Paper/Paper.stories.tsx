@@ -223,3 +223,44 @@ export const WarnsOnInvalidBorderColor: Story = {
     );
   },
 };
+
+export const WarnsOnInvalidRadius: Story = {
+  args: { radius: 'invalid' as never },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /invalid `radius` value/.test(m))).toBe(true)
+    );
+  },
+};
+
+// ── Mantine style-prop bypass tests ───────────────────────────────────────────
+// `PaperProps` omits Mantine's raw style props (`bg`/`p`/`shadow`/`bd`/etc.) at
+// the type level, so a typed caller can't reach them — these simulate a caller
+// that bypasses the type system anyway (`as any`, untyped JS).
+
+export const IgnoresMantineStyleProps: Story = {
+  render: () => <Paper data-testid="paper" {...({ bg: 'red', p: 40, shadow: 'none' } as any)} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const style = getComputedStyle(canvas.getByTestId('paper'));
+
+    // Regression: none of the bypassed props should reach the rendered element
+    // — Paper's own defaults (white background, `md` padding, a shadow) win.
+    await expect(style.backgroundColor).toBe('rgb(255, 255, 255)');
+    await expect(style.padding).not.toBe('40px');
+    await expect(style.boxShadow).not.toBe('none');
+  },
+};
+
+export const WarnsOnMantineStyleProps: Story = {
+  args: { bg: 'red', shadow: 'none' } as never,
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /prop\(s\) bg, shadow are ignored/.test(m))).toBe(
+        true
+      )
+    );
+  },
+};

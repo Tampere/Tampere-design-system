@@ -508,3 +508,30 @@ export const WarnsOnInvalidTitleOrder: Story = {
     );
   },
 };
+
+export const WarnsOnInvalidMediaPlacement: Story = {
+  args: { media: <img alt="" src={sizedMediaImage} />, mediaPlacement: 'invalid' as never },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /invalid `mediaPlacement` value/.test(m))).toBe(true)
+    );
+  },
+};
+
+export const FixedSurfacePropsCannotBeOverridden: Story = {
+  // Simulates a non-TS consumer passing one of Card's fixed Paper props through
+  // (`CardProps` doesn't declare them, so a typed caller can't) — Card's own
+  // `radius`/`withShadow`/`padding` must still win, since Card's whole surface
+  // contract (edge-to-edge media, no visible border) depends on them.
+  args: { radius: 'pill', withShadow: false, padding: 'lg' } as never,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const card = canvas.getByTestId('card');
+    const style = getComputedStyle(card);
+
+    await expect(style.borderRadius).toBe('0px');
+    await expect(style.boxShadow).not.toBe('none');
+    await expect(style.padding).toBe('0px');
+  },
+};
