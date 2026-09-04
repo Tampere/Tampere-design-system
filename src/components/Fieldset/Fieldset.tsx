@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react';
+import { useId } from 'react';
 import cx from 'clsx';
 import {
   Fieldset as MantineFieldset,
@@ -11,7 +11,6 @@ import {
   errorText,
   helperText as helperTextStyle,
   legend as legendStyle,
-  pill,
   root,
   withBorder as withBorderStyle,
 } from './Fieldset.css';
@@ -24,10 +23,8 @@ export interface FieldsetProps
   helperText?: React.ReactNode;
   /** Presence of an error replaces `helperText`, same convention as TextField. */
   error?: string;
-  /** Mantine's bordered "default" variant vs TREDS's borderless default (per Figma, #70). Default `false`. */
+  /** Mantine's bordered "default" variant vs TREDS's borderless default (per Figma, #70). Default `false`. Sharp corners only — a rounded/pill radius needs more design work before it's offered here. */
   withBorder?: boolean;
-  /** Corner shape when `withBorder`. Same values as Paper's `radius`. Default `'sharp'`. */
-  radius?: 'sharp' | 'pill';
   children?: React.ReactNode;
   'data-testid'?: string;
 }
@@ -39,7 +36,6 @@ export const Fieldset = ({
   helperText,
   error,
   withBorder: hasBorder = false,
-  radius = 'sharp',
   children,
   className,
   classNames,
@@ -47,17 +43,6 @@ export const Fieldset = ({
 }: FieldsetProps) => {
   const descriptionId = useId();
   const description = error ?? helperText;
-
-  // Dev-only guard: an out-of-union `radius` value silently falls back to the
-  // sharp-corner default with no other signal — same risk class Paper already
-  // guards for its own `radius` prop.
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') return;
-
-    if (radius !== 'sharp' && radius !== 'pill') {
-      console.error(`Fieldset: invalid \`radius\` value "${String(radius)}".`);
-    }
-  }, [radius]);
 
   return (
     <MantineFieldset
@@ -73,12 +58,7 @@ export const Fieldset = ({
           )}
         </>
       }
-      className={cx(
-        root,
-        hasBorder && withBorderStyle,
-        hasBorder && radius === 'pill' && pill,
-        className
-      )}
+      className={cx(root, hasBorder && withBorderStyle, className)}
       classNames={mergeClassNames({ root: '', legend: legendStyle }, classNames)}
       aria-describedby={description ? descriptionId : props['aria-describedby']}
     >
