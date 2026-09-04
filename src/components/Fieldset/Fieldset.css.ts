@@ -51,11 +51,16 @@ export const asterisk = style({
 });
 
 // Opt-in bordered variant (Mantine's own default Fieldset look) — TREDS's own
-// default (per Figma, #70) stays borderless.
+// default (per Figma, #70) stays borderless. No Figma spec exists for this
+// addition, so the padding reuses `forms.spacing` — the only pre-existing
+// token actually named for general form-container spacing (sitting unused
+// next to `forms.fieldset.spacing`) — rather than hugging the border with 0
+// padding or inventing a new token with no source of truth to check it against.
 export const withBorder = style({
   borderWidth: strokeWeight,
   borderStyle: 'solid',
   borderColor: divider,
+  padding: forms.spacing,
 });
 
 // Same `sharp`/`pill` pair as Paper's `radius` prop — `sharp` is already

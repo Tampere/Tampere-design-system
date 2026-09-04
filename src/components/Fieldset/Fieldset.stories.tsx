@@ -177,6 +177,20 @@ export const WithBorder: Story = {
     await expect(style.borderColor).toBe('rgb(222, 222, 226)');
     // Default radius is 'sharp' — matches Paper's own default.
     await expect(style.borderRadius).toBe('0px');
+    // The legend and content must not hug the border — no Figma spec exists
+    // for this Mantine-style addition, so this reuses `forms.spacing` (24px),
+    // the only pre-existing token actually named for this purpose.
+    await expect(style.padding).toBe('24px');
+  },
+};
+
+export const WithoutBorderHasNoPadding: Story = {
+  // Figma's default Fieldset (per #70) has no border and no padding — must
+  // not gain padding just because `withBorder`'s style exists in the CSS.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByTestId('fieldset')).padding).toBe('0px');
   },
 };
 
