@@ -8,7 +8,7 @@ import {
   content as cardContent,
   contentPaddingVariants,
 } from '../Card/Card.css';
-import { breakpoint } from '../../theme/tokens/breakpoint';
+import { containerQueryBreakpoint } from '../../theme/tokens/breakpoint';
 
 const {
   theme: {
@@ -36,6 +36,8 @@ export const textBlock = cardTextBlock;
 export const root = cardRoot;
 export const media = cardMedia;
 export const content = cardContent;
+// Card exposes `sm`/`md`/`lg` padding via its own `size` prop; Linkbox has no
+// equivalent size variant, so it always uses Card's `md` tier.
 export const contentPadding = contentPaddingVariants.md;
 
 // Figma's "Kuvaava teksti" (P1) is styled with text/secondary, not
@@ -71,13 +73,12 @@ globalStyle(`${inverted} .${iconRow}`, { color: contrast });
 // The whole box is a real `<a>` — Paper's `component="a"`. The overlay tint
 // is applied via `backgroundImage` (a same-color-stop linear-gradient), not
 // `backgroundColor`: `link` is on the exact same element as Paper's own
-// `background-color` (white or, when `inverted`, turquoise), so setting
-// `backgroundColor` here would replace that opaque color outright rather
-// than tint over it — a translucent `rgba(255,255,255,0.1)` `backgroundColor`
-// on the turquoise surface once erased it down to ~10% opacity, making the
-// whole box nearly disappear against the page behind it. `backgroundImage`
-// paints on top of `backgroundColor` (CSS's own layering order) without
-// touching the color underneath.
+// `background-color` (white or, when `inverted`, turquoise), so a translucent
+// `backgroundColor` here would replace that opaque color outright rather than
+// tint over it — e.g. `rgba(255,255,255,0.1)` on the turquoise surface drops
+// it to ~10% opacity, nearly invisible against the page behind it.
+// `backgroundImage` paints on top of `backgroundColor` (CSS's own layering
+// order) without touching the color underneath.
 export const link = style({
   textDecoration: 'none',
   selectors: {
@@ -132,9 +133,26 @@ globalStyle(`${inverted}.${link}:focus-visible`, {
 // spec doesn't forbid it outright; splitting container and containee avoids
 // the issue entirely, since `root` is a genuine descendant, not the container
 // querying itself.
-export const leftMarker = style({ containerType: 'inline-size' });
+//
+// `width: '100%'` is required, not cosmetic: inline-size containment computes
+// the container's own inline size as though it had no content, so without an
+// explicit width a `left`-placed Linkbox used as a flex item (the common case
+// — a row of cards) collapses to 0 width instead of sharing the row (verified
+// in Chromium: 0px vs. 226px for an otherwise-identical `top`-placed sibling).
+// A plain block-flow parent doesn't hit this — its `width: auto` already
+// fills the containing block regardless of content — which is why it went
+// unnoticed: every existing story wraps the box in a plain (non-flex) div.
+export const leftMarker = style({ containerType: 'inline-size', width: '100%' });
 
-const wideEnoughForRowSplit = `(min-width: ${breakpoint.md.appWidth})`;
+// Intentionally not `breakpoint.md.appWidth` (the responsive viewport
+// breakpoint table in `theme/tokens/breakpoint.ts`, swapped in via CSS custom
+// properties at `:root`): `@container` conditions require a literal length,
+// not a `var()` reference, and — more importantly — this threshold is a
+// Linkbox-local layout decision (a 50/50 row split gets cramped below this
+// container width), not the site's responsive viewport grid. Reusing the
+// viewport token would silently retune this component's own collapse point
+// any time the design system's `md` breakpoint changes for unrelated reasons.
+const wideEnoughForRowSplit = `(min-width: ${containerQueryBreakpoint.md})`;
 
 globalStyle(`${leftMarker} > ${root}`, {
   '@container': { [wideEnoughForRowSplit]: { flexDirection: 'row' } },

@@ -254,6 +254,16 @@ export const breakpoint = {
 export type Breakpoint = typeof breakpoint;
 export type BreakpointKey = keyof Breakpoint;
 
+// Literal (non-responsive) thresholds for `@container` queries in component
+// stylesheets. Deliberately separate from the `breakpoint` table above: that
+// table's values are consumed through `vars.theme` and swapped via CSS custom
+// properties at `:root` for viewport `@media` queries — `@container`
+// conditions require an actual literal length, not a `var()` reference, and a
+// component's own container-query threshold is that component's layout
+// decision, not the site's responsive viewport grid, so it shouldn't drift
+// just because the viewport `md` breakpoint is retuned for unrelated reasons.
+export const containerQueryBreakpoint = { md: '768px' } as const;
+
 // Sorted explicitly by appWidth — do not rely on object key declaration order.
 // That was a prior bug (see commit 58f906c): a reorder/insert in the object
 // above must not silently invert this widest-first ordering.

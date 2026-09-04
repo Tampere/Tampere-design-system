@@ -38,7 +38,10 @@ export const Default: Story = {
     await expect(link).toHaveAttribute('href', '#');
     await expect(canvas.getByText('Lisätietoa')).not.toBeNull();
     await expect(canvas.getByText('Kuvaava teksti')).not.toBeNull();
-    await expect(link.querySelector('svg')).not.toBeNull();
+    // The internal `ArrowRightIcon` has 2 `<path>`s; `OpenExternalLinkIcon`
+    // (asserted in `External` below) has 3 — a stable, implementation-light
+    // way to confirm the *internal* icon renders here, not just "some SVG".
+    await expect(link.querySelectorAll('svg path').length).toBe(2);
 
     const style = getComputedStyle(link);
     // Figma "Card link content" — Background/Default = #ffffff.
@@ -241,6 +244,26 @@ export const External: Story = {
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     await expect(link).toHaveAccessibleName(/avautuu uuteen välilehteen/);
+    // The external `OpenExternalLinkIcon` has 3 `<path>`s, vs. the internal
+    // `ArrowRightIcon`'s 2 (asserted in `Default` above) — confirms the icon
+    // actually swapped, not just that `external`'s other side effects fired.
+    await expect(link.querySelectorAll('svg path').length).toBe(3);
+  },
+};
+
+export const AppendsExternalLabelToConsumerAriaLabelOverride: Story = {
+  // Regression guard: a consumer's own `aria-label` must not silently drop
+  // `external`'s screen-reader signal — see the comment on `baseAccessibleName`
+  // in Linkbox.tsx. Issue #75 requires external links to be flagged to AT
+  // regardless of whether the accessible name is the default `title` or a
+  // consumer override.
+  args: { external: true, href: 'https://tampere.fi', 'aria-label': 'Mukautettu nimi' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link');
+
+    await expect(link).toHaveAccessibleName(/^Mukautettu nimi/);
+    await expect(link).toHaveAccessibleName(/avautuu uuteen välilehteen/);
   },
 };
 
@@ -300,6 +323,33 @@ export const WithCustomClassName: Story = {
   },
 };
 
+let forwardedRefNode: HTMLElement | null = null;
+
+export const ForwardsRefToRenderedElement: Story = {
+  // `forwardRef<HTMLDivElement, LinkboxProps>` (see Linkbox.tsx) forwards
+  // straight through to `Paper` with no cast at this boundary — a regression
+  // that forwarded the ref to the wrong node, or dropped it, would still
+  // type-check cleanly, so only a test like this one catches it.
+  render: (args) => {
+    forwardedRefNode = null;
+    return (
+      <Linkbox
+        {...args}
+        ref={(node) => {
+          forwardedRefNode = node;
+        }}
+      />
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Otsikko' });
+
+    await waitFor(() => expect(forwardedRefNode).not.toBeNull());
+    await expect(forwardedRefNode).toBe(link);
+  },
+};
+
 export const MergesRelWithExternal: Story = {
   args: { external: true, rel: 'nofollow' },
   play: async ({ canvasElement }) => {
@@ -325,16 +375,6 @@ const captureConsoleErrors = () => {
   };
 };
 
-export const WarnsWithoutDestination: Story = {
-  args: { href: undefined },
-  beforeEach: captureConsoleErrors,
-  play: async () => {
-    await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => /provide `href`/.test(m))).toBe(true)
-    );
-  },
-};
-
 export const WarnsWhenTargetIgnoredByExternal: Story = {
   args: { external: true, target: '_self' },
   beforeEach: captureConsoleErrors,
@@ -356,5 +396,46 @@ export const WarnsWithInvalidTitleOrder: Story = {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /invalid `titleOrder`/.test(m))).toBe(true)
     );
+  },
+};
+
+export const WarnsWithInvalidMediaPlacement: Story = {
+  // Same risk class as `WarnsWithInvalidTitleOrder` above: an out-of-union
+  // `mediaPlacement` silently falls back to the `top`/stacked layout with no
+  // other signal (see the guard in Linkbox.tsx).
+  args: {
+    media: <img alt="" src={sizedMediaImage} />,
+    mediaPlacement: 'bottom' as unknown as 'top' | 'left',
+  },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /invalid `mediaPlacement`/.test(m))).toBe(true)
+    );
+  },
+};
+
+export const WithMediaLeftAsFlexItemFillsAvailableWidth: Story = {
+  // Regression: `leftMarker`'s `containerType: 'inline-size'` computes the
+  // container's own inline size as though it had no content — without an
+  // explicit width, a `left`-placed Linkbox used as a flex item (the common
+  // real-world layout: a row of cards) collapsed to 0 width instead of
+  // sharing the row. `WithMediaLeft`/`...CollapsesToStackedBelowMdBreakpoint`
+  // above don't catch this — they wrap in a plain block-level div, which
+  // doesn't hit the bug (a block box's `width: auto` already fills its
+  // containing block regardless of content). This story wraps in a flex row
+  // instead, with no explicit width on the Linkbox itself, to exercise the
+  // actual failure mode.
+  args: { media: <img alt="" src={sizedMediaImage} />, mediaPlacement: 'left' },
+  render: (args) => (
+    <div style={{ display: 'flex', width: 1200 }}>
+      <Linkbox {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Otsikko' });
+
+    await expect(link.getBoundingClientRect().width).toBeGreaterThan(0);
   },
 };

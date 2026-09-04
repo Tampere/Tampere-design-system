@@ -1,14 +1,6 @@
-import {
-  forwardRef,
-  useEffect,
-  type AriaAttributes,
-  type AriaRole,
-  type ElementType,
-  type ReactNode,
-  type Ref,
-} from 'react';
+import { forwardRef, useEffect, type AnchorHTMLAttributes, type ReactNode } from 'react';
 import cx from 'clsx';
-import { Paper, type PaperProps } from '../Paper';
+import { Paper, type PaperProps, type SurfacePrimitiveProps } from '../Paper';
 import { Typography } from '../Typography';
 import { ArrowRightIcon, OpenExternalLinkIcon } from '../../icons';
 import {
@@ -25,10 +17,8 @@ import {
   leftMarker,
 } from './Linkbox.css';
 
-const mediaPlacementValues = { top: true, left: true } as const;
-
-export interface LinkboxProps extends AriaAttributes {
-  href?: string;
+export interface LinkboxProps extends SurfacePrimitiveProps {
+  href: string;
   title: string;
   /** Overrides the title's default heading level (3) — e.g. for a Linkbox nested under an existing H2. */
   titleOrder?: 2 | 3 | 4 | 5;
@@ -36,7 +26,8 @@ export interface LinkboxProps extends AriaAttributes {
   description?: string;
   /**
    * Rendered in a fixed 3:2 frame that bleeds to the box's edge — an `<img>`,
-   * `<video>`, `<svg>`, or a wrapped element, cropped with `object-fit: cover`.
+   * `<video>`, `<svg>`, `<iframe>`/`<canvas>` embed, or a wrapped element,
+   * cropped with `object-fit: cover`.
    */
   media?: ReactNode;
   /**
@@ -50,24 +41,25 @@ export interface LinkboxProps extends AriaAttributes {
   mediaPlacement?: 'top' | 'left';
   /** `false` (default) is a white surface with dark text; `true` is a solid Paper `turquoise` surface with contrast text. */
   inverted?: boolean;
-  /** Swaps the arrow icon, forces `target="_blank"`, prepends `rel="noopener noreferrer"` (merging with any existing `rel`), and appends `externalLabel` to the accessible name. */
+  /** Swaps the arrow icon, forces `target="_blank"`, prepends `rel="noopener noreferrer"` (merging with any existing `rel`), and appends `externalLabel` to the accessible name — including a consumer-supplied `aria-label` override. */
   external?: boolean;
-  /** Appended to the accessible name when `external` is set. */
+  /** Appended to the accessible name when `external` is set — to `title`, or to a consumer's own `aria-label` override if one is given. */
   externalLabel?: string;
-  /** Polymorphic root element, e.g. a router `Link` component. Mirrors Paper/Card's own `component` prop — the whole box is always this element. */
-  component?: ElementType;
   target?: string;
   rel?: string;
   className?: string;
-  id?: string;
-  role?: AriaRole;
-  'data-testid'?: string;
 }
 
 const titleComponent = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5' } as const;
 
 /** A card-shaped link — the whole box navigates to one destination, unlike `Card`, which is never itself a link. */
-export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Linkbox(
+// `HTMLDivElement`, not `HTMLAnchorElement`: `component` accepts any
+// `ElementType` (inherited from `SurfacePrimitiveProps`), so — same as
+// Paper/Card — the type can't promise callers a more specific element than
+// that. Promising `HTMLAnchorElement` while `component` stays fully open
+// would let a consumer swap in a non-anchor component with no compiler
+// warning that the ref's declared type no longer matches what's rendered.
+export const Linkbox = forwardRef<HTMLDivElement, LinkboxProps>(function Linkbox(
   {
     href,
     title,
@@ -87,16 +79,19 @@ export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Link
   },
   ref
 ) {
-  const accessibleName = external ? `${title} ${externalLabel}` : title;
+  // A consumer's own `aria-label` override (see `RespectsConsumerAriaLabelOverride`
+  // in the stories) replaces `title` as the base name, but `external`'s
+  // screen-reader signal must still be appended either way — dropping it
+  // whenever a consumer supplies their own label would silently fail issue
+  // #75's "external links flagged to assistive tech" requirement for that case.
+  const baseAccessibleName = props['aria-label'] ?? title;
+  const accessibleName = external ? `${baseAccessibleName} ${externalLabel}` : baseAccessibleName;
   const linkTarget = external ? '_blank' : target;
   const linkRel = external ? cx('noopener noreferrer', rel) : rel;
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') return;
 
-    if (!href) {
-      console.error('Linkbox: provide `href` so the link has a destination.');
-    }
     if (external && target) {
       console.error(
         'Linkbox: `target` is ignored when `external` is set — external links always open in a new tab.'
@@ -105,32 +100,33 @@ export const Linkbox = forwardRef<HTMLAnchorElement, LinkboxProps>(function Link
     if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
       console.error(`Linkbox: invalid \`titleOrder\` value "${titleOrder}".`);
     }
-    if (!(mediaPlacement in mediaPlacementValues)) {
+    if (mediaPlacement !== 'top' && mediaPlacement !== 'left') {
       console.error(`Linkbox: invalid \`mediaPlacement\` value "${String(mediaPlacement)}".`);
     }
-  }, [href, external, target, titleOrder, mediaPlacement]);
+  }, [external, target, titleOrder, mediaPlacement]);
 
   // `Paper`'s own type doesn't widen anchor attributes when `component="a"`
   // (its manually-typed wrapper can't infer per-element props the way
   // Mantine's raw polymorphic factory does — see Paper.tsx's own cast at
-  // its Mantine boundary for the same reason). Cast at this one boundary
-  // rather than losing type safety on the rest of `LinkboxProps`.
-  const anchorProps = {
+  // its Mantine boundary for the same reason). The object literal is typed
+  // explicitly (not inferred from an untyped `as unknown as PaperProps` cast
+  // directly on the literal) so a typo'd key still fails `tsc` before it ever
+  // reaches that boundary cast.
+  const anchorProps: Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'> & {
+    'aria-label': string;
+  } = {
     href,
-    'aria-label': props['aria-label'] ?? accessibleName,
+    'aria-label': accessibleName,
     target: linkTarget,
     rel: linkRel,
-  } as unknown as PaperProps;
+  };
 
   return (
     <Paper
-      // Paper's own forwardRef is typed to `HTMLDivElement` regardless of the
-      // polymorphic `component` it renders as — Linkbox is always an anchor,
-      // so cast at this one boundary the same way `anchorProps` above does.
-      ref={ref as unknown as Ref<HTMLDivElement>}
+      ref={ref}
       {...props}
       component={component ?? 'a'}
-      {...anchorProps}
+      {...(anchorProps as unknown as PaperProps)}
       background={inverted ? 'turquoise' : 'default'}
       radius="sharp"
       withShadow={false}

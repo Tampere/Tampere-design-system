@@ -5,11 +5,11 @@ export { Card, type CardProps } from './Card/Card';
 export { Checkbox } from './Checkbox/Checkbox';
 export { Chip, type ChipProps } from './Chip/Chip';
 export { IconButton } from './IconButton/IconButton';
-export { Linkbox, type LinkboxProps } from './Linkbox/Linkbox';
 export {
   LabeledIconButton,
   type LabeledIconButtonProps,
 } from './LabeledIconButton/LabeledIconButton';
+export { Linkbox, type LinkboxProps } from './Linkbox/Linkbox';
 export { LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { Modal } from './Modal/Modal';
 export { NavigationLink } from './NavigationLink/NavigationLink';
