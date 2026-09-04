@@ -25,6 +25,9 @@ export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) 
   // imperatively. Re-assert on every commit (no dependency array): the browser's own click
   // activation steps clear it back to false, and that reset isn't reflected in the `indeterminate`
   // prop, so a dependency array would leave the DOM property silently desynced after a click.
+  // This relies on `onClick` below always toggling `checked` (forcing a re-render, and thus this
+  // effect, on every click) — if that internal state is ever removed, this reassertion needs to
+  // move to the click handler itself instead.
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.indeterminate = !!indeterminate;

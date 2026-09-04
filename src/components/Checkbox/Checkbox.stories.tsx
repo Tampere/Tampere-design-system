@@ -3,6 +3,7 @@ import { useArgs } from '@storybook/client-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
+import { CheckboxIndeterminateIcon } from '../../icons/CheckboxIndeterminateIcon';
 import { Checkbox } from './Checkbox';
 
 function SelectAllExample() {
@@ -130,15 +131,60 @@ export const Indeterminate: Story = {
 export const IndeterminateTakesPrecedenceOverChecked: Story = {
   tags: ['!dev', '!autodocs'],
   args: { label: 'Both set', indeterminate: true, checked: true },
-  render: (args) => <Checkbox {...args} />,
+  render: (args) => (
+    <>
+      <Checkbox {...args} />
+      {/* Hidden reference render of the expected icon, so the assertion below tracks the icon's
+          actual geometry instead of a path string that would silently go stale if it changed. */}
+      <CheckboxIndeterminateIcon aria-hidden="true" style={{ display: 'none' }} />
+    </>
+  ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
     await expect(checkboxInput.indeterminate).toBe(true);
     await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
     // Indeterminate icon's dash path, not the checked icon's checkmark path.
+    const [renderedIcon, referenceIcon] = canvasElement.querySelectorAll('svg');
+    await expect(renderedIcon.querySelector('path:nth-of-type(2)')?.getAttribute('d')).toBe(
+      referenceIcon.querySelector('path:nth-of-type(2)')?.getAttribute('d')
+    );
+
+    // The precedence must also hold across the click activation steps that reset the native
+    // `indeterminate` DOM property (see the `Indeterminate` story above).
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+  },
+};
+
+export const IndeterminateDisabled: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Disabled indeterminate', indeterminate: true, disabled: true },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
     const path = checkboxInput.parentElement?.querySelector('svg path:nth-of-type(2)');
-    await expect(path?.getAttribute('d')).toBe('M20 11V13H4V11H20Z');
+    // Figma disabled state = Neutral/300 (#c9c9ce), overriding the indeterminate blue.
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(201, 201, 206)');
+  },
+};
+
+export const IndeterminateError: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error indeterminate', indeterminate: true, error: true },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+    const path = checkboxInput.parentElement?.querySelector('svg path:nth-of-type(2)');
+    // Figma error state = Red/300 (#ae1e20), overriding the indeterminate blue.
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(174, 30, 32)');
   },
 };
 
