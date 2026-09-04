@@ -3,9 +3,10 @@ import { vars } from '../../theme';
 
 const {
   theme: {
-    components: { forms, input },
+    components: { forms, input, typography },
     states,
     text,
+    font,
     cornerRadius,
     strokeWeight,
     divider,
@@ -20,6 +21,22 @@ export const root = style({
   display: 'flex',
   flexDirection: 'column',
   gap: forms.fieldset.spacing,
+});
+
+// Figma's "Inputs and forms/Input label" style — same recipe as TextField's
+// own label (TextField.css.ts's `labelRoot`): P2 size, Subheader/Semi-Bold
+// weight (no dedicated weight token of its own, per project convention),
+// text.primary color. Mantine's bare `<legend>` has no type-scale styling of
+// its own, so this must be applied explicitly.
+export const legend = style({
+  margin: 0,
+  color: text.primary,
+  fontSize: input.font.label.fontSize,
+  fontWeight: typography.subheader.fontWeight,
+  lineHeight: input.font.label.lineHeight,
+  letterSpacing: font.letterSpacing,
+  display: 'flex',
+  alignItems: 'center',
 });
 
 export const asterisk = style({
