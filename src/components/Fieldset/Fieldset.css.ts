@@ -2,7 +2,6 @@ import { style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  primitives: { spacing },
   theme: {
     components: { forms, input, typography },
     states,
@@ -10,7 +9,7 @@ const {
     font,
     cornerRadius,
     strokeWeight,
-    divider,
+    inputStates,
   },
 } = vars;
 
@@ -31,11 +30,6 @@ export const root = style({
 // its own, so this must be applied explicitly.
 export const legend = style({
   margin: 0,
-  // A flex `<fieldset>`'s `<legend>` always renders flush with the fieldset's
-  // own top edge, straddling its border line — a small top padding here (not
-  // on the fieldset, which has no effect on the legend's own position, see
-  // `withBorder`'s comment) keeps the glyphs off the stroke.
-  paddingTop: spacing['0,5'],
   // A flex `<fieldset>`'s `<legend>` is excluded from the flex formatting
   // context per the CSS Fieldsets spec (browsers wrap the rest of the
   // children in an anonymous "fieldset content box"), so `root`'s flex `gap`
@@ -62,25 +56,24 @@ export const asterisk = style({
 // token actually named for general form-container spacing (sitting unused
 // next to `forms.fieldset.spacing`) — rather than hugging the border with 0
 // padding or inventing a new token with no source of truth to check it against.
-// `paddingTop` stays 0: a flex `<fieldset>`'s `<legend>` always renders flush
-// with the fieldset's own top edge regardless of padding-top (browsers
-// exclude it from the padding box entirely, per the CSS Fieldsets spec — see
-// `legend`'s own comment below), so a nonzero padding-top here would only
-// double up with the legend's `marginBottom`, not give the legend itself any
-// more clearance from the top border.
+// Border color matches the resting border color inputs use (`inputStates.default`),
+// not the lighter `divider` token, so the box reads as part of the same form
+// surface family as the fields inside it. `paddingTop` stays 0: a flex
+// `<fieldset>`'s `<legend>` always renders flush with the fieldset's own top
+// edge regardless of padding-top (browsers exclude it from the padding box
+// entirely, per the CSS Fieldsets spec — see `legend`'s own comment above),
+// so a nonzero padding-top here would only double up with the legend's
+// `marginBottom`, not give the legend itself any more clearance from the top
+// border.
 export const withBorder = style({
   borderWidth: strokeWeight,
   borderStyle: 'solid',
-  borderColor: divider,
+  borderColor: inputStates.default,
   paddingTop: 0,
   paddingRight: forms.spacing,
   paddingBottom: forms.spacing,
   paddingLeft: forms.spacing,
 });
-
-// Same `sharp`/`pill` pair as Paper's `radius` prop — `sharp` is already
-// `root`'s own default, so only `pill` needs its own class.
-export const pill = style({ borderRadius: cornerRadius.rounded });
 
 export const childrenWrapper = style({
   display: 'flex',

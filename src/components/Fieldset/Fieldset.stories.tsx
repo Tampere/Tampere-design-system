@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, waitFor } from '@storybook/testing-library';
+import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { Fieldset } from './Fieldset';
 import { selectionGroup } from './Fieldset.css';
@@ -174,8 +175,12 @@ export const WithBorder: Story = {
 
     await expect(style.borderStyle).toBe('solid');
     await expect(style.borderWidth).toBe('2px');
-    await expect(style.borderColor).toBe('rgb(222, 222, 226)');
-    // Default radius is 'sharp' — matches Paper's own default.
+    // Same resting border color inputs use (`inputStates.default`), not the
+    // lighter `divider` token, so the box reads as part of the same form
+    // surface family as the fields inside it.
+    await expect(style.borderColor).toBe('rgb(82, 82, 91)');
+    // Sharp corners only — no rounded/pill radius option (needs more design
+    // work before it's offered here).
     await expect(style.borderRadius).toBe('0px');
     // The legend and content must not hug the border — no Figma spec exists
     // for this Mantine-style addition, so this reuses `forms.spacing` (24px),
@@ -204,10 +209,6 @@ export const WithBorder: Story = {
     const legendStackGapToken = parseFloat(getComputedStyle(fieldset).rowGap);
 
     await expect(Math.abs(gapAfterLegend - legendStackGapToken)).toBeLessThan(1);
-
-    // A little breathing room between the legend text and the border line it
-    // straddles, so the glyphs don't render flush against the stroke.
-    await expect(parseFloat(getComputedStyle(legend).paddingTop)).toBeGreaterThan(0);
   },
 };
 
@@ -221,52 +222,53 @@ export const WithoutBorderHasNoPadding: Story = {
   },
 };
 
-export const WithBorderAndPillRadius: Story = {
-  tags: docExample,
-  args: { withBorder: true, radius: 'pill' },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(getComputedStyle(canvas.getByTestId('fieldset')).borderRadius).toBe('9999px');
-  },
-};
-
-export const RadiusIgnoredWithoutBorder: Story = {
-  // `radius` only affects the bordered variant's corners — must not leak a
-  // pill radius onto the borderless default Fieldset.
-  args: { radius: 'pill' },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await expect(getComputedStyle(canvas.getByTestId('fieldset')).borderRadius).toBe('0px');
-  },
-};
-
 export const WithCheckboxGroup: Story = {
   tags: docExample,
   args: {
     legend: 'Minulle sopivimmat työskentelypäivät',
     required: true,
     helperText: 'Valitse päivät, jotka useimmiten sopivat',
-    // Checkbox is a controlled component — always pass `checked` explicitly
-    // (see Checkbox.stories.tsx's own convention). Grouped as a single
-    // Fieldset child (via `selectionGroup`) so the items get the tight
-    // Figma "Selection-items-spacing" gap, not the larger field-group gap
-    // meant for stacking distinct field types.
-    children: (
-      <div data-testid="checkbox-group" className={selectionGroup}>
-        <Checkbox label="Maanantai" checked={false} onChange={() => {}} />
-        <Checkbox label="Tiistai" checked={false} onChange={() => {}} />
-        <Checkbox label="Keskiviikko" checked={false} onChange={() => {}} />
-        <Checkbox label="Torstai" checked={false} onChange={() => {}} />
-        <Checkbox label="Perjantai" checked={false} onChange={() => {}} />
-      </div>
-    ),
+  },
+  // Checkbox is a controlled component with its own internal state, toggled
+  // via `onClick` (not `onChange` — see Checkbox.stories.tsx's own
+  // convention) — a story-local `useState` is required for the checkboxes to
+  // actually respond to clicks, not just render a static unchecked snapshot.
+  // Grouped as a single Fieldset child (via `selectionGroup`) so the items
+  // get the tight Figma "Selection-items-spacing" gap, not the larger
+  // field-group gap meant for stacking distinct field types.
+  render: (args) => {
+    const days = ['Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai'];
+    const [checked, setChecked] = useState(days.map(() => false));
+
+    return (
+      <Fieldset {...args}>
+        <div data-testid="checkbox-group" className={selectionGroup}>
+          {days.map((label, i) => (
+            <Checkbox
+              key={label}
+              label={label}
+              checked={checked[i]}
+              onClick={() => setChecked(checked.map((c, idx) => (idx === i ? !c : c)))}
+            />
+          ))}
+        </div>
+      </Fieldset>
+    );
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const checkboxes = canvas.getAllByRole('checkbox');
 
-    await expect(canvas.getAllByRole('checkbox')).toHaveLength(5);
+    await expect(checkboxes).toHaveLength(5);
+
+    // Regression: checkboxes must actually respond to clicks (the earlier
+    // static `checked={false}` demo looked right but was unclickable —
+    // Checkbox's own render-phase `checked`/prop-sync logic immediately
+    // reverted any click back to the hardcoded `false`).
+    const first = checkboxes[0] as HTMLInputElement;
+    await expect(first.checked).toBe(false);
+    await userEvent.click(first);
+    await expect(first.checked).toBe(true);
 
     // Regression: checkbox items must use the tight legend-stack gap
     // (`forms.fieldset.spacing` — Figma's `Forms/Selection-items-spacing`
@@ -288,19 +290,48 @@ export const WithRadioGroup: Story = {
     legend: 'Minulle sopivin työskentelypaikka',
     required: true,
     helperText: 'Voit vaihtaa valintaa myöhemmin uudelleen',
-    // Grouped as a single Fieldset child — same rationale as WithCheckboxGroup.
-    children: (
-      <div data-testid="radio-group" className={selectionGroup}>
-        <RadioButton name="workplace" label="Toimistolla" />
-        <RadioButton name="workplace" label="Etänä" />
-        <RadioButton name="workplace" label="Hybridi" />
-      </div>
-    ),
+  },
+  // RadioButton is fully controlled (no internal state of its own) — a
+  // story-local `useState` drives mutual exclusivity, matching
+  // RadioButton.stories.tsx's own `onClick`-driven convention.
+  render: (args) => {
+    const options = [
+      { value: 'office', label: 'Toimistolla' },
+      { value: 'remote', label: 'Etänä' },
+      { value: 'hybrid', label: 'Hybridi' },
+    ];
+    const [selected, setSelected] = useState<string>();
+
+    return (
+      <Fieldset {...args}>
+        <div data-testid="radio-group" className={selectionGroup}>
+          {options.map((option) => (
+            <RadioButton
+              key={option.value}
+              name="workplace"
+              label={option.label}
+              checked={selected === option.value}
+              onClick={() => setSelected(option.value)}
+            />
+          ))}
+        </div>
+      </Fieldset>
+    );
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const radios = canvas.getAllByRole('radio') as HTMLInputElement[];
 
-    await expect(canvas.getAllByRole('radio')).toHaveLength(3);
+    await expect(radios).toHaveLength(3);
+
+    // Regression: radios must actually respond to clicks and stay mutually
+    // exclusive (the earlier demo passed neither `checked` nor `onClick` at
+    // all, so nothing happened on click).
+    await userEvent.click(radios[0]);
+    await expect(radios[0].checked).toBe(true);
+    await userEvent.click(radios[1]);
+    await expect(radios[1].checked).toBe(true);
+    await expect(radios[0].checked).toBe(false);
 
     // Regression: same gap check as WithCheckboxGroup.
     const fieldsetGap = parseFloat(getComputedStyle(canvas.getByTestId('fieldset')).rowGap);
@@ -350,30 +381,5 @@ export const WithCustomClassName: Story = {
     const canvas = within(canvasElement);
 
     await expect(canvas.getByTestId('fieldset').className).toContain('consumer-custom-class');
-  },
-};
-
-// ── Dev-warning test (verifies the console.error guard in Fieldset.tsx) ────
-
-let capturedConsoleErrors: string[] = [];
-
-const captureConsoleErrors = () => {
-  capturedConsoleErrors = [];
-  const original = console.error;
-  console.error = (...messageArgs: unknown[]) => {
-    capturedConsoleErrors.push(String(messageArgs[0]));
-  };
-  return () => {
-    console.error = original;
-  };
-};
-
-export const WarnsOnInvalidRadius: Story = {
-  args: { radius: 'invalid' as never },
-  beforeEach: captureConsoleErrors,
-  play: async () => {
-    await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => /invalid `radius` value/.test(m))).toBe(true)
-    );
   },
 };
