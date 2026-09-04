@@ -21,12 +21,15 @@ export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) 
     setChecked(!!inputProps.checked);
   }
 
-  // The native `indeterminate` DOM property has no HTML attribute/JSX prop, so it must be set imperatively.
+  // The native `indeterminate` DOM property has no HTML attribute/JSX prop, so it must be set
+  // imperatively. Re-assert on every commit (no dependency array): the browser's own click
+  // activation steps clear it back to false, and that reset isn't reflected in the `indeterminate`
+  // prop, so a dependency array would leave the DOM property silently desynced after a click.
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.indeterminate = !!indeterminate;
     }
-  }, [indeterminate]);
+  });
 
   const uniqueId = useId();
   const safeId = inputProps.id ?? uniqueId;

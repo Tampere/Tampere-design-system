@@ -118,10 +118,17 @@ export const Indeterminate: Story = {
     await expect(path).toBeTruthy();
     // Figma Primary-states/Default = Blue/400 (#29549a).
     await expect(getComputedStyle(path as Element).fill).toBe('rgb(41, 84, 154)');
+
+    // The browser's click activation steps reset the native `indeterminate` DOM property to
+    // false; while the `indeterminate` prop stays true it must be reasserted after a click.
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
   },
 };
 
 export const IndeterminateTakesPrecedenceOverChecked: Story = {
+  tags: ['!dev', '!autodocs'],
   args: { label: 'Both set', indeterminate: true, checked: true },
   render: (args) => <Checkbox {...args} />,
   play: async ({ canvasElement }) => {
@@ -143,6 +150,29 @@ export const SelectAll: Story = {
     const [selectAll, item1, item2, item3] = canvas.getAllByRole('checkbox') as HTMLInputElement[];
 
     // Starts with only Item 1 checked: partial selection.
+    await expect(selectAll.indeterminate).toBe(true);
+    await expect(selectAll.checked).toBe(false);
+    await expect(selectAll.getAttribute('aria-checked')).toBe('mixed');
+
+    // Clicking "Select all" while indeterminate selects every item (not deselect).
+    await userEvent.click(selectAll);
+    await expect(selectAll.indeterminate).toBe(false);
+    await expect(selectAll.checked).toBe(true);
+    await expect(selectAll.getAttribute('aria-checked')).toBeNull();
+    await expect(item1.checked).toBe(true);
+    await expect(item2.checked).toBe(true);
+    await expect(item3.checked).toBe(true);
+
+    // Clicking "Select all" again while fully checked deselects every item.
+    await userEvent.click(selectAll);
+    await expect(selectAll.indeterminate).toBe(false);
+    await expect(selectAll.checked).toBe(false);
+    await expect(item1.checked).toBe(false);
+    await expect(item2.checked).toBe(false);
+    await expect(item3.checked).toBe(false);
+
+    // Checking one item returns the parent to partial selection.
+    await userEvent.click(item1);
     await expect(selectAll.indeterminate).toBe(true);
     await expect(selectAll.checked).toBe(false);
 
