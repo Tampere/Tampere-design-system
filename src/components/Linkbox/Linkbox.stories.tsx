@@ -439,3 +439,35 @@ export const WithMediaLeftAsFlexItemFillsAvailableWidth: Story = {
     await expect(link.getBoundingClientRect().width).toBeGreaterThan(0);
   },
 };
+
+export const StretchedByFlexRowFillsFullHeight: Story = {
+  // Regression: the inner flex wrapper (`root` in Linkbox.css.ts) had no
+  // explicit height. Card's own `root` sits directly on the stretched
+  // flex/grid item, so it's stretched for free — Linkbox's `root` lives one
+  // level *down* on an inner `<div>` that a plain `align-items: stretch`
+  // doesn't reach, so it only grew to its content's intrinsic height,
+  // leaving bare surface below the media/icon row instead of filling the
+  // box. `WithMediaLeftAsFlexItemFillsAvailableWidth` above doesn't catch
+  // this — the Linkbox is that row's only item, so nothing stretches it.
+  // This story adds a much taller sibling to force a real stretch and
+  // asserts the media fills the full stretched height, not just its own
+  // intrinsic height.
+  args: { media: <img alt="" src={sizedMediaImage} />, mediaPlacement: 'left' },
+  render: (args) => (
+    <div style={{ display: 'flex', width: 1200 }}>
+      <Linkbox {...args} />
+      <div style={{ height: 600, width: 1 }} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Otsikko' });
+    const media = canvas.getByRole('img');
+    const mediaWrapper = media.parentElement as HTMLElement;
+
+    const linkRect = link.getBoundingClientRect();
+    const mediaRect = mediaWrapper.getBoundingClientRect();
+    await expect(linkRect.height).toBeGreaterThanOrEqual(600);
+    await expect(Math.abs(mediaRect.bottom - linkRect.bottom)).toBeLessThan(1);
+  },
+};

@@ -33,7 +33,16 @@ export const textBlock = cardTextBlock;
 // below is Linkbox-specific — Card's own `left` placement stays row at every
 // breakpoint; that behaviour is untouched since Linkbox never applies Card's
 // `rootMediaLeft` class.
-export const root = cardRoot;
+//
+// One addition over Card's own `root`: `height: 100%`. Card's `root` sits
+// directly on the stretched flex/grid item (Paper) itself, so a parent row
+// of equal-height cards stretches it for free and `content`'s `flex: 1 0 0`
+// fills the box. Linkbox's `root` lives one level *down*, on an inner `<div>`
+// (see `leftMarker` below and Linkbox.tsx), and an `auto`-height div isn't
+// stretched by anything — without this, a Linkbox in a stretched flex/grid
+// row only grows to its content's intrinsic height, leaving bare surface
+// below the media/icon row instead of filling the box.
+export const root = style([cardRoot, { height: '100%' }]);
 export const media = cardMedia;
 export const content = cardContent;
 // Card exposes `sm`/`md`/`lg` padding via its own `size` prop; Linkbox has no
@@ -126,13 +135,10 @@ globalStyle(`${inverted}.${link}:focus-visible`, {
 //
 // `leftMarker` is on the outer element (Paper/the `<a>` itself); `root` is
 // the *inner* flex wrapper one level down (see Linkbox.tsx) — deliberately
-// two different elements, because a `@container` query cannot restyle
-// layout-mode properties (like `flexDirection`) on the very element that
-// establishes the container. Querying `leftMarker` from its own rule for its
-// own `flexDirection` silently no-ops in Chromium even though the containment
-// spec doesn't forbid it outright; splitting container and containee avoids
-// the issue entirely, since `root` is a genuine descendant, not the container
-// querying itself.
+// two different elements. Container queries cannot restyle the element that
+// establishes the container itself — a documented, cross-engine restriction
+// of the feature, not a browser-specific gap — so `root` has to be a genuine
+// descendant of `leftMarker`, not the same element being queried.
 //
 // `width: '100%'` is required, not cosmetic: inline-size containment computes
 // the container's own inline size as though it had no content, so without an

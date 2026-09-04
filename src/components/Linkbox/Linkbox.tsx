@@ -25,9 +25,12 @@ export interface LinkboxProps extends SurfacePrimitiveProps {
   eyebrow?: string;
   description?: string;
   /**
-   * Rendered in a fixed 3:2 frame that bleeds to the box's edge — an `<img>`,
-   * `<video>`, `<svg>`, `<iframe>`/`<canvas>` embed, or a wrapped element,
-   * cropped with `object-fit: cover`.
+   * An `<img>`, `<video>`, `<svg>`, `<iframe>`/`<canvas>` embed, or a wrapped
+   * element, cropped with `object-fit: cover`. Rendered in a fixed 3:2 frame
+   * that bleeds to the box's edge in `top` placement (and in `left` once it
+   * collapses to stacked below the container breakpoint) — in `left`'s
+   * row-split above that breakpoint it's instead a 50%-width column
+   * stretched to the row's height. See `mediaPlacement`.
    */
   media?: ReactNode;
   /**
@@ -107,11 +110,12 @@ export const Linkbox = forwardRef<HTMLDivElement, LinkboxProps>(function Linkbox
 
   // `Paper`'s own type doesn't widen anchor attributes when `component="a"`
   // (its manually-typed wrapper can't infer per-element props the way
-  // Mantine's raw polymorphic factory does — see Paper.tsx's own cast at
-  // its Mantine boundary for the same reason). The object literal is typed
-  // explicitly (not inferred from an untyped `as unknown as PaperProps` cast
-  // directly on the literal) so a typo'd key still fails `tsc` before it ever
-  // reaches that boundary cast.
+  // Mantine's raw polymorphic factory does — see Paper.tsx's own single `as`
+  // cast at its Mantine boundary for the same reason). The object literal
+  // below is typed explicitly first, so a typo'd key still fails `tsc`
+  // before the value ever reaches the `as PaperProps` cast at the JSX
+  // spread — going through `as unknown as` there would silently disable
+  // that check instead of just widening past it.
   const anchorProps: Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'> & {
     'aria-label': string;
   } = {
@@ -126,7 +130,7 @@ export const Linkbox = forwardRef<HTMLDivElement, LinkboxProps>(function Linkbox
       ref={ref}
       {...props}
       component={component ?? 'a'}
-      {...(anchorProps as unknown as PaperProps)}
+      {...(anchorProps as PaperProps)}
       background={inverted ? 'turquoise' : 'default'}
       radius="sharp"
       withShadow={false}
