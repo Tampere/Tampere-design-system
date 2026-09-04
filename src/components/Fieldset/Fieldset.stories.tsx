@@ -179,8 +179,35 @@ export const WithBorder: Story = {
     await expect(style.borderRadius).toBe('0px');
     // The legend and content must not hug the border — no Figma spec exists
     // for this Mantine-style addition, so this reuses `forms.spacing` (24px),
-    // the only pre-existing token actually named for this purpose.
-    await expect(style.padding).toBe('24px');
+    // the only pre-existing token actually named for this purpose. `top` is
+    // 0: a flex `<fieldset>`'s `<legend>` always renders flush with the
+    // fieldset's own top edge regardless of padding-top (browsers exclude it
+    // from the padding box entirely), so a nonzero padding-top would only
+    // double up with the legend's own marginBottom below (see the regression
+    // check further down) without giving the legend itself any more
+    // clearance from the top border.
+    await expect(style.paddingTop).toBe('0px');
+    await expect(style.paddingRight).toBe('24px');
+    await expect(style.paddingBottom).toBe('24px');
+    await expect(style.paddingLeft).toBe('24px');
+
+    // Regression: the gap from the legend to the first content below it must
+    // match the fieldset's normal legend-stack gap (`forms.fieldset.spacing`,
+    // the same value `root`'s own flex `rowGap` resolves to), not double up
+    // with `withBorder`'s own padding-top stacking on top of the legend's
+    // marginBottom.
+    const legend = canvas.getByText('Hakijan tiedot');
+    const firstField = canvas.getByText('Etunimi');
+    const fieldset = canvas.getByTestId('fieldset');
+    const gapAfterLegend =
+      firstField.getBoundingClientRect().top - legend.getBoundingClientRect().bottom;
+    const legendStackGapToken = parseFloat(getComputedStyle(fieldset).rowGap);
+
+    await expect(Math.abs(gapAfterLegend - legendStackGapToken)).toBeLessThan(1);
+
+    // A little breathing room between the legend text and the border line it
+    // straddles, so the glyphs don't render flush against the stroke.
+    await expect(parseFloat(getComputedStyle(legend).paddingTop)).toBeGreaterThan(0);
   },
 };
 
