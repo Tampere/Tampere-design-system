@@ -32,6 +32,22 @@ export const Default: Story = {
   },
 };
 
+export const LegendUsesInputLabelTypography: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const legend = canvas.getByText('Hakijan tiedot');
+    const style = getComputedStyle(legend);
+
+    // Same recipe as TextField's own label (TextField.css.ts): Figma's "Inputs
+    // and forms/Input label" style — P2 size, Subheader/Semi-Bold weight,
+    // text.primary color. A bare <legend> otherwise falls back to the
+    // browser's own small default legend font, not any TREDS type scale.
+    await expect(style.fontWeight).toBe('600');
+    await expect(style.color).toBe('rgb(45, 45, 50)');
+    await expect(parseFloat(style.fontSize)).toBeGreaterThanOrEqual(14);
+  },
+};
+
 export const Required: Story = {
   tags: docExample,
   args: { required: true },

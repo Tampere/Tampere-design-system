@@ -4,11 +4,13 @@ import {
   Fieldset as MantineFieldset,
   type FieldsetProps as MantineFieldsetProps,
 } from '@mantine/core';
+import { mergeClassNames } from '../../utils.ts';
 import {
   asterisk,
   childrenWrapper,
   errorText,
   helperText as helperTextStyle,
+  legend as legendStyle,
   pill,
   root,
   withBorder as withBorderStyle,
@@ -40,6 +42,7 @@ export const Fieldset = ({
   radius = 'sharp',
   children,
   className,
+  classNames,
   ...props
 }: FieldsetProps) => {
   const descriptionId = useId();
@@ -76,6 +79,7 @@ export const Fieldset = ({
         hasBorder && radius === 'pill' && pill,
         className
       )}
+      classNames={mergeClassNames({ root: '', legend: legendStyle }, classNames)}
       aria-describedby={description ? descriptionId : props['aria-describedby']}
     >
       {description && (
