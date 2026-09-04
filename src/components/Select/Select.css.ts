@@ -76,3 +76,11 @@ export const emptyMessage = style([
     color: text.secondary,
   },
 ]);
+
+export const dropDownGroupLabel = style([
+  textBase,
+  {
+    color: text.secondary,
+    fontWeight: item.highlightFontWeight,
+  },
+]);

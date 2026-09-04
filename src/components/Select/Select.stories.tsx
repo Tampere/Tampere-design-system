@@ -159,3 +159,35 @@ export const ManyOptionsScrollable: Story = {
     await expect(listbox.scrollHeight).toBeGreaterThan(listbox.clientHeight);
   },
 };
+
+/**
+ * `options` can also be an array of `{ group, items }` to render the options
+ * under group headers. Headers are shown but are not themselves selectable —
+ * only the options within a group can be picked.
+ */
+export const GroupedOptions: Story = {
+  args: {
+    inputLabel: 'Kaupunginosa',
+    options: [
+      { group: 'Pirkanmaa', items: ['Tampere', 'Nokia', 'Ylöjärvi'] },
+      { group: 'Uusimaa', items: ['Helsinki', 'Espoo', 'Vantaa'] },
+    ],
+  },
+  render: (args) => <Select {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.click(input);
+
+    // Dropdown content is portaled (Combobox defaults to `withinPortal: true`),
+    // so it's queried via the global `screen`, not `canvas` scoped to canvasElement.
+    await expect(screen.getByText('Pirkanmaa')).toBeInTheDocument();
+    await expect(screen.getByText('Uusimaa')).toBeInTheDocument();
+
+    const option = screen.getByRole('option', { name: 'Tampere' });
+    await userEvent.click(option);
+
+    await expect(input).toHaveValue('Tampere');
+  },
+};

@@ -5,26 +5,40 @@ import { CloseIcon } from '../../icons/CloseIcon.tsx';
 
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
-import { chevronOpen, dropDown, dropDownOption, emptyMessage, listOptions } from './Select.css.ts';
+import {
+  chevronOpen,
+  dropDown,
+  dropDownGroupLabel,
+  dropDownOption,
+  emptyMessage,
+  listOptions,
+} from './Select.css.ts';
+export interface SelectOptionGroup {
+  // Header shown above the group's options.
+  group: string;
+  items: string[];
+}
+
+export type SelectOptions = string[] | SelectOptionGroup[];
+
+function isGroupedOptions(options: SelectOptions): options is SelectOptionGroup[] {
+  return options.length > 0 && typeof options[0] === 'object';
+}
 
 interface Props {
-  /**
-   * Label for the input field. If not set, you must provide an aria-label for accessibility.
-   */
+  // Label for the input field. If not set, you must provide an aria-label for accessibility.
   inputLabel?: string;
   helperText?: string;
   placeholder?: string;
   clearButtonLabel?: string;
   expandButtonLabel?: string;
   collapseButtonLabel?: string;
-  /**
-   * Message shown in the dropdown when no options match the search. If not set, nothing is shown.
-   */
+  // Message shown in the dropdown when no options match the search. If not set, nothing is shown.
   noResultsMessage?: string;
   required?: boolean;
   error?: string;
   disabled?: boolean;
-  options: string[];
+  options: SelectOptions;
   showSearchIcon?: boolean;
   value?: string;
   onChange?: (value: string) => void;
@@ -61,22 +75,54 @@ export function Select({
   });
   const { dropdownOpened, toggleDropdown, closeDropdown, openDropdown } = combobox;
 
-  const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase().trim())
-  );
+  // Normalize both option shapes into a single list of groups. A flat
+  // `string[]` becomes one ungrouped group so the filtering/rendering below
+  // doesn't need to branch on which shape was passed.
+  const groups: { group?: string; items: string[] }[] = isGroupedOptions(options)
+    ? options
+    : [{ items: options }];
 
-  const selectOptions = filteredOptions.map((item, idx) => (
-    <Combobox.Option
-      aria-description={`${idx + 1} / ${filteredOptions.length}`}
-      component={'div'}
-      className={dropDownOption}
-      value={item}
-      key={item}
-      selected={item === value}
-    >
-      {item}
-    </Combobox.Option>
-  ));
+  const filteredGroups = groups
+    .map((group) => ({
+      group: group.group,
+      items: group.items.filter((item) => item.toLowerCase().includes(search.toLowerCase().trim())),
+    }))
+    .filter((group) => group.items.length > 0);
+
+  const totalVisibleOptions = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
+
+  const selectOptions = filteredGroups.flatMap((group, groupIdx) => {
+    const groupOffset = filteredGroups
+      .slice(0, groupIdx)
+      .reduce((sum, precedingGroup) => sum + precedingGroup.items.length, 0);
+
+    const optionNodes = group.items.map((item, itemIdx) => (
+      <Combobox.Option
+        aria-description={`${groupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
+        component={'div'}
+        className={dropDownOption}
+        value={item}
+        key={item}
+        selected={item === value}
+      >
+        {item}
+      </Combobox.Option>
+    ));
+
+    if (!group.group) {
+      return optionNodes;
+    }
+
+    return (
+      <Combobox.Group
+        label={group.group}
+        key={group.group}
+        classNames={{ groupLabel: dropDownGroupLabel }}
+      >
+        {optionNodes}
+      </Combobox.Group>
+    );
+  });
 
   // Array so TextField can count the icons itself and size its reserved
   // padding accordingly — see TextField's `getRightSectionSize`.
