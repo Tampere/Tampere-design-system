@@ -315,7 +315,28 @@ export function getTheme(bp: BreakpointKey) {
       headerGap: primitives.spacing['1,5'],
       todayMarkerInset: primitives.spacing['0,5'],
     },
-    forms: { spacing: primitives.spacing['3'], fieldset: { spacing: primitives.spacing['1'] } },
+    forms: {
+      spacing: primitives.spacing['3'],
+      fieldset: {
+        // Figma's `Components/Fieldset/Spacing`, aliased through
+        // `Breakpoint/Spacing/Small` — 16px at 1024/1440/1920, 12px at
+        // 320/480/768. Was previously a flat, non-responsive 8px
+        // (`primitives.spacing['1']`) that didn't match Figma at all —
+        // corrected as part of #50 (see #70's spacing decision comment).
+        spacing: bpTokens.spacing.sm,
+        // New for #50/#70: `Components/Fieldset/Field-group-spacing`, aliased
+        // through `Breakpoint/Spacing/Medium` — 24px at 1024/1440/1920, 16px
+        // at 320/480/768. Gap between multiple distinct input elements
+        // composed directly inside one Fieldset (e.g. TextField + Select +
+        // DateField) — distinct from the tighter Checkbox/Radio item-to-item
+        // gap, which lives inside those components and is untouched.
+        fieldGroupSpacing: bpTokens.spacing.md,
+        // Figma's Fieldset `.Required` instance sits at x=336, right after the
+        // `.Input label` ending at x=332 — a fixed 4px gap, not per-breakpoint
+        // (same precedent as `labeledIconButton.spacing` above).
+        requiredIndicatorGap: primitives.spacing['0,5'],
+      },
+    },
     icon: {
       size: {
         extraSmall: rem('16px'),
@@ -354,8 +375,7 @@ export function getTheme(bp: BreakpointKey) {
       },
     },
     labeledIconButton: {
-      // Figma Spacing/1 = 8, a fixed constant (not per-breakpoint) — same
-      // precedent as forms.fieldset.spacing above.
+      // Figma Spacing/1 = 8, a fixed constant (not per-breakpoint).
       spacing: primitives.spacing['1'],
     },
     input: {
