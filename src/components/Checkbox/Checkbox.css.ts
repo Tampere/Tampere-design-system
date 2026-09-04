@@ -80,16 +80,23 @@ globalStyle(`${input}:focus-visible + svg path`, {
   fill: selectionStates.unchecked.focus,
 });
 
-// Checked state
-globalStyle(`${input}[data-checked=true] + svg path`, {
+// Checked & indeterminate states (identical colors per Figma design). `:is(...)` keeps future
+// checked-state rules from having to remember to also list `[data-indeterminate=true]`.
+const checkedOrIndeterminate = `${input}:is([data-checked=true], [data-indeterminate=true])`;
+
+globalStyle(`${checkedOrIndeterminate} + svg path`, {
   fill: states.default,
 });
 
-globalStyle(`${input}[data-checked=true]:hover + svg path`, {
+globalStyle(`${checkedOrIndeterminate}:hover + svg path`, {
   fill: states.hover,
 });
 
-globalStyle(`${input}[data-checked=true]:active + svg path`, {
+globalStyle(`${checkedOrIndeterminate}:focus-visible + svg path`, {
+  fill: states.focus,
+});
+
+globalStyle(`${checkedOrIndeterminate}:active + svg path`, {
   fill: states.active,
 });
 

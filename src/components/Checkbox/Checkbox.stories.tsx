@@ -1,7 +1,35 @@
+import { Flex } from '@mantine/core';
 import { useArgs } from '@storybook/client-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { useState } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
+import { CheckboxIndeterminateIcon } from '../../icons/CheckboxIndeterminateIcon';
 import { Checkbox } from './Checkbox';
+
+function SelectAllExample() {
+  const [children, setChildren] = useState([true, false, false]);
+  const allChecked = children.every(Boolean);
+  const noneChecked = children.every((c) => !c);
+
+  return (
+    <Flex direction="column" gap="xs">
+      <Checkbox
+        label="Select all"
+        checked={allChecked}
+        indeterminate={!allChecked && !noneChecked}
+        onClick={() => setChildren(children.map(() => !allChecked))}
+      />
+      {children.map((checked, i) => (
+        <Checkbox
+          key={i}
+          label={`Item ${i + 1}`}
+          checked={checked}
+          onClick={() => setChildren(children.map((c, idx) => (idx === i ? !c : c)))}
+        />
+      ))}
+    </Flex>
+  );
+}
 
 const meta = {
   argTypes: {
@@ -10,12 +38,14 @@ const meta = {
     disabled: { control: 'boolean' },
     onChange: { action: 'changed' },
     error: { control: 'boolean' },
+    indeterminate: { control: 'boolean' },
   },
   args: {
     label: 'Label',
     checked: false,
     disabled: false,
     error: false,
+    indeterminate: false,
   },
   component: Checkbox,
 } satisfies Meta<typeof Checkbox>;
@@ -74,6 +104,140 @@ export const Error: Story = {
     await expect(path).toBeTruthy();
     // Figma Common/Error = Red/300 (#ae1e20).
     await expect(getComputedStyle(path as Element).fill).toBe('rgb(174, 30, 32)');
+  },
+};
+
+export const Indeterminate: Story = {
+  args: { label: 'Indeterminate option', indeterminate: true },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+    const path = checkboxInput.parentElement?.querySelector('svg path');
+    await expect(path).toBeTruthy();
+    // Figma Primary-states/Default = Blue/400 (#29549a).
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(41, 84, 154)');
+
+    // The browser's click activation steps reset the native `indeterminate` DOM property to
+    // false; while the `indeterminate` prop stays true it must be reasserted after a click.
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+  },
+};
+
+export const IndeterminateTakesPrecedenceOverChecked: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Both set', indeterminate: true, checked: true },
+  render: (args) => (
+    <>
+      <Checkbox {...args} />
+      {/* Hidden reference render of the expected icon, so the assertion below tracks the icon's
+          actual geometry instead of a path string that would silently go stale if it changed. */}
+      <CheckboxIndeterminateIcon aria-hidden="true" style={{ display: 'none' }} />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+    // Indeterminate icon's dash path, not the checked icon's checkmark path.
+    const [renderedIcon, referenceIcon] = canvasElement.querySelectorAll('svg');
+    await expect(renderedIcon.querySelector('path:nth-of-type(2)')?.getAttribute('d')).toBe(
+      referenceIcon.querySelector('path:nth-of-type(2)')?.getAttribute('d')
+    );
+
+    // The precedence must also hold across the click activation steps that reset the native
+    // `indeterminate` DOM property (see the `Indeterminate` story above).
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+  },
+};
+
+export const IndeterminateDisabled: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Disabled indeterminate', indeterminate: true, disabled: true },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+    const path = checkboxInput.parentElement?.querySelector('svg path:nth-of-type(2)');
+    // Figma disabled state = Neutral/300 (#c9c9ce), overriding the indeterminate blue.
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(201, 201, 206)');
+  },
+};
+
+export const IndeterminateError: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error indeterminate', indeterminate: true, error: true },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
+    const path = checkboxInput.parentElement?.querySelector('svg path:nth-of-type(2)');
+    // Figma error state = Red/300 (#ae1e20), overriding the indeterminate blue.
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(174, 30, 32)');
+  },
+};
+
+export const SelectAll: Story = {
+  args: { label: 'Select all' },
+  render: () => <SelectAllExample />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const [selectAll, item1, item2, item3] = canvas.getAllByRole('checkbox') as HTMLInputElement[];
+
+    // Starts with only Item 1 checked: partial selection.
+    await expect(selectAll.indeterminate).toBe(true);
+    await expect(selectAll.checked).toBe(false);
+    await expect(selectAll.getAttribute('aria-checked')).toBe('mixed');
+
+    // Clicking "Select all" while indeterminate selects every item (not deselect).
+    await userEvent.click(selectAll);
+    await expect(selectAll.indeterminate).toBe(false);
+    await expect(selectAll.checked).toBe(true);
+    await expect(selectAll.getAttribute('aria-checked')).toBeNull();
+    await expect(item1.checked).toBe(true);
+    await expect(item2.checked).toBe(true);
+    await expect(item3.checked).toBe(true);
+
+    // Clicking "Select all" again while fully checked deselects every item.
+    await userEvent.click(selectAll);
+    await expect(selectAll.indeterminate).toBe(false);
+    await expect(selectAll.checked).toBe(false);
+    await expect(item1.checked).toBe(false);
+    await expect(item2.checked).toBe(false);
+    await expect(item3.checked).toBe(false);
+
+    // Checking one item returns the parent to partial selection.
+    await userEvent.click(item1);
+    await expect(selectAll.indeterminate).toBe(true);
+    await expect(selectAll.checked).toBe(false);
+
+    // Checking the remaining items resolves the parent to fully checked.
+    await userEvent.click(item2);
+    await userEvent.click(item3);
+    await expect(selectAll.indeterminate).toBe(false);
+    await expect(selectAll.checked).toBe(true);
+
+    // Unchecking one item returns the parent to indeterminate.
+    await userEvent.click(item1);
+    await expect(selectAll.indeterminate).toBe(true);
+    await expect(selectAll.checked).toBe(false);
+
+    // Unchecking all items resolves the parent to fully unchecked.
+    await userEvent.click(item2);
+    await userEvent.click(item3);
+    await expect(selectAll.indeterminate).toBe(false);
+    await expect(selectAll.checked).toBe(false);
   },
 };
 
