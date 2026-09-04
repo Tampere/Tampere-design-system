@@ -2,11 +2,23 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { Fieldset } from './Fieldset';
+import { selectionGroup } from './Fieldset.css';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { RadioButton } from '../RadioButton/RadioButton';
 import { TextField } from '../TextField/TextField';
 import { Select } from '../Select/Select';
 import { DateField } from '../DateField';
+
+// Finnish translation of HDS (Helsinki Design System)'s canonical Fieldset
+// example (hds.hel.fi/components/fieldset/#example), matching the Figma
+// branch's "Fieldset with applicant information" example (node 14047:1146).
+const applicantInfoFields = (
+  <>
+    <TextField inputLabel="Etunimi" />
+    <TextField inputLabel="Sukunimi" />
+    <TextField inputLabel="Henkilötunnus" placeholder="Esim. 111299-1234" />
+  </>
+);
 
 const meta = {
   component: Fieldset,
@@ -14,6 +26,7 @@ const meta = {
   args: {
     legend: 'Hakijan tiedot',
     'data-testid': 'fieldset',
+    children: applicantInfoFields,
   },
 } satisfies Meta<typeof Fieldset>;
 
@@ -76,6 +89,24 @@ export const WithHelperText: Story = {
     const helper = canvas.getByText('Ohjeteksti');
 
     await expect(group).toHaveAttribute('aria-describedby', helper.id);
+
+    // Regression: a flex `<fieldset>`'s `<legend>` is excluded from the flex
+    // formatting context (browsers wrap the rest of the children in an
+    // anonymous "fieldset content box" per the CSS Fieldsets spec) — the
+    // root's flex `gap` therefore never applies between the legend and its
+    // next sibling, only among children after it (that gap measures 0
+    // without an explicit margin on the legend). Assert equality against the
+    // helper→children gap (both use the same `forms.fieldset.spacing` token)
+    // rather than a breakpoint-dependent hardcoded pixel value.
+    const legend = canvas.getByText('Hakijan tiedot');
+    const childrenWrapper = helper.nextElementSibling as HTMLElement;
+    const legendToHelperGap =
+      helper.getBoundingClientRect().top - legend.getBoundingClientRect().bottom;
+    const helperToChildrenGap =
+      childrenWrapper.getBoundingClientRect().top - helper.getBoundingClientRect().bottom;
+
+    await expect(legendToHelperGap).toBeGreaterThan(0);
+    await expect(Math.abs(legendToHelperGap - helperToChildrenGap)).toBeLessThan(1);
   },
 };
 
@@ -177,21 +208,36 @@ export const WithCheckboxGroup: Story = {
     required: true,
     helperText: 'Valitse päivät, jotka useimmiten sopivat',
     // Checkbox is a controlled component — always pass `checked` explicitly
-    // (see Checkbox.stories.tsx's own convention).
+    // (see Checkbox.stories.tsx's own convention). Grouped as a single
+    // Fieldset child (via `selectionGroup`) so the items get the tight
+    // Figma "Selection-items-spacing" gap, not the larger field-group gap
+    // meant for stacking distinct field types.
     children: (
-      <>
+      <div data-testid="checkbox-group" className={selectionGroup}>
         <Checkbox label="Maanantai" checked={false} onChange={() => {}} />
         <Checkbox label="Tiistai" checked={false} onChange={() => {}} />
         <Checkbox label="Keskiviikko" checked={false} onChange={() => {}} />
         <Checkbox label="Torstai" checked={false} onChange={() => {}} />
         <Checkbox label="Perjantai" checked={false} onChange={() => {}} />
-      </>
+      </div>
     ),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await expect(canvas.getAllByRole('checkbox')).toHaveLength(5);
+
+    // Regression: checkbox items must use the tight legend-stack gap
+    // (`forms.fieldset.spacing` — Figma's `Forms/Selection-items-spacing`
+    // aliases to that exact same token), not the larger `fieldGroupSpacing`
+    // meant for grouping distinct field types. Compare the group's own
+    // computed row-gap against the Fieldset root's (both should resolve to
+    // the same token, at whatever breakpoint the test viewport lands on)
+    // rather than asserting a breakpoint-dependent hardcoded pixel value.
+    const fieldsetGap = parseFloat(getComputedStyle(canvas.getByTestId('fieldset')).rowGap);
+    const groupGap = parseFloat(getComputedStyle(canvas.getByTestId('checkbox-group')).rowGap);
+
+    await expect(groupGap).toBe(fieldsetGap);
   },
 };
 
@@ -201,18 +247,25 @@ export const WithRadioGroup: Story = {
     legend: 'Minulle sopivin työskentelypaikka',
     required: true,
     helperText: 'Voit vaihtaa valintaa myöhemmin uudelleen',
+    // Grouped as a single Fieldset child — same rationale as WithCheckboxGroup.
     children: (
-      <>
+      <div data-testid="radio-group" className={selectionGroup}>
         <RadioButton name="workplace" label="Toimistolla" />
         <RadioButton name="workplace" label="Etänä" />
         <RadioButton name="workplace" label="Hybridi" />
-      </>
+      </div>
     ),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await expect(canvas.getAllByRole('radio')).toHaveLength(3);
+
+    // Regression: same gap check as WithCheckboxGroup.
+    const fieldsetGap = parseFloat(getComputedStyle(canvas.getByTestId('fieldset')).rowGap);
+    const groupGap = parseFloat(getComputedStyle(canvas.getByTestId('radio-group')).rowGap);
+
+    await expect(groupGap).toBe(fieldsetGap);
   },
 };
 

@@ -30,6 +30,12 @@ export const root = style({
 // its own, so this must be applied explicitly.
 export const legend = style({
   margin: 0,
+  // A flex `<fieldset>`'s `<legend>` is excluded from the flex formatting
+  // context per the CSS Fieldsets spec (browsers wrap the rest of the
+  // children in an anonymous "fieldset content box"), so `root`'s flex `gap`
+  // never applies between the legend and its next sibling — only among the
+  // children after it. Close that gap explicitly here instead.
+  marginBottom: forms.fieldset.spacing,
   color: text.primary,
   fontSize: input.font.label.fontSize,
   fontWeight: typography.subheader.fontWeight,
@@ -60,6 +66,20 @@ export const childrenWrapper = style({
   display: 'flex',
   flexDirection: 'column',
   gap: forms.fieldset.fieldGroupSpacing,
+});
+
+// Groups same-type selection controls (Checkbox/RadioButton items) into a
+// single Fieldset child, matching Figma's "Checkbox group"/"Radio button
+// group" sub-components. TREDS has no dedicated CheckboxGroup/RadioGroup
+// component yet, so this is used directly by Fieldset.stories.tsx's doc
+// examples. Figma's `Forms/Selection-items-spacing` aliases to the exact same
+// `Breakpoint/Spacing/Small` chain as `Components/Fieldset/Spacing` (16px at
+// 1024+, 12px at 768 and below) — reuse that token, not the larger
+// `fieldGroupSpacing` (24/16px) meant for grouping distinct field types.
+export const selectionGroup = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: forms.fieldset.spacing,
 });
 
 // Shared with TextField/TextArea's own helper text style (Figma's "Inputs and
