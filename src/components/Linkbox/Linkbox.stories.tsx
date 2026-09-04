@@ -47,6 +47,12 @@ export const Default: Story = {
     // Figma "Card link content" — Background/Default = #ffffff.
     await expect(style.backgroundColor).toBe('rgb(255, 255, 255)');
     await expect(link.tagName).toBe('A');
+    // Description's `text/secondary` override (neutral/600, #52525b) on the
+    // default (non-inverted) surface — the inverted case is covered
+    // separately by `InvertedColor` below.
+    await expect(getComputedStyle(canvas.getByText('Kuvaava teksti')).color).toBe(
+      'rgb(82, 82, 91)'
+    );
   },
 };
 
@@ -119,6 +125,12 @@ export const InvertedColor: Story = {
     await expect(getComputedStyle(canvas.getByText('Kuvaava teksti')).color).toBe(
       'rgb(255, 255, 255)'
     );
+    // The arrow icon (`fill="currentColor"`) inherits its color from
+    // `iconRow`'s own `${inverted} .${iconRow}` override — asserted
+    // separately from the text colors above since it isn't a `Typography`
+    // element and isn't covered by `invertibleTextSelectors`.
+    const icon = link.querySelector('svg') as SVGElement;
+    await expect(getComputedStyle(icon).color).toBe('rgb(255, 255, 255)');
   },
 };
 
@@ -267,6 +279,21 @@ export const AppendsExternalLabelToConsumerAriaLabelOverride: Story = {
   },
 };
 
+export const WithCustomExternalLabel: Story = {
+  // `externalLabel` overrides the default Finnish suffix — every other
+  // `external` story relies on the destructured default value
+  // (`'(avautuu uuteen välilehteen)'`), so a bug that hardcoded the default
+  // string into the accessible-name concatenation instead of reading the
+  // prop would otherwise slip through undetected.
+  args: { external: true, href: 'https://tampere.fi', externalLabel: '(opens in a new tab)' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: /^Otsikko/ });
+
+    await expect(link).toHaveAccessibleName('Otsikko (opens in a new tab)');
+  },
+};
+
 // A minimal stand-in for a router `Link` component (Next.js `Link`, React
 // Router's `Link`, etc.) — forwards everything through to a real `<a>`.
 function FakeRouterLink({ href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) {
@@ -323,6 +350,21 @@ export const WithCustomClassName: Story = {
   },
 };
 
+export const WithoutEyebrowOrDescription: Story = {
+  // `eyebrow`/`description` are both optional and conditionally rendered
+  // (`eyebrow && <Typography>`/`description && <Typography>` in Linkbox.tsx)
+  // — every other story sets both via `meta.args`, so the omitted branch is
+  // otherwise never exercised.
+  args: { eyebrow: undefined, description: undefined },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.queryByText('Lisätietoa')).toBeNull();
+    await expect(canvas.queryByText('Kuvaava teksti')).toBeNull();
+    await expect(canvas.getByRole('link')).toHaveAccessibleName('Otsikko');
+  },
+};
+
 let forwardedRefNode: HTMLElement | null = null;
 
 export const ForwardsRefToRenderedElement: Story = {
@@ -360,6 +402,24 @@ export const MergesRelWithExternal: Story = {
   },
 };
 
+export const WithPlainTargetAndRel: Story = {
+  // `target`/`rel` pass straight through unmodified when `external` isn't
+  // set — `linkTarget`/`linkRel` in Linkbox.tsx only take the `external`
+  // branch (forced `_blank`/prepended `noopener noreferrer`) otherwise.
+  // Every other story exercising `target`/`rel` does so with `external: true`
+  // (`MergesRelWithExternal` above, `WithCustomComponentAndExternal`), so
+  // this fallthrough branch was otherwise untested — a regression that
+  // dropped it (e.g. always forcing `_blank`) would pass every other story.
+  args: { target: '_self', rel: 'nofollow' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Otsikko' });
+
+    await expect(link).toHaveAttribute('target', '_self');
+    await expect(link).toHaveAttribute('rel', 'nofollow');
+  },
+};
+
 // ── Dev-warning tests (verifies the console.error guards in Linkbox.tsx) ──
 
 let capturedConsoleErrors: string[] = [];
@@ -378,10 +438,15 @@ const captureConsoleErrors = () => {
 export const WarnsWhenTargetIgnoredByExternal: Story = {
   args: { external: true, target: '_self' },
   beforeEach: captureConsoleErrors,
-  play: async () => {
+  play: async ({ canvasElement }) => {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /`target` is ignored/.test(m))).toBe(true)
     );
+    // The warning fires alongside, not instead of, the actual override — a
+    // consumer's conflicting `target` must still lose to `external`'s
+    // `_blank`, not just get flagged.
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('link')).toHaveAttribute('target', '_blank');
   },
 };
 
@@ -392,10 +457,15 @@ export const WarnsWithInvalidTitleOrder: Story = {
   // override with no signal — same risk class Card's identical prop guards.
   args: { titleOrder: 6 as unknown as 2 | 3 | 4 | 5 },
   beforeEach: captureConsoleErrors,
-  play: async () => {
+  play: async ({ canvasElement }) => {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /invalid `titleOrder`/.test(m))).toBe(true)
     );
+    // The warning fires alongside, not instead of, a safe fallback — an
+    // out-of-union value degrades to Typography's own `h3` default rather
+    // than losing the heading entirely.
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('heading', { name: 'Otsikko' }).tagName).toBe('H3');
   },
 };
 
@@ -408,10 +478,17 @@ export const WarnsWithInvalidMediaPlacement: Story = {
     mediaPlacement: 'bottom' as unknown as 'top' | 'left',
   },
   beforeEach: captureConsoleErrors,
-  play: async () => {
+  play: async ({ canvasElement }) => {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /invalid `mediaPlacement`/.test(m))).toBe(true)
     );
+    // The warning fires alongside, not instead of, a safe fallback — an
+    // out-of-union value degrades to the stacked (`top`) layout rather than
+    // silently applying no layout at all.
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Otsikko' });
+    const layout = link.firstElementChild as HTMLElement;
+    await expect(getComputedStyle(layout).flexDirection).toBe('column');
   },
 };
 

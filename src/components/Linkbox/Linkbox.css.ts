@@ -52,8 +52,14 @@ export const contentPadding = contentPaddingVariants.md;
 // Figma's "Kuvaava teksti" (P1) is styled with text/secondary, not
 // Typography's own p1 default (text/primary) — only the description needs
 // this override; the eyebrow (P2) and title (H3) already default to
-// text/secondary and text/header respectively.
-export const description = style({ color: text.secondary });
+// text/secondary and text/header respectively. `!important` isn't required to
+// beat Typography's own p1 class on specificity (this is a single class same
+// as that one, but applied via `className` alongside it, so source order
+// already decides) — same defensive reasoning as Card.css.ts's
+// `invertibleSelectors`: it guards against a same-specificity rule declared
+// later in source order (e.g. Typography's own stylesheet re-ordering, or a
+// consumer `className` override) winning the cascade regardless of intent.
+export const description = style({ color: `${text.secondary} !important` });
 
 // Icon row sits below the text block, matching Figma's arrow position.
 export const iconRow = style({ display: 'flex', alignItems: 'center', color: text.header });
@@ -99,11 +105,14 @@ export const link = style({
   },
 });
 
-// Only the tint differs when `inverted` — Figma's own Focus-visible/Outline
-// variable is the same dark #1e1e22 for both the Default and Inverted focus
-// cells (confirmed against the "Card link content" Figma frame), so the
+// Only the tint differs when `inverted` — as of the "Card link content" Figma
+// frame checked for this component, its Focus-visible/Outline variable is the
+// same dark #1e1e22 for both the Default and Inverted focus cells, so the
 // outline itself doesn't need an inverted override the way e.g. Card's
 // nested TextLink focus ring does against its own (different) backgrounds.
+// If that Figma variable is ever split per-background, this (and the
+// `InvertedFocusVisibleUsesSameOutlineAsDefault` story asserting it) will
+// need revisiting — nothing here re-derives it from a live source of truth.
 globalStyle(`${inverted}.${link}:hover`, {
   backgroundImage: `linear-gradient(${hover.overlayContrast}, ${hover.overlayContrast})`,
 });
@@ -144,10 +153,11 @@ globalStyle(`${inverted}.${link}:focus-visible`, {
 // the container's own inline size as though it had no content, so without an
 // explicit width a `left`-placed Linkbox used as a flex item (the common case
 // — a row of cards) collapses to 0 width instead of sharing the row (verified
-// in Chromium: 0px vs. 226px for an otherwise-identical `top`-placed sibling).
-// A plain block-flow parent doesn't hit this — its `width: auto` already
-// fills the containing block regardless of content — which is why it went
-// unnoticed: every existing story wraps the box in a plain (non-flex) div.
+// in Chromium against a one-off repro — a non-zero width is what matters here,
+// the exact pixel figure measured isn't a maintained invariant). A plain
+// block-flow parent doesn't hit this — its `width: auto` already fills the
+// containing block regardless of content — which is why it went unnoticed:
+// every existing story wraps the box in a plain (non-flex) div.
 export const leftMarker = style({ containerType: 'inline-size', width: '100%' });
 
 // Intentionally not `breakpoint.md.appWidth` (the responsive viewport
@@ -160,14 +170,20 @@ export const leftMarker = style({ containerType: 'inline-size', width: '100%' })
 // any time the design system's `md` breakpoint changes for unrelated reasons.
 const wideEnoughForRowSplit = `(min-width: ${containerQueryBreakpoint.md})`;
 
+// Full child-combinator chains (`leftMarker > root > media`/`content`), not
+// `leftMarker`-to-descendant — `media`/`content` are Card's own shared
+// classes, so a plain descendant selector would also reach a `Card` (or
+// another Linkbox) nested two levels down inside this Linkbox's `media` slot,
+// force-splitting its layout too. The explicit chain scopes this strictly to
+// Linkbox's own direct structure.
 globalStyle(`${leftMarker} > ${root}`, {
   '@container': { [wideEnoughForRowSplit]: { flexDirection: 'row' } },
 });
-globalStyle(`${leftMarker} ${media}`, {
+globalStyle(`${leftMarker} > ${root} > ${media}`, {
   '@container': {
     [wideEnoughForRowSplit]: { aspectRatio: 'auto', flex: `0 0 ${card.mediaSplit}` },
   },
 });
-globalStyle(`${leftMarker} ${content}`, {
+globalStyle(`${leftMarker} > ${root} > ${content}`, {
   '@container': { [wideEnoughForRowSplit]: { flex: `0 0 ${card.mediaSplit}` } },
 });
