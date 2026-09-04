@@ -80,18 +80,27 @@ globalStyle(`${input}:focus-visible + svg path`, {
   fill: selectionStates.unchecked.focus,
 });
 
-// Checked state
-globalStyle(`${input}[data-checked=true] + svg path`, {
-  fill: states.default,
-});
+// Checked & indeterminate states (identical colors per Figma design)
+globalStyle(
+  `${input}[data-checked=true] + svg path, ${input}[data-indeterminate=true] + svg path`,
+  {
+    fill: states.default,
+  }
+);
 
-globalStyle(`${input}[data-checked=true]:hover + svg path`, {
-  fill: states.hover,
-});
+globalStyle(
+  `${input}[data-checked=true]:hover + svg path, ${input}[data-indeterminate=true]:hover + svg path`,
+  {
+    fill: states.hover,
+  }
+);
 
-globalStyle(`${input}[data-checked=true]:active + svg path`, {
-  fill: states.active,
-});
+globalStyle(
+  `${input}[data-checked=true]:active + svg path, ${input}[data-indeterminate=true]:active + svg path`,
+  {
+    fill: states.active,
+  }
+);
 
 // Disabled state
 globalStyle(`${input}[data-disabled=true] + svg path`, {
