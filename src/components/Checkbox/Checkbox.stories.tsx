@@ -88,11 +88,32 @@ export const Checked: Story = {
     };
     return <Checkbox {...args} checked={checked} onClick={handleClick} />;
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    // Regression net: a checkbox that never receives `indeterminate` must never render as one.
+    await expect(checkboxInput.indeterminate).toBe(false);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBeNull();
+
+    // Keyboard-focusing a checked checkbox should render `states.focus` (see the comment on the
+    // `:focus-visible` rule in Checkbox.css.ts) — currently identical to `states.default`, so this
+    // is a basic sanity check, not a specificity regression net.
+    await userEvent.tab();
+    await expect(checkboxInput).toHaveFocus();
+    const path = checkboxInput.parentElement?.querySelector('svg path');
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(41, 84, 154)');
+  },
 };
 
 export const Disabled: Story = {
   args: { label: 'Disabled option', disabled: true },
   render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const checkboxInput = within(canvasElement).getByRole('checkbox') as HTMLInputElement;
+    // Regression net: a checkbox that never receives `indeterminate` must never render as one.
+    await expect(checkboxInput.indeterminate).toBe(false);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBeNull();
+  },
 };
 
 export const Error: Story = {
@@ -170,6 +191,12 @@ export const IndeterminateDisabled: Story = {
     const path = checkboxInput.parentElement?.querySelector('svg path:nth-of-type(2)');
     // Figma disabled state = Neutral/300 (#c9c9ce), overriding the indeterminate blue.
     await expect(getComputedStyle(path as Element).fill).toBe('rgb(201, 201, 206)');
+
+    // A disabled native input suppresses click activation entirely — clicking must be a no-op.
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.indeterminate).toBe(true);
+    await expect(checkboxInput.checked).toBe(false);
+    await expect(checkboxInput.getAttribute('aria-checked')).toBe('mixed');
   },
 };
 
@@ -189,7 +216,6 @@ export const IndeterminateError: Story = {
 };
 
 export const SelectAll: Story = {
-  args: { label: 'Select all' },
   render: () => <SelectAllExample />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -312,6 +338,9 @@ export const ControlledForwardsCallerOnChange: Story = {
   render: () => (
     <Checkbox label="Controlled option" checked={false} onClick={() => {}} onChange={onChangeSpy} />
   ),
+  beforeEach: () => {
+    onChangeSpy.mockClear();
+  },
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole('checkbox'));
     await expect(onChangeSpy).toHaveBeenCalledTimes(1);
@@ -329,6 +358,19 @@ export const UncontrolledDoesNotExceedRerenderLimit: Story = {
     await expect(checkboxInput.checked).toBe(false);
     await userEvent.click(checkboxInput);
     await expect(checkboxInput.checked).toBe(true);
+  },
+};
+
+// Verifies `defaultChecked` (the standard React prop for uncontrolled initial state) is honored,
+// not silently dropped by the `checked`+`defaultChecked` conflict on the underlying native input.
+export const UncontrolledDefaultCheckedIsHonored: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Uncontrolled option" defaultChecked />,
+  play: async ({ canvasElement }) => {
+    const checkboxInput = within(canvasElement).getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.checked).toBe(true);
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.checked).toBe(false);
   },
 };
 

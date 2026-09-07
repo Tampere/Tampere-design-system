@@ -12,8 +12,8 @@ interface Props extends ComponentPropsWithoutRef<'input'> {
   indeterminate?: boolean;
 }
 
-export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) {
-  const [checked, setChecked] = useState(inputProps.checked ?? false);
+export function Checkbox({ label, error, indeterminate, defaultChecked, ...inputProps }: Props) {
+  const [checked, setChecked] = useState(inputProps.checked ?? defaultChecked ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Keep internal state in sync when the parent provides a controlled `checked` prop. Guarded
@@ -28,8 +28,8 @@ export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) 
   // activation steps clear it back to false, and that reset isn't reflected in the `indeterminate`
   // prop, so a dependency array would leave the DOM property silently desynced after a click.
   // This relies on `onClick` below always toggling `checked` (forcing a re-render, and thus this
-  // effect, on every click) — if that internal state is ever removed, this reassertion needs to
-  // move to the click handler itself instead.
+  // effect, on every click) — if that internal state is ever removed, this effect needs some other
+  // trigger to re-run after a click (e.g. reasserting directly inside the click handler instead).
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.indeterminate = !!indeterminate;
@@ -65,8 +65,10 @@ export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) 
           }}
           // Toggling happens in `onClick` above; this only exists so React's controlled-input
           // heuristic (which pairs `checked` with `onChange`, not `onClick`) doesn't log a
-          // "checked without onChange" warning. Still forwards a caller's own `onChange`, since
-          // that was reachable via the `{...inputProps}` spread before this was added.
+          // "checked without onChange" warning. Still forwards a caller's own `onChange` —
+          // the explicit handler here shadows the one that would otherwise apply via the
+          // `{...inputProps}` spread above. Note a caller wiring both `onClick` and `onChange`
+          // will have both fire for the same interaction; that's expected, not a bug.
           onChange={(e) => {
             if (inputProps.onChange) {
               inputProps.onChange(e);

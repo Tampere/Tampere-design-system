@@ -75,12 +75,12 @@ globalStyle(`${input}:hover + svg path`, {
   fill: selectionStates.unchecked.hover,
 });
 
-globalStyle(`${input}:active + svg path`, {
-  fill: selectionStates.unchecked.active,
-});
-
 globalStyle(`${input}:focus-visible + svg path`, {
   fill: selectionStates.unchecked.focus,
+});
+
+globalStyle(`${input}:active + svg path`, {
+  fill: selectionStates.unchecked.active,
 });
 
 // Checked & indeterminate states (identical colors per Figma design). `:is(...)` keeps future
@@ -95,6 +95,14 @@ globalStyle(`${checkedOrIndeterminate}:hover + svg path`, {
   fill: states.hover,
 });
 
+// This selector is MORE specific than the checked-default rule above (an extra `:focus-visible`
+// pseudo-class), not merely tied with it. That headroom is what matters: `states.focus` currently
+// equals `states.default`, so deleting this rule wouldn't visibly break anything today — a
+// checked/indeterminate checkbox would still render `states.default` (blue), because the
+// checked-default rule above ties in specificity with the unchecked block's `:focus-visible` rule
+// and wins that tie by source order (declared later). Keep this rule anyway: it's what would let
+// `states.focus` ever diverge from `states.default` and still take effect for a
+// checked/indeterminate checkbox — without it, that divergence would be silently swallowed.
 globalStyle(`${checkedOrIndeterminate}:focus-visible + svg path`, {
   fill: states.focus,
 });
