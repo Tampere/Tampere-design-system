@@ -61,6 +61,15 @@ export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) 
               inputProps.onClick(e);
             }
           }}
+          // Toggling happens in `onClick` above; this only exists so React's controlled-input
+          // heuristic (which pairs `checked` with `onChange`, not `onClick`) doesn't log a
+          // "checked without onChange" warning. Still forwards a caller's own `onChange`, since
+          // that was reachable via the `{...inputProps}` spread before this was added.
+          onChange={(e) => {
+            if (inputProps.onChange) {
+              inputProps.onChange(e);
+            }
+          }}
           id={safeId}
           className={input}
           type="checkbox"

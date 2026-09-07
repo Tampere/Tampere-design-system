@@ -2,7 +2,7 @@ import { Flex } from '@mantine/core';
 import { useArgs } from '@storybook/client-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { CheckboxIndeterminateIcon } from '../../icons/CheckboxIndeterminateIcon';
 import { Checkbox } from './Checkbox';
 
@@ -262,5 +262,58 @@ export const RichLabel: Story = {
       } catch {}
     };
     return <Checkbox {...args} checked={checked} onClick={handleClick} />;
+  },
+};
+
+// ── Dev-warning tests (verifies #124's fix: a controlled Checkbox that only
+// wires `onClick` doesn't log React's "checked without onChange" warning, and
+// that a caller's own `onChange` still fires — the fix's `onChange` handler
+// must forward, not swallow, it) ─────────────────────────────────────────────
+
+// Captures console.error calls for the dev-warning test below.
+let capturedConsoleErrors: string[] = [];
+
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  const original = console.error;
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+  };
+  return () => {
+    console.error = original;
+  };
+};
+
+export const ControlledWithoutOnChangeDoesNotWarn: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Rendered without spreading `args` so meta's `onChange: { action: 'changed' }` argType
+  // (which auto-populates an `onChange` arg via the actions addon) can't mask the bug being
+  // tested: a caller wiring only `onClick`, with no `onChange` at all, on a controlled Checkbox.
+  render: () => <Checkbox label="Controlled option" checked={true} onClick={() => {}} />,
+  beforeEach: captureConsoleErrors,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // React's warning (if any) logs on this initial mount render already, before the click below.
+    await expect(capturedConsoleErrors.some((m) => /provided a `checked` prop/.test(m))).toBe(
+      false
+    );
+    // ...and must stay silent across the update render a click causes, too.
+    await userEvent.click(canvas.getByRole('checkbox'));
+    await expect(capturedConsoleErrors.some((m) => /provided a `checked` prop/.test(m))).toBe(
+      false
+    );
+  },
+};
+
+const onChangeSpy = fn();
+
+export const ControlledForwardsCallerOnChange: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Checkbox label="Controlled option" checked={false} onClick={() => {}} onChange={onChangeSpy} />
+  ),
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('checkbox'));
+    await expect(onChangeSpy).toHaveBeenCalledTimes(1);
   },
 };
