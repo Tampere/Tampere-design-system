@@ -64,7 +64,7 @@ export const LegendUsesInputLabelTypography: Story = {
 
 export const Required: Story = {
   tags: docExample,
-  args: { required: true },
+  args: { showRequiredMarker: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     // The visual asterisk is decorative (aria-hidden) — the accessible name
@@ -279,7 +279,7 @@ export const WithCheckboxGroup: Story = {
   tags: docExample,
   args: {
     legend: 'Minulle sopivimmat työskentelypäivät',
-    required: true,
+    showRequiredMarker: true,
     helperText: 'Valitse päivät, jotka useimmiten sopivat',
   },
   // Checkbox is a controlled component with its own internal state, toggled
@@ -341,7 +341,7 @@ export const WithRadioGroup: Story = {
   tags: docExample,
   args: {
     legend: 'Minulle sopivin työskentelypaikka',
-    required: true,
+    showRequiredMarker: true,
     helperText: 'Voit vaihtaa valintaa myöhemmin uudelleen',
   },
   // RadioButton is fully controlled (no internal state of its own) — a
@@ -398,7 +398,7 @@ export const WithMixedInputs: Story = {
   tags: docExample,
   args: {
     legend: 'Yhteydenottopyyntö',
-    required: true,
+    showRequiredMarker: true,
     helperText: 'Täytä tiedot, niin olemme sinuun yhteydessä',
     children: (
       <>

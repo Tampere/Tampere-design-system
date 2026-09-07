@@ -19,7 +19,7 @@ export interface FieldsetProps
   extends Omit<MantineFieldsetProps, 'legend' | 'variant' | 'radius'>, React.AriaAttributes {
   legend: React.ReactNode;
   /** Renders a decorative `*` next to the legend. Individual inputs inside still need their own `required` attribute — this isn't a native `<fieldset>` concept. */
-  required?: boolean;
+  showRequiredMarker?: boolean;
   helperText?: React.ReactNode;
   /** Rendered alongside `helperText`, not replacing it — matches TextField/Mantine's InputWrapper, which shows description and error together. */
   error?: string;
@@ -32,7 +32,7 @@ export interface FieldsetProps
 /** Groups related form inputs under a common legend, using native `<fieldset>`/`<legend>` semantics. */
 export const Fieldset = ({
   legend,
-  required,
+  showRequiredMarker,
   helperText,
   error,
   withBorder: hasBorder = false,
@@ -55,7 +55,7 @@ export const Fieldset = ({
       legend={
         <>
           {legend}
-          {required && (
+          {showRequiredMarker && (
             <span aria-hidden="true" className={asterisk}>
               *
             </span>
