@@ -317,3 +317,31 @@ export const ControlledForwardsCallerOnChange: Story = {
     await expect(onChangeSpy).toHaveBeenCalledTimes(1);
   },
 };
+
+// ── Verifies #122's fix: an uncontrolled Checkbox (no `checked` prop at all) must not trip
+// React's "Too many re-renders" limit. Rendered without spreading `args`, since meta's
+// `checked: false` default would otherwise mask the bug by always providing a `checked` prop.
+export const UncontrolledDoesNotExceedRerenderLimit: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Uncontrolled option" />,
+  play: async ({ canvasElement }) => {
+    const checkboxInput = within(canvasElement).getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput.checked).toBe(false);
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.checked).toBe(true);
+  },
+};
+
+// Verifies #123's fix: Checkbox's label uses the same `typography.p2` body-text style as
+// RadioButton's label, instead of falling back to the browser's ambient inherited font.
+export const LabelUsesBodyTypography: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Body text label' },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const label = within(canvasElement).getByText('Body text label');
+    const style = getComputedStyle(label);
+    await expect(style.fontSize).toBe('18px');
+    await expect(style.color).toBe('rgb(45, 45, 50)');
+  },
+};

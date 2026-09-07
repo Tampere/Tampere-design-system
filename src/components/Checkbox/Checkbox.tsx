@@ -16,9 +16,11 @@ export function Checkbox({ label, error, indeterminate, ...inputProps }: Props) 
   const [checked, setChecked] = useState(inputProps.checked ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keep internal state in sync when the parent provides a controlled `checked` prop.
-  if (inputProps.checked !== checked) {
-    setChecked(!!inputProps.checked);
+  // Keep internal state in sync when the parent provides a controlled `checked` prop. Guarded
+  // on `!== undefined`: an uncontrolled caller never passes `checked`, so without this guard
+  // `undefined !== checked` would be true on every render, calling `setChecked` in a loop.
+  if (inputProps.checked !== undefined && inputProps.checked !== checked) {
+    setChecked(inputProps.checked);
   }
 
   // The native `indeterminate` DOM property has no HTML attribute/JSX prop, so it must be set

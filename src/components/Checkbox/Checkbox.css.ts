@@ -8,7 +8,7 @@ const {
     focusRing,
     states,
     selectionStates,
-    components: { iconButton },
+    components: { iconButton, typography },
     text,
   },
 } = vars;
@@ -50,11 +50,14 @@ export const icon = style({
 
 export const inputLabel = styleVariants({
   default: {
+    ...typography.p2,
+    color: text.primary,
     appearance: 'none',
     height: rem(24),
     gap: spacing['0,5'],
   },
   disabled: {
+    ...typography.p2,
     appearance: 'none',
     height: rem(24),
     gap: spacing['0,5'],
