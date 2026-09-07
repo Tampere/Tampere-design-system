@@ -94,12 +94,23 @@ export const selectionGroup = style({
   gap: forms.fieldset.selectionItemsSpacing,
 });
 
+// Groups helperText+error into one tight unit before the description→content
+// gap applies, matching TextField's own description-to-error spacing
+// (`inputVars.spacing.verticalSpacing`, the gap on TextField.css.ts's `root`)
+// rather than the looser legend-stack gap the two sit inside.
+export const descriptionGroup = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: input.spacing.verticalSpacing,
+});
+
 // Shared with TextField/TextArea's own helper text style (Figma's "Inputs and
 // forms/Helper text" — same size/line-height across all form components).
 const descriptionFont = {
-  margin: 0, // reset the <p>'s default UA margin — spacing is via the root flex `gap`
+  margin: 0, // reset the <p>'s default UA margin — spacing is via `descriptionGroup`'s flex `gap`
   fontSize: input.font.helperText.fontSize,
   lineHeight: input.font.helperText.lineHeight,
+  letterSpacing: font.letterSpacing,
 };
 
 export const helperText = style({ ...descriptionFont, color: text.secondary });

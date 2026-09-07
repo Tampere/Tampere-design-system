@@ -97,17 +97,18 @@ export const WithHelperText: Story = {
     // root's flex `gap` therefore never applies between the legend and its
     // next sibling, only among children after it (that gap measures 0
     // without an explicit margin on the legend). Assert equality against the
-    // helper→children gap (both use the same `forms.fieldset.spacing` token)
-    // rather than a breakpoint-dependent hardcoded pixel value.
+    // description→children gap (both use the same `forms.fieldset.spacing`
+    // token) rather than a breakpoint-dependent hardcoded pixel value.
     const legend = canvas.getByText('Hakijan tiedot');
-    const childrenWrapper = helper.nextElementSibling as HTMLElement;
+    const descriptionGroup = helper.parentElement as HTMLElement;
+    const childrenWrapper = descriptionGroup.nextElementSibling as HTMLElement;
     const legendToHelperGap =
       helper.getBoundingClientRect().top - legend.getBoundingClientRect().bottom;
-    const helperToChildrenGap =
-      childrenWrapper.getBoundingClientRect().top - helper.getBoundingClientRect().bottom;
+    const descriptionToChildrenGap =
+      childrenWrapper.getBoundingClientRect().top - descriptionGroup.getBoundingClientRect().bottom;
 
     await expect(legendToHelperGap).toBeGreaterThan(0);
-    await expect(Math.abs(legendToHelperGap - helperToChildrenGap)).toBeLessThan(1);
+    await expect(Math.abs(legendToHelperGap - descriptionToChildrenGap)).toBeLessThan(1);
   },
 };
 
@@ -120,13 +121,25 @@ export const WithError: Story = {
 
     // Error is shown alongside helper text, not replacing it — matches
     // TextField/Mantine's InputWrapper, which renders description and error
-    // together, both wired into aria-describedby.
+    // together at TextField's own tighter spacing (input.spacing.verticalSpacing),
+    // both wired into aria-describedby.
     const helper = canvas.getByText('Ohjeteksti');
     const error = canvas.getByText('Virheteksti');
 
     await expect(group).toHaveAttribute('aria-describedby', `${helper.id} ${error.id}`);
     await expect(getComputedStyle(error).color).toBe('rgb(174, 30, 32)');
     await expect(getComputedStyle(helper).color).not.toBe('rgb(174, 30, 32)');
+
+    // Regression: helper→error gap must be the tight TextField-matching gap
+    // (input.spacing.verticalSpacing), strictly smaller than the looser
+    // legend→helper gap (forms.fieldset.spacing) the pair sits inside.
+    const legend = canvas.getByText('Hakijan tiedot');
+    const legendToHelperGap =
+      helper.getBoundingClientRect().top - legend.getBoundingClientRect().bottom;
+    const helperToErrorGap =
+      error.getBoundingClientRect().top - helper.getBoundingClientRect().bottom;
+
+    await expect(helperToErrorGap).toBeLessThan(legendToHelperGap);
   },
 };
 
@@ -323,17 +336,20 @@ export const WithCheckboxGroup: Story = {
     await userEvent.click(first);
     await expect(first.checked).toBe(true);
 
-    // Regression: checkbox items must use `selectionItemsSpacing`'s value
-    // (currently identical to the legend-stack gap, since both alias the
-    // same Figma breakpoint chain today), not the larger `fieldGroupSpacing`
-    // meant for grouping distinct field types. Compare the group's own
-    // computed row-gap against the Fieldset root's (both should resolve to
-    // the same token, at whatever breakpoint the test viewport lands on)
-    // rather than asserting a breakpoint-dependent hardcoded pixel value.
-    const fieldsetGap = parseFloat(getComputedStyle(canvas.getByTestId('fieldset')).rowGap);
-    const groupGap = parseFloat(getComputedStyle(canvas.getByTestId('checkbox-group')).rowGap);
+    // Regression: checkbox items must use the tighter `selectionItemsSpacing`
+    // gap, strictly less than `fieldGroupSpacing` (the larger gap meant for
+    // stacking distinct field types) — compared against the actual
+    // field-group gap (the checkbox group's own parent, Fieldset's
+    // `childrenWrapper`) so this survives `selectionItemsSpacing` and
+    // `spacing` diverging from each other later, which is the whole point of
+    // giving them separate tokens.
+    const checkboxGroup = canvas.getByTestId('checkbox-group');
+    const fieldGroupGap = parseFloat(
+      getComputedStyle(checkboxGroup.parentElement as HTMLElement).rowGap
+    );
+    const groupGap = parseFloat(getComputedStyle(checkboxGroup).rowGap);
 
-    await expect(groupGap).toBe(fieldsetGap);
+    await expect(groupGap).toBeLessThan(fieldGroupGap);
   },
 };
 
@@ -387,10 +403,13 @@ export const WithRadioGroup: Story = {
     await expect(radios[0].checked).toBe(false);
 
     // Regression: same gap check as WithCheckboxGroup.
-    const fieldsetGap = parseFloat(getComputedStyle(canvas.getByTestId('fieldset')).rowGap);
-    const groupGap = parseFloat(getComputedStyle(canvas.getByTestId('radio-group')).rowGap);
+    const radioGroup = canvas.getByTestId('radio-group');
+    const fieldGroupGap = parseFloat(
+      getComputedStyle(radioGroup.parentElement as HTMLElement).rowGap
+    );
+    const groupGap = parseFloat(getComputedStyle(radioGroup).rowGap);
 
-    await expect(groupGap).toBe(fieldsetGap);
+    await expect(groupGap).toBeLessThan(fieldGroupGap);
   },
 };
 

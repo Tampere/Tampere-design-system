@@ -8,10 +8,12 @@ import { mergeClassNames } from '../../utils.ts';
 import {
   asterisk,
   childrenWrapper,
+  descriptionGroup,
   errorText,
   helperText as helperTextStyle,
   legend as legendStyle,
   root,
+  selectionGroup,
   withBorder as withBorderStyle,
 } from './Fieldset.css';
 
@@ -27,6 +29,9 @@ export interface FieldsetProps extends Omit<MantineFieldsetProps, 'legend' | 'va
   children?: React.ReactNode;
   'data-testid'?: string;
 }
+
+/** Flex-column wrapper class for grouping Checkbox/RadioButton items inside one Fieldset — see the WithCheckboxGroup/WithRadioGroup doc examples. */
+export const fieldsetSelectionGroup = selectionGroup;
 
 /** Groups related form inputs under a common legend, using native `<fieldset>`/`<legend>` semantics. */
 export const Fieldset = ({
@@ -65,15 +70,19 @@ export const Fieldset = ({
       classNames={mergeClassNames<{ legend: string }>({ legend: legendStyle }, classNames)}
       aria-describedby={describedBy}
     >
-      {helperText && (
-        <p id={helperTextId} className={helperTextStyle}>
-          {helperText}
-        </p>
-      )}
-      {error && (
-        <p id={errorId} className={errorText}>
-          {error}
-        </p>
+      {(helperText || error) && (
+        <div className={descriptionGroup}>
+          {helperText && (
+            <p id={helperTextId} className={helperTextStyle}>
+              {helperText}
+            </p>
+          )}
+          {error && (
+            <p id={errorId} className={errorText}>
+              {error}
+            </p>
+          )}
+        </div>
       )}
       {children && <div className={childrenWrapper}>{children}</div>}
     </MantineFieldset>
