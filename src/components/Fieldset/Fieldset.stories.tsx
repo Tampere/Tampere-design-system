@@ -118,11 +118,64 @@ export const WithError: Story = {
     const canvas = within(canvasElement);
     const group = canvas.getByRole('group', { name: 'Hakijan tiedot' });
 
-    // Error replaces helper text, matching TextField's error/helperText convention
-    await expect(canvas.queryByText('Ohjeteksti')).toBeNull();
+    // Error is shown alongside helper text, not replacing it — matches
+    // TextField/Mantine's InputWrapper, which renders description and error
+    // together, both wired into aria-describedby.
+    const helper = canvas.getByText('Ohjeteksti');
     const error = canvas.getByText('Virheteksti');
-    await expect(group).toHaveAttribute('aria-describedby', error.id);
+
+    await expect(group).toHaveAttribute('aria-describedby', `${helper.id} ${error.id}`);
     await expect(getComputedStyle(error).color).toBe('rgb(174, 30, 32)');
+    await expect(getComputedStyle(helper).color).not.toBe('rgb(174, 30, 32)');
+  },
+};
+
+export const ErrorOnlyDescribedBy: Story = {
+  args: { error: 'Virheteksti' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole('group', { name: 'Hakijan tiedot' });
+    const error = canvas.getByText('Virheteksti');
+
+    await expect(canvas.queryByText('Ohjeteksti')).toBeNull();
+    await expect(group).toHaveAttribute('aria-describedby', error.id);
+  },
+};
+
+export const EmptyStringErrorFallsBackToHelperText: Story = {
+  args: { helperText: 'Ohjeteksti', error: '' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole('group', { name: 'Hakijan tiedot' });
+
+    // Regression: an empty-string `error` (common from controlled form
+    // state) must not swallow `helperText` — only a truthy `error` shows.
+    const helper = canvas.getByText('Ohjeteksti');
+    await expect(helper).toBeVisible();
+    await expect(group).toHaveAttribute('aria-describedby', helper.id);
+  },
+};
+
+export const DescribedByMergesWithConsumerValue: Story = {
+  args: { helperText: 'Ohjeteksti', 'aria-describedby': 'external-hint' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole('group', { name: 'Hakijan tiedot' });
+    const helper = canvas.getByText('Ohjeteksti');
+
+    // A caller-supplied aria-describedby must be merged with, not clobbered
+    // by, the internal helperText/error ids.
+    await expect(group).toHaveAttribute('aria-describedby', `${helper.id} external-hint`);
+  },
+};
+
+export const DescribedByFallsBackToConsumerValueWhenNoDescription: Story = {
+  args: { 'aria-describedby': 'external-hint' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole('group', { name: 'Hakijan tiedot' });
+
+    await expect(group).toHaveAttribute('aria-describedby', 'external-hint');
   },
 };
 

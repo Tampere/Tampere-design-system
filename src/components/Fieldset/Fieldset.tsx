@@ -21,7 +21,7 @@ export interface FieldsetProps
   /** Renders a decorative `*` next to the legend. Individual inputs inside still need their own `required` attribute — this isn't a native `<fieldset>` concept. */
   required?: boolean;
   helperText?: React.ReactNode;
-  /** Presence of an error replaces `helperText`, same convention as TextField. */
+  /** Rendered alongside `helperText`, not replacing it — matches TextField/Mantine's InputWrapper, which shows description and error together. */
   error?: string;
   /** Mantine's bordered "default" variant vs TREDS's borderless default (per Figma, #70). Default `false`. Sharp corners only — a rounded/pill radius needs more design work before it's offered here. */
   withBorder?: boolean;
@@ -41,8 +41,12 @@ export const Fieldset = ({
   classNames,
   ...props
 }: FieldsetProps) => {
-  const descriptionId = useId();
-  const description = error ?? helperText;
+  const helperTextId = useId();
+  const errorId = useId();
+  const describedBy =
+    [helperText && helperTextId, error && errorId, props['aria-describedby']]
+      .filter(Boolean)
+      .join(' ') || undefined;
 
   return (
     <MantineFieldset
@@ -60,11 +64,16 @@ export const Fieldset = ({
       }
       className={cx(root, hasBorder && withBorderStyle, className)}
       classNames={mergeClassNames({ root: '', legend: legendStyle }, classNames)}
-      aria-describedby={description ? descriptionId : props['aria-describedby']}
+      aria-describedby={describedBy}
     >
-      {description && (
-        <p id={descriptionId} className={error ? errorText : helperTextStyle}>
-          {description}
+      {helperText && (
+        <p id={helperTextId} className={helperTextStyle}>
+          {helperText}
+        </p>
+      )}
+      {error && (
+        <p id={errorId} className={errorText}>
+          {error}
         </p>
       )}
       {children && <div className={childrenWrapper}>{children}</div>}
