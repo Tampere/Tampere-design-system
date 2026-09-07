@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { Linkbox } from './Linkbox';
+import { Typography } from '../Typography';
 
 // A 1x1 GIF has no real intrinsic size, so it can't catch the media wrapper
 // collapsing to 0 height in the default (top) layout — this SVG has real
@@ -131,6 +132,25 @@ export const InvertedColor: Story = {
     // element and isn't covered by `invertibleTextSelectors`.
     const icon = link.querySelector('svg') as SVGElement;
     await expect(getComputedStyle(icon).color).toBe('rgb(255, 255, 255)');
+  },
+};
+
+export const InvertedColorDoesNotForceMediaTextWhite: Story = {
+  // Regression: `invertibleTextSelectors` used to be a bare `${inverted}
+  // .${className}` selector matched from Paper (where `inverted` also lives
+  // for the link hover/focus rules), reaching every Typography descendant —
+  // including one nested inside `media`, which sits outside `content` as a
+  // sibling and is never meant to be force-inverted (`media` is a consumer
+  // slot, e.g. an image with its own caption). Must now compound with
+  // `content`, matching Card.tsx's own `content`+`inverted` pairing.
+  args: { inverted: true, media: <Typography variant="p1">Media-teksti</Typography> },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(getComputedStyle(canvas.getByText('Otsikko')).color).toBe('rgb(255, 255, 255)');
+    // `text.primary` (neutral/800, #2d2d32) — Typography's own default p1
+    // color, untouched by the `inverted` override that flips `content`'s text.
+    await expect(getComputedStyle(canvas.getByText('Media-teksti')).color).toBe('rgb(45, 45, 50)');
   },
 };
 

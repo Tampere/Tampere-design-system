@@ -68,22 +68,25 @@ export const icon = style({ width: iconTokens.size.large, height: iconTokens.siz
 
 // Marker class toggled when `inverted` — no rule of its own (the background
 // color itself comes from Paper's `background="turquoise"`), just a hook for
-// the invertible text/icon selectors below. Same technique as Card.css.ts's
-// `inverted` marker.
+// the invertible text/icon selectors below and for the link hover/focus
+// overlay tint further down. Same technique as Card.css.ts's `inverted`
+// marker, applied on Paper (see Linkbox.tsx) for that second purpose.
 export const inverted = style({});
 
 // Same allowlist-driven inversion technique as Card.css.ts's
-// `invertibleSelectors` — flips Linkbox's own text/icon to the contrast
-// color when `inverted`. `inverted` alone (not compounded with `root`) is
-// enough to scope this to Linkbox instances — it's a Linkbox-local marker,
-// and `root` lives on a different (inner) element now (see `leftMarker`
-// below), so the two are no longer ever on the same element.
+// `invertibleSelectors`, and — like Card — compounded with `content` (applied
+// together on Linkbox.tsx's content `<div>`, alongside Paper) rather than
+// matched bare: `media` is a sibling of `content`, not a descendant, so a
+// bare `${inverted} .${className}` selector (matched from Paper, where
+// `inverted` also lives for the link-hover rules below) would reach into
+// `media` too and force-invert any Typography a consumer nests there. The
+// `${content}${inverted}` compound keeps this scoped the same way Card's is.
 const invertibleTextSelectors = Object.values(typography)
-  .map((className) => `${inverted} .${className}`)
+  .map((className) => `${content}${inverted} .${className}`)
   .join(', ');
 
 globalStyle(invertibleTextSelectors, { color: `${contrast} !important` });
-globalStyle(`${inverted} .${iconRow}`, { color: contrast });
+globalStyle(`${content}${inverted} .${iconRow}`, { color: contrast });
 
 // The whole box is a real `<a>` — Paper's `component="a"`. The overlay tint
 // is applied via `backgroundImage` (a same-color-stop linear-gradient), not

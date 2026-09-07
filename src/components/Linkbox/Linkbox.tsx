@@ -62,120 +62,128 @@ const titleComponent = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5' } as const;
 // that. Promising `HTMLAnchorElement` while `component` stays fully open
 // would let a consumer swap in a non-anchor component with no compiler
 // warning that the ref's declared type no longer matches what's rendered.
-export const Linkbox = forwardRef<HTMLDivElement, LinkboxProps>(function Linkbox(
-  {
-    href,
-    title,
-    titleOrder,
-    eyebrow,
-    description,
-    media,
-    mediaPlacement = 'top',
-    inverted = false,
-    external = false,
-    externalLabel = '(avautuu uuteen välilehteen)',
-    component,
-    target,
-    rel,
-    className,
-    ...props
-  },
-  ref
-) {
-  // A consumer's own `aria-label` override (see `RespectsConsumerAriaLabelOverride`
-  // in the stories) replaces `title` as the base name, but `external`'s
-  // screen-reader signal must still be appended either way — dropping it
-  // whenever a consumer supplies their own label would silently fail issue
-  // #75's "external links flagged to assistive tech" requirement for that case.
-  const baseAccessibleName = props['aria-label'] ?? title;
-  const accessibleName = external ? `${baseAccessibleName} ${externalLabel}` : baseAccessibleName;
-  const linkTarget = external ? '_blank' : target;
-  const linkRel = external ? cx('noopener noreferrer', rel) : rel;
+export const Linkbox = forwardRef<HTMLDivElement, LinkboxProps>(
+  (
+    {
+      href,
+      title,
+      titleOrder,
+      eyebrow,
+      description,
+      media,
+      mediaPlacement = 'top',
+      inverted = false,
+      external = false,
+      externalLabel = '(avautuu uuteen välilehteen)',
+      component,
+      target,
+      rel,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    // A consumer's own `aria-label` override (see `RespectsConsumerAriaLabelOverride`
+    // in the stories) replaces `title` as the base name, but `external`'s
+    // screen-reader signal must still be appended either way — dropping it
+    // whenever a consumer supplies their own label would silently fail issue
+    // #75's "external links flagged to assistive tech" requirement for that case.
+    const baseAccessibleName = props['aria-label'] ?? title;
+    const accessibleName = external ? `${baseAccessibleName} ${externalLabel}` : baseAccessibleName;
+    const linkTarget = external ? '_blank' : target;
+    const linkRel = external ? cx('noopener noreferrer', rel) : rel;
 
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') return;
+    useEffect(() => {
+      if (process.env.NODE_ENV === 'production') return;
 
-    if (external && target) {
-      console.error(
-        'Linkbox: `target` is ignored when `external` is set — external links always open in a new tab.'
-      );
-    }
-    if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
-      console.error(`Linkbox: invalid \`titleOrder\` value "${titleOrder}".`);
-    }
-    if (mediaPlacement !== 'top' && mediaPlacement !== 'left') {
-      console.error(`Linkbox: invalid \`mediaPlacement\` value "${String(mediaPlacement)}".`);
-    }
-  }, [external, target, titleOrder, mediaPlacement]);
+      if (external && target) {
+        console.error(
+          'Linkbox: `target` is ignored when `external` is set — external links always open in a new tab.'
+        );
+      }
+      if (titleOrder !== undefined && !(titleOrder in titleComponent)) {
+        console.error(`Linkbox: invalid \`titleOrder\` value "${titleOrder}".`);
+      }
+      if (mediaPlacement !== 'top' && mediaPlacement !== 'left') {
+        console.error(`Linkbox: invalid \`mediaPlacement\` value "${String(mediaPlacement)}".`);
+      }
+    }, [external, target, titleOrder, mediaPlacement]);
 
-  // `Paper`'s own type doesn't widen anchor attributes when `component="a"`
-  // (its manually-typed wrapper can't infer per-element props the way
-  // Mantine's raw polymorphic factory does — see Paper.tsx's own single `as`
-  // cast at its Mantine boundary for the same reason). The object literal
-  // below is typed explicitly first, so a typo'd key still fails `tsc`
-  // before the value ever reaches the `as PaperProps` cast at the JSX
-  // spread — going through `as unknown as` there would silently disable
-  // that check instead of just widening past it.
-  const anchorProps: Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'> & {
-    'aria-label': string;
-  } = {
-    href,
-    'aria-label': accessibleName,
-    target: linkTarget,
-    rel: linkRel,
-  };
+    // `Paper`'s own type doesn't widen anchor attributes when `component="a"`
+    // (its manually-typed wrapper can't infer per-element props the way
+    // Mantine's raw polymorphic factory does — see Paper.tsx's own single `as`
+    // cast at its Mantine boundary for the same reason). The object literal
+    // below is typed explicitly first, so a typo'd key still fails `tsc`
+    // before the value ever reaches the `as PaperProps` cast at the JSX
+    // spread — going through `as unknown as` there would silently disable
+    // that check instead of just widening past it.
+    const anchorProps: Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'> & {
+      'aria-label': string;
+    } = {
+      href,
+      'aria-label': accessibleName,
+      target: linkTarget,
+      rel: linkRel,
+    };
 
-  return (
-    <Paper
-      ref={ref}
-      {...props}
-      component={component ?? 'a'}
-      {...(anchorProps as PaperProps)}
-      background={inverted ? 'turquoise' : 'default'}
-      radius="sharp"
-      withShadow={false}
-      padding="none"
-      className={cx(
-        media && mediaPlacement === 'left' && leftMarker,
-        inverted && invertedMarker,
-        linkClass,
-        className
-      )}
-    >
-      {/* `root` (the flex row/column layout) lives on this inner wrapper, not
-          the outer element above — a `@container` query can't restyle the
-          same element that establishes the container (see `leftMarker` in
-          Linkbox.css.ts), so the container (outer) and the thing whose
-          `flexDirection` it toggles (this wrapper) have to be different
-          elements. */}
-      <div className={root}>
-        {media && <div className={mediaClass}>{media}</div>}
-        <div className={cx(contentClass, contentPadding)}>
-          <div className={textBlock}>
-            {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
-            <Typography
-              variant="h3"
-              component={titleOrder ? titleComponent[titleOrder] : undefined}
-            >
-              {title}
-            </Typography>
-            {description && (
-              <Typography variant="p1" className={descriptionClass}>
-                {description}
+    return (
+      <Paper
+        ref={ref}
+        {...props}
+        component={component ?? 'a'}
+        {...(anchorProps as PaperProps)}
+        background={inverted ? 'turquoise' : 'default'}
+        radius="sharp"
+        withShadow={false}
+        padding="none"
+        className={cx(
+          media && mediaPlacement === 'left' && leftMarker,
+          inverted && invertedMarker,
+          linkClass,
+          className
+        )}
+      >
+        {/* `root` (the flex row/column layout) lives on this inner wrapper, not
+            the outer element above — a `@container` query can't restyle the
+            same element that establishes the container (see `leftMarker` in
+            Linkbox.css.ts), so the container (outer) and the thing whose
+            `flexDirection` it toggles (this wrapper) have to be different
+            elements. */}
+        <div className={root}>
+          {media && <div className={mediaClass}>{media}</div>}
+          {/* `invertedMarker` is applied here too (in addition to Paper, where
+              it's needed for the link hover/focus overlay tint) so the
+              text/icon inversion selectors in Linkbox.css.ts can compound it
+              with `content` — scoping the forced-white text color to this
+              block and excluding `media`, which sits outside it as a sibling.
+              Same technique as Card.tsx's own `content`+`inverted` pairing. */}
+          <div className={cx(contentClass, contentPadding, inverted && invertedMarker)}>
+            <div className={textBlock}>
+              {eyebrow && <Typography variant="p2">{eyebrow}</Typography>}
+              <Typography
+                variant="h3"
+                component={titleOrder ? titleComponent[titleOrder] : undefined}
+              >
+                {title}
               </Typography>
-            )}
-          </div>
-          <div className={iconRow}>
-            {external ? (
-              <OpenExternalLinkIcon aria-hidden className={iconClass} />
-            ) : (
-              <ArrowRightIcon aria-hidden className={iconClass} />
-            )}
+              {description && (
+                <Typography variant="p1" className={descriptionClass}>
+                  {description}
+                </Typography>
+              )}
+            </div>
+            <div className={iconRow}>
+              {external ? (
+                <OpenExternalLinkIcon aria-hidden className={iconClass} />
+              ) : (
+                <ArrowRightIcon aria-hidden className={iconClass} />
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </Paper>
-  );
-});
+      </Paper>
+    );
+  }
+);
 
 Linkbox.displayName = 'Linkbox';
