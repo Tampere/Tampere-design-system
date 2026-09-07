@@ -436,3 +436,28 @@ export const WithCustomClassName: Story = {
     await expect(canvas.getByTestId('fieldset').className).toContain('consumer-custom-class');
   },
 };
+
+export const WithoutChildrenRendersNoWrapper: Story = {
+  args: { children: undefined },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole('group', { name: 'Hakijan tiedot' });
+
+    // No wrapper div should render when there are no children to group —
+    // the fieldset's only DOM child is its own <legend>.
+    await expect(group.children).toHaveLength(1);
+  },
+};
+
+export const CustomClassNamesMergeWithInternalStyles: Story = {
+  args: { classNames: { legend: 'consumer-legend-class' } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const legend = canvas.getByText('Hakijan tiedot');
+
+    // A caller's classNames.legend must merge with (cx), not replace, the
+    // internal legend typography class.
+    await expect(legend.className).toContain('consumer-legend-class');
+    await expect(getComputedStyle(legend).fontWeight).toBe('600');
+  },
+};
