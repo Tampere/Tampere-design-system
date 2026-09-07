@@ -215,7 +215,15 @@ export const IndeterminateError: Story = {
   },
 };
 
+// Static docs example: a realistic partial-selection "select all" pattern at rest. Kept
+// separate from the interaction-test story below so viewing it in the docs page doesn't
+// trigger a `play` function that clicks through every state and lands on "all unchecked".
 export const SelectAll: Story = {
+  render: () => <SelectAllExample />,
+};
+
+export const SelectAllStateTransitions: Story = {
+  tags: ['!dev', '!autodocs'],
   render: () => <SelectAllExample />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
