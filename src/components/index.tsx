@@ -9,6 +9,7 @@ export {
   LabeledIconButton,
   type LabeledIconButtonProps,
 } from './LabeledIconButton/LabeledIconButton';
+export { Linkbox, type LinkboxProps } from './Linkbox/Linkbox';
 export { LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { Modal } from './Modal/Modal';
 export { NavigationLink } from './NavigationLink/NavigationLink';
