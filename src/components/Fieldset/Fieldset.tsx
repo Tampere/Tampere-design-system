@@ -15,8 +15,7 @@ import {
   withBorder as withBorderStyle,
 } from './Fieldset.css';
 
-export interface FieldsetProps
-  extends Omit<MantineFieldsetProps, 'legend' | 'variant' | 'radius'>, React.AriaAttributes {
+export interface FieldsetProps extends Omit<MantineFieldsetProps, 'legend' | 'variant' | 'radius'> {
   legend: React.ReactNode;
   /** Renders a decorative `*` next to the legend. Individual inputs inside still need their own `required` attribute — this isn't a native `<fieldset>` concept. */
   showRequiredMarker?: boolean;
@@ -63,7 +62,7 @@ export const Fieldset = ({
         </>
       }
       className={cx(root, hasBorder && withBorderStyle, className)}
-      classNames={mergeClassNames({ root: '', legend: legendStyle }, classNames)}
+      classNames={mergeClassNames<{ legend: string }>({ legend: legendStyle }, classNames)}
       aria-describedby={describedBy}
     >
       {helperText && (
