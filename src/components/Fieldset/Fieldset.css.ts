@@ -85,14 +85,13 @@ export const childrenWrapper = style({
 // single Fieldset child, matching Figma's "Checkbox group"/"Radio button
 // group" sub-components. TREDS has no dedicated CheckboxGroup/RadioGroup
 // component yet, so this is used directly by Fieldset.stories.tsx's doc
-// examples. Figma's `Forms/Selection-items-spacing` aliases to the exact same
-// `Breakpoint/Spacing/Small` chain as `Components/Fieldset/Spacing` (16px at
-// 1024+, 12px at 768 and below) — reuse that token, not the larger
-// `fieldGroupSpacing` (24/16px) meant for grouping distinct field types.
+// examples. Uses its own `selectionItemsSpacing` token (not the larger
+// `fieldGroupSpacing` meant for grouping distinct field types) — see that
+// token's own comment in theme.ts for why it's separate from `spacing`.
 export const selectionGroup = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: forms.fieldset.spacing,
+  gap: forms.fieldset.selectionItemsSpacing,
 });
 
 // Shared with TextField/TextArea's own helper text style (Figma's "Inputs and

@@ -287,8 +287,8 @@ export const WithCheckboxGroup: Story = {
   // convention) — a story-local `useState` is required for the checkboxes to
   // actually respond to clicks, not just render a static unchecked snapshot.
   // Grouped as a single Fieldset child (via `selectionGroup`) so the items
-  // get the tight Figma "Selection-items-spacing" gap, not the larger
-  // field-group gap meant for stacking distinct field types.
+  // get their own dedicated "Selection-items-spacing" gap token, not the
+  // larger field-group gap meant for stacking distinct field types.
   render: (args) => {
     const days = ['Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai'];
     const [checked, setChecked] = useState(days.map(() => false));
@@ -323,9 +323,9 @@ export const WithCheckboxGroup: Story = {
     await userEvent.click(first);
     await expect(first.checked).toBe(true);
 
-    // Regression: checkbox items must use the tight legend-stack gap
-    // (`forms.fieldset.spacing` — Figma's `Forms/Selection-items-spacing`
-    // aliases to that exact same token), not the larger `fieldGroupSpacing`
+    // Regression: checkbox items must use `selectionItemsSpacing`'s value
+    // (currently identical to the legend-stack gap, since both alias the
+    // same Figma breakpoint chain today), not the larger `fieldGroupSpacing`
     // meant for grouping distinct field types. Compare the group's own
     // computed row-gap against the Fieldset root's (both should resolve to
     // the same token, at whatever breakpoint the test viewport lands on)

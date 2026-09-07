@@ -82,6 +82,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "fieldset": {
         "fieldGroupSpacing": "calc(1.5rem * var(--mantine-scale))",
         "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(1rem * var(--mantine-scale))",
         "spacing": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
@@ -434,6 +435,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "fieldset": {
         "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
         "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
         "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
@@ -786,6 +788,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "fieldset": {
         "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
         "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
         "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
@@ -1552,6 +1555,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "fieldset": {
           "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
           "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+          "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
           "spacing": "calc(0.75rem * var(--mantine-scale))",
         },
         "spacing": "calc(1.5rem * var(--mantine-scale))",
@@ -1905,6 +1909,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "fieldset": {
         "fieldGroupSpacing": "calc(1.5rem * var(--mantine-scale))",
         "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(1rem * var(--mantine-scale))",
         "spacing": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
@@ -2257,6 +2262,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "fieldset": {
         "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
         "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
         "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
@@ -2609,6 +2615,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "fieldset": {
         "fieldGroupSpacing": "calc(1.5rem * var(--mantine-scale))",
         "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(1rem * var(--mantine-scale))",
         "spacing": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",

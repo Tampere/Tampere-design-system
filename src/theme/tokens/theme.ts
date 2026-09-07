@@ -333,8 +333,14 @@ export function getTheme(bp: BreakpointKey) {
         fieldGroupSpacing: bpTokens.spacing.md,
         // Figma's Fieldset `.Required` instance sits at x=336, right after the
         // `.Input label` ending at x=332 — a fixed 4px gap, not per-breakpoint
-        // (same precedent as `labeledIconButton.spacing` above).
+        // (same precedent as `labeledIconButton.spacing` below).
         requiredIndicatorGap: primitives.spacing['0,5'],
+        // Figma's `Forms/Selection-items-spacing` (gap between Checkbox/Radio
+        // items grouped under one Fieldset) aliases through the same
+        // `Breakpoint/Spacing/Small` chain as `spacing` above — same values
+        // today, but kept as its own token since the two Figma variables are
+        // independent and could diverge later.
+        selectionItemsSpacing: bpTokens.spacing.sm,
       },
     },
     icon: {
