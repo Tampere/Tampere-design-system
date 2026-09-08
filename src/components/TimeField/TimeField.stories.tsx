@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
+import { userEvent as browserUserEvent } from '@vitest/browser/context';
 import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
 import { timeInput } from './TimeField.css';
@@ -596,5 +597,91 @@ export const RangeErrorFollowsMinMaxChanges: Story = {
     await waitFor(() =>
       expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
     );
+  },
+};
+
+// Chromium fires NO event when the user half-fills an empty time input: the
+// value stays '' and `badInput` flips silently. So this can only be caught on
+// blur, which is why `revalidate` is wired to onBlur and not just to an effect
+// over `currentValue`. Without that, the field shows `09:--` and reports
+// nothing to anyone (WCAG 3.3.1) — the same case DateField.tsx:275-281 guards.
+//
+// Two driver substitutions were required, both verified empirically:
+// - `@storybook/testing-library`'s `userEvent` is inert for reaching this
+//   native input's `badInput` state at all (typing '09' never flips
+//   `validity.badInput`), so these four stories use the Playwright-backed
+//   driver from `@vitest/browser/context` instead.
+// - Even with that driver, `userEvent.tab()` does NOT blur the field: a
+//   multi-segment time input treats Tab as moving between its internal
+//   hour/minute segments (confirmed via `document.activeElement` staying on
+//   the input after `.tab()`), not as leaving the control. A click on a
+//   different focusable element is used instead to actually trigger blur.
+const blurTimeInput = (canvas: ReturnType<typeof within>) =>
+  browserUserEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+
+export const IncompleteEntryShowsError: Story = {
+  args: { onChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await browserUserEvent.type(input, '09'); // hour only — minute left as `--`
+    await blurTimeInput(canvas);
+    await waitFor(() =>
+      expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
+    );
+    // The value never became a real time, so nothing was committed upward.
+    await expect(args.onChange).not.toHaveBeenCalledWith(expect.stringMatching(/^\d{2}:\d{2}$/));
+  },
+};
+
+// A partially-filled field is not an empty field: the typed `09` must render in
+// the normal text colour, not the `--:--` placeholder grey.
+export const IncompleteEntryIsNotMarkedEmpty: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('data-empty', 'true');
+    await browserUserEvent.type(input, '09');
+    await blurTimeInput(canvas);
+    await waitFor(() => expect(input).not.toHaveAttribute('data-empty'));
+  },
+};
+
+// Completing the time clears the incomplete error again.
+export const CompletingTheTimeClearsIncompleteError: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await browserUserEvent.type(input, '09');
+    await blurTimeInput(canvas);
+    await waitFor(() =>
+      expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
+    );
+    // Re-focus the field before typing again — blurring for the check above
+    // moved focus to the picker trigger. `@storybook/testing-library`'s
+    // `userEvent.clear`/`type` reliably resets focus to the first (hour)
+    // segment here, where `browserUserEvent`'s click-then-type left focus on
+    // whichever segment its default click position happened to hit (verified
+    // empirically) — so this one step reverts to the other driver.
+    await userEvent.clear(input);
+    await userEvent.type(input, '0930');
+    await expect(input).toHaveValue('09:30');
+    await waitFor(() =>
+      expect(canvas.queryByText('Anna kellonaika muodossa tunnit:minuutit')).not.toBeInTheDocument()
+    );
+  },
+};
+
+// A consumer-supplied error still outranks the internal incomplete message.
+export const ConsumerErrorWinsOverIncompleteError: Story = {
+  args: { error: 'Varaus on jo täynnä' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await browserUserEvent.type(canvas.getByLabelText('Valitse kellonaika'), '09');
+    await blurTimeInput(canvas);
+    await expect(canvas.getByText('Varaus on jo täynnä')).toBeVisible();
+    await expect(
+      canvas.queryByText('Anna kellonaika muodossa tunnit:minuutit')
+    ).not.toBeInTheDocument();
   },
 };
