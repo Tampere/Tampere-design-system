@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import cx from 'clsx';
 import { TextField } from '../TextField';
-import { timeInput } from './TimeField.css';
+import { Button } from '../Button';
+import { TimeIcon } from '../../icons/TimeIcon';
+import { timeInput, triggerIcon } from './TimeField.css';
 
 export interface TimeFieldClassNames {
   root: string;
@@ -18,6 +20,8 @@ export interface TimeFieldProps {
   onChange?: (time: string) => void;
   /** Visible field label. Provide this, `aria-label`, or `aria-labelledby`. */
   inputLabel?: string;
+  /** Accessible name for the clock trigger. Required — no default. */
+  pickerButtonLabel: string;
   'aria-label'?: string;
   'aria-labelledby'?: string;
   helperText?: React.ReactNode;
@@ -34,6 +38,7 @@ export function TimeField({
   defaultValue,
   onChange,
   inputLabel,
+  pickerButtonLabel,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledby,
   helperText,
@@ -45,6 +50,25 @@ export function TimeField({
   const isControlled = value !== undefined;
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
   const currentValue = isControlled ? value : internalValue;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function openPicker() {
+    const input = inputRef.current;
+    if (!input) return;
+    // Feature-detect first (Safari <16 has no showPicker), then guard the call:
+    // Chromium throws NotAllowedError without user activation and
+    // InvalidStateError on a disabled/hidden input. Focusing keeps the button
+    // from being an inert control in any of those cases.
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker();
+        return;
+      } catch {
+        // fall through to focus
+      }
+    }
+    input.focus();
+  }
 
   // Dev-only guard: without a visible label or an aria-label/aria-labelledby the
   // time input has no accessible name.
@@ -65,6 +89,7 @@ export function TimeField({
   return (
     <TextField
       type="time"
+      ref={inputRef}
       inputLabel={inputLabel}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
@@ -81,6 +106,18 @@ export function TimeField({
       // still `--`".
       data-empty={currentValue === '' ? 'true' : undefined}
       classNames={{ root: classNames?.root, input: cx(timeInput, classNames?.input) }}
+      endInstance={
+        <Button
+          variant="primary"
+          iconOnly
+          aria-label={pickerButtonLabel}
+          disabled={disabled}
+          onClick={openPicker}
+          className={classNames?.pickerButton}
+        >
+          <TimeIcon className={triggerIcon} />
+        </Button>
+      }
     />
   );
 }
