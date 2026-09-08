@@ -4,6 +4,7 @@ import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
 import { timeInput } from './TimeField.css';
+import { DateField } from '../DateField';
 
 const meta = {
   component: TimeField,
@@ -15,6 +16,17 @@ const meta = {
     inputLabel: 'Valitse kellonaika',
     pickerButtonLabel: 'Avaa kellonaikavalitsin',
   },
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Aikakenttä käyttää selaimen omaa kellonaikavalitsinta. Huomaa: `<input type="time">` ' +
+          'näyttää kellonajan katsojan käyttöjärjestelmän kieliasetuksen mukaan, joten esimerkiksi ' +
+          'en-US-asetuksella kenttä näyttää muodon `09:30 AM`. Luettu ja kirjoitettu arvo on aina ' +
+          '24 tunnin `HH:mm` riippumatta näyttömuodosta.',
+      },
+    },
+  },
 } satisfies Meta<typeof TimeField>;
 
 export default meta;
@@ -25,6 +37,64 @@ const docExample = ['dev', 'autodocs'];
 let capturedConsoleErrors: string[] = [];
 
 export const Default: Story = { tags: docExample };
+
+export const WithValue: Story = {
+  tags: docExample,
+  args: { defaultValue: '09:30' },
+};
+
+export const WithHelperText: Story = {
+  tags: docExample,
+  args: { helperText: 'Muoto: tunnit:minuutit' },
+};
+
+export const WithError: Story = {
+  tags: docExample,
+  args: { error: 'Kellonaika on virheellinen', defaultValue: '09:30' },
+};
+
+export const WithMinMax: Story = {
+  tags: docExample,
+  args: { min: '08:00', max: '17:00', defaultValue: '09:30', helperText: 'Valittavissa 8–17' },
+};
+
+// Shows how DateField and TimeField compose: TimeField returns a plain "HH:mm"
+// string while DateField returns a Date, so a consumer combining them into a
+// single timestamp does so themselves — see the description below.
+export const BookingFlow: Story = {
+  tags: docExample,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`TimeField` palauttaa arvon merkkijonona muodossa `"HH:mm"`, kun taas `DateField` ' +
+          'palauttaa `Date`-olion. Komponentit eivät yhdistä arvojaan automaattisesti — kuluttaja ' +
+          'tekee sen itse, esimerkiksi: ' +
+          '`dayjs(date).hour(+time.slice(0, 2)).minute(+time.slice(3))`.',
+      },
+    },
+  },
+  render: function Render(args) {
+    const [date, setDate] = useState<Date | null>(null);
+    const [time, setTime] = useState('');
+    return (
+      // flexWrap prevents the pairing from overflowing the viewport at narrow
+      // widths (e.g. the 320px check in the brief) — the brief's sample style
+      // omitted it, but the two fields together don't fit a 320px canvas.
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-start' }}>
+        <DateField
+          label="Valitse päivämäärä"
+          calendarButtonLabel="Avaa kalenteri"
+          prevMonthLabel="Edellinen kuukausi"
+          nextMonthLabel="Seuraava kuukausi"
+          value={date}
+          onChange={setDate}
+        />
+        <TimeField {...args} value={time} onChange={setTime} />
+      </div>
+    );
+  },
+};
 
 export const Uncontrolled: Story = {
   args: { defaultValue: '09:30', onChange: fn() },
