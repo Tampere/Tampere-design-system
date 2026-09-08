@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
-import { userEvent as browserUserEvent } from '@vitest/browser/context';
+import { userEvent as browserUserEvent } from 'vitest/browser';
 import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
 import { timeInput } from './TimeField.css';
@@ -610,14 +610,24 @@ export const RangeErrorFollowsMinMaxChanges: Story = {
 // - `@storybook/testing-library`'s `userEvent` is inert for reaching this
 //   native input's `badInput` state at all (typing '09' never flips
 //   `validity.badInput`), so these four stories use the Playwright-backed
-//   driver from `@vitest/browser/context` instead.
+//   driver from `vitest/browser` instead.
 // - Even with that driver, `userEvent.tab()` does NOT blur the field: a
 //   multi-segment time input treats Tab as moving between its internal
 //   hour/minute segments (confirmed via `document.activeElement` staying on
 //   the input after `.tab()`), not as leaving the control. A click on a
 //   different focusable element is used instead to actually trigger blur.
-const blurTimeInput = (canvas: ReturnType<typeof within>) =>
-  browserUserEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+//
+// That element is the picker-trigger button, whose `onClick` calls
+// `input.showPicker()` — real OS-level chrome Playwright cannot see into
+// (see `TriggerOpensNativePicker`/`TriggerFallsBackToFocus` above, which
+// stub it for the same reason). Stub it here too so the click still moves
+// focus for real without depending on whatever headless Chromium does with
+// an unmocked `showPicker()` call.
+const blurTimeInput = (canvas: ReturnType<typeof within>) => {
+  const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
+  Object.defineProperty(input, 'showPicker', { value: () => {}, configurable: true });
+  return browserUserEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+};
 
 export const IncompleteEntryShowsError: Story = {
   args: { onChange: fn() },
@@ -672,16 +682,37 @@ export const CompletingTheTimeClearsIncompleteError: Story = {
   },
 };
 
-// A consumer-supplied error still outranks the internal incomplete message.
+// A consumer-supplied error still outranks the internal incomplete message —
+// and, distinctly, `incomplete` is still genuinely computed underneath it
+// rather than never evaluated at all. `error` is toggleable via a button
+// rather than a fixed arg so the story can prove both halves: with `error` a
+// naive/absent `incomplete` computation would pass this identically (the
+// consumer error masks it either way), but once `error` is cleared, the
+// incomplete message must appear — which only happens if `revalidate` really
+// set `validity.incomplete` while `error` was still masking it.
 export const ConsumerErrorWinsOverIncompleteError: Story = {
-  args: { error: 'Varaus on jo täynnä' },
+  render: function Render(args) {
+    const [error, setError] = useState<string | undefined>('Varaus on jo täynnä');
+    return (
+      <>
+        <TimeField {...args} error={error} />
+        <button onClick={() => setError(undefined)}>Clear consumer error</button>
+      </>
+    );
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await browserUserEvent.type(canvas.getByLabelText('Valitse kellonaika'), '09');
     await blurTimeInput(canvas);
+    // Both are live: the consumer error wins.
     await expect(canvas.getByText('Varaus on jo täynnä')).toBeVisible();
     await expect(
       canvas.queryByText('Anna kellonaika muodossa tunnit:minuutit')
     ).not.toBeInTheDocument();
+    // Clearing the consumer error reveals the incomplete message underneath.
+    await userEvent.click(canvas.getByRole('button', { name: 'Clear consumer error' }));
+    await waitFor(() =>
+      expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
+    );
   },
 };
