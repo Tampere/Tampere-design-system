@@ -107,3 +107,23 @@ export const HidesNativePickerIndicator: Story = {
     await expect(input).toHaveClass(timeInput);
   },
 };
+
+export const MarksEmptySegmentsForPlaceholderStyling: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    // `data-empty` is what TimeField.css.ts keys its `--:--` placeholder
+    // colouring off (Chromium's `-webkit-datetime-edit-*` shadow
+    // pseudo-elements don't support `:not([attr])` matching, so this can't be
+    // driven by a browser-set attribute). This only checks the attribute is
+    // wired correctly — the rendered colour itself is verified visually, not
+    // by a computed-style read, since that read is unreliable for these
+    // pseudo-elements (see HidesNativePickerIndicator above).
+    await expect(input).toHaveAttribute('data-empty', 'true');
+    await userEvent.type(input, '0945');
+    await expect(input).toHaveValue('09:45');
+    await expect(input).not.toHaveAttribute('data-empty');
+    await userEvent.clear(input);
+    await expect(input).toHaveAttribute('data-empty', 'true');
+  },
+};
