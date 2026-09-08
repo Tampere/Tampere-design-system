@@ -31,6 +31,14 @@ export interface TimeFieldProps {
   helperText?: React.ReactNode;
   /** Consumer-supplied error. Takes precedence over internal range validation. */
   error?: string;
+  /** Shown when the time falls outside [min, max] or off `step`. Default: Finnish. */
+  outOfRangeError?: string;
+  /** Earliest selectable time, "HH:mm". */
+  min?: string;
+  /** Latest selectable time, "HH:mm". */
+  max?: string;
+  /** Granularity in seconds; values below 60 are clamped to 60. Default 60. */
+  step?: number;
   disabled?: boolean;
   required?: boolean;
   classNames?: Partial<TimeFieldClassNames>;
@@ -48,6 +56,10 @@ export function TimeField({
   'aria-labelledby': ariaLabelledby,
   helperText,
   error,
+  outOfRangeError = 'Kellonaika on sallitun välin ulkopuolella',
+  min,
+  max,
+  step = 60,
   disabled,
   required,
   classNames,
@@ -57,12 +69,30 @@ export function TimeField({
   const currentValue = isControlled ? value : internalValue;
   const inputRef = useRef<HTMLInputElement>(null);
   const pickerButtonRef = useRef<HTMLButtonElement>(null);
+  const [rangeError, setRangeError] = useState(false);
+
+  // A sub-60 step makes the browser render a seconds segment, which this
+  // component does not support.
+  const effectiveStep = Math.max(60, step);
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && step < 60) {
+      console.error(`TimeField: \`step\` must be at least 60 seconds — got ${step}, using 60.`);
+    }
+  }, [step]);
 
   const showClear = !disabled && currentValue !== '';
+
+  function validate(input: HTMLInputElement) {
+    const { rangeUnderflow, rangeOverflow, stepMismatch } = input.validity;
+    setRangeError(rangeUnderflow || rangeOverflow || stepMismatch);
+  }
+
+  const shownError = error ?? (rangeError ? outOfRangeError : undefined);
 
   function handleClear() {
     if (!isControlled) setInternalValue('');
     onChange?.('');
+    setRangeError(false);
     // The ✕ disappears once the field is empty, so move focus to the adjacent
     // picker trigger rather than letting it fall back to <body>.
     requestAnimationFrame(() => pickerButtonRef.current?.focus());
@@ -100,6 +130,7 @@ export function TimeField({
     const next = event.currentTarget.value;
     if (!isControlled) setInternalValue(next);
     onChange?.(next);
+    validate(event.currentTarget);
   }
 
   return (
@@ -110,11 +141,15 @@ export function TimeField({
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
       helperText={helperText}
-      error={error}
+      error={shownError}
       disabled={disabled}
       required={required}
       value={currentValue}
       onChange={handleChange}
+      onBlur={(e) => validate(e.currentTarget)}
+      min={min}
+      max={max}
+      step={effectiveStep}
       // Drives the empty-segment placeholder colour in TimeField.css.ts: the
       // `-webkit-datetime-edit-*` shadow pseudo-elements don't support
       // `:not([attr])` matching in Chromium, so component state (not an

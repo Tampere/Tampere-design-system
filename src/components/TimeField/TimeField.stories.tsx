@@ -254,3 +254,81 @@ export const ClearMovesFocusToTrigger: Story = {
     await waitFor(() => expect(trigger).toHaveFocus());
   },
 };
+
+// Controlled (not uncontrolled, per the plan's rulings): also proves the
+// out-of-range value is still committed up to the parent — TimeField flags
+// it rather than blocking entry, matching how the native input itself never
+// refuses a keystroke for being out of [min, max].
+export const OutOfRangeShowsError: Story = {
+  args: { min: '08:00', max: '17:00' },
+  render: function Render(args) {
+    const [value, setValue] = useState('');
+    return (
+      <>
+        <TimeField {...args} value={value} onChange={setValue} />
+        <span data-testid="echo">{value}</span>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await userEvent.type(input, '0600');
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    await expect(canvas.getByTestId('echo').textContent).toBe('06:00');
+    // …and clears again once the value is back inside the range.
+    await userEvent.clear(input);
+    await userEvent.type(input, '0900');
+    await waitFor(() =>
+      expect(
+        canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+      ).not.toBeInTheDocument()
+    );
+    await expect(canvas.getByTestId('echo').textContent).toBe('09:00');
+  },
+};
+
+export const ConsumerErrorWinsOverRangeError: Story = {
+  args: { min: '08:00', max: '17:00', error: 'Varaus on jo täynnä' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByLabelText('Valitse kellonaika'), '0600');
+    await expect(canvas.getByText('Varaus on jo täynnä')).toBeVisible();
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+  },
+};
+
+export const StepIsClampedToWholeMinutes: Story = {
+  args: { step: 5 },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    // A sub-60 step would make the browser render a seconds segment; the
+    // component clamps it to a whole minute so only hh:mm segments exist.
+    await expect(input).toHaveAttribute('step', '60');
+    // The invalid sub-60 step also fires a dev-only warning.
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /step.*must be at least 60/i.test(m))).toBe(true)
+    );
+    // With the browser only ever seeing the clamped step, a normal
+    // minute-granularity entry must not be flagged as a step mismatch.
+    await userEvent.type(input, '0930');
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+  },
+};
