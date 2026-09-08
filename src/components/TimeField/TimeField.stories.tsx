@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, userEvent } from '@storybook/testing-library';
+import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
 
@@ -19,6 +19,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const docExample = ['dev', 'autodocs'];
+
+let capturedConsoleErrors: string[] = [];
 
 export const Default: Story = { tags: docExample };
 
@@ -63,5 +65,26 @@ export const IsANativeTimeInput: Story = {
     // The native input is what supplies keyboard increments and spinbutton
     // semantics — if this regresses to type="text" the whole design is void.
     await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveAttribute('type', 'time');
+  },
+};
+
+export const WarnsWithoutAccessibleName: Story = {
+  // With neither inputLabel nor aria-label/aria-labelledby, the component must
+  // warn the developer in dev (the input would otherwise be unnamed).
+  args: { inputLabel: undefined },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /accessible name/i.test(m))).toBe(true)
+    );
   },
 };
