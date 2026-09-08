@@ -525,11 +525,9 @@ export const StepMismatchHasItsOwnMessage: Story = {
   },
 };
 
-// Chromium never evaluates `stepMismatch` on a time input without a `min`
-// present (see the empirical finding documented above). Without the
-// component defaulting `min` to '00:00' whenever `step` is supplied and no
-// `min` was given, this story's off-grid value would be silently accepted —
-// this is the exact behaviour gap the default exists to close.
+// This story asserts the '00:00' default is applied; it types its value, so it
+// would be flagged even without the default. The story that fails when the
+// default is removed is OffGridControlledValueIsFlaggedAtMount.
 export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
   args: { step: 900 }, // 15 minutes, no explicit `min`.
   play: async ({ canvasElement }) => {
@@ -538,6 +536,23 @@ export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
     // The component filled in the '00:00' default so `step` actually bites.
     await expect(input).toHaveAttribute('min', '00:00');
     await userEvent.type(input, '0905'); // 5 minutes off the 15-minute grid.
+    await waitFor(() =>
+      expect(canvas.getByText('Valitse kellonaika sallitulla tarkkuudella')).toBeVisible()
+    );
+  },
+};
+
+// The counterfactual for the `min: '00:00'` default. A controlled field mounted
+// with an off-grid value and no user interaction is the ONE case where Chromium
+// won't evaluate `stepMismatch` without a `min` present — measured: no `min` →
+// false, `min="00:00"` → true. Deleting `effectiveMin` makes this story red,
+// which StepAloneEnforcesGranularityViaDefaultMin does not (it only asserts the
+// attribute is there, not that it is doing anything).
+export const OffGridControlledValueIsFlaggedAtMount: Story = {
+  args: { value: '09:05', step: 900, onChange: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // No typing, no clicking — the value came straight from the prop.
     await waitFor(() =>
       expect(canvas.getByText('Valitse kellonaika sallitulla tarkkuudella')).toBeVisible()
     );
