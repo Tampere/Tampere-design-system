@@ -53,10 +53,11 @@ export interface TimeFieldProps {
   /** Latest selectable time, "HH:mm". */
   max?: string;
   /**
-   * Granularity in seconds; clamped to the nearest whole minute (minimum 60). Default 60.
-   * Enforced relative to `min` — Chromium does not evaluate `step` without a `min` present, so
-   * if `step` is supplied and `min` is not, `min` defaults to `'00:00'` (the earliest
-   * representable time, so this excludes no values) purely to switch on step enforcement.
+   * Granularity in seconds; clamped to the nearest whole minute (minimum 60,
+   * for any finite value). Default 60. Enforced relative to `min`: if `step` is
+   * supplied and `min` is not, `min` defaults to `'00:00'` so that a value
+   * arriving from the `value` prop alone is still step-checked (see the comment
+   * on `effectiveMin`). `'00:00'` excludes no values on a 24-hour clock.
    */
   step?: number;
   disabled?: boolean;
@@ -111,12 +112,15 @@ export function TimeField({
     }
   }, [step, effectiveStep]);
 
-  // Chromium never evaluates `stepMismatch` on a time input without a `min`
-  // present (verified empirically, not documented behaviour) — so a `step`
-  // given without a `min` would otherwise enforce nothing at all. Default to
-  // the earliest representable time, which excludes no values, purely to
-  // switch step enforcement on. Only when the consumer actually asked for a
-  // `step`: fields that never set `step` get no implicit `min`.
+  // Chromium does not evaluate `stepMismatch` when the value came only from the
+  // content attribute and has never been made "dirty" — i.e. a controlled field
+  // mounted with an off-grid value and not yet touched, which is the common
+  // case. (Typed and IDL-set values are checked with or without a `min`, so this
+  // is narrower than "step needs a min".) Defaulting to the earliest
+  // representable time switches the check on and excludes no values, since `min`
+  // is inclusive. Only when the consumer actually asked for a `step`: fields
+  // that never set `step` get no implicit `min`.
+  // Counterfactual test: OffGridControlledValueIsFlaggedAtMount.
   const effectiveMin = min ?? (stepProp !== undefined ? '00:00' : undefined);
 
   const showClear = !disabled && currentValue !== '';
