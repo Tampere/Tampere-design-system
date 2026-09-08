@@ -13,6 +13,7 @@ const meta = {
   tags: ['!dev', '!autodocs'],
   args: {
     inputLabel: 'Valitse kellonaika',
+    pickerButtonLabel: 'Avaa kellonaikavalitsin',
   },
 } satisfies Meta<typeof TimeField>;
 
@@ -125,5 +126,48 @@ export const MarksEmptySegmentsForPlaceholderStyling: Story = {
     await expect(input).not.toHaveAttribute('data-empty');
     await userEvent.clear(input);
     await expect(input).toHaveAttribute('data-empty', 'true');
+  },
+};
+
+export const TriggerOpensNativePicker: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
+    // The picker panel is OS-level chrome Playwright cannot see into, so assert
+    // the invocation rather than the rendered widget.
+    const showPicker = fn();
+    Object.defineProperty(input, 'showPicker', { value: showPicker, configurable: true });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+    await expect(showPicker).toHaveBeenCalledTimes(1);
+  },
+};
+
+export const TriggerFallsBackToFocus: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
+    // Safari <16 has no showPicker, and Chromium throws NotAllowedError without
+    // user activation. Either way the button must not be inert.
+    Object.defineProperty(input, 'showPicker', {
+      value: () => {
+        throw new DOMException('not allowed', 'NotAllowedError');
+      },
+      configurable: true,
+    });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+    await expect(input).toHaveFocus();
+  },
+};
+
+export const DisabledDisablesBothParts: Story = {
+  tags: docExample,
+  args: { disabled: true, defaultValue: '09:30' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Figma's one stated exception: disabling the component disables both subcomponents.
+    await expect(canvas.getByLabelText('Valitse kellonaika')).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' })).toBeDisabled();
   },
 };
