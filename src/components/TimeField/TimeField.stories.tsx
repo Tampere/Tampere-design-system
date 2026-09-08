@@ -13,7 +13,7 @@ const meta = {
   // autodocs page (`!autodocs`). Documentation examples opt back in via `docExample`.
   tags: ['!dev', '!autodocs'],
   args: {
-    inputLabel: 'Valitse kellonaika',
+    label: 'Valitse kellonaika',
     pickerButtonLabel: 'Avaa kellonaikavalitsin',
   },
   parameters: {
@@ -142,7 +142,7 @@ export const IsANativeTimeInput: Story = {
 
 export const AccessibleNameViaAriaLabel: Story = {
   // With no visible label, an aria-label must give the input an accessible name.
-  args: { inputLabel: undefined, 'aria-label': 'Kellonaika' },
+  args: { label: undefined, 'aria-label': 'Kellonaika' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Kellonaika');
@@ -150,7 +150,7 @@ export const AccessibleNameViaAriaLabel: Story = {
   },
 };
 
-// When both `inputLabel` and `aria-label` are supplied, the visible label must
+// When both `label` and `aria-label` are supplied, the visible label must
 // win the accessible-name computation — forwarding `aria-label` unconditionally
 // would let it silently override the visible label's text (WCAG 2.5.3 Label in
 // Name), breaking voice-control activation by the visible label's wording.
@@ -165,9 +165,9 @@ export const VisibleLabelWinsOverAriaLabel: Story = {
 };
 
 export const WarnsWithoutAccessibleName: Story = {
-  // With neither inputLabel nor aria-label/aria-labelledby, the component must
+  // With neither label nor aria-label/aria-labelledby, the component must
   // warn the developer in dev (the input would otherwise be unnamed).
-  args: { inputLabel: undefined },
+  args: { label: undefined },
   beforeEach: () => {
     capturedConsoleErrors = [];
     const original = console.error;

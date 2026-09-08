@@ -21,7 +21,7 @@ export interface TimeFieldProps {
   /** Called with "HH:mm", or '' when cleared. */
   onChange?: (time: string) => void;
   /** Visible field label. Provide this, `aria-label`, or `aria-labelledby`. */
-  inputLabel?: string;
+  label?: string;
   /** Accessible name for the clock trigger. Required — no default. */
   pickerButtonLabel: string;
   /** Accessible name for the clear (✕) button. Default: Finnish. */
@@ -54,7 +54,7 @@ export function TimeField({
   value,
   defaultValue,
   onChange,
-  inputLabel,
+  label,
   pickerButtonLabel,
   clearButtonLabel = 'Tyhjennä kellonaika',
   'aria-label': ariaLabel,
@@ -144,12 +144,12 @@ export function TimeField({
   // Dev-only guard: without a visible label or an aria-label/aria-labelledby the
   // time input has no accessible name.
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && !inputLabel && !ariaLabel && !ariaLabelledby) {
+    if (process.env.NODE_ENV !== 'production' && !label && !ariaLabel && !ariaLabelledby) {
       console.error(
-        'TimeField: provide `inputLabel`, `aria-label` or `aria-labelledby` — the input has no accessible name otherwise.'
+        'TimeField: provide `label`, `aria-label` or `aria-labelledby` — the input has no accessible name otherwise.'
       );
     }
-  }, [inputLabel, ariaLabel, ariaLabelledby]);
+  }, [label, ariaLabel, ariaLabelledby]);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const next = event.currentTarget.value;
@@ -160,7 +160,7 @@ export function TimeField({
   // Forward an aria-label/aria-labelledby only when there is no visible label,
   // so it can't silently override a visible label's accessible name.
   const inputAriaProps =
-    !inputLabel && (ariaLabel || ariaLabelledby)
+    !label && (ariaLabel || ariaLabelledby)
       ? { 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledby }
       : {};
 
@@ -168,7 +168,7 @@ export function TimeField({
     <TextField
       type="time"
       ref={inputRef}
-      inputLabel={inputLabel}
+      inputLabel={label}
       {...inputAriaProps}
       helperText={helperText}
       error={shownError}
