@@ -16,7 +16,14 @@ export interface TimeFieldClassNames {
   pickerButton: string;
 }
 
-export interface TimeFieldProps {
+export interface TimeFieldProps extends Pick<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  // Pure passthrough props: none of them can break the a11y wiring or the
+  // segment styling, and `name` is what makes the field submit at all. The
+  // set stays explicit rather than extending InputHTMLAttributes wholesale,
+  // which would reopen `type`, widen min/max/step, and hand out `className`.
+  'name' | 'id' | 'autoComplete' | 'onFocus' | 'onBlur'
+> {
   /** Committed time as "HH:mm", or '' when empty. Omit for an uncontrolled field. */
   value?: string;
   /** Initial time for an uncontrolled field. Ignored when `value` is supplied. */
@@ -86,6 +93,11 @@ export function TimeField({
   disabled,
   required,
   classNames,
+  name,
+  id,
+  autoComplete,
+  onFocus,
+  onBlur,
 }: TimeFieldProps) {
   const isControlled = value !== undefined;
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
@@ -235,8 +247,11 @@ export function TimeField({
     onChange?.(next);
   }
 
-  function handleBlur() {
+  function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
+    // Revalidate first so a consumer reading the DOM in their own handler sees
+    // the settled state, then hand the event on.
     revalidate();
+    onBlur?.(event);
   }
 
   // Forward an aria-label/aria-labelledby only when there is no visible label,
@@ -258,7 +273,11 @@ export function TimeField({
       required={required}
       value={currentValue}
       onChange={handleChange}
+      onFocus={onFocus}
       onBlur={handleBlur}
+      name={name}
+      id={id}
+      autoComplete={autoComplete}
       min={effectiveMin}
       max={max}
       step={effectiveStep}

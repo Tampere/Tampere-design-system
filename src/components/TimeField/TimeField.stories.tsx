@@ -920,3 +920,66 @@ export const KeyboardArrowsDecrementByStep: Story = {
     await expect(input).toHaveValue('10:00');
   },
 };
+
+// Without `name` the field contributes nothing to a native form submission,
+// and the closed prop set leaves no way to reach the input from outside.
+export const SubmitsUnderItsName: Story = {
+  args: { name: 'appointmentTime', defaultValue: '09:30' },
+  render: function Render(args) {
+    const [submitted, setSubmitted] = useState('');
+    return (
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSubmitted(String(new FormData(event.currentTarget).get('appointmentTime')));
+        }}
+      >
+        <TimeField {...args} />
+        <button type="submit">Lähetä</button>
+        <span data-testid="submitted">{submitted}</span>
+      </form>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveAttribute(
+      'name',
+      'appointmentTime'
+    );
+    await userEvent.click(canvas.getByRole('button', { name: 'Lähetä' }));
+    await waitFor(() => expect(canvas.getByTestId('submitted').textContent).toBe('09:30'));
+  },
+};
+
+// A consumer `onBlur` must run without displacing the internal revalidation
+// that the incomplete-entry check depends on.
+//
+// Uses `browserUserEvent`/`blurTimeInput` rather than the brief's plain
+// `userEvent.type` + `.tab()`: per the comment above `blurTimeInput`, the
+// `@storybook/testing-library` driver is inert for reaching `badInput` on
+// this native input, and `.tab()` moves between the input's own hour/minute
+// segments instead of leaving the control — same empirical constraints
+// IncompleteEntryShowsError et al. already work around.
+export const ConsumerBlurRunsAlongsideRevalidation: Story = {
+  args: { onBlur: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await browserUserEvent.type(input, '09'); // incomplete on purpose
+    await blurTimeInput(canvas);
+    await expect(args.onBlur).toHaveBeenCalledTimes(1);
+    // The internal revalidation still ran: the incomplete error is showing.
+    await waitFor(() =>
+      expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
+    );
+  },
+};
+
+// An explicit `id` must reach the input so an external <label> can target it.
+export const AcceptsAnExplicitId: Story = {
+  args: { id: 'booking-time', label: undefined, 'aria-label': 'Kellonaika' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText('Kellonaika')).toHaveAttribute('id', 'booking-time');
+  },
+};
