@@ -424,7 +424,7 @@ export const StepIsClampedToWholeMinutes: Story = {
     // minute-granularity entry must not be flagged as a step mismatch.
     await userEvent.type(input, '0930');
     await expect(
-      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
     ).not.toBeInTheDocument();
   },
 };
@@ -460,7 +460,9 @@ export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
 // the booking-flow case the plan calls out. This is the only story in this
 // file that actually drives `stepMismatch` true/false, as distinct from the
 // two stories above, which only check the clamped `step` attribute and the
-// dev warning — they never assert on validity itself.
+// dev warning — they never assert on validity itself. It expects the
+// `stepMismatch`-specific message, not the range one, since every value here
+// stays inside [00:00, ∞) — only the grid is ever at issue.
 //
 // `min` is passed explicitly here (rather than relying on the component's
 // own '00:00' default — see StepAloneEnforcesGranularityViaDefaultMin below)
@@ -477,22 +479,48 @@ export const StepMismatchFlagsOffGridValuesAtFifteenMinuteGranularity: Story = {
     // On the 15-minute grid (00, 15, 30, 45) — no error.
     await userEvent.type(input, '0915');
     await expect(
-      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
     ).not.toBeInTheDocument();
     // Off the grid by 5 minutes — `stepMismatch` fires.
     await userEvent.clear(input);
     await userEvent.type(input, '0905');
     await waitFor(() =>
-      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+      expect(canvas.getByText('Valitse kellonaika sallitulla tarkkuudella')).toBeVisible()
     );
     // Back on the grid — clears again.
     await userEvent.clear(input);
     await userEvent.type(input, '0930');
     await waitFor(() =>
       expect(
-        canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+        canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
       ).not.toBeInTheDocument()
     );
+  },
+};
+
+// An off-grid time inside [min, max] is not "outside the allowed range" — it is
+// the wrong granularity, and the message has to say which (WCAG 3.3.3).
+export const StepMismatchHasItsOwnMessage: Story = {
+  args: { min: '08:00', max: '17:00', step: 900 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await userEvent.type(input, '0905'); // inside the window, off the 15-min grid
+    await waitFor(() =>
+      expect(canvas.getByText('Valitse kellonaika sallitulla tarkkuudella')).toBeVisible()
+    );
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    // A genuinely out-of-window value still gets the range message.
+    await userEvent.clear(input);
+    await userEvent.type(input, '0600');
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    await expect(
+      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
+    ).not.toBeInTheDocument();
   },
 };
 
@@ -510,7 +538,7 @@ export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
     await expect(input).toHaveAttribute('min', '00:00');
     await userEvent.type(input, '0905'); // 5 minutes off the 15-minute grid.
     await waitFor(() =>
-      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+      expect(canvas.getByText('Valitse kellonaika sallitulla tarkkuudella')).toBeVisible()
     );
   },
 };
@@ -519,6 +547,8 @@ export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
 // itself: `min` is inclusive, so `00:00 >= min('00:00')` must not read as
 // rangeUnderflow, and 0 seconds past midnight is trivially on any step grid
 // (0 is a multiple of everything), so `stepMismatch` must not fire either.
+// Checked against both messages now that they've split, since either flag
+// firing would be a regression this story exists to catch.
 export const DefaultMinDoesNotFlagMidnightItself: Story = {
   args: { step: 900 },
   play: async ({ canvasElement }) => {
@@ -528,6 +558,9 @@ export const DefaultMinDoesNotFlagMidnightItself: Story = {
     await expect(input).toHaveValue('00:00');
     await expect(
       canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
     ).not.toBeInTheDocument();
   },
 };

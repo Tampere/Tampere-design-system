@@ -34,8 +34,14 @@ export interface TimeFieldProps {
   helperText?: React.ReactNode;
   /** Consumer-supplied error. Takes precedence over internal range validation. */
   error?: string;
-  /** Shown when the time falls outside [min, max] or off `step`. Default: Finnish. */
+  /** Shown when the time falls outside [min, max]. Default: Finnish. */
   outOfRangeError?: string;
+  /**
+   * Shown when the time is inside [min, max] but off the `step` grid. Kept
+   * separate from `outOfRangeError` because "outside the allowed range" is
+   * wrong and unactionable for a granularity problem. Default: Finnish.
+   */
+  stepMismatchError?: string;
   /**
    * Shown when the segments hold an incomplete time (e.g. an hour with no
    * minutes). The native input reports this as `badInput` and keeps its own
@@ -71,6 +77,7 @@ export function TimeField({
   helperText,
   error,
   outOfRangeError = 'Kellonaika on sallitun välin ulkopuolella',
+  stepMismatchError = 'Valitse kellonaika sallitulla tarkkuudella',
   invalidTimeError = 'Anna kellonaika muodossa tunnit:minuutit',
   min,
   max,
@@ -145,14 +152,17 @@ export function TimeField({
   useEffect(revalidate, [revalidate, currentValue, effectiveMin, max, effectiveStep]);
 
   // Consumer error first, then incomplete entry (the user can't fix a range
-  // problem they haven't finished typing), then the range window.
+  // problem they haven't finished typing), then the range window, then
+  // granularity — each with the message that actually names the problem.
   const shownError =
     error ??
     (validity.incomplete
       ? invalidTimeError
-      : validity.outOfRange || validity.stepMismatch
+      : validity.outOfRange
         ? outOfRangeError
-        : undefined);
+        : validity.stepMismatch
+          ? stepMismatchError
+          : undefined);
 
   function handleClear() {
     if (!isControlled) setInternalValue('');
