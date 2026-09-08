@@ -716,3 +716,51 @@ export const ConsumerErrorWinsOverIncompleteError: Story = {
     );
   },
 };
+
+// A malformed value is rejected outright by the native input, which leaves the
+// field visually empty while the consumer's state still holds their string —
+// so the only signal that anything is wrong has to come from us. A malformed
+// `min` is worse: the browser ignores the attribute, silently disabling both
+// the range check and (because the '00:00' fallback no longer fires) step
+// enforcement. Same hazard DateField.tsx:188-202 guards.
+export const WarnsOnMalformedTimeStrings: Story = {
+  args: { value: '9:30', min: '25:00', onChange: fn() },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The native input really does discard it — this is what the warning is for.
+    await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveValue('');
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => m.includes('`value` must be "HH:mm"'))).toBe(true)
+    );
+    await expect(capturedConsoleErrors.some((m) => m.includes('`min` must be "HH:mm"'))).toBe(true);
+  },
+};
+
+// The guard must stay quiet for well-formed values, including the empty string,
+// or it would cry wolf on every correctly-used field.
+export const DoesNotWarnOnWellFormedTimeStrings: Story = {
+  args: { value: '', min: '00:00', max: '23:59', step: 900, onChange: fn() },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async () => {
+    await waitFor(() => expect(capturedConsoleErrors.some((m) => m.includes('HH:mm'))).toBe(false));
+  },
+};

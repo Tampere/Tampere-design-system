@@ -7,6 +7,9 @@ import { TimeIcon } from '../../icons/TimeIcon';
 import { CloseIcon } from '../../icons/CloseIcon';
 import { timeInput, triggerIcon } from './TimeField.css';
 
+/** Zero-padded 24-hour "HH:mm" — the only shape the native time input accepts. */
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
 export interface TimeFieldClassNames {
   root: string;
   input: string;
@@ -186,6 +189,31 @@ export function TimeField({
       );
     }
   }, [label, ariaLabel, ariaLabelledby]);
+
+  // Dev-only guard: the native input silently discards a time string it can't
+  // parse. For `value`/`defaultValue` that means an empty-looking field while
+  // the consumer believes a value is set; for `min`/`max` it means the
+  // attribute is ignored, which disables the range check AND — since the
+  // `'00:00'` fallback only fires when `min` is `undefined` — step enforcement
+  // along with it. Warn rather than sanitize: a controlled field must render
+  // what it was given, and the bug belongs to the caller.
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+    const entries: [string, string | undefined][] = [
+      ['value', value],
+      ['defaultValue', defaultValue],
+      ['min', min],
+      ['max', max],
+    ];
+    for (const [name, candidate] of entries) {
+      if (candidate !== undefined && candidate !== '' && !TIME_RE.test(candidate)) {
+        console.error(
+          `TimeField: \`${name}\` must be "HH:mm" (zero-padded, 24-hour) — got "${candidate}". ` +
+            'The browser ignores unparseable values, so this silently does nothing.'
+        );
+      }
+    }
+  }, [value, defaultValue, min, max]);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const next = event.currentTarget.value;
