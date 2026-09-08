@@ -320,9 +320,10 @@ export const StepIsClampedToWholeMinutes: Story = {
     // A sub-60 step would make the browser render a seconds segment; the
     // component clamps it to a whole minute so only hh:mm segments exist.
     await expect(input).toHaveAttribute('step', '60');
-    // The invalid sub-60 step also fires a dev-only warning.
+    // The invalid sub-60 step also fires a dev-only warning naming both the
+    // value that was passed and the value actually used.
     await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => /step.*must be at least 60/i.test(m))).toBe(true)
+      expect(capturedConsoleErrors.some((m) => m.includes('got 5, using 60'))).toBe(true)
     );
     // With the browser only ever seeing the clamped step, a normal
     // minute-granularity entry must not be flagged as a step mismatch.
@@ -330,5 +331,132 @@ export const StepIsClampedToWholeMinutes: Story = {
     await expect(
       canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
     ).not.toBeInTheDocument();
+  },
+};
+
+// A step that IS >= 60 but isn't a multiple of it (e.g. 90s = 1.5min) would
+// otherwise slip through a floor-only clamp unchanged, breaking the same
+// "no seconds segment" contract as a sub-60 step: 90 rounds to 120, not 60.
+export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
+  args: { step: 90 },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    // 90s rounds to the nearer of 60/120 by whole minutes, i.e. 120.
+    await expect(input).toHaveAttribute('step', '120');
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => m.includes('got 90, using 120'))).toBe(true)
+    );
+  },
+};
+
+// With the clamp rounding to a whole-minute multiple, `stepMismatch` becomes
+// reachable (and meaningful) for a legitimate granularity like 15 minutes —
+// the booking-flow case the plan calls out. This is the only story in this
+// file that actually drives `stepMismatch` true/false, as distinct from the
+// two stories above, which only check the clamped `step` attribute and the
+// dev warning — they never assert on validity itself.
+//
+// `min` is required here, not incidental: empirically (verified against the
+// real Chromium instance this suite runs in, not by reading the spec),
+// Chromium only evaluates `stepMismatch` for a time input once a `min` is
+// present to anchor the step base — omitting `min` here, `0905` and `0915`
+// were both accepted with `stepMismatch: false` regardless of `step`. This
+// is worth knowing: a consumer who sets `step` without `min` gets no
+// off-grid enforcement at all.
+export const StepMismatchFlagsOffGridValuesAtFifteenMinuteGranularity: Story = {
+  args: { step: 900, min: '00:00' }, // 15 minutes; already a whole-minute multiple, so no dev warning.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('step', '900');
+    // On the 15-minute grid (00, 15, 30, 45) — no error.
+    await userEvent.type(input, '0915');
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    // Off the grid by 5 minutes — `stepMismatch` fires.
+    await userEvent.clear(input);
+    await userEvent.type(input, '0905');
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    // Back on the grid — clears again.
+    await userEvent.clear(input);
+    await userEvent.type(input, '0930');
+    await waitFor(() =>
+      expect(
+        canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+      ).not.toBeInTheDocument()
+    );
+  },
+};
+
+// Controlled: the parent resets `value` programmatically (a button click, not
+// typing or blurring the input itself) — the stale range error must clear
+// purely from the value becoming valid again, proving validation is driven
+// by an effect over `currentValue` rather than only by the input's own
+// change/blur events.
+export const RangeErrorClearsOnProgrammaticValueReset: Story = {
+  args: { min: '08:00', max: '17:00' },
+  render: function Render(args) {
+    const [value, setValue] = useState('06:00');
+    return (
+      <>
+        <TimeField {...args} value={value} onChange={setValue} />
+        <button onClick={() => setValue('09:00')}>Set to 09:00</button>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The field mounts already out of range — the error must show without
+    // any user interaction with the input at all.
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    await userEvent.click(canvas.getByText('Set to 09:00'));
+    await waitFor(() =>
+      expect(
+        canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+      ).not.toBeInTheDocument()
+    );
+  },
+};
+
+// Changing `min`/`max` themselves — not the value — must re-evaluate the
+// already-displayed value against the new bounds.
+export const RangeErrorFollowsMinMaxChanges: Story = {
+  render: function Render(args) {
+    const [min, setMin] = useState('08:00');
+    return (
+      <>
+        <TimeField {...args} min={min} max="17:00" defaultValue="09:00" />
+        <button onClick={() => setMin('10:00')}>Raise min to 10:00</button>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // 09:00 is within the initial [08:00, 17:00].
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    // Raising `min` past the already-displayed value flags it — no
+    // interaction with the input itself.
+    await userEvent.click(canvas.getByText('Raise min to 10:00'));
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
   },
 };
