@@ -171,3 +171,35 @@ export const DisabledDisablesBothParts: Story = {
     await expect(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' })).toBeDisabled();
   },
 };
+
+export const ClearButtonEmptiesTheField: Story = {
+  args: { defaultValue: '09:30', onChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Tyhjennä kellonaika' }));
+    await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveValue('');
+    await expect(args.onChange).toHaveBeenLastCalledWith('');
+  },
+};
+
+export const ClearButtonOnlyWhenPopulatedAndEnabled: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Empty field: nothing to clear.
+    await expect(
+      canvas.queryByRole('button', { name: 'Tyhjennä kellonaika' })
+    ).not.toBeInTheDocument();
+  },
+};
+
+export const ClearMovesFocusToTrigger: Story = {
+  args: { defaultValue: '09:30' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' });
+    await userEvent.click(canvas.getByRole('button', { name: 'Tyhjennä kellonaika' }));
+    // The ✕ unmounts the moment the field empties, so focus would otherwise
+    // fall to <body>. Same fix as DateField.handleClear.
+    await waitFor(() => expect(trigger).toHaveFocus());
+  },
+};
