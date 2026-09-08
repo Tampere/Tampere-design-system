@@ -633,6 +633,77 @@ export const RangeErrorFollowsMinMaxChanges: Story = {
   },
 };
 
+// Every other range story goes below `min`, which left `max` and the
+// `rangeOverflow` flag deletable without a single test going red.
+export const OverMaxShowsError: Story = {
+  args: { min: '08:00', max: '17:00' },
+  render: function Render(args) {
+    const [value, setValue] = useState('');
+    return (
+      <>
+        <TimeField {...args} value={value} onChange={setValue} />
+        <span data-testid="echo">{value}</span>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('max', '17:00');
+    await userEvent.type(input, '1930');
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    // Flagged, not blocked — the same contract the underflow story asserts.
+    await expect(canvas.getByTestId('echo').textContent).toBe('19:30');
+    // …and clears once the value is back inside the window.
+    await userEvent.clear(input);
+    await userEvent.type(input, '1600');
+    await waitFor(() =>
+      expect(
+        canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+      ).not.toBeInTheDocument()
+    );
+  },
+};
+
+// `max` is inclusive: the boundary value itself must not be flagged.
+export const MaxBoundaryIsInclusive: Story = {
+  args: { min: '08:00', max: '17:00' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await userEvent.type(input, '1700');
+    await expect(input).toHaveValue('17:00');
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+  },
+};
+
+// Mirror of RangeErrorFollowsMinMaxChanges, which only ever raises `min`.
+export const RangeErrorFollowsMaxChanges: Story = {
+  render: function Render(args) {
+    const [max, setMax] = useState('17:00');
+    return (
+      <>
+        <TimeField {...args} min="08:00" max={max} defaultValue="16:00" />
+        <button onClick={() => setMax('15:00')}>Lower max to 15:00</button>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    await userEvent.click(canvas.getByText('Lower max to 15:00'));
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+  },
+};
+
 // Chromium fires NO event when the user half-fills an empty time input: the
 // value stays '' and `badInput` flips silently. So this can only be caught on
 // blur, which is why `revalidate` is wired to onBlur and not just to an effect
