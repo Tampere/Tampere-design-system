@@ -74,6 +74,12 @@ export function TimeField({
       required={required}
       value={currentValue}
       onChange={handleChange}
+      // Drives the empty-segment placeholder colour in TimeField.css.ts: the
+      // `-webkit-datetime-edit-*` shadow pseudo-elements don't support
+      // `:not([attr])` matching in Chromium, so component state (not an
+      // attribute the browser itself sets) has to signal "every segment is
+      // still `--`".
+      data-empty={currentValue === '' ? 'true' : undefined}
       classNames={{ root: classNames?.root, input: cx(timeInput, classNames?.input) }}
     />
   );
