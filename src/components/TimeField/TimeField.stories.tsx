@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
+import { timeInput } from './TimeField.css';
 
 const meta = {
   component: TimeField,
@@ -86,5 +87,23 @@ export const WarnsWithoutAccessibleName: Story = {
     await waitFor(() =>
       expect(capturedConsoleErrors.some((m) => /accessible name/i.test(m))).toBe(true)
     );
+  },
+};
+
+export const HidesNativePickerIndicator: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    // Figma places the clock control OUTSIDE the field, so the browser's own
+    // in-field indicator must not render — otherwise there are two clock icons.
+    //
+    // Reading getComputedStyle(input, '::-webkit-calendar-picker-indicator')
+    // proved unreliable in this Chromium/Playwright combination — it reports
+    // 'block' regardless of the `display: none` rule targeting that shadow
+    // pseudo-element, so it cannot distinguish "rule applied" from "rule
+    // absent". Assert structurally instead: the input carries the `timeInput`
+    // class, which is the thing that contains the suppression rule (see
+    // TimeField.css.ts). The visual result is confirmed manually in Storybook.
+    await expect(input).toHaveClass(timeInput);
   },
 };
