@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import cx from 'clsx';
 import { TextField } from '../TextField';
 import { Button } from '../Button';
@@ -33,6 +33,12 @@ export interface TimeFieldProps {
   error?: string;
   /** Shown when the time falls outside [min, max] or off `step`. Default: Finnish. */
   outOfRangeError?: string;
+  /**
+   * Shown when the segments hold an incomplete time (e.g. an hour with no
+   * minutes). The native input reports this as `badInput` and keeps its own
+   * value empty, so without this the entry is discarded silently. Default: Finnish.
+   */
+  invalidTimeError?: string;
   /** Earliest selectable time, "HH:mm". */
   min?: string;
   /** Latest selectable time, "HH:mm". */
@@ -62,6 +68,7 @@ export function TimeField({
   helperText,
   error,
   outOfRangeError = 'Kellonaika on sallitun välin ulkopuolella',
+  invalidTimeError = 'Anna kellonaika muodossa tunnit:minuutit',
   min,
   max,
   step: stepProp,
@@ -74,7 +81,11 @@ export function TimeField({
   const currentValue = isControlled ? value : internalValue;
   const inputRef = useRef<HTMLInputElement>(null);
   const pickerButtonRef = useRef<HTMLButtonElement>(null);
-  const [rangeError, setRangeError] = useState(false);
+  const [validity, setValidity] = useState({
+    incomplete: false,
+    outOfRange: false,
+    stepMismatch: false,
+  });
   const step = stepProp ?? 60;
 
   // A step that isn't a whole number of minutes makes the browser render a
@@ -100,20 +111,45 @@ export function TimeField({
 
   const showClear = !disabled && currentValue !== '';
 
-  // Revalidate off the native input's own `validity` object whenever anything
-  // that could change it does — not just user-driven change/blur events, but
-  // also a controlled consumer resetting `value`, or `min`/`max`/`step`
-  // themselves changing under an already-displayed value. This single effect
-  // subsumes what would otherwise be duplicate validate() calls wired to
-  // onChange and onBlur.
-  useEffect(() => {
+  // Read the flags straight off the native input rather than reimplementing
+  // range/step arithmetic. `badInput` is separated from the range flags because
+  // it means something different to the user (incomplete entry, not a value
+  // outside the allowed window) and needs its own message.
+  const revalidate = useCallback(() => {
     const input = inputRef.current;
-    if (!input) return;
-    const { rangeUnderflow, rangeOverflow, stepMismatch } = input.validity;
-    setRangeError(rangeUnderflow || rangeOverflow || stepMismatch);
-  }, [currentValue, effectiveMin, max, effectiveStep]);
+    if (!input) {
+      // The ref is the only route to `validity`; losing it would silently
+      // disable every range and step check for the lifetime of the component.
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('TimeField: input ref is not attached — validation is inactive.');
+      }
+      return;
+    }
+    const { rangeUnderflow, rangeOverflow, stepMismatch, badInput } = input.validity;
+    setValidity({
+      incomplete: badInput,
+      outOfRange: rangeUnderflow || rangeOverflow,
+      stepMismatch,
+    });
+  }, []);
 
-  const shownError = error ?? (rangeError ? outOfRangeError : undefined);
+  // Covers every input that can move the range and step flags: the value, and
+  // `min`/`max`/`step` themselves changing under an already-displayed value.
+  // `badInput` cannot be observed this way — half-filling an *empty* field
+  // changes no value and fires no event — which is why `onBlur` also
+  // revalidates. If you read another validity flag here, check whether an
+  // effect can actually see it flip.
+  useEffect(revalidate, [revalidate, currentValue, effectiveMin, max, effectiveStep]);
+
+  // Consumer error first, then incomplete entry (the user can't fix a range
+  // problem they haven't finished typing), then the range window.
+  const shownError =
+    error ??
+    (validity.incomplete
+      ? invalidTimeError
+      : validity.outOfRange || validity.stepMismatch
+        ? outOfRangeError
+        : undefined);
 
   function handleClear() {
     if (!isControlled) setInternalValue('');
@@ -157,6 +193,10 @@ export function TimeField({
     onChange?.(next);
   }
 
+  function handleBlur() {
+    revalidate();
+  }
+
   // Forward an aria-label/aria-labelledby only when there is no visible label,
   // so it can't silently override a visible label's accessible name.
   const inputAriaProps =
@@ -176,15 +216,16 @@ export function TimeField({
       required={required}
       value={currentValue}
       onChange={handleChange}
+      onBlur={handleBlur}
       min={effectiveMin}
       max={max}
       step={effectiveStep}
       // Drives the empty-segment placeholder colour in TimeField.css.ts: the
-      // `-webkit-datetime-edit-*` shadow pseudo-elements don't support
-      // `:not([attr])` matching in Chromium, so component state (not an
-      // attribute the browser itself sets) has to signal "every segment is
-      // still `--`".
-      data-empty={currentValue === '' ? 'true' : undefined}
+      // `-webkit-datetime-edit-*` shadow pseudo-elements can't be qualified by
+      // an attribute selector, so component state has to signal "nothing is
+      // entered". A partially-filled field (`09:--`) is deliberately NOT empty
+      // — its typed segment should render in the normal text colour.
+      data-empty={currentValue === '' && !validity.incomplete ? 'true' : undefined}
       classNames={{ root: classNames?.root, input: cx(timeInput, classNames?.input) }}
       rightSectionPointerEvents={showClear ? 'auto' : 'none'}
       rightSection={
