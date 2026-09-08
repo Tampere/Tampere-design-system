@@ -37,7 +37,12 @@ export interface TimeFieldProps {
   min?: string;
   /** Latest selectable time, "HH:mm". */
   max?: string;
-  /** Granularity in seconds; clamped to the nearest whole minute (minimum 60). Default 60. */
+  /**
+   * Granularity in seconds; clamped to the nearest whole minute (minimum 60). Default 60.
+   * Enforced relative to `min` — Chromium does not evaluate `step` without a `min` present, so
+   * if `step` is supplied and `min` is not, `min` defaults to `'00:00'` (the earliest
+   * representable time, so this excludes no values) purely to switch on step enforcement.
+   */
   step?: number;
   disabled?: boolean;
   required?: boolean;
@@ -59,7 +64,7 @@ export function TimeField({
   outOfRangeError = 'Kellonaika on sallitun välin ulkopuolella',
   min,
   max,
-  step = 60,
+  step: stepProp,
   disabled,
   required,
   classNames,
@@ -70,6 +75,7 @@ export function TimeField({
   const inputRef = useRef<HTMLInputElement>(null);
   const pickerButtonRef = useRef<HTMLButtonElement>(null);
   const [rangeError, setRangeError] = useState(false);
+  const step = stepProp ?? 60;
 
   // A step that isn't a whole number of minutes makes the browser render a
   // seconds segment, which this component does not support — round to the
@@ -84,6 +90,14 @@ export function TimeField({
     }
   }, [step, effectiveStep]);
 
+  // Chromium never evaluates `stepMismatch` on a time input without a `min`
+  // present (verified empirically, not documented behaviour) — so a `step`
+  // given without a `min` would otherwise enforce nothing at all. Default to
+  // the earliest representable time, which excludes no values, purely to
+  // switch step enforcement on. Only when the consumer actually asked for a
+  // `step`: fields that never set `step` get no implicit `min`.
+  const effectiveMin = min ?? (stepProp !== undefined ? '00:00' : undefined);
+
   const showClear = !disabled && currentValue !== '';
 
   // Revalidate off the native input's own `validity` object whenever anything
@@ -97,7 +111,7 @@ export function TimeField({
     if (!input) return;
     const { rangeUnderflow, rangeOverflow, stepMismatch } = input.validity;
     setRangeError(rangeUnderflow || rangeOverflow || stepMismatch);
-  }, [currentValue, min, max, effectiveStep]);
+  }, [currentValue, effectiveMin, max, effectiveStep]);
 
   const shownError = error ?? (rangeError ? outOfRangeError : undefined);
 
@@ -156,7 +170,7 @@ export function TimeField({
       required={required}
       value={currentValue}
       onChange={handleChange}
-      min={min}
+      min={effectiveMin}
       max={max}
       step={effectiveStep}
       // Drives the empty-segment placeholder colour in TimeField.css.ts: the

@@ -367,13 +367,12 @@ export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
 // two stories above, which only check the clamped `step` attribute and the
 // dev warning — they never assert on validity itself.
 //
-// `min` is required here, not incidental: empirically (verified against the
-// real Chromium instance this suite runs in, not by reading the spec),
-// Chromium only evaluates `stepMismatch` for a time input once a `min` is
-// present to anchor the step base — omitting `min` here, `0905` and `0915`
-// were both accepted with `stepMismatch: false` regardless of `step`. This
-// is worth knowing: a consumer who sets `step` without `min` gets no
-// off-grid enforcement at all.
+// `min` is passed explicitly here (rather than relying on the component's
+// own '00:00' default — see StepAloneEnforcesGranularityViaDefaultMin below)
+// to exercise the consumer-supplied-`min` path specifically: it must behave
+// identically to the defaulted path, and this is the story that would catch
+// a regression that special-cased the default instead of just filling the
+// same `min` prop.
 export const StepMismatchFlagsOffGridValuesAtFifteenMinuteGranularity: Story = {
   args: { step: 900, min: '00:00' }, // 15 minutes; already a whole-minute multiple, so no dev warning.
   play: async ({ canvasElement }) => {
@@ -399,6 +398,51 @@ export const StepMismatchFlagsOffGridValuesAtFifteenMinuteGranularity: Story = {
         canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
       ).not.toBeInTheDocument()
     );
+  },
+};
+
+// Chromium never evaluates `stepMismatch` on a time input without a `min`
+// present (see the empirical finding documented above). Without the
+// component defaulting `min` to '00:00' whenever `step` is supplied and no
+// `min` was given, this story's off-grid value would be silently accepted —
+// this is the exact behaviour gap the default exists to close.
+export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
+  args: { step: 900 }, // 15 minutes, no explicit `min`.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    // The component filled in the '00:00' default so `step` actually bites.
+    await expect(input).toHaveAttribute('min', '00:00');
+    await userEvent.type(input, '0905'); // 5 minutes off the 15-minute grid.
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+  },
+};
+
+// The one value the '00:00' default could plausibly disturb is midnight
+// itself: `min` is inclusive, so `00:00 >= min('00:00')` must not read as
+// rangeUnderflow, and 0 seconds past midnight is trivially on any step grid
+// (0 is a multiple of everything), so `stepMismatch` must not fire either.
+export const DefaultMinDoesNotFlagMidnightItself: Story = {
+  args: { step: 900 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await userEvent.type(input, '0000');
+    await expect(input).toHaveValue('00:00');
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+  },
+};
+
+// The default is purely a side effect of `step` — a field that never sets
+// `step` must not gain an implicit `min` it never asked for.
+export const NoStepMeansNoImplicitMin: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText('Valitse kellonaika')).not.toHaveAttribute('min');
   },
 };
 
