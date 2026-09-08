@@ -176,16 +176,67 @@ export const ClearButtonEmptiesTheField: Story = {
   args: { defaultValue: '09:30', onChange: fn() },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
     await userEvent.click(canvas.getByRole('button', { name: 'Tyhjennä kellonaika' }));
-    await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveValue('');
+    await expect(input).toHaveValue('');
     await expect(args.onChange).toHaveBeenLastCalledWith('');
+    // Task 3's empty-segment placeholder mechanism keys off this attribute —
+    // clearing must flip it back to 'true', the same as a manually emptied field.
+    await expect(input).toHaveAttribute('data-empty', 'true');
   },
 };
 
-export const ClearButtonOnlyWhenPopulatedAndEnabled: Story = {
+// Mirrors DateField.stories.tsx's ClearButtonClearsValue: every other clear story
+// here uses defaultValue (uncontrolled), which collapses the distinction between
+// `currentValue`/`showClear` reading `internalValue` vs. the controlled-aware
+// value — a regression there would pass all of them. This one proves the clear
+// button also works, and drives the *parent's* state, in controlled mode.
+export const ClearButtonClearsControlledValue: Story = {
+  render: function Render(args) {
+    const [value, setValue] = useState('09:30');
+    return (
+      <>
+        <TimeField {...args} value={value} onChange={setValue} />
+        <span data-testid="echo">{value}</span>
+      </>
+    );
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    // Empty field: nothing to clear.
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveValue('09:30');
+    await userEvent.click(canvas.getByRole('button', { name: 'Tyhjennä kellonaika' }));
+    await expect(input).toHaveValue('');
+    // The parent's state, not internal state, must have emptied — toHaveTextContent('')
+    // would pass vacuously (empty string is a substring match), so compare textContent directly.
+    await expect(canvas.getByTestId('echo').textContent).toBe('');
+    // The ✕ is removed once the field is empty; focus moves to the trigger so it
+    // isn't lost to <body> when the button it sat on disappears.
+    await expect(
+      canvas.queryByRole('button', { name: 'Tyhjennä kellonaika' })
+    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' })).toHaveFocus()
+    );
+  },
+};
+
+export const ClearButtonHiddenWhenEmpty: Story = {
+  // Nothing to clear on an empty field, so the ✕ must not be present.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      canvas.queryByRole('button', { name: 'Tyhjennä kellonaika' })
+    ).not.toBeInTheDocument();
+  },
+};
+
+export const ClearButtonHiddenWhenDisabled: Story = {
+  // A disabled field can't be edited, so the clear affordance is suppressed even
+  // though there is a value present.
+  args: { disabled: true, defaultValue: '09:30' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
     await expect(
       canvas.queryByRole('button', { name: 'Tyhjennä kellonaika' })
     ).not.toBeInTheDocument();
