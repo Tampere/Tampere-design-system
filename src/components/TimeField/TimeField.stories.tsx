@@ -140,6 +140,30 @@ export const IsANativeTimeInput: Story = {
   },
 };
 
+export const AccessibleNameViaAriaLabel: Story = {
+  // With no visible label, an aria-label must give the input an accessible name.
+  args: { inputLabel: undefined, 'aria-label': 'Kellonaika' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Kellonaika');
+    await expect(input).toHaveAccessibleName('Kellonaika');
+  },
+};
+
+// When both `inputLabel` and `aria-label` are supplied, the visible label must
+// win the accessible-name computation — forwarding `aria-label` unconditionally
+// would let it silently override the visible label's text (WCAG 2.5.3 Label in
+// Name), breaking voice-control activation by the visible label's wording.
+export const VisibleLabelWinsOverAriaLabel: Story = {
+  args: { 'aria-label': 'Should not win' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAccessibleName('Valitse kellonaika');
+    await expect(input).not.toHaveAccessibleName('Should not win');
+  },
+};
+
 export const WarnsWithoutAccessibleName: Story = {
   // With neither inputLabel nor aria-label/aria-labelledby, the component must
   // warn the developer in dev (the input would otherwise be unnamed).

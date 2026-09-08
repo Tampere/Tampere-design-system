@@ -117,6 +117,10 @@ export const SizeLarge: Story = {
 };
 
 export const ForwardsRefToInput: Story = {
+  // Test-only: this exercises ref forwarding, not a visual example — keep it
+  // off TextField's public docs page (unlike the rest of this file, whose
+  // stories are all genuine visual examples).
+  tags: ['!dev', '!autodocs'],
   render: function Render(args) {
     const ref = useRef<HTMLInputElement>(null);
     const [tag, setTag] = useState('none');

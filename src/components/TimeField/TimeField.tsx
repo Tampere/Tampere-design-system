@@ -157,13 +157,19 @@ export function TimeField({
     onChange?.(next);
   }
 
+  // Forward an aria-label/aria-labelledby only when there is no visible label,
+  // so it can't silently override a visible label's accessible name.
+  const inputAriaProps =
+    !inputLabel && (ariaLabel || ariaLabelledby)
+      ? { 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledby }
+      : {};
+
   return (
     <TextField
       type="time"
       ref={inputRef}
       inputLabel={inputLabel}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledby}
+      {...inputAriaProps}
       helperText={helperText}
       error={shownError}
       disabled={disabled}
