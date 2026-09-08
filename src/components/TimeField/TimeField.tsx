@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import cx from 'clsx';
 import { TextField } from '../TextField';
+import { timeInput } from './TimeField.css';
 
 export interface TimeFieldClassNames {
   root: string;
@@ -72,7 +74,7 @@ export function TimeField({
       required={required}
       value={currentValue}
       onChange={handleChange}
-      classNames={{ root: classNames?.root, wrapper: classNames?.input }}
+      classNames={{ root: classNames?.root, input: cx(timeInput, classNames?.input) }}
     />
   );
 }
