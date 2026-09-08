@@ -37,7 +37,7 @@ export interface TimeFieldProps {
   min?: string;
   /** Latest selectable time, "HH:mm". */
   max?: string;
-  /** Granularity in seconds; values below 60 are clamped to 60. Default 60. */
+  /** Granularity in seconds; clamped to the nearest whole minute (minimum 60). Default 60. */
   step?: number;
   disabled?: boolean;
   required?: boolean;
@@ -71,28 +71,39 @@ export function TimeField({
   const pickerButtonRef = useRef<HTMLButtonElement>(null);
   const [rangeError, setRangeError] = useState(false);
 
-  // A sub-60 step makes the browser render a seconds segment, which this
-  // component does not support.
-  const effectiveStep = Math.max(60, step);
+  // A step that isn't a whole number of minutes makes the browser render a
+  // seconds segment, which this component does not support — round to the
+  // nearest minute (and never below one) rather than merely flooring at 60,
+  // otherwise e.g. `step={90}` would slip through unchanged.
+  const effectiveStep = Math.max(60, Math.round(step / 60) * 60);
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && step < 60) {
-      console.error(`TimeField: \`step\` must be at least 60 seconds — got ${step}, using 60.`);
+    if (process.env.NODE_ENV !== 'production' && step !== effectiveStep) {
+      console.error(
+        `TimeField: \`step\` must be a whole number of minutes — got ${step}, using ${effectiveStep}.`
+      );
     }
-  }, [step]);
+  }, [step, effectiveStep]);
 
   const showClear = !disabled && currentValue !== '';
 
-  function validate(input: HTMLInputElement) {
+  // Revalidate off the native input's own `validity` object whenever anything
+  // that could change it does — not just user-driven change/blur events, but
+  // also a controlled consumer resetting `value`, or `min`/`max`/`step`
+  // themselves changing under an already-displayed value. This single effect
+  // subsumes what would otherwise be duplicate validate() calls wired to
+  // onChange and onBlur.
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
     const { rangeUnderflow, rangeOverflow, stepMismatch } = input.validity;
     setRangeError(rangeUnderflow || rangeOverflow || stepMismatch);
-  }
+  }, [currentValue, min, max, effectiveStep]);
 
   const shownError = error ?? (rangeError ? outOfRangeError : undefined);
 
   function handleClear() {
     if (!isControlled) setInternalValue('');
     onChange?.('');
-    setRangeError(false);
     // The ✕ disappears once the field is empty, so move focus to the adjacent
     // picker trigger rather than letting it fall back to <body>.
     requestAnimationFrame(() => pickerButtonRef.current?.focus());
@@ -130,7 +141,6 @@ export function TimeField({
     const next = event.currentTarget.value;
     if (!isControlled) setInternalValue(next);
     onChange?.(next);
-    validate(event.currentTarget);
   }
 
   return (
@@ -146,7 +156,6 @@ export function TimeField({
       required={required}
       value={currentValue}
       onChange={handleChange}
-      onBlur={(e) => validate(e.currentTarget)}
       min={min}
       max={max}
       step={effectiveStep}
