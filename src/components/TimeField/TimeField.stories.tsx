@@ -6,6 +6,7 @@ import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
 import { timeInput } from './TimeField.css';
 import { DateField } from '../DateField';
+import { vars } from '../../theme';
 
 const meta = {
   component: TimeField,
@@ -79,10 +80,16 @@ export const BookingFlow: Story = {
     const [date, setDate] = useState<Date | null>(null);
     const [time, setTime] = useState('');
     return (
-      // flexWrap prevents the pairing from overflowing the viewport at narrow
-      // widths (e.g. the 320px check in the brief) — the brief's sample style
-      // omitted it, but the two fields together don't fit a 320px canvas.
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-start' }}>
+      // flexWrap prevents the pairing from overflowing at narrow widths — the
+      // two fields together don't fit a 320px canvas.
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: vars.primitives.spacing['2'],
+          alignItems: 'flex-start',
+        }}
+      >
         <DateField
           label="Valitse päivämäärä"
           calendarButtonLabel="Avaa kalenteri"
