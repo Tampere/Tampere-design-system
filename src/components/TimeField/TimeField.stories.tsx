@@ -137,6 +137,7 @@ export const IsANativeTimeInput: Story = {
     const canvas = within(canvasElement);
     // The native input is what supplies keyboard increments and spinbutton
     // semantics — if this regresses to type="text" the whole design is void.
+    // The increments themselves are asserted in KeyboardArrowsIncrementByStep.
     await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveAttribute('type', 'time');
   },
 };
@@ -866,5 +867,41 @@ export const DoesNotWarnOnWellFormedTimeStrings: Story = {
   },
   play: async () => {
     await waitFor(() => expect(capturedConsoleErrors.some((m) => m.includes('HH:mm'))).toBe(false));
+  },
+};
+
+// Issue #53 requires keyboard increments. The native input provides them, but
+// nothing asserted it — and the arrows are also the only place the `step` grid
+// is observable as *behaviour* rather than as an attribute.
+export const KeyboardArrowsIncrementByStep: Story = {
+  args: { defaultValue: '09:00', step: 900, onChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
+    await browserUserEvent.click(input);
+    // Focus lands on the hour segment; ArrowUp steps the hour by one.
+    await browserUserEvent.keyboard('{ArrowUp}');
+    await expect(input).toHaveValue('10:00');
+    await expect(args.onChange).toHaveBeenLastCalledWith('10:00');
+    // Move to the minute segment: ArrowUp there steps by `step`, not by 1.
+    await browserUserEvent.keyboard('{ArrowRight}{ArrowUp}');
+    await expect(input).toHaveValue('10:15');
+    await expect(args.onChange).toHaveBeenLastCalledWith('10:15');
+    // Every value handed upward is still "HH:mm".
+    for (const call of (args.onChange as ReturnType<typeof fn>).mock.calls) {
+      await expect(call[0]).toMatch(/^([01]\d|2[0-3]):[0-5]\d$/);
+    }
+  },
+};
+
+// ArrowDown must step back down and stay on the grid.
+export const KeyboardArrowsDecrementByStep: Story = {
+  args: { defaultValue: '10:15', step: 900, onChange: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
+    await browserUserEvent.click(input);
+    await browserUserEvent.keyboard('{ArrowRight}{ArrowDown}');
+    await expect(input).toHaveValue('10:00');
   },
 };
