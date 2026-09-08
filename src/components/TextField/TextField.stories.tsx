@@ -1,7 +1,8 @@
+import { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-// react hooks not required here; story state is managed via Storybook args
 import { useArgs } from '@storybook/client-api';
-import { expect, within } from 'storybook/test';
+import { within, userEvent } from '@storybook/testing-library';
+import { expect } from 'storybook/test';
 import { TextField } from './TextField';
 
 const meta = {
@@ -113,4 +114,26 @@ export const SizeSmall: Story = {
 export const SizeLarge: Story = {
   args: { inputLabel: 'Large', size: 'lg', placeholder: 'Large input' },
   render: (args) => <TextField {...args} />,
+};
+
+export const ForwardsRefToInput: Story = {
+  render: function Render(args) {
+    const ref = useRef<HTMLInputElement>(null);
+    const [tag, setTag] = useState('none');
+    return (
+      <>
+        <TextField {...args} ref={ref} inputLabel="Ref test" />
+        <button type="button" onClick={() => setTag(ref.current?.tagName ?? 'null')}>
+          read ref
+        </button>
+        <span data-testid="ref-tag">{tag}</span>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'read ref' }));
+    // The ref must land on the <input>, not on a wrapper div.
+    await expect(canvas.getByTestId('ref-tag')).toHaveTextContent('INPUT');
+  },
 };
