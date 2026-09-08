@@ -283,7 +283,7 @@ export const ClearButtonEmptiesTheField: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Tyhjennä kellonaika' }));
     await expect(input).toHaveValue('');
     await expect(args.onChange).toHaveBeenLastCalledWith('');
-    // Task 3's empty-segment placeholder mechanism keys off this attribute —
+    // The empty-segment placeholder mechanism (#53) keys off this attribute —
     // clearing must flip it back to 'true', the same as a manually emptied field.
     await expect(input).toHaveAttribute('data-empty', 'true');
   },
@@ -358,7 +358,7 @@ export const ClearMovesFocusToTrigger: Story = {
   },
 };
 
-// Controlled (not uncontrolled, per the plan's rulings): also proves the
+// Controlled (not uncontrolled): also proves the
 // out-of-range value is still committed up to the parent — TimeField flags
 // it rather than blocking entry, matching how the native input itself never
 // refuses a keystroke for being out of [min, max].
@@ -465,7 +465,7 @@ export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
 
 // With the clamp rounding to a whole-minute multiple, `stepMismatch` becomes
 // reachable (and meaningful) for a legitimate granularity like 15 minutes —
-// the booking-flow case the plan calls out. This is the only story in this
+// the booking-flow case #53 calls out. This is the only story in this
 // file that actually drives `stepMismatch` true/false, as distinct from the
 // two stories above, which only check the clamped `step` attribute and the
 // dev warning — they never assert on validity itself. It expects the
@@ -549,12 +549,14 @@ export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
   },
 };
 
-// The counterfactual for the `min: '00:00'` default. A controlled field mounted
-// with an off-grid value and no user interaction is the ONE case where Chromium
-// won't evaluate `stepMismatch` without a `min` present — measured: no `min` →
-// false, `min="00:00"` → true. Deleting `effectiveMin` makes this story red,
-// which StepAloneEnforcesGranularityViaDefaultMin does not (it only asserts the
-// attribute is there, not that it is doing anything).
+// The counterfactual for the `min: '00:00'` default. Without an explicit `min`,
+// the step base falls back to the `value` content attribute, which React keeps
+// in sync with this value on every commit — so `stepMismatch` can never be true
+// no matter what off-grid value is mounted. The injected `min` is what makes
+// `stepMismatch` observable at all: measured, no `min` → false, `min="00:00"` →
+// true for the same off-grid value. Deleting `effectiveMin` makes this story
+// red, which StepAloneEnforcesGranularityViaDefaultMin does not (it only
+// asserts the attribute is there, not that it is doing anything).
 export const OffGridControlledValueIsFlaggedAtMount: Story = {
   args: { value: '09:05', step: 900, onChange: fn() },
   play: async ({ canvasElement }) => {
@@ -766,8 +768,8 @@ export const IncompleteEntryShowsError: Story = {
     await waitFor(() =>
       expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
     );
-    // The value never became a real time, so nothing was committed upward.
-    await expect(args.onChange).not.toHaveBeenCalledWith(expect.stringMatching(/^\d{2}:\d{2}$/));
+    // The entry never became a real time, so nothing was committed upward at all.
+    await expect(args.onChange).not.toHaveBeenCalled();
   },
 };
 
@@ -888,7 +890,7 @@ export const DoesNotWarnOnWellFormedTimeStrings: Story = {
     };
   },
   play: async () => {
-    await waitFor(() => expect(capturedConsoleErrors.some((m) => m.includes('HH:mm'))).toBe(false));
+    await expect(capturedConsoleErrors.some((m) => m.includes('HH:mm'))).toBe(false);
   },
 };
 
@@ -961,7 +963,7 @@ export const SubmitsUnderItsName: Story = {
 // A consumer `onBlur` must run without displacing the internal revalidation
 // that the incomplete-entry check depends on.
 //
-// Uses `browserUserEvent`/`blurTimeInput` rather than the brief's plain
+// Uses `browserUserEvent`/`blurTimeInput` rather than plain
 // `userEvent.type` + `.tab()`: per the comment above `blurTimeInput`, the
 // `@storybook/testing-library` driver is inert for reaching `badInput` on
 // this native input, and `.tab()` moves between the input's own hour/minute

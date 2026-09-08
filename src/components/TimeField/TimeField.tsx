@@ -28,7 +28,13 @@ export interface TimeFieldProps extends Pick<
   value?: string;
   /** Initial time for an uncontrolled field. Ignored when `value` is supplied. */
   defaultValue?: string;
-  /** Called with "HH:mm", or '' when cleared. */
+  /**
+   * Called with "HH:mm", or '' when cleared. Also called with '' while editing
+   * a segment of an otherwise-complete value (e.g. clearing the minutes of
+   * "09:30"), because the native input genuinely holds no time at that point.
+   * Unlike `DateField`, which keeps the last committed value and never fires
+   * `onChange(null)` mid-edit, TimeField commits the transient `''`.
+   */
   onChange?: (time: string) => void;
   /** Visible field label. Provide this, `aria-label`, or `aria-labelledby`. */
   label?: string;
@@ -39,7 +45,13 @@ export interface TimeFieldProps extends Pick<
   'aria-label'?: string;
   'aria-labelledby'?: string;
   helperText?: React.ReactNode;
-  /** Consumer-supplied error. Takes precedence over internal range validation. */
+  /**
+   * Consumer-supplied error. Takes precedence over the internal range,
+   * step-mismatch, and incomplete-entry messages. An empty string still
+   * counts as a supplied error and suppresses all of them, so avoid the
+   * common `error={errors.time ?? ''}` idiom — pass `undefined` (not `''`)
+   * when there is no consumer error, e.g. `error={errors.time}`.
+   */
   error?: string;
   /** Shown when the time falls outside [min, max]. Default: Finnish. */
   outOfRangeError?: string;
@@ -62,9 +74,10 @@ export interface TimeFieldProps extends Pick<
   /**
    * Granularity in seconds; clamped to the nearest whole minute (minimum 60,
    * for any finite value). Default 60. Enforced relative to `min`: if `step` is
-   * supplied and `min` is not, `min` defaults to `'00:00'` so that a value
-   * arriving from the `value` prop alone is still step-checked (see the comment
-   * on `effectiveMin`). `'00:00'` excludes no values on a 24-hour clock.
+   * supplied and `min` is not, `min` defaults to `'00:00'` so that `stepMismatch`
+   * is observable at all — without a `min`, the step check is never true for
+   * typed or programmatic values alike (see the comment on `effectiveMin`).
+   * `'00:00'` excludes no values on a 24-hour clock.
    */
   step?: number;
   disabled?: boolean;
@@ -124,14 +137,15 @@ export function TimeField({
     }
   }, [step, effectiveStep]);
 
-  // Chromium does not evaluate `stepMismatch` when the value came only from the
-  // content attribute and has never been made "dirty" — i.e. a controlled field
-  // mounted with an off-grid value and not yet touched, which is the common
-  // case. (Typed and IDL-set values are checked with or without a `min`, so this
-  // is narrower than "step needs a min".) Defaulting to the earliest
-  // representable time switches the check on and excludes no values, since `min`
-  // is inclusive. Only when the consumer actually asked for a `step`: fields
-  // that never set `step` get no implicit `min`.
+  // Per the HTML step-base algorithm, `step` is measured from `min` if present,
+  // otherwise from the `value` *content attribute*, otherwise from 0. React keeps
+  // a controlled input's value content attribute in sync with the `value` prop on
+  // every commit (`setDefaultValue`), so with no `min` the step base always equals
+  // the current value — meaning `stepMismatch` can never be true by the time this
+  // component's post-commit effect reads it, for typed and programmatic values
+  // alike. An explicit `min` pins the step base instead; `'00:00'` excludes no
+  // values, since `min` is inclusive. Only when the consumer actually asked for a
+  // `step`: fields that never set `step` get no implicit `min`.
   // Counterfactual test: OffGridControlledValueIsFlaggedAtMount.
   const effectiveMin = min ?? (stepProp !== undefined ? '00:00' : undefined);
 
@@ -284,8 +298,12 @@ export function TimeField({
       // Drives the empty-segment placeholder colour in TimeField.css.ts: the
       // `-webkit-datetime-edit-*` shadow pseudo-elements can't be qualified by
       // an attribute selector, so component state has to signal "nothing is
-      // entered". A partially-filled field (`09:--`) is deliberately NOT empty
-      // — its typed segment should render in the normal text colour.
+      // entered". A partially-filled field (`09:--`) stops counting as empty
+      // once the entry settles on blur. While it's still being typed, though,
+      // half-filling an empty field fires no event — `validity.incomplete`
+      // stays `false`, so `data-empty` stays `'true'` and the whole edit
+      // region, typed digits included, stays in the placeholder colour until
+      // blur revalidates.
       data-empty={currentValue === '' && !validity.incomplete ? 'true' : undefined}
       classNames={{ root: classNames?.root, input: cx(timeInput, classNames?.input) }}
       rightSectionPointerEvents={showClear ? 'auto' : 'none'}
