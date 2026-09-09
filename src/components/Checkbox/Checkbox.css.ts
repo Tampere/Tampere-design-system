@@ -75,6 +75,10 @@ globalStyle(`${input}:hover + svg path`, {
   fill: selectionStates.unchecked.hover,
 });
 
+// `:focus-visible` and `:active` tie in specificity — (0,2,2) each — so source order decides
+// which wins while a focused control is being pressed. `:active` is declared last deliberately:
+// pressing is a momentary state and should read as pressed, not merely focused. RadioButton.css.ts
+// declares the same block in the same order; keep the two in step.
 globalStyle(`${input}:focus-visible + svg path`, {
   fill: selectionStates.unchecked.focus,
 });

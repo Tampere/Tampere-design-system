@@ -1,8 +1,8 @@
 import { Flex } from '@mantine/core';
 import { useArgs } from '@storybook/client-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { type MouseEvent, useState } from 'react';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { CheckboxIndeterminateIcon } from '../../icons/CheckboxIndeterminateIcon';
 import { Checkbox } from './Checkbox';
 
@@ -307,14 +307,22 @@ export const RichLabel: Story = {
 // Captures console.error calls for the dev-warning test below.
 let capturedConsoleErrors: string[] = [];
 
+// The un-patched `console.error`, captured once at module scope. Deliberately *not* re-read inside
+// the patch: if a story aborted mid-play (timeout, cancelled run) its cleanup would never run, and
+// a second patch would then capture the previous stub as "original" — leaving `console.error`
+// broken for the rest of the browser session.
+const nativeConsoleError = console.error;
+
 const captureConsoleErrors = () => {
   capturedConsoleErrors = [];
-  const original = console.error;
   console.error = (...messageArgs: unknown[]) => {
     capturedConsoleErrors.push(String(messageArgs[0]));
+    // Still forward, so an unrelated React error raised during the story stays visible in CI
+    // output instead of being swallowed by the capture.
+    nativeConsoleError(...messageArgs);
   };
   return () => {
-    console.error = original;
+    console.error = nativeConsoleError;
   };
 };
 
@@ -393,5 +401,123 @@ export const LabelUsesBodyTypography: Story = {
     const style = getComputedStyle(label);
     await expect(style.fontSize).toBe('18px');
     await expect(style.color).toBe('rgb(45, 45, 50)');
+  },
+};
+
+// ── Vetoed-click tests: a caller can cancel a checkbox toggle with `preventDefault()` in its own
+// `onClick`, the standard native pattern (e.g. behind a confirmation prompt). Because Checkbox
+// fakes the toggle in its click handler rather than leaving it to the browser, ignoring the veto
+// used to leave React state and the DOM permanently split — icon checked, input unchecked, and the
+// field missing from a form submit. ────────────────────────────────────────────────────────────
+
+const vetoClick = (e: MouseEvent<HTMLInputElement>) => e.preventDefault();
+
+export const VetoedClickDoesNotToggle: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Uncontrolled option" onClick={vetoClick} />,
+  play: async ({ canvasElement }) => {
+    const checkboxInput = within(canvasElement).getByRole('checkbox') as HTMLInputElement;
+    await userEvent.click(checkboxInput);
+    // The DOM value the browser reverted...
+    await expect(checkboxInput.checked).toBe(false);
+    // ...and the internal state the icon renders from, which `data-checked` reflects.
+    await expect(checkboxInput).not.toHaveAttribute('data-checked');
+  },
+};
+
+export const VetoedClickPreservesIndeterminate: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Uncontrolled option" indeterminate onClick={vetoClick} />,
+  play: async ({ canvasElement }) => {
+    const checkboxInput = within(canvasElement).getByRole('checkbox') as HTMLInputElement;
+    await userEvent.click(checkboxInput);
+    // A vetoed click causes no re-render, so the effect that re-asserts `indeterminate` doesn't
+    // run — the browser's canceled-activation steps have to have restored it on their own.
+    await expect(checkboxInput.indeterminate).toBe(true);
+  },
+};
+
+const vetoedOnChangeSpy = fn();
+
+export const VetoedClickDoesNotFireOnChange: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Checkbox label="Uncontrolled option" onClick={vetoClick} onChange={vetoedOnChangeSpy} />
+  ),
+  beforeEach: () => {
+    vetoedOnChangeSpy.mockClear();
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('checkbox'));
+    await expect(vetoedOnChangeSpy).not.toHaveBeenCalled();
+  },
+};
+
+// ── Form-reset tests: `defaultChecked` can't be forwarded to the input alongside `checked`, so
+// the `checked` content attribute the browser resets from is set imperatively instead. Without it
+// a reset silently unchecks the input — dropping the field from the submitted data — while the
+// icon carries on rendering the pre-reset value. ───────────────────────────────────────────────
+
+function UncontrolledResetExample() {
+  return (
+    <form>
+      <Checkbox name="agree" label="Uncontrolled option" defaultChecked />
+      <button type="reset">Reset</button>
+    </form>
+  );
+}
+
+export const FormResetRestoresDefaultChecked: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <UncontrolledResetExample />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+
+    // The content attribute the browser resets from, which `defaultChecked` alone wouldn't set.
+    await expect(checkboxInput.defaultChecked).toBe(true);
+
+    await userEvent.click(checkboxInput);
+    await expect(checkboxInput.checked).toBe(false);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Reset' }));
+    await waitFor(async () => {
+      await expect(checkboxInput.checked).toBe(true);
+      // ...and the internal state resynced, so the icon matches the reset input.
+      await expect(checkboxInput).toHaveAttribute('data-checked', 'true');
+    });
+    await expect(new FormData(checkboxInput.form!).get('agree')).toBe('on');
+  },
+};
+
+function ControlledResetExample() {
+  const [checked, setChecked] = useState(true);
+
+  return (
+    <form>
+      <Checkbox
+        name="agree"
+        label="Controlled option"
+        checked={checked}
+        onClick={() => setChecked(!checked)}
+      />
+      <button type="reset">Reset</button>
+    </form>
+  );
+}
+
+export const FormResetKeepsControlledValue: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <ControlledResetExample />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Reset' }));
+    // The parent still says checked, so the reset must not desync the DOM from it.
+    await waitFor(async () => {
+      await expect(checkboxInput.checked).toBe(true);
+    });
+    await expect(checkboxInput).toHaveAttribute('data-checked', 'true');
   },
 };
