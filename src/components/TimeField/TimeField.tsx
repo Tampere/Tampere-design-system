@@ -148,6 +148,17 @@ export function TimeField({
     }
   }, [stepMinutes, effectiveStepMinutes]);
 
+  // Correct a swapped pair, the way DateField.tsx does: left alone, `min="17:00"
+  // max="08:00"` makes every value in the intended window report an error while
+  // every value outside it passes, with nothing pointing at the swapped props.
+  // Only well-formed bounds are compared — the browser ignores an unparseable
+  // min/max, so swapping on one would invent a range the browser never had (the
+  // dev guard further down warns about those separately). "HH:mm" is zero-padded
+  // and fixed-width, so a plain string comparison is a time comparison.
+  const boundsSwapped = !!min && !!max && TIME_RE.test(min) && TIME_RE.test(max) && max < min;
+  const rangeMin = boundsSwapped ? max : min;
+  const rangeMax = boundsSwapped ? min : max;
+
   // Per the HTML step-base algorithm, `step` is measured from `min` if present,
   // otherwise from the `value` *content attribute*, otherwise from 0. React keeps
   // a controlled input's value content attribute in sync with the `value` prop on
@@ -156,9 +167,11 @@ export function TimeField({
   // component's post-commit effect reads it, for typed and programmatic values
   // alike. An explicit `min` pins the step base instead; `'00:00'` excludes no
   // values, since `min` is inclusive. Only when the consumer actually asked for a
-  // step: fields that never set `stepMinutes` get no implicit `min`.
+  // step: fields that never set `stepMinutes` get no implicit `min`. Reads
+  // `rangeMin`, not `min`, so a swapped pair pins the step base to the corrected
+  // lower bound rather than to the upper one.
   // Counterfactual test: OffGridControlledValueIsFlaggedAtMount.
-  const effectiveMin = min ?? (stepMinutesProp !== undefined ? '00:00' : undefined);
+  const effectiveMin = rangeMin ?? (stepMinutesProp !== undefined ? '00:00' : undefined);
 
   const showClear = !disabled && currentValue !== '';
 
@@ -190,7 +203,7 @@ export function TimeField({
   // changes no value and fires no event — which is why `onBlur` also
   // revalidates. If you read another validity flag here, check whether an
   // effect can actually see it flip.
-  useEffect(revalidate, [revalidate, currentValue, effectiveMin, max, domStep]);
+  useEffect(revalidate, [revalidate, currentValue, effectiveMin, rangeMax, domStep]);
 
   // Consumer error first, then incomplete entry (the user can't fix a range
   // problem they haven't finished typing), then the range window, then
@@ -264,7 +277,14 @@ export function TimeField({
         );
       }
     }
-  }, [value, defaultValue, min, max]);
+    // Normalising a swapped pair keeps the field usable, but the props are still
+    // wrong — say so, or the caller never finds out.
+    if (boundsSwapped) {
+      console.error(
+        `TimeField: \`min\` ("${min}") is after \`max\` ("${max}") — using the pair the other way round.`
+      );
+    }
+  }, [value, defaultValue, min, max, boundsSwapped]);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const next = event.currentTarget.value;
@@ -304,7 +324,7 @@ export function TimeField({
       id={id}
       autoComplete={autoComplete}
       min={effectiveMin}
-      max={max}
+      max={rangeMax}
       step={domStep}
       // Drives the empty-segment placeholder colour in TimeField.css.ts: the
       // `-webkit-datetime-edit-*` shadow pseudo-elements can't be qualified by

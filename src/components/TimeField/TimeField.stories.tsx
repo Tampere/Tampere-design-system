@@ -749,6 +749,78 @@ export const MaxBoundaryIsInclusive: Story = {
   },
 };
 
+// A swapped pair leaves the browser with no satisfiable window — every value is
+// either below `min` or above `max`, so the field rejects everything, including
+// the window the consumer meant, with nothing pointing at the swapped props.
+// Order the bounds instead (same normalisation as DateField.tsx) and warn.
+export const SwappedMinMaxIsNormalised: Story = {
+  args: { min: '17:00', max: '08:00', defaultValue: '09:30' },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('min', '08:00');
+    await expect(input).toHaveAttribute('max', '17:00');
+    // 09:30 is inside the window the consumer meant, so it must not be flagged.
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    // The normalised window is still enforced — dropping both bounds would also
+    // clear the error above, so this is what distinguishes the two fixes.
+    await userEvent.clear(input);
+    await userEvent.type(input, '0700');
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    await expect(capturedConsoleErrors.some((m) => m.includes('is after `max`'))).toBe(true);
+  },
+};
+
+// The normalisation compares strings, which is only a time comparison for
+// well-formed "HH:mm". The malformed `max` here is a truncated "08:0", which
+// does sort below a valid "09:00" — so an unguarded comparison would swap the
+// pair, inventing a 09:00 upper bound the consumer never set and throwing away
+// the lower bound they did set (the browser ignores the unparseable one). Note
+// that a merely non-padded bound like "1:00" would not reach this: it sorts
+// *above* "09:00", since '1' > '0'. Bounds it can't parse are left alone.
+export const MalformedBoundIsNotSwapped: Story = {
+  args: { min: '09:00', max: '08:0', defaultValue: '10:00' },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('min', '09:00');
+    await expect(input).toHaveAttribute('max', '08:0');
+    // 10:00 is above the real `min` and the malformed `max` is ignored by the
+    // browser, so nothing is out of range; a bogus swap would flag it.
+    await expect(
+      canvas.queryByText('Kellonaika on sallitun välin ulkopuolella')
+    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => m.includes('`max` must be "HH:mm"'))).toBe(true)
+    );
+    await expect(capturedConsoleErrors.some((m) => m.includes('is after `max`'))).toBe(false);
+  },
+};
+
 // Mirror of RangeErrorFollowsMinMaxChanges, which only ever raises `min`.
 export const RangeErrorFollowsMaxChanges: Story = {
   render: function Render(args) {
