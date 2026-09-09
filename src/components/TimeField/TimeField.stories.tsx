@@ -358,6 +358,29 @@ export const ClearMovesFocusToTrigger: Story = {
   },
 };
 
+// The other side of ClearButtonClearsControlledValue: a controlled consumer that
+// ignores `onChange` keeps the value, so the ✕ stays and the clear did nothing
+// visible. Moving focus to the trigger anyway would be the visible half of an
+// action that had no effect — and unlike the uncontrolled case, there is no
+// re-render to notice, so the component has to check the value itself.
+export const IgnoredControlledClearLeavesFocusAlone: Story = {
+  args: { value: '09:30', onChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const clearButton = canvas.getByRole('button', { name: 'Tyhjennä kellonaika' });
+    await userEvent.click(clearButton);
+    await expect(args.onChange).toHaveBeenLastCalledWith('');
+    // The parent ignored the call, so the value — and with it the ✕ — is unchanged.
+    await expect(canvas.getByLabelText('Valitse kellonaika')).toHaveValue('09:30');
+    await expect(clearButton).toBeInTheDocument();
+    // Give an (incorrect) deferred focus move a chance to happen, then assert
+    // that focus is still on the ✕ the user actually clicked.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await expect(clearButton).toHaveFocus();
+    await expect(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' })).not.toHaveFocus();
+  },
+};
+
 // Controlled (not uncontrolled): also proves the
 // out-of-range value is still committed up to the parent — TimeField flags
 // it rather than blocking entry, matching how the native input itself never

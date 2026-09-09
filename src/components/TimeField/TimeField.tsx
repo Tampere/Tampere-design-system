@@ -218,13 +218,29 @@ export function TimeField({
           ? stepMismatchError
           : undefined);
 
+  const [clearRequests, setClearRequests] = useState(0);
+  const handledClearRequest = useRef(0);
+
   function handleClear() {
     if (!isControlled) setInternalValue('');
     onChange?.('');
-    // The ✕ disappears once the field is empty, so move focus to the adjacent
-    // picker trigger rather than letting it fall back to <body>.
-    requestAnimationFrame(() => pickerButtonRef.current?.focus());
+    // Only *request* the focus move; the effect below decides whether it happened.
+    setClearRequests((n) => n + 1);
   }
+
+  // The ✕ unmounts the moment the field empties, so focus would otherwise fall
+  // back to <body> — move it to the adjacent picker trigger. Conditional on the
+  // value having actually emptied: a controlled consumer that ignores `onChange`
+  // keeps both the value and the ✕, and moving focus there would be the visible
+  // half of an action that did nothing. Keyed on the click counter rather than on
+  // the value alone, because an ignored clear re-renders nothing to observe; the
+  // ref then marks the request consumed either way, so a later manual emptying
+  // (deleting the segments by hand) can't inherit a stale focus move.
+  useEffect(() => {
+    if (clearRequests === handledClearRequest.current) return;
+    handledClearRequest.current = clearRequests;
+    if (currentValue === '') pickerButtonRef.current?.focus();
+  }, [clearRequests, currentValue]);
 
   function openPicker() {
     const input = inputRef.current;
