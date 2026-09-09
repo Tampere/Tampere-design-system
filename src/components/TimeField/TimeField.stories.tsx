@@ -405,8 +405,12 @@ export const ConsumerErrorWinsOverRangeError: Story = {
   },
 };
 
-export const StepIsClampedToWholeMinutes: Story = {
-  args: { step: 5 },
+// `stepMinutes` is in minutes, so the DOM attribute is always 60x the prop —
+// this is the story that pins the unit conversion. Zero (or any value below a
+// minute) would mean "no granularity at all" to the browser, so it clamps to
+// one minute and says so.
+export const StepMinutesBelowOneIsClampedToOneMinute: Story = {
+  args: { stepMinutes: 0 },
   beforeEach: () => {
     capturedConsoleErrors = [];
     const original = console.error;
@@ -420,28 +424,19 @@ export const StepIsClampedToWholeMinutes: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
-    // A sub-60 step would make the browser render a seconds segment; the
-    // component clamps it to a whole minute so only hh:mm segments exist.
     await expect(input).toHaveAttribute('step', '60');
-    // The invalid sub-60 step also fires a dev-only warning naming both the
-    // value that was passed and the value actually used.
+    // The dev-only warning names both the value that was passed and the value
+    // actually used, in the prop's own unit.
     await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => m.includes('got 5, using 60'))).toBe(true)
+      expect(capturedConsoleErrors.some((m) => m.includes('got 0, using 1'))).toBe(true)
     );
-    // With the browser only ever seeing the clamped step, a normal
-    // minute-granularity entry must not be flagged as a step mismatch.
-    await userEvent.type(input, '0930');
-    await expect(
-      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
-    ).not.toBeInTheDocument();
   },
 };
 
-// A step that IS >= 60 but isn't a multiple of it (e.g. 90s = 1.5min) would
-// otherwise slip through a floor-only clamp unchanged, breaking the same
-// "no seconds segment" contract as a sub-60 step: 90 rounds to 120, not 60.
-export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
-  args: { step: 90 },
+// A fractional step would make the browser render a seconds segment, which this
+// component does not support: 1.5 minutes rounds to 2 (=120s), not down to 1.
+export const FractionalStepMinutesRoundsToAWholeMinute: Story = {
+  args: { stepMinutes: 1.5 },
   beforeEach: () => {
     capturedConsoleErrors = [];
     const original = console.error;
@@ -455,20 +450,68 @@ export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
-    // 90s rounds to the nearer of 60/120 by whole minutes, i.e. 120.
     await expect(input).toHaveAttribute('step', '120');
     await waitFor(() =>
-      expect(capturedConsoleErrors.some((m) => m.includes('got 90, using 120'))).toBe(true)
+      expect(capturedConsoleErrors.some((m) => m.includes('got 1.5, using 2'))).toBe(true)
     );
   },
 };
 
-// With the clamp rounding to a whole-minute multiple, `stepMismatch` becomes
-// reachable (and meaningful) for a legitimate granularity like 15 minutes —
-// the booking-flow case #53 calls out. This is the only story in this
-// file that actually drives `stepMismatch` true/false, as distinct from the
-// two stories above, which only check the clamped `step` attribute and the
-// dev warning — they never assert on validity itself. It expects the
+// `Math.round(NaN)` is NaN and `Math.max(1, NaN)` is NaN, so without the
+// `Number.isFinite` guard this put `step="NaN"` in the DOM and warned the
+// self-contradictory "got NaN, using NaN".
+export const NaNStepMinutesFallsBackToOneMinute: Story = {
+  args: { stepMinutes: NaN },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('step', '60');
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => m.includes('got NaN, using 1'))).toBe(true)
+    );
+  },
+};
+
+// The other half of the same guard, and the one that used to fail silently:
+// Infinity survived `Math.max`/`Math.round` unchanged, so it compared equal to
+// itself and produced no warning at all on its way into the DOM.
+export const InfiniteStepMinutesFallsBackToOneMinute: Story = {
+  args: { stepMinutes: Infinity },
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(input).toHaveAttribute('step', '60');
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => m.includes('got Infinity, using 1'))).toBe(true)
+    );
+  },
+};
+
+// `stepMismatch` is reachable (and meaningful) for a legitimate granularity
+// like 15 minutes — the booking-flow case #53 calls out. This is the only story
+// in this file that actually drives `stepMismatch` true/false, as distinct from
+// the four clamping stories above, which only check the emitted `step` attribute
+// and the dev warning — they never assert on validity itself. It expects the
 // `stepMismatch`-specific message, not the range one, since every value here
 // stays inside [00:00, ∞) — only the grid is ever at issue.
 //
@@ -479,7 +522,7 @@ export const StepRoundsToNearestMinuteWhenAboveSixty: Story = {
 // a regression that special-cased the default instead of just filling the
 // same `min` prop.
 export const StepMismatchFlagsOffGridValuesAtFifteenMinuteGranularity: Story = {
-  args: { step: 900, min: '00:00' }, // 15 minutes; already a whole-minute multiple, so no dev warning.
+  args: { stepMinutes: 15, min: '00:00' }, // Already a whole number of minutes, so no dev warning.
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
@@ -509,7 +552,7 @@ export const StepMismatchFlagsOffGridValuesAtFifteenMinuteGranularity: Story = {
 // An off-grid time inside [min, max] is not "outside the allowed range" — it is
 // the wrong granularity, and the message has to say which (WCAG 3.3.3).
 export const StepMismatchHasItsOwnMessage: Story = {
-  args: { min: '08:00', max: '17:00', step: 900 },
+  args: { min: '08:00', max: '17:00', stepMinutes: 15 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
@@ -536,11 +579,11 @@ export const StepMismatchHasItsOwnMessage: Story = {
 // would be flagged even without the default. The story that fails when the
 // default is removed is OffGridControlledValueIsFlaggedAtMount.
 export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
-  args: { step: 900 }, // 15 minutes, no explicit `min`.
+  args: { stepMinutes: 15 }, // No explicit `min`.
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
-    // The component filled in the '00:00' default so `step` actually bites.
+    // The component filled in the '00:00' default so the step grid actually bites.
     await expect(input).toHaveAttribute('min', '00:00');
     await userEvent.type(input, '0905'); // 5 minutes off the 15-minute grid.
     await waitFor(() =>
@@ -558,7 +601,7 @@ export const StepAloneEnforcesGranularityViaDefaultMin: Story = {
 // red, which StepAloneEnforcesGranularityViaDefaultMin does not (it only
 // asserts the attribute is there, not that it is doing anything).
 export const OffGridControlledValueIsFlaggedAtMount: Story = {
-  args: { value: '09:05', step: 900, onChange: fn() },
+  args: { value: '09:05', stepMinutes: 15, onChange: fn() },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     // No typing, no clicking — the value came straight from the prop.
@@ -575,7 +618,7 @@ export const OffGridControlledValueIsFlaggedAtMount: Story = {
 // Checked against both messages now that they've split, since either flag
 // firing would be a regression this story exists to catch.
 export const DefaultMinDoesNotFlagMidnightItself: Story = {
-  args: { step: 900 },
+  args: { stepMinutes: 15 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
@@ -590,8 +633,8 @@ export const DefaultMinDoesNotFlagMidnightItself: Story = {
   },
 };
 
-// The default is purely a side effect of `step` — a field that never sets
-// `step` must not gain an implicit `min` it never asked for.
+// The default is purely a side effect of `stepMinutes` — a field that never sets
+// it must not gain an implicit `min` it never asked for.
 export const NoStepMeansNoImplicitMin: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -878,7 +921,7 @@ export const WarnsOnMalformedTimeStrings: Story = {
 // The guard must stay quiet for well-formed values, including the empty string,
 // or it would cry wolf on every correctly-used field.
 export const DoesNotWarnOnWellFormedTimeStrings: Story = {
-  args: { value: '', min: '00:00', max: '23:59', step: 900, onChange: fn() },
+  args: { value: '', min: '00:00', max: '23:59', stepMinutes: 15, onChange: fn() },
   beforeEach: () => {
     capturedConsoleErrors = [];
     const original = console.error;
@@ -895,10 +938,10 @@ export const DoesNotWarnOnWellFormedTimeStrings: Story = {
 };
 
 // Issue #53 requires keyboard increments. The native input provides them, but
-// nothing asserted it — and the arrows are also the only place the `step` grid
-// is observable as *behaviour* rather than as an attribute.
+// nothing asserted it — and the arrows are also the only place the `stepMinutes`
+// grid is observable as *behaviour* rather than as an attribute.
 export const KeyboardArrowsIncrementByStep: Story = {
-  args: { defaultValue: '09:00', step: 900, onChange: fn() },
+  args: { defaultValue: '09:00', stepMinutes: 15, onChange: fn() },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
@@ -907,7 +950,7 @@ export const KeyboardArrowsIncrementByStep: Story = {
     await browserUserEvent.keyboard('{ArrowUp}');
     await expect(input).toHaveValue('10:00');
     await expect(args.onChange).toHaveBeenLastCalledWith('10:00');
-    // Move to the minute segment: ArrowUp there steps by `step`, not by 1.
+    // Move to the minute segment: ArrowUp there steps by `stepMinutes`, not by 1.
     await browserUserEvent.keyboard('{ArrowRight}{ArrowUp}');
     await expect(input).toHaveValue('10:15');
     await expect(args.onChange).toHaveBeenLastCalledWith('10:15');
@@ -920,7 +963,7 @@ export const KeyboardArrowsIncrementByStep: Story = {
 
 // ArrowDown must step back down and stay on the grid.
 export const KeyboardArrowsDecrementByStep: Story = {
-  args: { defaultValue: '10:15', step: 900, onChange: fn() },
+  args: { defaultValue: '10:15', stepMinutes: 15, onChange: fn() },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;

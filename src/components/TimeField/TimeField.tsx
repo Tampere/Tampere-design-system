@@ -72,14 +72,19 @@ export interface TimeFieldProps extends Pick<
   /** Latest selectable time, "HH:mm". */
   max?: string;
   /**
-   * Granularity in seconds; clamped to the nearest whole minute (minimum 60,
-   * for any finite value). Default 60. Enforced relative to `min`: if `step` is
-   * supplied and `min` is not, `min` defaults to `'00:00'` so that `stepMismatch`
-   * is observable at all — without a `min`, the step check is never true for
-   * typed or programmatic values alike (see the comment on `effectiveMin`).
-   * `'00:00'` excludes no values on a 24-hour clock.
+   * Granularity in **minutes**; rounded to a whole minute, minimum 1. Default 1.
+   * Named for its unit because the underlying `<input type="time">` measures
+   * `step` in seconds, and this component supports no sub-minute granularity —
+   * a seconds-unit prop that only accepts multiples of 60 would invite a
+   * factor-of-60 mistake for nothing.
+   *
+   * Enforced relative to `min`: if `stepMinutes` is supplied and `min` is not,
+   * `min` defaults to `'00:00'` so that `stepMismatch` is observable at all —
+   * without a `min`, the step check is never true for typed or programmatic
+   * values alike (see the comment on `effectiveMin`). `'00:00'` excludes no
+   * values on a 24-hour clock.
    */
-  step?: number;
+  stepMinutes?: number;
   disabled?: boolean;
   required?: boolean;
   classNames?: Partial<TimeFieldClassNames>;
@@ -102,7 +107,7 @@ export function TimeField({
   invalidTimeError = 'Anna kellonaika muodossa tunnit:minuutit',
   min,
   max,
-  step: stepProp,
+  stepMinutes: stepMinutesProp,
   disabled,
   required,
   classNames,
@@ -122,20 +127,26 @@ export function TimeField({
     outOfRange: false,
     stepMismatch: false,
   });
-  const step = stepProp ?? 60;
+  const stepMinutes = stepMinutesProp ?? 1;
 
   // A step that isn't a whole number of minutes makes the browser render a
-  // seconds segment, which this component does not support — round to the
-  // nearest minute (and never below one) rather than merely flooring at 60,
-  // otherwise e.g. `step={90}` would slip through unchanged.
-  const effectiveStep = Math.max(60, Math.round(step / 60) * 60);
+  // seconds segment, which this component does not support, so round to the
+  // nearest minute and never go below one. `Number.isFinite` first: without it
+  // `Math.round(NaN)` keeps NaN all the way into the DOM attribute (and into a
+  // self-contradictory "got NaN, using NaN" warning), while `Infinity` compares
+  // equal to itself and would slip through with no warning at all.
+  const effectiveStepMinutes = Number.isFinite(stepMinutes)
+    ? Math.max(1, Math.round(stepMinutes))
+    : 1;
+  // The DOM attribute is in seconds; the prop is in minutes.
+  const domStep = effectiveStepMinutes * 60;
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && step !== effectiveStep) {
+    if (process.env.NODE_ENV !== 'production' && stepMinutes !== effectiveStepMinutes) {
       console.error(
-        `TimeField: \`step\` must be a whole number of minutes — got ${step}, using ${effectiveStep}.`
+        `TimeField: \`stepMinutes\` must be a whole number of minutes, at least 1 — got ${stepMinutes}, using ${effectiveStepMinutes}.`
       );
     }
-  }, [step, effectiveStep]);
+  }, [stepMinutes, effectiveStepMinutes]);
 
   // Per the HTML step-base algorithm, `step` is measured from `min` if present,
   // otherwise from the `value` *content attribute*, otherwise from 0. React keeps
@@ -145,9 +156,9 @@ export function TimeField({
   // component's post-commit effect reads it, for typed and programmatic values
   // alike. An explicit `min` pins the step base instead; `'00:00'` excludes no
   // values, since `min` is inclusive. Only when the consumer actually asked for a
-  // `step`: fields that never set `step` get no implicit `min`.
+  // step: fields that never set `stepMinutes` get no implicit `min`.
   // Counterfactual test: OffGridControlledValueIsFlaggedAtMount.
-  const effectiveMin = min ?? (stepProp !== undefined ? '00:00' : undefined);
+  const effectiveMin = min ?? (stepMinutesProp !== undefined ? '00:00' : undefined);
 
   const showClear = !disabled && currentValue !== '';
 
@@ -179,7 +190,7 @@ export function TimeField({
   // changes no value and fires no event — which is why `onBlur` also
   // revalidates. If you read another validity flag here, check whether an
   // effect can actually see it flip.
-  useEffect(revalidate, [revalidate, currentValue, effectiveMin, max, effectiveStep]);
+  useEffect(revalidate, [revalidate, currentValue, effectiveMin, max, domStep]);
 
   // Consumer error first, then incomplete entry (the user can't fix a range
   // problem they haven't finished typing), then the range window, then
@@ -294,7 +305,7 @@ export function TimeField({
       autoComplete={autoComplete}
       min={effectiveMin}
       max={max}
-      step={effectiveStep}
+      step={domStep}
       // Drives the empty-segment placeholder colour in TimeField.css.ts: the
       // `-webkit-datetime-edit-*` shadow pseudo-elements can't be qualified by
       // an attribute selector, so component state has to signal "nothing is
