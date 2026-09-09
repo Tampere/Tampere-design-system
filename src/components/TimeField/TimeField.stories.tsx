@@ -86,7 +86,7 @@ export const BookingFlow: Story = {
         style={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: vars.primitives.spacing['2'],
+          gap: vars.primitives.spacing['3'],
           alignItems: 'flex-start',
         }}
       >
