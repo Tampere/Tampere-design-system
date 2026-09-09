@@ -19,21 +19,16 @@ export interface SelectOptionGroup {
   items: string[];
 }
 
+// SelectOptions are either list of items or list of grouped items with headers
 export type SelectOptions = string[] | SelectOptionGroup[];
 
-function isGroupedOptions(options: SelectOptions): options is SelectOptionGroup[] {
-  return options.length > 0 && typeof options[0] === 'object';
-}
-
-interface Props {
-  // Label for the input field. If not set, you must provide an aria-label for accessibility.
+export interface SelectProps {
   inputLabel?: string;
   helperText?: string;
   placeholder?: string;
   clearButtonLabel?: string;
   expandButtonLabel?: string;
   collapseButtonLabel?: string;
-  // Message shown in the dropdown when no options match the search. If not set, nothing is shown.
   noResultsMessage?: string;
   required?: boolean;
   error?: string;
@@ -49,7 +44,12 @@ interface Props {
   };
 }
 
-export function Select({
+// Checking options type based on the first option in the options array
+function isGroupedOptions(options: SelectOptions): options is SelectOptionGroup[] {
+  return options.length > 0 && typeof options[0] === 'object';
+}
+
+export const Select = ({
   inputLabel,
   helperText,
   placeholder,
@@ -64,31 +64,39 @@ export function Select({
   noResultsMessage,
   classNames,
   ...props
-}: Props) {
+}: SelectProps) => {
   const [search, setSearch] = useState('');
   const [value, setValue] = useState('');
   const combobox = useCombobox({
-    // Reset the search filter whenever the dropdown opens (via click, chevron,
-    // or keyboard), so a previous selection doesn't keep the list filtered
-    // down next time it's opened — only actively typing should filter.
+    // Reset the search filter whenever the dropdown opens so a previous
+    // selection doesn't keep the list filtered down next time it's opened
+    // — only actively typing should filter.
     onDropdownOpen: () => setSearch(''),
   });
   const { dropdownOpened, toggleDropdown, closeDropdown, openDropdown } = combobox;
 
-  // Normalize both option shapes into a single list of groups. A flat
-  // `string[]` becomes one ungrouped group so the filtering/rendering below
-  // doesn't need to branch on which shape was passed.
+  // Normalize both option shapes into a single list of groups so the filtering
+  // and rendering below doesn't need to branch on which shape was passed.
   const groups: { group?: string; items: string[] }[] = isGroupedOptions(options)
     ? options
     : [{ items: options }];
 
+  const searchQuery = search.toLowerCase().trim();
+
   const filteredGroups = groups
-    .map((group) => ({
-      group: group.group,
-      items: group.items.filter((item) => item.toLowerCase().includes(search.toLowerCase().trim())),
-    }))
+    .map((group) => {
+      const groupHeaderMatches = !!group.group && group.group.toLowerCase().includes(searchQuery);
+
+      return {
+        group: group.group,
+        items: groupHeaderMatches
+          ? group.items
+          : group.items.filter((item) => item.toLowerCase().includes(searchQuery)),
+      };
+    })
     .filter((group) => group.items.length > 0);
 
+  // Accessible position count across groups
   const totalVisibleOptions = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
 
   const selectOptions = filteredGroups.flatMap((group, groupIdx) => {
@@ -96,7 +104,7 @@ export function Select({
       .slice(0, groupIdx)
       .reduce((sum, precedingGroup) => sum + precedingGroup.items.length, 0);
 
-    const optionNodes = group.items.map((item, itemIdx) => (
+    const renderedOptions = group.items.map((item, itemIdx) => (
       <Combobox.Option
         aria-description={`${groupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
         component={'div'}
@@ -110,7 +118,7 @@ export function Select({
     ));
 
     if (!group.group) {
-      return optionNodes;
+      return renderedOptions;
     }
 
     return (
@@ -119,7 +127,7 @@ export function Select({
         key={group.group}
         classNames={{ groupLabel: dropDownGroupLabel }}
       >
-        {optionNodes}
+        {renderedOptions}
       </Combobox.Group>
     );
   });
@@ -207,4 +215,4 @@ export function Select({
       </Combobox.Dropdown>
     </Combobox>
   );
-}
+};
