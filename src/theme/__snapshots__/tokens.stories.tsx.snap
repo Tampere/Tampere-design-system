@@ -100,6 +100,28 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
+      "padding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(4rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(2rem * var(--mantine-scale))",
+    },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(1rem * var(--mantine-scale))",
+    },
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
@@ -503,6 +525,28 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "vertical": "calc(3rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(2rem * var(--mantine-scale))",
+    },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
@@ -905,6 +949,28 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "todayMarker": "#2d2d32",
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
+    },
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "vertical": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(2rem * var(--mantine-scale))",
+    },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "footer": {
       "backgroundBottom": "#22437b",
@@ -1706,6 +1772,28 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "todayMarkerContrast": "#ffffff",
         "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
       },
+      "dropzone": {
+        "border": "#dedee2",
+        "dragOver": {
+          "background": "#f7f7f9",
+          "border": "#1d3a6c",
+        },
+        "dragReject": {
+          "border": "#ae1e20",
+          "title": "#ae1e20",
+        },
+        "padding": {
+          "horizontal": "calc(1rem * var(--mantine-scale))",
+          "vertical": "calc(3rem * var(--mantine-scale))",
+        },
+        "spacing": "calc(2rem * var(--mantine-scale))",
+      },
+      "fileList": {
+        "padding": {
+          "vertical": "calc(0.5rem * var(--mantine-scale))",
+        },
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
       "footer": {
         "backgroundBottom": "#22437b",
         "backgroundTop": "#29549a",
@@ -2110,6 +2198,28 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
+      "padding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(4rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(2rem * var(--mantine-scale))",
+    },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(1rem * var(--mantine-scale))",
+    },
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
@@ -2513,6 +2623,28 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "vertical": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(2rem * var(--mantine-scale))",
+    },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
@@ -2915,6 +3047,28 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "todayMarker": "#2d2d32",
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
+    },
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
+      "padding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(4rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(2rem * var(--mantine-scale))",
+    },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "footer": {
       "backgroundBottom": "#22437b",
