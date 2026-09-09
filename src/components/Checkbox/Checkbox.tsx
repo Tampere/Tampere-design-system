@@ -38,43 +38,68 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
     }
   });
 
-  // `defaultChecked` is deliberately not forwarded as a prop: React rejects it alongside the
-  // `checked` prop below and drops it with a warning. Setting the DOM property writes the
-  // `checked` content attribute instead, which is what the browser restores from on form reset.
-  // Without it `input.defaultChecked` stays false, so resetting a form silently unchecks a
-  // `defaultChecked` Checkbox — dropping it from the submitted data.
+  // `defaultChecked` can't be forwarded as a prop: `checked` below always wins over it, so React
+  // would only ever seed the input from `checked`. At mount that's harmless — React writes the
+  // `checked` content attribute (what a form reset restores from) from the `checked` prop, and
+  // this component seeds that prop from `defaultChecked`. What React skips is every *later*
+  // change: it applies `defaultChecked` only while `checked` is absent, so without this effect a
+  // `defaultChecked` that changes after mount would never reach the DOM, and the next form reset
+  // would restore the stale value. Guarded on `!== undefined` so a controlled Checkbox — which
+  // has no `defaultChecked` of its own — keeps the attribute React derived from `checked` instead
+  // of having it cleared. Narrow deps are correct here, unlike the deliberately dep-less effect
+  // above: nothing else writes this property, so it only needs re-applying when the prop changes.
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.defaultChecked = !!defaultChecked;
+    if (inputRef.current && defaultChecked !== undefined) {
+      inputRef.current.defaultChecked = defaultChecked;
     }
   }, [defaultChecked]);
 
   // A form reset restores `input.checked` from that content attribute without telling React, so
   // the internal state (and the icon it renders) would keep showing the pre-reset value. Read the
-  // input back after the reset instead of assuming a value: the `reset` event fires *before* the
-  // browser restores control values, and another listener can still cancel it — at microtask time
-  // the DOM already reflects whichever way that went.
+  // input back afterwards rather than assuming a value: the `reset` event fires *before* the
+  // browser restores control values, and another listener can still cancel it, so only the DOM
+  // knows which way it went.
+  //
+  // The wait has to be a task, not a microtask. A listener invoked from a browser-originated
+  // dispatch — i.e. a real user clicking the reset button — returns with an empty JS stack, so the
+  // microtask checkpoint runs right there, still ahead of the form-reset algorithm. Called from JS
+  // (`form.reset()`, or a synthetic click) the stack isn't empty and a microtask would have been
+  // late enough, which is exactly why this needs a browser-driven test to stay honest — see the
+  // form-reset stories.
+  //
+  // Listen on the document rather than on `inputRef.current.form`: `reset` bubbles, and form
+  // membership follows the `form` attribute, so resolving the form once at subscribe time would
+  // miss a Checkbox whose form mounts later or changes.
   const controlledChecked = inputProps.checked;
   useEffect(() => {
-    const form = inputRef.current?.form;
-    if (!form) return;
+    const node = inputRef.current;
+    if (!node) return;
 
-    const syncAfterReset = () => {
-      queueMicrotask(() => {
-        const node = inputRef.current;
-        if (!node) return;
+    let pending: ReturnType<typeof setTimeout> | undefined;
+    const syncAfterReset = (event: Event) => {
+      if (event.target !== inputRef.current?.form) return;
+      clearTimeout(pending);
+      pending = setTimeout(() => {
+        const input = inputRef.current;
+        if (!input) return;
         if (controlledChecked !== undefined) {
           // Controlled: the parent owns the value, so restore the DOM from the prop rather than
           // letting a reset desync it from what the parent still believes is checked.
-          node.checked = controlledChecked;
+          input.checked = controlledChecked;
         } else {
-          setChecked(node.checked);
+          setChecked(input.checked);
         }
-      });
+      }, 0);
     };
 
-    form.addEventListener('reset', syncAfterReset);
-    return () => form.removeEventListener('reset', syncAfterReset);
+    const doc = node.ownerDocument;
+    doc.addEventListener('reset', syncAfterReset);
+    return () => {
+      // The listener goes away here, but an already-scheduled callback would still run — with a
+      // stale `controlledChecked` — and overwrite whatever the parent has since committed.
+      clearTimeout(pending);
+      doc.removeEventListener('reset', syncAfterReset);
+    };
   }, [controlledChecked]);
 
   const uniqueId = useId();
