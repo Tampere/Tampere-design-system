@@ -315,6 +315,38 @@ export function getTheme(bp: BreakpointKey) {
       headerGap: primitives.spacing['1,5'],
       todayMarkerInset: primitives.spacing['0,5'],
     },
+    dropzone: {
+      // Figma: File drop zone, component set 6814:2770. Border is Effects/Divider
+      // at Effects/Stroke/Weight/Default; padding is Spacing/2 Extra-large (64px)
+      // vertically, Spacing/Medium (24px) horizontally.
+      border: colors.neutral['200'],
+      padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xxl },
+      // The drop area's own auto-layout gap (heading → picker). Figma binds the
+      // raw `Spacing/4` primitive here, not a responsive semantic token, so it
+      // stays 32px at every breakpoint — measured on the breakpoints frame at
+      // 1440 (6817:11195), 768 (6817:11239) and 480 (6817:11261), all 32.
+      // Deliberately NOT `bpTokens.spacing.lg`, which would drop to 24 below
+      // 1024. The button → status-line gap is a different, smaller value that
+      // comes from `input.padding.vertical` — see Dropzone.css.ts.
+      spacing: primitives.spacing['4'],
+      // Not designed in Figma — derived from existing tokens pending design input.
+      // See docs/superpowers/specs/2026-09-09-file-inputs-design.md ("Gaps in the
+      // design"). Replace these two with real variables once the drag states are
+      // drawn; do not treat them as Figma-backed.
+      dragOver: { border: states.hover, background: colors.neutral['50'] },
+      dragReject: { border: states.error, title: states.error },
+    },
+    fileList: {
+      // Figma: .File list, 6801:3920 — 48px rows = 24px line-height (reused from
+      // components.list.lineHeight) + Spacing/Extra-small (12px) top and bottom.
+      // The label's font/line-height are NOT duplicated here: .File list binds the
+      // same Components/List variables that components.list already exposes.
+      padding: { vertical: bpTokens.spacing.xs },
+      // The horizontal gap between a row's filename and its remove button —
+      // NOT the gap between rows. Rows correctly have no gap of their own
+      // (see FileList.css.ts `list`), matching Figma's flush 48px rows.
+      spacing: bpTokens.spacing.sm,
+    },
     forms: { spacing: primitives.spacing['3'], fieldset: { spacing: primitives.spacing['1'] } },
     icon: {
       size: {
