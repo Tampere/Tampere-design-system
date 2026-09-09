@@ -99,18 +99,23 @@ export const Select = ({
   // Accessible position count across groups
   const totalVisibleOptions = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
 
+  const groupOffsets = filteredGroups.reduce<number[]>((offsets, _, groupIdx) => {
+    offsets.push(
+      groupIdx === 0 ? 0 : offsets[groupIdx - 1] + filteredGroups[groupIdx - 1].items.length
+    );
+    return offsets;
+  }, []);
+
   const selectOptions = filteredGroups.flatMap((group, groupIdx) => {
-    const groupOffset = filteredGroups
-      .slice(0, groupIdx)
-      .reduce((sum, precedingGroup) => sum + precedingGroup.items.length, 0);
+    const currentGroupOffset = groupOffsets[groupIdx];
 
     const renderedOptions = group.items.map((item, itemIdx) => (
       <Combobox.Option
-        aria-description={`${groupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
+        aria-description={`${currentGroupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
         component={'div'}
         className={dropDownOption}
         value={item}
-        key={item}
+        key={`${groupIdx}-${item}`}
         selected={item === value}
       >
         {item}
@@ -124,7 +129,7 @@ export const Select = ({
     return (
       <Combobox.Group
         label={group.group}
-        key={group.group}
+        key={`${groupIdx}-${group.group}`}
         classNames={{ groupLabel: dropDownGroupLabel }}
       >
         {renderedOptions}
