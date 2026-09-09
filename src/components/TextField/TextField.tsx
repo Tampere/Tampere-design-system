@@ -1,6 +1,6 @@
 import { TextInput, type TextInputProps } from '@mantine/core';
 import cx from 'clsx';
-import { Children, useEffect, useState } from 'react';
+import { Children, forwardRef, useEffect, useState } from 'react';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
 import { SearchIcon } from '../../icons/SearchIcon.tsx';
 import { mergeClassNames } from '../../utils.ts';
@@ -67,88 +67,96 @@ const InputContainer = ({
 };
 
 /** A text field component with optional search and clear icons. */
-export const TextField = ({
-  inputLabel,
-  helperText,
-  error,
-  disabled,
-  showSearchIcon,
-  showClearButton,
-  clearButtonLabel,
-  endInstance,
-  onChange,
-  onClearButtonClick,
-  classNames,
-  ...props
-}: TextFieldProps) => {
-  const inputStatus = getInputStatus(error, disabled);
+export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+  (
+    {
+      inputLabel,
+      helperText,
+      error,
+      disabled,
+      showSearchIcon,
+      showClearButton,
+      clearButtonLabel,
+      endInstance,
+      onChange,
+      onClearButtonClick,
+      classNames,
+      ...props
+    },
+    ref
+  ) => {
+    const inputStatus = getInputStatus(error, disabled);
 
-  const [textValue, setTextValue] = useState('');
+    const [textValue, setTextValue] = useState('');
 
-  // TextField padding is calculated based on which icons are shown in
-  // right and left sections
-  const hasClearButton = !!showClearButton && textValue.length > 0;
-  const rightIconCount = hasClearButton ? 1 : Children.count(props.rightSection);
-  const hasRightSection = rightIconCount > 0;
-  const hasLeftSection = !!showSearchIcon || !!props.leftSection;
+    // TextField padding is calculated based on which icons are shown in
+    // right and left sections
+    const hasClearButton = !!showClearButton && textValue.length > 0;
+    const rightIconCount = hasClearButton ? 1 : Children.count(props.rightSection);
+    const hasRightSection = rightIconCount > 0;
+    const hasLeftSection = !!showSearchIcon || !!props.leftSection;
 
-  // Dev-only guard: padding is only sized for up to 2 icons (see
-  // `getRightSectionSize`/`rightSectionPadding`)
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && rightIconCount > 2) {
-      console.error(
-        `TextField: \`rightSection\` has ${rightIconCount} icons, but padding is only reserved for up to 2 — text may run underneath.`
-      );
-    }
-  }, [rightIconCount]);
+    // Dev-only guard: padding is only sized for up to 2 icons (see
+    // `getRightSectionSize`/`rightSectionPadding`)
+    useEffect(() => {
+      if (process.env.NODE_ENV !== 'production' && rightIconCount > 2) {
+        console.error(
+          `TextField: \`rightSection\` has ${rightIconCount} icons, but padding is only reserved for up to 2 — text may run underneath.`
+        );
+      }
+    }, [rightIconCount]);
 
-  const defaultClassNames = {
-    section: section,
-    root: root,
-    wrapper: wrapper,
-    input: cx(
-      input[inputStatus],
-      hasLeftSection && leftSectionPadding,
-      hasRightSection && rightSectionPadding[getRightSectionSize(rightIconCount)]
-    ),
-    label: label[inputStatus],
-    description: description[inputStatus],
-    error: cx(errorRoot, errorText),
-  };
+    const defaultClassNames = {
+      section: section,
+      root: root,
+      wrapper: wrapper,
+      input: cx(
+        input[inputStatus],
+        hasLeftSection && leftSectionPadding,
+        hasRightSection && rightSectionPadding[getRightSectionSize(rightIconCount)]
+      ),
+      label: label[inputStatus],
+      description: description[inputStatus],
+      error: cx(errorRoot, errorText),
+    };
 
-  return (
-    <TextInput
-      {...props}
-      onChange={(e) => {
-        onChange?.(e);
-        setTextValue(e.currentTarget.value);
-      }}
-      value={props.value ?? textValue}
-      unstyled
-      classNames={mergeClassNames(defaultClassNames, classNames)}
-      disabled={disabled}
-      label={inputLabel}
-      description={helperText}
-      error={error}
-      inputContainer={(children) => (
-        <InputContainer endInstance={endInstance}>{children}</InputContainer>
-      )}
-      {...(showSearchIcon && { leftSection: <SearchIcon /> })}
-      {...(hasClearButton && {
-        rightSection: (
-          <IconButton
-            aria-label={clearButtonLabel}
-            onClick={() => {
-              setTextValue('');
-              onClearButtonClick?.();
-            }}
-            size={'sm'}
-            variant="default"
-          >
-            <CloseIcon />
-          </IconButton>
-        ),
-      })}
-    />
-  );
-};
+    return (
+      <TextInput
+        {...props}
+        ref={ref}
+        onChange={(e) => {
+          onChange?.(e);
+          setTextValue(e.currentTarget.value);
+        }}
+        value={props.value ?? textValue}
+        unstyled
+        classNames={mergeClassNames(defaultClassNames, classNames)}
+        disabled={disabled}
+        label={inputLabel}
+        description={helperText}
+        error={error}
+        inputContainer={(children) => (
+          <InputContainer endInstance={endInstance}>{children}</InputContainer>
+        )}
+        {...(showSearchIcon && { leftSection: <SearchIcon /> })}
+        {...(hasClearButton && {
+          rightSection: (
+            <IconButton
+              aria-label={clearButtonLabel}
+              onClick={() => {
+                setTextValue('');
+                onClearButtonClick?.();
+              }}
+              size={'sm'}
+              variant="default"
+            >
+              <CloseIcon />
+            </IconButton>
+          ),
+        })}
+      />
+    );
+  }
+);
+
+TextField.displayName = 'TextField';
