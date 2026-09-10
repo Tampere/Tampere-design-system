@@ -182,12 +182,50 @@ export const GroupedOptions: Story = {
 
     // Dropdown content is portaled (Combobox defaults to `withinPortal: true`),
     // so it's queried via the global `screen`, not `canvas` scoped to canvasElement.
-    await expect(screen.getByText('Pirkanmaa')).toBeInTheDocument();
+    const groupLabel = screen.getByText('Pirkanmaa');
+    await expect(groupLabel).toBeInTheDocument();
     await expect(screen.getByText('Uusimaa')).toBeInTheDocument();
+
+    // Design spec calls for text weight alone to signal grouping — no divider
+    // line. Mantine's default group-label styling draws one via `::after`.
+    await expect(getComputedStyle(groupLabel, '::after').display).toBe('none');
 
     const option = screen.getByRole('option', { name: 'Tampere' });
     await userEvent.click(option);
 
     await expect(input).toHaveValue('Tampere');
+  },
+};
+
+/**
+ * The same label can appear in more than one group (e.g. a district name that
+ * exists in two regions). Selecting one occurrence must not mark the other,
+ * identically-labeled occurrence as selected too.
+ */
+export const DuplicateLabelAcrossGroups: Story = {
+  args: {
+    inputLabel: 'Alue',
+    options: [
+      { group: 'Pirkanmaa', items: ['Keskusta', 'Hervanta'] },
+      { group: 'Uusimaa', items: ['Keskusta', 'Kallio'] },
+    ],
+  },
+  render: (args) => <Select {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+
+    await userEvent.click(input);
+
+    const duplicateOptions = screen.getAllByRole('option', { name: 'Keskusta' });
+    await expect(duplicateOptions).toHaveLength(2);
+
+    await userEvent.click(duplicateOptions[0]);
+    await expect(input).toHaveValue('Keskusta');
+
+    await userEvent.click(input);
+    const reopenedDuplicates = screen.getAllByRole('option', { name: 'Keskusta' });
+    await expect(reopenedDuplicates[0]).toHaveAttribute('data-combobox-selected', 'true');
+    await expect(reopenedDuplicates[1]).not.toHaveAttribute('data-combobox-selected', 'true');
   },
 };

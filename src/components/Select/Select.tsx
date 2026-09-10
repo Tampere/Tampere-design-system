@@ -14,21 +14,27 @@ import {
   listOptions,
 } from './Select.css.ts';
 export interface SelectOptionGroup {
-  // Header shown above the group's options.
+  /** Header shown above the group's options. */
   group: string;
   items: string[];
 }
 
-// SelectOptions are either list of items or list of grouped items with headers
+/** SelectOptions are either list of items or list of grouped items with headers */
 export type SelectOptions = string[] | SelectOptionGroup[];
 
 export interface SelectProps {
+  /**
+   * Label for the input field. If not set, you must provide an aria-label for accessibility.
+   */
   inputLabel?: string;
   helperText?: string;
   placeholder?: string;
   clearButtonLabel?: string;
   expandButtonLabel?: string;
   collapseButtonLabel?: string;
+  /**
+   * Message shown in the dropdown when no options match the search. If not set, nothing is shown.
+   */
   noResultsMessage?: string;
   required?: boolean;
   error?: string;
@@ -49,6 +55,11 @@ function isGroupedOptions(options: SelectOptions): options is SelectOptionGroup[
   return options.length > 0 && typeof options[0] === 'object';
 }
 
+// Unique per group, so a duplicate label across groups doesn't collide.
+function getOptionKey(group: string | undefined, item: string): string {
+  return group !== undefined ? `${group}::${item}` : item;
+}
+
 export const Select = ({
   inputLabel,
   helperText,
@@ -67,6 +78,8 @@ export const Select = ({
 }: SelectProps) => {
   const [search, setSearch] = useState('');
   const [value, setValue] = useState('');
+  // Disambiguates a duplicate label across groups — `value` alone can't.
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const combobox = useCombobox({
     // Reset the search filter whenever the dropdown opens so a previous
     // selection doesn't keep the list filtered down next time it's opened
@@ -80,6 +93,14 @@ export const Select = ({
   const groups: { group?: string; items: string[] }[] = isGroupedOptions(options)
     ? options
     : [{ items: options }];
+
+  // Uses unfiltered `groups` so a key selected before a search still resolves.
+  const optionKeyToLabel = new Map<string, string>();
+  groups.forEach((group) => {
+    group.items.forEach((item) => {
+      optionKeyToLabel.set(getOptionKey(group.group, item), item);
+    });
+  });
 
   const searchQuery = search.toLowerCase().trim();
 
@@ -109,18 +130,22 @@ export const Select = ({
   const selectOptions = filteredGroups.flatMap((group, groupIdx) => {
     const currentGroupOffset = groupOffsets[groupIdx];
 
-    const renderedOptions = group.items.map((item, itemIdx) => (
-      <Combobox.Option
-        aria-description={`${currentGroupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
-        component={'div'}
-        className={dropDownOption}
-        value={item}
-        key={`${groupIdx}-${item}`}
-        selected={item === value}
-      >
-        {item}
-      </Combobox.Option>
-    ));
+    const renderedOptions = group.items.map((item, itemIdx) => {
+      const optionKey = getOptionKey(group.group, item);
+
+      return (
+        <Combobox.Option
+          aria-description={`${currentGroupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
+          component={'div'}
+          className={dropDownOption}
+          value={optionKey}
+          key={`${groupIdx}-${itemIdx}`}
+          selected={selectedKey !== null ? optionKey === selectedKey : item === value}
+        >
+          {item}
+        </Combobox.Option>
+      );
+    });
 
     if (!group.group) {
       return renderedOptions;
@@ -149,6 +174,7 @@ export const Select = ({
         onClick={() => {
           props.onChange?.('');
           setValue('');
+          setSelectedKey(null);
           closeDropdown();
         }}
         size={'sm'}
@@ -173,9 +199,11 @@ export const Select = ({
     <Combobox
       offset={0}
       store={combobox}
-      onOptionSubmit={(val) => {
-        props.onChange?.(val);
-        setValue(val);
+      onOptionSubmit={(optionKey) => {
+        const label = optionKeyToLabel.get(optionKey) ?? optionKey;
+        props.onChange?.(label);
+        setValue(label);
+        setSelectedKey(optionKey);
         closeDropdown();
       }}
       disabled={disabled}
@@ -196,6 +224,7 @@ export const Select = ({
           onChange={(e) => {
             props.onChange?.(e.currentTarget.value);
             setValue(e.currentTarget.value);
+            setSelectedKey(null);
             openDropdown();
             // Set after openDropdown: opening can reset search to '' via
             // onDropdownOpen, and the typed value should win over that.
