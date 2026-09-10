@@ -5,9 +5,24 @@ import { CloseIcon } from '../../icons/CloseIcon.tsx';
 
 import { IconButton } from '../IconButton';
 import { TextField } from '../TextField';
-import { chevronOpen, dropDown, dropDownOption, emptyMessage, listOptions } from './Select.css.ts';
+import {
+  chevronOpen,
+  dropDown,
+  dropDownGroupLabel,
+  dropDownOption,
+  emptyMessage,
+  listOptions,
+} from './Select.css.ts';
+export interface SelectOptionGroup {
+  /** Header shown above the group's options. */
+  group: string;
+  items: string[];
+}
 
-interface Props {
+/** SelectOptions are either list of items or list of grouped items with headers */
+export type SelectOptions = string[] | SelectOptionGroup[];
+
+export interface SelectProps {
   /**
    * Label for the input field. If not set, you must provide an aria-label for accessibility.
    */
@@ -24,7 +39,7 @@ interface Props {
   required?: boolean;
   error?: string;
   disabled?: boolean;
-  options: string[];
+  options: SelectOptions;
   showSearchIcon?: boolean;
   value?: string;
   onChange?: (value: string) => void;
@@ -35,7 +50,17 @@ interface Props {
   };
 }
 
-export function Select({
+// Checking options type based on the first option in the options array
+function isGroupedOptions(options: SelectOptions): options is SelectOptionGroup[] {
+  return options.length > 0 && typeof options[0] === 'object';
+}
+
+// Unique per group, so a duplicate label across groups doesn't collide.
+function getOptionKey(group: string | undefined, item: string): string {
+  return group !== undefined ? `${group}::${item}` : item;
+}
+
+export const Select = ({
   inputLabel,
   helperText,
   placeholder,
@@ -50,33 +75,92 @@ export function Select({
   noResultsMessage,
   classNames,
   ...props
-}: Props) {
+}: SelectProps) => {
   const [search, setSearch] = useState('');
   const [value, setValue] = useState('');
+  // Disambiguates a duplicate label across groups — `value` alone can't.
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const combobox = useCombobox({
-    // Reset the search filter whenever the dropdown opens (via click, chevron,
-    // or keyboard), so a previous selection doesn't keep the list filtered
-    // down next time it's opened — only actively typing should filter.
+    // Reset the search filter whenever the dropdown opens so a previous
+    // selection doesn't keep the list filtered down next time it's opened
+    // — only actively typing should filter.
     onDropdownOpen: () => setSearch(''),
   });
   const { dropdownOpened, toggleDropdown, closeDropdown, openDropdown } = combobox;
 
-  const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase().trim())
-  );
+  // Normalize both option shapes into a single list of groups so the filtering
+  // and rendering below doesn't need to branch on which shape was passed.
+  const groups: { group?: string; items: string[] }[] = isGroupedOptions(options)
+    ? options
+    : [{ items: options }];
 
-  const selectOptions = filteredOptions.map((item, idx) => (
-    <Combobox.Option
-      aria-description={`${idx + 1} / ${filteredOptions.length}`}
-      component={'div'}
-      className={dropDownOption}
-      value={item}
-      key={item}
-      selected={item === value}
-    >
-      {item}
-    </Combobox.Option>
-  ));
+  // Uses unfiltered `groups` so a key selected before a search still resolves.
+  const optionKeyToLabel = new Map<string, string>();
+  groups.forEach((group) => {
+    group.items.forEach((item) => {
+      optionKeyToLabel.set(getOptionKey(group.group, item), item);
+    });
+  });
+
+  const searchQuery = search.toLowerCase().trim();
+
+  const filteredGroups = groups
+    .map((group) => {
+      const groupHeaderMatches = !!group.group && group.group.toLowerCase().includes(searchQuery);
+
+      return {
+        group: group.group,
+        items: groupHeaderMatches
+          ? group.items
+          : group.items.filter((item) => item.toLowerCase().includes(searchQuery)),
+      };
+    })
+    .filter((group) => group.items.length > 0);
+
+  // Accessible position count across groups
+  const totalVisibleOptions = filteredGroups.reduce((sum, group) => sum + group.items.length, 0);
+
+  const groupOffsets = filteredGroups.reduce<number[]>((offsets, _, groupIdx) => {
+    offsets.push(
+      groupIdx === 0 ? 0 : offsets[groupIdx - 1] + filteredGroups[groupIdx - 1].items.length
+    );
+    return offsets;
+  }, []);
+
+  const selectOptions = filteredGroups.flatMap((group, groupIdx) => {
+    const currentGroupOffset = groupOffsets[groupIdx];
+
+    const renderedOptions = group.items.map((item, itemIdx) => {
+      const optionKey = getOptionKey(group.group, item);
+
+      return (
+        <Combobox.Option
+          aria-description={`${currentGroupOffset + itemIdx + 1} / ${totalVisibleOptions}`}
+          component={'div'}
+          className={dropDownOption}
+          value={optionKey}
+          key={`${groupIdx}-${itemIdx}`}
+          selected={selectedKey !== null ? optionKey === selectedKey : item === value}
+        >
+          {item}
+        </Combobox.Option>
+      );
+    });
+
+    if (!group.group) {
+      return renderedOptions;
+    }
+
+    return (
+      <Combobox.Group
+        label={group.group}
+        key={`${groupIdx}-${group.group}`}
+        classNames={{ groupLabel: dropDownGroupLabel }}
+      >
+        {renderedOptions}
+      </Combobox.Group>
+    );
+  });
 
   // Array so TextField can count the icons itself and size its reserved
   // padding accordingly — see TextField's `getRightSectionSize`.
@@ -90,6 +174,7 @@ export function Select({
         onClick={() => {
           props.onChange?.('');
           setValue('');
+          setSelectedKey(null);
           closeDropdown();
         }}
         size={'sm'}
@@ -114,9 +199,11 @@ export function Select({
     <Combobox
       offset={0}
       store={combobox}
-      onOptionSubmit={(val) => {
-        props.onChange?.(val);
-        setValue(val);
+      onOptionSubmit={(optionKey) => {
+        const label = optionKeyToLabel.get(optionKey) ?? optionKey;
+        props.onChange?.(label);
+        setValue(label);
+        setSelectedKey(optionKey);
         closeDropdown();
       }}
       disabled={disabled}
@@ -137,6 +224,7 @@ export function Select({
           onChange={(e) => {
             props.onChange?.(e.currentTarget.value);
             setValue(e.currentTarget.value);
+            setSelectedKey(null);
             openDropdown();
             // Set after openDropdown: opening can reset search to '' via
             // onDropdownOpen, and the typed value should win over that.
@@ -161,4 +249,4 @@ export function Select({
       </Combobox.Dropdown>
     </Combobox>
   );
-}
+};

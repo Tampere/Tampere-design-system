@@ -76,3 +76,18 @@ export const emptyMessage = style([
     color: text.secondary,
   },
 ]);
+
+export const dropDownGroupLabel = style([
+  textBase,
+  {
+    color: text.secondary,
+    fontWeight: item.highlightFontWeight,
+    selectors: {
+      // Design spec: text weight alone signals grouping, no divider line —
+      // hide Mantine's default `::after` group-label divider.
+      '&::after': {
+        display: 'none',
+      },
+    },
+  },
+]);
