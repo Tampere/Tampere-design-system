@@ -14,14 +14,10 @@ const {
   },
 } = vars;
 
-// Applied both as Dropzone's own row-to-row gap and — via `classNames.root`
-// on Input.Wrapper — as the wrapper's own root layout, so label, drop area,
-// FileList and error all stack with one consistent gap instead of sitting
-// flush at Mantine's default zero margins (see FileInput.css.ts `root`,
-// which this mirrors). Uses `input.spacing.verticalSpacing`, the same token
-// every other field in the library uses for this gap — `dropzone.spacing` is
-// reserved for the drop area's own internal gap below, a different, larger
-// value that must not leak into this outer stack.
+// Input.Wrapper stacks label, drop area, FileList and error at Mantine's
+// default zero margins, so the gap has to come from here. Deliberately
+// `input.spacing.verticalSpacing` and not `dropzone.spacing`, which is the
+// drop area's own larger internal gap and must not leak into this outer stack.
 export const root = style({
   display: 'flex',
   flexDirection: 'column',
@@ -30,22 +26,17 @@ export const root = style({
 
 const areaBase = style({
   boxSizing: 'border-box',
-  // Mantine's own root rule sets `border-radius: var(--dropzone-radius)`, which
-  // defaults to the theme radius — and unlayered Vanilla Extract only outranks
-  // it for properties we actually declare, so an undeclared one is simply
-  // inherited. Figma's Effects/Corner-radius/Default is 0. Same explicit
-  // override `Paper.css.ts` makes against its own Mantine primitive.
+  // Mantine's own root rule sets `border-radius: var(--dropzone-radius)`, and
+  // unlayered Vanilla Extract outranks it only for properties we declare — an
+  // undeclared one is inherited. Figma's Effects/Corner-radius/Default is 0.
   borderRadius: cornerRadius.sharp,
   padding: `${dropzone.padding.vertical} ${dropzone.padding.horizontal}`,
   border: `${strokeWeight} solid ${dropzone.border}`,
   background: background.default,
   selectors: {
-    // Mantine's Dropzone stamps `mod` boolean flags as data attributes on
-    // the root (getBoxMod truthy values become `data-<key>="true"`) — the
-    // exact names below (`data-accept`/`data-reject`) are what's rendered,
-    // confirmed against @mantine/dropzone's own Dropzone.mjs source and
-    // programmatically via a dispatched dragenter in Dropzone.stories.tsx's
-    // DragOverStylesTheArea story, not merely assumed.
+    // Mantine's Dropzone stamps `mod` boolean flags as data attributes on the
+    // root (getBoxMod truthy values become `data-<key>="true"`), which is what
+    // makes these `data-accept`/`data-reject`.
     // Derived styling, not Figma-specified — see the spec's "Gaps" section.
     '&[data-accept]': {
       borderColor: dropzone.dragOver.border,
@@ -64,7 +55,7 @@ const areaBase = style({
 // input and `inner`, never the gap between the heading, picker and status line —
 // so the whole flex column has to be applied here, via `classNames.inner`, and
 // the root left as a plain block that owns only the border, background and
-// padding. Verified against @mantine/dropzone's source, not assumed.
+// padding.
 export const areaInner = style({
   display: 'flex',
   flexDirection: 'column',
@@ -72,15 +63,10 @@ export const areaInner = style({
   gap: dropzone.spacing,
 });
 
-// Figma's `File input container` (6801:7171). It exists because the drop area
-// does NOT have one uniform gap: 32px separates the heading from the picker,
-// but only 16px separates the picker from the status line. A single flex `gap`
-// on the area can't express both, so the picker and the status line are nested
-// one level down with their own, smaller gap — the same nesting Figma uses.
-// The 16px is `input.padding.vertical` because that is the variable Figma binds
-// on the status line's container; it renders as a gap here only because we keep
-// the area's bottom padding symmetric with its top (Figma's own container adds
-// a further 16px below the text, which we deliberately don't reproduce).
+// Figma's `File input container` (6801:7171). The drop area does NOT have one
+// uniform gap — 32px heading-to-picker, 16px picker-to-status — and a single
+// flex `gap` can't express both, so these two nest one level down with their
+// own, as Figma nests them. The 16px is the variable Figma binds there.
 export const fileUpload = style({
   display: 'flex',
   flexDirection: 'column',
@@ -106,10 +92,8 @@ const titleBase = style({
   color: text.primary,
   margin: 0,
   textAlign: 'center',
-  // Unlike the status line (a single-line-by-nature filename/count), a
-  // custom `title` has room to wrap inside the drop area's 64px of
-  // vertical padding — clamping it to one line with ellipsis would just
-  // hide the rest of a longer heading for no reason. Let it wrap.
+  // A custom `title` has room to wrap inside the drop area's 64px of vertical
+  // padding, so it isn't clamped to one line the way the status line is.
   overflowWrap: 'break-word',
 });
 
@@ -119,13 +103,10 @@ export const title = styleVariants({
   disabled: [titleBase, { color: text.disabled }],
 });
 
-// Figma calls for the heading (not just the border) to go error-red while
-// an unacceptable file is dragged over the area. `titleBase` stays present
-// as its own class across every status variant (styleVariants composes
-// rather than merging classes — verified against the rendered DOM), so this
-// matches the heading regardless of the field's own default/error/disabled
-// status; `areaBase` is likewise always present on the area regardless of
-// its status variant.
+// Figma calls for the heading, not just the border, to go error-red while an
+// unacceptable file is dragged over. `styleVariants` composes rather than
+// merges classes, so `areaBase`/`titleBase` stay present under every status
+// variant and this selector matches in all of them.
 globalStyle(`${areaBase}[data-reject] ${titleBase}`, {
   color: dropzone.dragReject.title,
 });
@@ -137,10 +118,8 @@ const statusBase = style({
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   maxWidth: '100%',
-  // Matches FileInput's status text (FileInput.css.ts `displayBase`) — same
-  // token pair, so both controls render the status line at the same size at
-  // every breakpoint instead of Dropzone silently inheriting Mantine's
-  // default body text size.
+  // Without these the status line silently inherits Mantine's default body
+  // text size, at a different size from FileInput's.
   fontSize: inputVars.font.text.fontSize,
   lineHeight: inputVars.font.text.lineHeight,
   letterSpacing: font.letterSpacing,

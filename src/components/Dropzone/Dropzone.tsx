@@ -72,13 +72,9 @@ export const Dropzone = ({
 }: DropzoneProps) => {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
-  // Input.Wrapper's own `describedBy`/`aria-invalid` wiring only reaches
-  // Mantine `Input` descendants via InputWrapperProvider context — our
-  // composed control (a div/p/span/Button) doesn't consume it, so nothing
-  // gets associated automatically. Mirror Input.Wrapper's own id scheme
-  // (`${idBase}-label`, `${idBase}-description`, `${idBase}-error`, where
-  // idBase is the `id` we pass it below) and wire the picker Button
-  // explicitly instead — the exact scheme FileInput.tsx uses.
+  // Input.Wrapper's ARIA wiring reaches only Mantine `Input` descendants, so
+  // this composed control gets none of it and wires the picker Button itself.
+  // See FileInput.tsx for the full reason and Input.Wrapper's own id scheme.
   const labelId = `${fieldId}-label`;
   const descriptionId = `${fieldId}-description`;
   const errorId = `${fieldId}-error`;
@@ -90,13 +86,10 @@ export const Dropzone = ({
   // never sees the area rendered (or who tabs past it) never learns
   // dropping is even possible.
   const headingId = `${fieldId}-heading`;
-  // Input.Wrapper renders no `<label>` at all when `inputLabel` is unset, so
-  // `labelId` above wouldn't reference anything real — and the AriaAttributes
-  // spread means a bare `aria-label` on Input.Wrapper would land on its
-  // role-less wrapper `<div>`, which takes no accessible name from it. Pull
-  // `aria-label` out of the spread (above) and, when there's no `inputLabel`
-  // to fall back to, park its text in a visually-hidden span the Button's
-  // own `aria-labelledby` can reference instead — mirrors FileInput.tsx.
+  // With no `inputLabel` there is no `<label>` for `labelId` to reference, and
+  // a bare `aria-label` would land on Input.Wrapper's role-less `<div>`, which
+  // takes no accessible name from it. Park it in a visually-hidden span the
+  // Button can reference instead — see FileInput.tsx.
   const ariaLabelId = `${fieldId}-aria-label`;
   const usesAriaLabel = !inputLabel && !!ariaLabel;
   // `labelId`/`ariaLabelId` reference real DOM nodes only in their
@@ -134,7 +127,6 @@ export const Dropzone = ({
     rejectionMessage,
   });
 
-  // A consumer-level error always wins over a derived rejection message.
   const message = error ?? derivedMessage;
   const status = getFieldStatus(!!message, disabled);
 
@@ -184,9 +176,8 @@ export const Dropzone = ({
         disabled={disabled}
         // The Button owns the picker; the area must not be a second click or
         // focus/keyboard-activation target on top of it. `activateOnClick`
-        // alone leaves the root at `tabindex="0"` (react-dropzone only drops
-        // it when keyboard activation is also off) — verified empirically,
-        // not merely assumed.
+        // alone leaves the root at `tabindex="0"` — react-dropzone only drops
+        // it when keyboard activation is also off.
         activateOnClick={false}
         activateOnKeyboard={false}
         // react-dropzone hides its own picker input with the visually-hidden
@@ -203,8 +194,7 @@ export const Dropzone = ({
         // that clicks pass through to the root's own open-dialog handler —
         // fine when the only content is Mantine's own status icons, but it
         // silently swallows every click on our real interactive children
-        // (the picker Button) unless turned back on. Found by testing, not
-        // documented in the props' own doc comment.
+        // (the picker Button) unless turned back on.
         enablePointerEvents
         className={area[status]}
         // The children stack inside Mantine's `inner` div, not the root, so the
@@ -224,7 +214,6 @@ export const Dropzone = ({
           </span>
         )}
         <div className={fileUpload}>
-          {/* Same picker path as FileInput, so both controls behave identically. */}
           <FileButton
             resetRef={resetRef}
             onChange={(picked) => {
@@ -251,10 +240,7 @@ export const Dropzone = ({
                 // *separate* element (`buttonTextId`, not this button's own
                 // id): a self-referencing aria-labelledby entry is treated as
                 // a cycle and contributes nothing, silently dropping the
-                // button's own text from the accessible name. `nameSourceId`
-                // (also mirrored from FileInput.tsx) falls back to
-                // `ariaLabelId` when there's no `inputLabel`, or is omitted
-                // entirely when there's neither.
+                // button's own text from the accessible name.
                 aria-labelledby={[nameSourceId, buttonTextId].filter(Boolean).join(' ')}
                 aria-describedby={describedBy || undefined}
                 aria-invalid={message ? true : undefined}
