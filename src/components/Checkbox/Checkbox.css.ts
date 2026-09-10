@@ -104,6 +104,9 @@ globalStyle(`${checkedOrIndeterminate}:hover + svg path`, {
 // It also ties at (0,3,2) with the `:hover` rule above and wins by source order, so a focused
 // checkbox stays `states.focus` when hovered rather than darkening to `states.hover`. That is
 // deliberate, and matches the unchecked block, which orders `:hover` before `:focus-visible` too.
+// RadioButton.css.ts declares the mirror of this rule; keep the two in step. Because the two
+// tokens are equal today, no story can observe whether this rule is present — that pairing is the
+// only thing keeping it honest, so don't delete it from one file alone.
 globalStyle(`${checkedOrIndeterminate}:focus-visible + svg path`, {
   fill: states.focus,
 });

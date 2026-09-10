@@ -81,6 +81,17 @@ globalStyle(`${input}[data-checked=true]:hover + svg path`, {
   fill: states.hover,
 });
 
+// Keep this rule. `states.focus` currently equals `states.default`, so it looks inert — but it is
+// what lets the two ever diverge and still take effect for a checked radio. It also ties at
+// (0,3,2) with the `:hover` rule above and wins by source order, so a focused radio stays
+// `states.focus` when hovered rather than darkening to `states.hover`. That is deliberate, and
+// matches both the unchecked block above and Checkbox.css.ts's checked block. Because the two
+// tokens are equal today, no story can observe whether this rule is present — the pair of files
+// is the only thing keeping it honest, so don't delete it from one of them alone.
+globalStyle(`${input}[data-checked=true]:focus-visible + svg path`, {
+  fill: states.focus,
+});
+
 globalStyle(`${input}[data-checked=true]:active + svg path`, {
   fill: states.active,
 });

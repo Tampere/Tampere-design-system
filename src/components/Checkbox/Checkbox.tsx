@@ -13,14 +13,27 @@ interface Props extends ComponentPropsWithoutRef<'input'> {
 }
 
 export function Checkbox({ label, error, indeterminate, defaultChecked, ...inputProps }: Props) {
-  const [checked, setChecked] = useState(inputProps.checked ?? defaultChecked ?? false);
+  // Normalise the controlled prop once: `undefined` means uncontrolled, anything else is a
+  // controlled value coerced to a real boolean. Both halves matter, and both have bitten already.
+  //
+  // Without the `undefined` check an uncontrolled caller — who never passes `checked` — would
+  // make `undefined !== checked` true on every render and call `setChecked` in a loop (#122).
+  //
+  // Without the `!!`, a JS caller clearing a controlled value to `null` would put `null` in state
+  // and on the native input, which React reads as *no* `checked` prop: the input silently stops
+  // being controlled and React stops writing its value. Coercing the *comparison* as well as the
+  // stored value is what keeps that from becoming a second render loop — a raw `null` prop is
+  // never equal to the coerced `false` in state, so it would re-set forever.
+  const controlledChecked = inputProps.checked === undefined ? undefined : !!inputProps.checked;
+
+  // Seeded from the normalised value, so the state is a boolean from the very first render rather
+  // than only from the first sync below.
+  const [checked, setChecked] = useState(controlledChecked ?? !!defaultChecked);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keep internal state in sync when the parent provides a controlled `checked` prop. Guarded
-  // on `!== undefined`: an uncontrolled caller never passes `checked`, so without this guard
-  // `undefined !== checked` would be true on every render, calling `setChecked` in a loop.
-  if (inputProps.checked !== undefined && inputProps.checked !== checked) {
-    setChecked(inputProps.checked);
+  // Keep internal state in sync when the parent provides a controlled `checked` prop.
+  if (controlledChecked !== undefined && controlledChecked !== checked) {
+    setChecked(controlledChecked);
   }
 
   // The native `indeterminate` DOM property has no HTML attribute/JSX prop, so it must be set
@@ -70,7 +83,6 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
   // Listen on the document rather than on `inputRef.current.form`: `reset` bubbles, and form
   // membership follows the `form` attribute, so resolving the form once at subscribe time would
   // miss a Checkbox whose form mounts later or changes.
-  const controlledChecked = inputProps.checked;
   useEffect(() => {
     const node = inputRef.current;
     if (!node) return;
@@ -105,9 +117,14 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
   const uniqueId = useId();
   const safeId = inputProps.id ?? uniqueId;
 
+  // Exactly one `data-*` attribute is emitted, so this ordering — not the CSS — is what resolves
+  // a control in several states at once. `disabled` outranks `error`: a control the user cannot
+  // interact with should read as inert rather than as something they are being asked to fix, and
+  // the label below greys out on `disabled` unconditionally, so any other order would render the
+  // control half-disabled (error-red icon, greyed label).
   const getInputVariant = () => {
-    if (error) return { 'data-error': true };
     if (inputProps.disabled) return { 'data-disabled': true };
+    if (error) return { 'data-error': true };
     if (indeterminate) return { 'data-indeterminate': true };
     if (checked) return { 'data-checked': true };
     return null;
@@ -134,7 +151,12 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
             if (inputProps.onClick) {
               inputProps.onClick(e);
             }
-            if (e.defaultPrevented) return;
+            // Both flags, because they can disagree. `e.preventDefault()` sets the synthetic
+            // event's own copy; `e.nativeEvent.preventDefault()` sets only the native one. Either
+            // cancels the browser's activation, so either has to skip the toggle — reading just
+            // the synthetic copy would let a native-event veto produce exactly the split state
+            // described above.
+            if (e.defaultPrevented || e.nativeEvent.defaultPrevented) return;
             setChecked(!checked);
           }}
           // Toggling happens in `onClick` above; this only exists so React's controlled-input

@@ -223,10 +223,10 @@ export const IndeterminateError: Story = {
   },
 };
 
-// `getInputVariant` emits a single `data-*` attribute with the precedence error > disabled >
+// `getInputVariant` emits a single `data-*` attribute with the precedence disabled > error >
 // indeterminate > checked, so the CSS can't act as a backstop — that JS ordering is the whole
-// contract. These two cover the composites a consumer actually hits: a pre-checked disabled
-// consent box, and a checked box inside an errored fieldset.
+// contract. These three cover the composites a consumer actually hits: a pre-checked disabled
+// consent box, a checked box inside an errored fieldset, and a disabled box inside one.
 export const DisabledChecked: Story = {
   tags: ['!dev', '!autodocs'],
   args: { label: 'Disabled checked', checked: true, disabled: true },
@@ -252,6 +252,29 @@ export const ErrorChecked: Story = {
     const path = checkboxInput.parentElement?.querySelector('svg path:nth-of-type(2)');
     // Figma error state = Red/300 (#ae1e20), overriding the checked blue.
     await expect(getComputedStyle(path as Element).fill).toBe('rgb(174, 30, 32)');
+  },
+};
+
+// `disabled` outranks `error`: a control the user cannot interact with should read as inert
+// rather than as something they are being asked to fix. This is also the only self-consistent
+// option — the label below keys off `inputProps.disabled` directly and always greys out, so an
+// error-red icon beside a greyed label would render the control half-disabled.
+export const ErrorDisabled: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error disabled', error: true, disabled: true },
+  render: (args) => <Checkbox {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+    await expect(checkboxInput).toHaveAttribute('data-disabled', 'true');
+    await expect(checkboxInput).not.toHaveAttribute('data-error');
+    const path = checkboxInput.parentElement?.querySelector('svg path');
+    // Figma disabled state = Neutral/300 (#c9c9ce), overriding the error red.
+    await expect(getComputedStyle(path as Element).fill).toBe('rgb(201, 201, 206)');
+    // ...and the icon agrees with the label, which greys out on `disabled` regardless.
+    await expect(getComputedStyle(canvas.getByText('Error disabled')).color).toBe(
+      'rgb(104, 104, 114)'
+    );
   },
 };
 
@@ -416,6 +439,50 @@ export const ControlledForwardsCallerOnChange: Story = {
   },
 };
 
+// A JS consumer (this package ships to plain-JS consumers too) can move a controlled `checked`
+// back to `null` as a "no value yet" idiom. `null` is not `undefined`, so the controlled-sync
+// guard accepts it and it reaches `useState` — where it must be coerced to a boolean. Uncoerced,
+// it lands on the native input as `checked={null}`, which React reads as *no* `checked` prop:
+// the input silently stops being controlled, React stops writing its value, and it warns.
+function NullableControlledExample() {
+  const [value, setValue] = useState<boolean | null>(true);
+
+  return (
+    <>
+      <Checkbox label="Nullable option" checked={value as boolean} onClick={() => {}} />
+      <button type="button" onClick={() => setValue(null)}>
+        Clear
+      </button>
+    </>
+  );
+}
+
+export const ControlledCheckedClearedToNull: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <NullableControlledExample />,
+  beforeEach: captureConsoleErrors,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkboxInput = canvas.getByRole('checkbox') as HTMLInputElement;
+
+    // Positive control: prove the capture is live before trusting the silence below.
+    const sentinel = 'nullable-checked-capture-sentinel';
+    console.error(sentinel);
+    await expect(capturedConsoleErrors).toContain(sentinel);
+
+    await expect(checkboxInput.checked).toBe(true);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Clear' }));
+
+    // Cleared to a falsy value, so the control reads unchecked and stays controlled.
+    await expect(checkboxInput.checked).toBe(false);
+    await expect(checkboxInput).not.toHaveAttribute('data-checked');
+    await expect(
+      capturedConsoleErrors.some((m) => /controlled input to be uncontrolled/.test(m))
+    ).toBe(false);
+  },
+};
+
 // ── Verifies #122's fix: an uncontrolled Checkbox (no `checked` prop at all) must not trip
 // React's "Too many re-renders" limit. Rendered without spreading `args`, since meta's
 // `checked: false` default would otherwise mask the bug by always providing a `checked` prop.
@@ -476,6 +543,11 @@ export const LabelUsesBodyTypography: Story = {
 
 const vetoClick = (e: MouseEvent<HTMLInputElement>) => e.preventDefault();
 
+// The same veto issued on the underlying native event. React's synthetic `defaultPrevented` is a
+// copy taken at construction, so this path never sets it — but the browser still cancels the
+// activation, so the toggle has to be skipped just the same.
+const nativeVetoClick = (e: MouseEvent<HTMLInputElement>) => e.nativeEvent.preventDefault();
+
 export const VetoedClickDoesNotToggle: Story = {
   tags: ['!dev', '!autodocs'],
   render: () => <Checkbox label="Uncontrolled option" onClick={vetoClick} />,
@@ -485,6 +557,19 @@ export const VetoedClickDoesNotToggle: Story = {
     // The DOM value the browser reverted...
     await expect(checkboxInput.checked).toBe(false);
     // ...and the internal state the icon renders from, which `data-checked` reflects.
+    await expect(checkboxInput).not.toHaveAttribute('data-checked');
+  },
+};
+
+export const NativeVetoedClickDoesNotToggle: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Uncontrolled option" onClick={nativeVetoClick} />,
+  play: async ({ canvasElement }) => {
+    const checkboxInput = within(canvasElement).getByRole('checkbox') as HTMLInputElement;
+    await userEvent.click(checkboxInput);
+    // The DOM value the browser reverted via its canceled-activation steps...
+    await expect(checkboxInput.checked).toBe(false);
+    // ...and the internal state, which must not have toggled out from under it.
     await expect(checkboxInput).not.toHaveAttribute('data-checked');
   },
 };
