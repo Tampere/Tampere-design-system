@@ -68,6 +68,11 @@ export const Default: Story = {
       canvas.getByRole('button', { name: 'Liitetiedostot Valitse tiedostoja' })
     ).toBeInTheDocument();
     await expect(canvas.getByText('Ei valittua tiedostoa')).toBeInTheDocument();
+
+    // Mantine's root rule applies its own `--dropzone-radius` unless we declare
+    // `border-radius` ourselves — unlayered CSS only outranks it per property.
+    // Figma's Effects/Corner-radius/Default is 0.
+    await expect(getComputedStyle(canvas.getByTestId('dropzone-area')).borderRadius).toBe('0px');
   },
 };
 
