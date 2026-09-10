@@ -4,6 +4,7 @@ import { vars } from '../../theme';
 const {
   theme: {
     background,
+    cornerRadius,
     error,
     font,
     states,
@@ -29,6 +30,12 @@ export const root = style({
 
 const areaBase = style({
   boxSizing: 'border-box',
+  // Mantine's own root rule sets `border-radius: var(--dropzone-radius)`, which
+  // defaults to the theme radius — and unlayered Vanilla Extract only outranks
+  // it for properties we actually declare, so an undeclared one is simply
+  // inherited. Figma's Effects/Corner-radius/Default is 0. Same explicit
+  // override `Paper.css.ts` makes against its own Mantine primitive.
+  borderRadius: cornerRadius.sharp,
   padding: `${dropzone.padding.vertical} ${dropzone.padding.horizontal}`,
   border: `${strokeWeight} solid ${dropzone.border}`,
   background: background.default,
