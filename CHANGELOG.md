@@ -4,20 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (pre-1.0: breaking changes bump the minor version).
 
-## [Unreleased]
+## [0.9.0] - 2026-09-10
 
-<!-- Partial: this section currently covers PR #121 (Checkbox) only. Before cutting the next
-     release, still to be collected from these merged-but-unreleased commits on main:
-       ba32bd6  feat(#49)  TextLink
-       7939273  feat(#51)  Chip
-       73d4fd6  feat(#73)  rounded (pill) Button variant
-       2d05ad1  feat(#74, #57)  Paper and Card
-       a29d6f9  fix(#102) Select dropdown scroll
-       59f5e0e  feat(#75) Linkbox
-     Plus any PR merged after 2026-09-09. -->
+### Upgrade notes
+
+- **Breaking: `Button`'s `variant` prop renamed `filled`/`outlined`/`text` → `primary`/`secondary`/`tertiary`**, to name the variants by intent rather than visual treatment ([#73](https://github.com/Tampere/Tampere-design-system/issues/73)).
+
+  | Old                  | New                   |
+  | -------------------- | --------------------- |
+  | `variant="filled"`   | `variant="primary"`   |
+  | `variant="outlined"` | `variant="secondary"` |
+  | `variant="text"`     | `variant="tertiary"`  |
+
+- **Breaking: `vars.theme.cornerRadius` changed shape from a single value to `{ sharp, rounded }`.** Feeds `Button`'s new `radius` prop (see below). If you referenced `vars.theme.cornerRadius` directly (uncommon — most consumers only use component props), update to `vars.theme.cornerRadius.sharp` for the previous value ([#73](https://github.com/Tampere/Tampere-design-system/issues/73)).
+- **Breaking: `SearchField`'s `searchButtonLabel` prop is now required.** Previously optional with no fallback, so an omitted label shipped an icon-only search trigger button with no accessible name — an axe-critical `button-name` violation, the same class of gap `Modal`/`Pagination` had in 0.8.0. Pass `searchButtonLabel="..."` explicitly ([#73](https://github.com/Tampere/Tampere-design-system/issues/73)).
 
 ### Added
 
+- **`TextLink`** — a standalone text link, sized across the full `Typography` scale (`h1`–`caption`) so it can be styled inline or as a heading-sized clickable element. Supports `openExternal` (adds an external-link icon and opens in a new tab), `visited` link coloring, and a `renderLink` render-prop for router integration. Exports `TextLink`, `TextLinkProps`, `TextLinkSize` ([#49](https://github.com/Tampere/Tampere-design-system/issues/49)).
+- **`Chip`** — a compact filter/selection or removable tag control. `checked`/`onChange` for the filter role (optionally with a leading icon or a custom `selectedIcon`), or `onRemove`/`removeLabel` for a dismissible tag — never both, enforced by the prop type. Exports `Chip`, `ChipProps` ([#51](https://github.com/Tampere/Tampere-design-system/issues/51)).
+- **`Paper`** — a base surface container (background, border, shadow, corner radius, padding), the building block behind `Card`/`Linkbox` below and a candidate base for other surfaces going forward. `background` accepts `default`/`turquoise`/`blue`/`pink`. Exports `Paper`, `PaperProps` ([#74](https://github.com/Tampere/Tampere-design-system/issues/74)).
+- **`Card`** — a static content tile built on `Paper`: `title` (required), optional `eyebrow`/`media`/`actions`/free-form `children`. `media` supports `top` or `left` placement, cropped to fill its frame. A static container only — no built-in click behavior; see `Linkbox` for a whole-card link. Exports `Card`, `CardProps` ([#57](https://github.com/Tampere/Tampere-design-system/issues/57)).
+- **`Linkbox`** — a card-shaped single-destination link (`title`, optional `eyebrow`/`description`/`media`, `external` for a new-tab link with an external-icon swap). Composes `Paper` directly with `component="a"` (or a custom router component via the polymorphic `component` prop). Exports `Linkbox`, `LinkboxProps` ([#75](https://github.com/Tampere/Tampere-design-system/issues/75)).
+- `Button` gains a `radius?: 'sharp' | 'pill'` prop (default `'sharp'`, non-breaking) for a fully rounded pill shape, and an `iconOnly?: boolean` prop for uniform padding with no label — `aria-label` becomes a required, compiler-enforced field when `iconOnly` is set ([#73](https://github.com/Tampere/Tampere-design-system/issues/73)).
+- `Select`'s `options` prop now also accepts a grouped shape, `{ group: string; items: string[] }[]`, rendered under group headers similar to native `<optgroup>` — alongside the existing flat `string[]` ([#103](https://github.com/Tampere/Tampere-design-system/issues/103)).
 - `Checkbox` now takes an `indeterminate` prop, which takes precedence over `checked` for both the rendered icon and `aria-checked` (`"mixed"`), matching native `input.indeterminate` semantics. Reuses the existing checked-state color tokens — no new tokens ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
 
 ### Changed
@@ -28,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- `Select`'s dropdown list now scrolls instead of clipping once it has more options than fit its max height ([#102](https://github.com/Tampere/Tampere-design-system/issues/102)).
 - **`Checkbox` inside a `<form>` no longer desyncs from the DOM when the user resets the form.** The internal state resynced on a microtask, which for a real user's click on a reset button runs _before_ the browser restores control values. An uncontrolled `defaultChecked` Checkbox was left rendering unchecked while still submitting its value; a controlled one was left contradicting its parent. Also fixes a `Checkbox` whose `<form>` mounts after it does, which previously never resynced at all ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
 - `Checkbox` no longer triggers React's "Too many re-renders" limit when used uncontrolled, with no `checked` prop ([#122](https://github.com/Tampere/Tampere-design-system/issues/122)).
 - **`Checkbox` now honours a `preventDefault()` veto issued on the native click event**, not only on React's synthetic one. React's synthetic `defaultPrevented` is a copy taken before any handler runs, so a caller vetoing via `e.nativeEvent.preventDefault()` previously had the toggle applied anyway — leaving React state and the DOM permanently split, with the icon checked, the input unchecked, and the field missing from a form submit ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
