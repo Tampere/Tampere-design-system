@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (pre-1.0: breaking changes bump the minor version).
 
+## [Unreleased]
+
+<!-- Partial: this section currently covers PR #121 (Checkbox) only. Before cutting the next
+     release, still to be collected from these merged-but-unreleased commits on main:
+       ba32bd6  feat(#49)  TextLink
+       7939273  feat(#51)  Chip
+       73d4fd6  feat(#73)  rounded (pill) Button variant
+       2d05ad1  feat(#74, #57)  Paper and Card
+       a29d6f9  fix(#102) Select dropdown scroll
+       59f5e0e  feat(#75) Linkbox
+     Plus any PR merged after 2026-09-09. -->
+
+### Added
+
+- `Checkbox` now takes an `indeterminate` prop, which takes precedence over `checked` for both the rendered icon and `aria-checked` (`"mixed"`), matching native `input.indeterminate` semantics. Reuses the existing checked-state color tokens — no new tokens ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+
+### Changed
+
+- **A keyboard-focused `Checkbox` or `RadioButton` that is being pressed now paints the pressed fill rather than the focus fill.** Affects unchecked controls only; a checked one's fill already won over both. The `:focus-visible` and `:active` rules tie in specificity, and both components previously declared `:active` first, so focus won. Changed so pressing reads as pressed ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+- **A keyboard-focused `Checkbox` or `RadioButton` now keeps its focus fill when hovered**, instead of darkening to the hover fill. Both gain a checked-state `:focus-visible` rule they previously lacked. `states.focus` and `states.default` are currently the same color, so this is only visible on a checked or indeterminate control, where hover previously darkened it ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+- **A `Checkbox` that is both `disabled` and `error` now renders as disabled rather than as an error.** Previously the error red won for the icon while the label greyed out regardless, rendering the control half-disabled. A control the user cannot interact with should read as inert rather than as something they are being asked to fix. `RadioButton` still resolves this pair the other way; see [#137](https://github.com/Tampere/Tampere-design-system/issues/137) ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+
+### Fixed
+
+- **`Checkbox` inside a `<form>` no longer desyncs from the DOM when the user resets the form.** The internal state resynced on a microtask, which for a real user's click on a reset button runs _before_ the browser restores control values. An uncontrolled `defaultChecked` Checkbox was left rendering unchecked while still submitting its value; a controlled one was left contradicting its parent. Also fixes a `Checkbox` whose `<form>` mounts after it does, which previously never resynced at all ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+- `Checkbox` no longer triggers React's "Too many re-renders" limit when used uncontrolled, with no `checked` prop ([#122](https://github.com/Tampere/Tampere-design-system/issues/122)).
+- **`Checkbox` now honours a `preventDefault()` veto issued on the native click event**, not only on React's synthetic one. React's synthetic `defaultPrevented` is a copy taken before any handler runs, so a caller vetoing via `e.nativeEvent.preventDefault()` previously had the toggle applied anyway — leaving React state and the DOM permanently split, with the icon checked, the input unchecked, and the field missing from a form submit ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+- **A controlled `Checkbox` whose `checked` prop is cleared to `null` now stays controlled and renders unchecked.** `null` reached the native input as `checked={null}`, which React reads as no `checked` prop at all: the input silently stopped being controlled, React stopped writing its value, and it logged a controlled-to-uncontrolled warning ([#118](https://github.com/Tampere/Tampere-design-system/issues/118)).
+- `Checkbox`'s label now uses the same `typography.p2` body-text style as `RadioButton`'s, instead of inheriting the ambient font ([#123](https://github.com/Tampere/Tampere-design-system/issues/123)).
+- `Checkbox` no longer logs React's "provided a `checked` prop to a form field without an `onChange` handler" warning for the controlled `onClick`-only usage the component itself documents. A caller's own `onChange` is still forwarded ([#124](https://github.com/Tampere/Tampere-design-system/issues/124)).
+
 ## [0.8.0] - 2026-08-18
 
 ### Upgrade notes
