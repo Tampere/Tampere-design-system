@@ -322,12 +322,8 @@ export function getTheme(bp: BreakpointKey) {
       border: colors.neutral['200'],
       padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xxl },
       // The drop area's own auto-layout gap (heading → picker). Figma binds the
-      // raw `Spacing/4` primitive here, not a responsive semantic token, so it
-      // stays 32px at every breakpoint — measured on the breakpoints frame at
-      // 1440 (6817:11195), 768 (6817:11239) and 480 (6817:11261), all 32.
-      // Deliberately NOT `bpTokens.spacing.lg`, which would drop to 24 below
-      // 1024. The button → status-line gap is a different, smaller value that
-      // comes from `input.padding.vertical` — see Dropzone.css.ts.
+      // raw `Spacing/4` primitive here, so it stays 32px at every breakpoint —
+      // deliberately NOT `bpTokens.spacing.lg`, which drops to 24 below 1024.
       spacing: primitives.spacing['4'],
       // Not designed in Figma — derived from existing tokens pending design input.
       // See docs/superpowers/specs/2026-09-09-file-inputs-design.md ("Gaps in the

@@ -41,11 +41,10 @@ const displayBase = style({
   height: controlHeight,
   padding: `${inputVars.padding.vertical} ${inputVars.padding.horizontal}`,
   // All four sides, the left included: Figma draws the seam as this box's own
-  // left border in every state (`#52525b` default 4761:6394, `#ae1e20` error
-  // 6751:6772, `#c9c9ce` disabled 6747:9526 — sampled from the renders). It
-  // reads as a subtle detail while the button beside it is solid blue, but
-  // it's the only thing dividing the two halves once the button is disabled
-  // and takes the same `background.disabled` fill as this box.
+  // left border in every state. It reads as a subtle detail beside a solid blue
+  // button, but once the button is disabled it takes the same
+  // `background.disabled` fill as this box, and the border is all that divides
+  // the two halves.
   border: `${inputVars.stroke.weight.default} solid ${inputStates.default}`,
   background: background.default,
   color: text.secondary,

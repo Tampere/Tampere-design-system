@@ -63,7 +63,7 @@ export const Default: Story = {
 
     await expect(canvas.getByText('Pudota tiedostot tähän')).toBeInTheDocument();
     // Accessible name is "<label> <button text>" — see Dropzone.tsx's
-    // aria-labelledby wiring, mirrored from FileInput.
+    // aria-labelledby wiring.
     await expect(
       canvas.getByRole('button', { name: 'Liitetiedostot Valitse tiedostoja' })
     ).toBeInTheDocument();
@@ -106,7 +106,7 @@ export const Error: Story = {
     );
     // The message and heading colours are asserted above, but neither pins
     // the box border itself — deleting `area.error`'s borderColor override
-    // would break neither. Mirrors FileInput.stories.tsx's Error story.
+    // would break neither.
     await expect(getComputedStyle(canvas.getByTestId('dropzone-area')).borderColor).toBe(
       'rgb(174, 30, 32)'
     );
@@ -126,8 +126,7 @@ export const Disabled: Story = {
 
     // Disabling the picker Button is not the same guarantee as disabling
     // the drop target itself — assert dropping a file while disabled is
-    // actually a no-op, rather than relying on Mantine's `disabled` doing
-    // the right thing unverified.
+    // actually a no-op.
     await dropFiles(canvas.getByTestId('dropzone-area'), [makeFile('ohitettu.pdf')]);
     await expect(canvas.queryByRole('listitem')).not.toBeInTheDocument();
   },
@@ -225,12 +224,9 @@ export const LabelIsAssociatedAndErrorIsDescribed: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Input.Wrapper's own describedBy/aria-invalid wiring only reaches
-    // Mantine `Input` descendants via context — our composed control (a
-    // div/p/span/Button) doesn't consume it, so Dropzone wires the picker
-    // Button explicitly instead, exactly like FileInput. Assert the wiring
-    // itself, not just that the label/helper/error text happens to render
-    // somewhere on the page.
+    // Input.Wrapper's wiring never reaches this composed control (see
+    // Dropzone.tsx), so assert the wiring itself rather than that the
+    // label/helper/error text happens to render somewhere on the page.
     const button = canvas.getByRole('button', { name: 'Liitetiedostot Valitse tiedostoja' });
     await expect(button).toBeInTheDocument();
 
@@ -279,9 +275,8 @@ export const AriaLabelSubstitutesForMissingInputLabel: Story = {
     // No `inputLabel` means Input.Wrapper renders no `<label>` at all, so
     // the only way for the consumer's `aria-label` to reach an actual
     // accessible name is via the visually-hidden span Dropzone.tsx wires
-    // into the Button's own aria-labelledby, exactly like FileInput. Query
-    // by the resulting accessible name itself, the same empirical standard
-    // the aria-labelledby ordering question was settled with earlier.
+    // into the Button's own aria-labelledby. Query by the resulting accessible
+    // name itself rather than by the span.
     const button = canvas.getByRole('button', { name: 'Liitteet Valitse tiedostoja' });
     await expect(button).toBeInTheDocument();
 
