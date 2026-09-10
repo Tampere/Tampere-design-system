@@ -47,7 +47,12 @@ export default [
   {
     input: 'dist/types/src/index.d.ts',
     output: { file: 'dist/index.d.ts', format: 'es' },
-    external: [/\.css$/],
+    // Only bare package specifiers are real stylesheets (e.g.
+    // '@mantine/core/styles.layer.css'). A relative '.css' specifier is a
+    // Vanilla Extract '.css.ts' module whose declarations must be inlined —
+    // marking those external leaves dangling imports in dist/index.d.ts,
+    // since dist/components/**/ is never emitted.
+    external: [/^[^./].*\.css$/],
     plugins: [dts()],
   },
 ];
