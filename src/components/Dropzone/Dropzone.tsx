@@ -189,6 +189,16 @@ export const Dropzone = ({
         // not merely assumed.
         activateOnClick={false}
         activateOnKeyboard={false}
+        // react-dropzone hides its own picker input with the visually-hidden
+        // clip technique rather than `display: none`, which keeps it in the
+        // accessibility tree — so axe reports a critical `label` violation
+        // ("Form elements must have labels") against an input that has no
+        // label and, with both activate-on-* off above, nothing in this
+        // component ever opens. Labelling it would be worse: it would announce
+        // a second file picker that does nothing. Hide it the way Mantine's own
+        // FileButton hides the *real* picker input instead. Dropping still
+        // works — those handlers live on the root via `getRootProps`, not here.
+        inputProps={{ style: { display: 'none' } }}
         // Mantine's inner wrapper is `pointer-events: none` by default, so
         // that clicks pass through to the root's own open-dialog handler —
         // fine when the only content is Mantine's own status icons, but it

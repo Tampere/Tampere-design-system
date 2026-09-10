@@ -257,6 +257,17 @@ export const LabelIsAssociatedAndErrorIsDescribed: Story = {
     // that both elements happen to exist.
     const labelEl = canvas.getByText('Liitetiedostot');
     await expect(labelEl.getAttribute('for')).toBe(button.getAttribute('id'));
+
+    // Neither hidden file input may reach the accessibility tree. Mantine's
+    // FileButton hides its own with `display: none`, but react-dropzone hides
+    // its (inert here) picker with the visually-hidden clip technique, which
+    // does not — that left an unlabelled form control exposed and axe flagged
+    // a critical `label` violation. `display` is the assertion because that is
+    // exactly what decides tree membership; a `toBeVisible` check passes for
+    // clipped elements. See `inputProps` in Dropzone.tsx.
+    const fileInputs = canvasElement.querySelectorAll<HTMLInputElement>('input[type="file"]');
+    await expect(fileInputs.length).toBe(2);
+    fileInputs.forEach((input) => expect(getComputedStyle(input).display).toBe('none'));
   },
 };
 
