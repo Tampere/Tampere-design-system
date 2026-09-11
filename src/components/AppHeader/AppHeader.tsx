@@ -1,32 +1,21 @@
 import type { ReactNode } from 'react';
 import cx from 'clsx';
-import { TampereVaakuna } from '../../logos/TampereVaakuna';
 import { TampereLogo } from '../../logos/TampereLogo';
-import { NavigationLink } from '../NavigationLink';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderDrawer } from './AppHeaderDrawer';
+import { AppHeaderBrand } from './AppHeaderBrand';
+import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
 import {
   root,
   row,
-  leftSection,
   rightSection,
-  brandLink,
-  primaryLogo,
   secondaryLogo,
-  siteName as siteNameClass,
   searchContainer,
   inlineNav,
-  navList,
-  navItem,
-  languageLink,
 } from './AppHeader.css';
 
-export interface AppHeaderLanguage {
-  /** Matched against `currentLanguage` to determine the selected link — not `label`, which is only display text. */
-  code: string;
-  label: string;
-  href: string;
-}
+// Re-exported so `index.ts` (and the package barrel) keep exporting it from here.
+export type { AppHeaderLanguage };
 
 export interface AppHeaderProps {
   siteName?: ReactNode;
@@ -70,36 +59,14 @@ export function AppHeader({
   return (
     <header className={cx(root, className)}>
       <div className={row}>
-        <div className={leftSection}>
-          {/* The link wraps the logo only: an accessible name concatenating
-              "Tampere" with an arbitrary site name reads poorly and changes
-              per consumer. */}
-          <a href={homeHref} className={brandLink} aria-label="Tampere">
-            <TampereVaakuna className={primaryLogo} />
-          </a>
-          {siteName ? <span className={siteNameClass}>{siteName}</span> : null}
-        </div>
+        <AppHeaderBrand siteName={siteName} homeHref={homeHref} />
         <div className={rightSection}>
           {languages?.length ? (
-            <nav aria-label={languagesAriaLabel}>
-              <ul className={navList}>
-                {languages.map((language) => (
-                  <li key={language.code} className={navItem}>
-                    <NavigationLink
-                      href={language.href}
-                      size="sm"
-                      className={languageLink}
-                      isSelected={language.code === currentLanguage}
-                      // "true", not the derived "page": switching language
-                      // stays on the same page in another translation.
-                      aria-current={language.code === currentLanguage ? 'true' : undefined}
-                    >
-                      {language.label}
-                    </NavigationLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            <AppHeaderLanguages
+              languages={languages}
+              currentLanguage={currentLanguage}
+              ariaLabel={languagesAriaLabel}
+            />
           ) : null}
           {actions}
           <TampereLogo className={secondaryLogo} />
