@@ -3,6 +3,7 @@ import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { AppHeaderNav } from './AppHeaderNav';
 import { AppHeaderDrawer } from './AppHeaderDrawer';
+import { AppHeader } from './AppHeader';
 
 const navigation = [
   { label: 'Palvelut', href: '/palvelut' },
@@ -131,5 +132,65 @@ export const DrawerCloseButtonHasAccessibleName: StoryObj<typeof AppHeaderDrawer
       name: 'Sulje valikko',
     });
     await expect(closeButton).toBeInTheDocument();
+  },
+};
+
+const languages = [
+  { code: 'fi', label: 'FI', href: '/fi' },
+  { code: 'en', label: 'EN', href: '/en' },
+];
+
+export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader
+      siteName="{Nimi}"
+      homeHref="/"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      search={<input aria-label="Etsi" placeholder="Etsi" />}
+      actions={<button type="button">Kirjaudu</button>}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('banner')).not.toBeNull();
+
+    // Two navigation landmarks, so each needs its own accessible name —
+    // an unnamed second nav is indistinguishable to AT.
+    await expect(canvas.getByRole('navigation', { name: 'Päänavigaatio' })).not.toBeNull();
+    await expect(canvas.getByRole('navigation', { name: 'Kieli' })).not.toBeNull();
+
+    // aria-current="true", not "page": the current language is the same page,
+    // not a different one. Relies on NavigationLink honouring an explicit value.
+    await expect(canvas.getByRole('link', { name: 'FI' })).toHaveAttribute('aria-current', 'true');
+    await expect(canvas.getByRole('link', { name: 'EN' })).not.toHaveAttribute('aria-current');
+
+    // The kit's Min-touch-target is 24px and the language links sit exactly on
+    // that floor at the small breakpoints — close enough that a padding change
+    // elsewhere could silently drop them under it.
+    await expect(
+      canvas.getByRole('link', { name: 'FI' }).getBoundingClientRect().height
+    ).toBeGreaterThanOrEqual(24);
+
+    await expect(canvas.getByLabelText('Etsi')).not.toBeNull();
+    await expect(canvas.getByRole('button', { name: 'Kirjaudu' })).not.toBeNull();
+
+    // The brand link names itself from the logo alone — concatenating an
+    // arbitrary site name would make the accessible name unstable per consumer.
+    const brand = canvas.getByRole('link', { name: 'Tampere' });
+    await expect(brand).toHaveAttribute('href', '/');
+    await expect(within(brand).queryByText('{Nimi}')).toBeNull();
+  },
+};
+
+export const LanguagesAreOptional: StoryObj<typeof AppHeader> = {
+  render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('banner')).not.toBeNull();
+    await expect(canvas.queryByRole('navigation', { name: 'Kieli' })).toBeNull();
   },
 };
