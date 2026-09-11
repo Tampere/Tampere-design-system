@@ -196,6 +196,11 @@ export function getTheme(bp: BreakpointKey) {
     appHeader: {
       spacing: bpTokens.spacing.sm,
       padding: { horizontal: bpTokens.layout.margin, vertical: bpTokens.spacing.sm },
+      logo: {
+        primaryHeight: bpTokens.appHeader.logo.primaryLogoHeight,
+        secondaryHeight: bpTokens.appHeader.logo.secondaryLogoHeight,
+      },
+      searchMaxWidth: bpTokens.appHeader.search.maxWidth,
     },
     footer: {
       spacing: primitives.spacing['4'],
