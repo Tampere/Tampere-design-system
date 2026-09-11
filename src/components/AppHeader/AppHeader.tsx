@@ -118,10 +118,12 @@ export function AppHeader({
             <TampereLogo className={secondaryLogo} />
           </div>
         </div>
-        <div className={row}>
-          <div className={searchContainer}>{search}</div>
-          <div className={rightSection}>{nav}</div>
-        </div>
+        {search || navigation.length > 0 ? (
+          <div className={row}>
+            <div className={searchContainer}>{search}</div>
+            <div className={rightSection}>{nav}</div>
+          </div>
+        ) : null}
       </header>
     );
   }
