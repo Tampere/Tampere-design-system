@@ -8,11 +8,14 @@ import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages
 import {
   root,
   row,
+  singleRowRow,
   rightSection,
   secondaryLogo,
   searchContainer,
   inlineNav,
   inlineLanguages,
+  siteName as siteNameClass,
+  siteNameSubheader,
 } from './AppHeader.css';
 
 // Re-exported so `index.ts` (and the package barrel) keep exporting it from here.
@@ -104,7 +107,11 @@ export function AppHeader({
     return (
       <header className={cx(root, className)}>
         <div className={row}>
-          <AppHeaderBrand siteName={siteName} homeHref={homeHref} />
+          <AppHeaderBrand
+            siteName={siteName}
+            homeHref={homeHref}
+            siteNameClassName={siteNameClass}
+          />
           <div className={rightSection}>
             {inlineLanguageNav}
             {actions}
@@ -119,13 +126,18 @@ export function AppHeader({
     );
   }
 
-  // Single-row right section follows Figma's own order: navigation, language
-  // menu, slot, then the menu button. No secondary logo — Figma hides it at
+  // Single row: brand on the left, then languages, the actions slot, and
+  // finally navigation (inline nav plus its drawer trigger) — the menu
+  // button lands last, matching Figma. No secondary logo — Figma hides it at
   // every single-row breakpoint.
   return (
     <header className={cx(root, className)}>
-      <div className={row}>
-        <AppHeaderBrand siteName={siteName} homeHref={homeHref} />
+      <div className={singleRowRow}>
+        <AppHeaderBrand
+          siteName={siteName}
+          homeHref={homeHref}
+          siteNameClassName={siteNameSubheader}
+        />
         <div className={rightSection}>
           {inlineLanguageNav}
           {actions}
