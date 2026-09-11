@@ -44,7 +44,7 @@ export interface AppHeaderProps {
 
 export function AppHeader({
   siteName,
-  homeHref,
+  homeHref = '/',
   navigation = [],
   navAriaLabel,
   languages,
