@@ -192,5 +192,6 @@ export const LanguagesAreOptional: StoryObj<typeof AppHeader> = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('banner')).not.toBeNull();
     await expect(canvas.queryByRole('navigation', { name: 'Kieli' })).toBeNull();
+    await expect(canvas.getByRole('link', { name: 'Tampere' })).toHaveAttribute('href', '/');
   },
 };
