@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 import { TampereLogo } from './TampereLogo';
 import { TampereVaakuna } from './TampereVaakuna';
 import { TampereVaakunaWhite } from './TampereVaakunaWhite';
@@ -54,4 +55,15 @@ export const All: Story = {
       </div>
     </div>
   ),
+};
+
+export const VaakunaAcceptsClassName: Story = {
+  render: () => <TampereVaakuna className="probe-class" />,
+  play: async ({ canvasElement }) => {
+    // The header sizes the vaakuna from a per-breakpoint token, which needs a
+    // class on the svg itself — the hardcoded width/height attributes can't
+    // respond to the breakpoint.
+    await expect(canvasElement.querySelector('svg.probe-class')).not.toBeNull();
+  },
+  tags: ['!dev', '!autodocs'],
 };

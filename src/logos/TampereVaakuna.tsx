@@ -1,6 +1,7 @@
-export function TampereVaakuna() {
+export function TampereVaakuna({ className }: { className?: string }) {
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
       width="158"
       height="40"
