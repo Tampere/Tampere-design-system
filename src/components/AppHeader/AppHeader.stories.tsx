@@ -51,6 +51,7 @@ export const DrawerOpensAndWiresAria: StoryObj<typeof AppHeaderDrawer> = {
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
       drawerTitle="Valikko"
+      languagesAriaLabel="Kieli"
     />
   ),
   play: async ({ canvasElement }) => {
@@ -91,6 +92,7 @@ export const DrawerClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderDraw
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
       drawerTitle="Valikko"
+      languagesAriaLabel="Kieli"
     />
   ),
   play: async ({ canvasElement }) => {
@@ -124,6 +126,7 @@ export const DrawerCloseButtonHasAccessibleName: StoryObj<typeof AppHeaderDrawer
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
       drawerTitle="Valikko"
+      languagesAriaLabel="Kieli"
     />
   ),
   play: async ({ canvasElement }) => {
@@ -215,9 +218,72 @@ export const LanguageLinksMeetTouchTargetAt320: StoryObj<typeof AppHeader> = {
     const canvas = within(canvasElement);
 
     await page.viewport(320, 640);
+    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
+    const dialog = await within(document.body).findByRole('dialog');
 
-    const height = canvas.getByRole('link', { name: 'FI' }).getBoundingClientRect().height;
-    await expect(height).toBeGreaterThanOrEqual(24);
+    // The kit's floor is 24px and `sm` NavigationLinks land within a pixel
+    // of it at the small breakpoints — see `languageLink`.
+    await expect(
+      within(dialog).getByRole('link', { name: 'FI' }).getBoundingClientRect().height
+    ).toBeGreaterThanOrEqual(24);
+  },
+};
+
+export const LanguagesMoveIntoDrawerBelow1024: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(768, 800);
+
+    // DOM selector, not getByRole: a display:none node has no accessible
+    // name, so a role query cannot see it either way.
+    const inline = canvasElement.querySelector('nav[aria-label="Kieli"]') as HTMLElement;
+    await waitFor(async () => {
+      await expect(getComputedStyle(inline).display).toBe('none');
+    });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    await expect(within(dialog).getByRole('navigation', { name: 'Kieli' })).not.toBeNull();
+    await expect(within(dialog).getByRole('link', { name: 'FI' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+  },
+};
+
+export const ExactlyOneLanguageLandmarkAt1200: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    // 1200 is the band where the drawer trigger exists *and* the inline
+    // language links are visible — the only width where both copies could
+    // land in the accessibility tree at once.
+    await page.viewport(1200, 800);
+    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
+    await within(document.body).findByRole('dialog');
+
+    await expect(within(document.body).getAllByRole('navigation', { name: 'Kieli' })).toHaveLength(
+      1
+    );
   },
 };
 

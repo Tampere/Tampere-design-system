@@ -6,7 +6,8 @@ import { breakpoint } from '../../theme/tokens/breakpoint';
 import { MenuIcon } from '../../icons/MenuIcon';
 import { Button } from '../Button/Button';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
-import { menuButton } from './AppHeader.css';
+import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
+import { drawerLanguages, menuButton } from './AppHeader.css';
 
 export interface AppHeaderDrawerProps {
   items: AppHeaderNavigationItem[];
@@ -14,6 +15,9 @@ export interface AppHeaderDrawerProps {
   menuButtonLabel: string;
   drawerTitle: string;
   closeButtonLabel?: string;
+  languages?: AppHeaderLanguage[];
+  currentLanguage?: string;
+  languagesAriaLabel: string;
   className?: string;
 }
 
@@ -23,6 +27,9 @@ export function AppHeaderDrawer({
   menuButtonLabel,
   drawerTitle,
   closeButtonLabel = 'Sulje valikko',
+  languages,
+  currentLanguage,
+  languagesAriaLabel,
   className,
 }: AppHeaderDrawerProps) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -63,6 +70,14 @@ export function AppHeaderDrawer({
           </Drawer.Header>
           <Drawer.Body>
             <AppHeaderNav items={items} ariaLabel={navAriaLabel} />
+            {languages?.length ? (
+              <AppHeaderLanguages
+                languages={languages}
+                currentLanguage={currentLanguage}
+                ariaLabel={languagesAriaLabel}
+                className={drawerLanguages}
+              />
+            ) : null}
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>
