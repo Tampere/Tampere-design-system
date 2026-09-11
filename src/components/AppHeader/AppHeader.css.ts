@@ -70,9 +70,10 @@ export const row = style({
   flexWrap: 'wrap',
 });
 
-// Single-row's own row: Figma gaps its First/Left/Right sections with the
-// grid's layout/gutter (32/24/16 at xl/lg/md), not appHeader.spacing —
-// verified against nodes 14147:8543/14147:10912/14147:10973.
+// Single-row's row, and its Left/Right sections below (singleRowLeftSection,
+// singleRowRightSection): Figma gaps all three with the grid's layout/gutter
+// (32/24/16 at xl/lg/md), not appHeader.spacing — verified against nodes
+// 14147:8543/14147:10912/14147:10973.
 export const singleRowRow = style([row, { gap: appHeader.rowGap }]);
 
 export const leftSection = style({
@@ -92,6 +93,11 @@ export const rightSection = style({
   gap: appHeader.spacing,
   minWidth: 0,
 });
+
+// Single-row-only gap override for leftSection/rightSection — see the
+// comment on singleRowRow above.
+export const singleRowLeftSection = style([leftSection, { gap: appHeader.rowGap }]);
+export const singleRowRightSection = style([rightSection, { gap: appHeader.rowGap }]);
 
 export const brandLink = style({ display: 'flex', alignItems: 'center' });
 
@@ -128,32 +134,39 @@ export const drawerLanguages = style({
   '@media': { [inlineLanguagesWidth]: { display: 'none' } },
 });
 
-export const siteName = style({
-  fontSize: typography.h5.fontSize,
-  fontFamily: typography.h5.fontFamily,
-  fontWeight: typography.h5.fontWeight,
-  lineHeight: typography.h5.lineHeight,
-  // Same reflow fix as `leftSection`, one level down: as a flex item of
-  // `leftSection`, this span's own default `min-width: auto` would otherwise
-  // still hold it — and `leftSection` with it — to its unwrapped text width.
+// Reflow protection shared by both type-scale variants below: as a flex item
+// of `leftSection`, this span's own default `min-width: auto` would otherwise
+// still hold it — and `leftSection` with it — to its unwrapped text width;
+// and `word-break: normal` only wraps at whitespace, so a single long word (a
+// Finnish compound is one word with no space to break at) still overflows its
+// box even with `min-width: 0` alone — `overflowWrap: anywhere` allows a
+// mid-word break as a last resort.
+const siteNameBase = style({
   minWidth: 0,
-  // `word-break: normal` only wraps at whitespace, so a single long word (a
-  // Finnish compound is one word with no space to break at) still overflows
-  // its box even with `min-width: 0` above — allow a mid-word break as a
-  // last resort once whitespace-wrapping alone can't fit it.
   overflowWrap: 'anywhere',
 });
 
+export const siteName = style([
+  siteNameBase,
+  {
+    fontSize: typography.h5.fontSize,
+    fontFamily: typography.h5.fontFamily,
+    fontWeight: typography.h5.fontWeight,
+    lineHeight: typography.h5.lineHeight,
+  },
+]);
+
 // Single-row's Site name resolves to the subheader token in Figma (20px at
 // 1440), not h5 (24px) — the two layouts intentionally diverge here.
-export const siteNameSubheader = style({
-  fontSize: typography.subheader.fontSize,
-  fontFamily: typography.subheader.fontFamily,
-  fontWeight: typography.subheader.fontWeight,
-  lineHeight: typography.subheader.lineHeight,
-  minWidth: 0,
-  overflowWrap: 'anywhere',
-});
+export const siteNameSubheader = style([
+  siteNameBase,
+  {
+    fontSize: typography.subheader.fontSize,
+    fontFamily: typography.subheader.fontFamily,
+    fontWeight: typography.subheader.fontWeight,
+    lineHeight: typography.subheader.lineHeight,
+  },
+]);
 
 export const searchContainer = style({
   display: 'flex',

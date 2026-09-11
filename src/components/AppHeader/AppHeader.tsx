@@ -9,6 +9,8 @@ import {
   root,
   row,
   singleRowRow,
+  singleRowLeftSection,
+  singleRowRightSection,
   rightSection,
   secondaryLogo,
   searchContainer,
@@ -29,6 +31,7 @@ export interface AppHeaderBaseProps {
   navigation?: AppHeaderNavigationItem[];
   /** Required: names the `navigation` landmark for AT, since a header can contain more than one `<nav>` (this one, plus the language switcher). No sensible Finnish default exists — it depends on the consumer's own navigation structure. */
   navAriaLabel: string;
+  /** With `navigation`, the links move into the drawer below 1024px; without it, they stay inline at every width since there is no drawer to carry them. */
   languages?: AppHeaderLanguage[];
   /** A language's `code` (not `label`) to mark as selected. */
   currentLanguage?: string;
@@ -56,7 +59,19 @@ export type AppHeaderProps =
       search?: ReactNode;
     });
 
-/** The site chrome header: brand logo, optional site name, primary navigation (inline at xl/xxl, a drawer below), language switcher, and search/actions slots. */
+/**
+ * The site chrome header: brand logo, optional site name, primary navigation,
+ * language switcher, and `actions`/`search` slots. `layout` selects Figma's
+ * two variants — `'single-row'` (the default) puts everything in one row;
+ * `'multi-row'` adds a second row carrying the `search` slot below the brand
+ * row (single-row has no `search` slot — put a search trigger in `actions`
+ * instead).
+ *
+ * Both layouts share the same responsive collapse: the primary navigation
+ * renders inline from 1440px up (`breakpoint.xl`) and drops into a drawer
+ * below it, and the language links move into that drawer below 1024px
+ * (`breakpoint.lg`) whenever a drawer exists — see the `languages` prop.
+ */
 export function AppHeader({
   siteName,
   homeHref = '/',
@@ -75,20 +90,26 @@ export function AppHeader({
 }: AppHeaderProps) {
   const hasDrawer = navigation.length > 0;
 
-  const nav = hasDrawer ? (
-    <>
-      <AppHeaderNav items={navigation} ariaLabel={navAriaLabel} className={inlineNav} />
-      <AppHeaderDrawer
-        items={navigation}
-        navAriaLabel={navAriaLabel}
-        menuButtonLabel={menuButtonLabel}
-        drawerTitle={drawerTitle}
-        closeButtonLabel={closeButtonLabel}
-        languages={languages}
-        currentLanguage={currentLanguage}
-        languagesAriaLabel={languagesAriaLabel}
-      />
-    </>
+  // Split so single-row can place the inline nav and the drawer trigger on
+  // opposite ends of its right section (Fix 1) while multi-row keeps them
+  // adjacent, as `nav` did before. The two never coexist visibly — inline
+  // nav shows ≥1440, the trigger below it — so splitting changes nothing at
+  // any single width.
+  const inlineNavEl = hasDrawer ? (
+    <AppHeaderNav items={navigation} ariaLabel={navAriaLabel} className={inlineNav} />
+  ) : null;
+
+  const drawerEl = hasDrawer ? (
+    <AppHeaderDrawer
+      items={navigation}
+      navAriaLabel={navAriaLabel}
+      menuButtonLabel={menuButtonLabel}
+      drawerTitle={drawerTitle}
+      closeButtonLabel={closeButtonLabel}
+      languages={languages}
+      currentLanguage={currentLanguage}
+      languagesAriaLabel={languagesAriaLabel}
+    />
   ) : null;
 
   const inlineLanguageNav = languages?.length ? (
@@ -118,20 +139,23 @@ export function AppHeader({
             <TampereLogo className={secondaryLogo} />
           </div>
         </div>
-        {search || navigation.length > 0 ? (
+        {search || hasDrawer ? (
           <div className={row}>
             <div className={searchContainer}>{search}</div>
-            <div className={rightSection}>{nav}</div>
+            <div className={rightSection}>
+              {inlineNavEl}
+              {drawerEl}
+            </div>
           </div>
         ) : null}
       </header>
     );
   }
 
-  // Single row: brand on the left, then languages, the actions slot, and
-  // finally navigation (inline nav plus its drawer trigger) — the menu
-  // button lands last, matching Figma. No secondary logo — Figma hides it at
-  // every single-row breakpoint.
+  // Single row: brand on the left; the right section runs inline navigation,
+  // then languages, then the actions slot, then the drawer trigger last —
+  // matching Figma node 14147:8543's right-section child order. No secondary
+  // logo — Figma hides it at every single-row breakpoint.
   return (
     <header className={cx(root, className)}>
       <div className={singleRowRow}>
@@ -139,11 +163,13 @@ export function AppHeader({
           siteName={siteName}
           homeHref={homeHref}
           siteNameClassName={siteNameSubheader}
+          className={singleRowLeftSection}
         />
-        <div className={rightSection}>
+        <div className={singleRowRightSection}>
+          {inlineNavEl}
           {inlineLanguageNav}
           {actions}
-          {nav}
+          {drawerEl}
         </div>
       </div>
     </header>
