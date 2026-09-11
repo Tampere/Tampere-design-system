@@ -5,6 +5,8 @@ import { AppHeaderNav } from './AppHeaderNav';
 import { AppHeaderDrawer } from './AppHeaderDrawer';
 import { AppHeader } from './AppHeader';
 import { Button } from '../Button/Button';
+import { LabeledIconButton } from '../LabeledIconButton';
+import { SearchIcon } from '../../icons/SearchIcon';
 
 const navigation = [
   { label: 'Palvelut', href: '/palvelut' },
@@ -502,6 +504,23 @@ export const Default: StoryObj<typeof AppHeader> = {
       navAriaLabel="Päänavigaatio"
       languages={languages}
       currentLanguage="fi"
+      actions={<LabeledIconButton icon={<SearchIcon />} label="Haku" />}
+    />
+  ),
+};
+
+export const MultiRow: StoryObj<typeof AppHeader> = {
+  tags: docExample,
+  render: () => (
+    <AppHeader
+      layout="multi-row"
+      siteName="{Nimi}"
+      homeHref="/"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      search={<input aria-label="Etsi" placeholder="Etsi" />}
     />
   ),
 };
@@ -619,6 +638,15 @@ export const MultiRowIsOptIn: StoryObj<typeof AppHeader> = {
     await expect(header.children).toHaveLength(2);
     await expect(header.children[1].contains(canvas.getByLabelText('Etsi'))).toBe(true);
     await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).not.toBeNull();
+  },
+};
+
+export const MultiRowOmitsTheSecondRowWhenEmpty: StoryObj<typeof AppHeader> = {
+  render: () => <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" siteName="{Nimi}" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // An empty second row still costs a row gap under the header.
+    await expect(canvas.getByRole('banner').children).toHaveLength(1);
   },
 };
 
