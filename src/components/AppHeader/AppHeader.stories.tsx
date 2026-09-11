@@ -85,6 +85,32 @@ export const DrawerOpensAndWiresAria: StoryObj<typeof AppHeaderDrawer> = {
   },
 };
 
+export const MenuButtonIsALabeledIconButton: StoryObj<typeof AppHeaderDrawer> = {
+  render: () => (
+    <AppHeaderDrawer
+      items={navigation}
+      navAriaLabel="Päänavigaatio"
+      menuButtonLabel="Valikko"
+      drawerTitle="Valikko"
+      languagesAriaLabel="Kieli"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+
+    // LabeledIconButton stacks its icon above the label; the horizontal
+    // Button it replaced is what Figma's .Main menu button is not.
+    await expect(getComputedStyle(trigger).flexDirection).toBe('column');
+
+    // It omits and strips aria-label/aria-labelledby, so confirm the ARIA
+    // the drawer relies on still reaches the element.
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(trigger.getAttribute('aria-controls')).not.toBeNull();
+    await expect(within(trigger).getByText('Valikko')).not.toBeNull();
+  },
+};
+
 export const DrawerClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderDrawer> = {
   render: () => (
     <AppHeaderDrawer

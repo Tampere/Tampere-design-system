@@ -40,13 +40,13 @@ export const navItem = style({ display: 'flex' });
 export const languageLink = style({ minHeight: minTouchTarget });
 
 export const menuButton = style({
-  // `!important`: Button's own `root` class sets an unconditional `display:
-  // flex` at the same (0,1,0) specificity; without it, whichever class's CSS
-  // happens to land later in the bundle wins, regardless of this media query.
-  // The compound-selector remedy Button.css.ts uses for its own `tertiary`/
-  // `pill` conflict (a `(0,2,0)` selector beating `pill`'s `(0,1,0)` without
-  // `!important`) isn't available here: that trick needs a selector built
-  // from Button's `root` class, which Button.css.ts doesn't export.
+  // `!important`: LabeledIconButton's own `root` class sets an unconditional
+  // `display: flex` at the same (0,1,0) specificity; without it, whichever
+  // class's CSS happens to land later in the bundle wins, regardless of this
+  // media query. The compound-selector remedy Button.css.ts uses for its own
+  // `tertiary`/`pill` conflict isn't available here: that trick needs a
+  // selector built from the button's `root` class, which neither button
+  // component exports.
   '@media': { [inlineNavWidth]: { display: 'none !important' } },
 });
 

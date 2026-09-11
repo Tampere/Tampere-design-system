@@ -4,7 +4,7 @@ import { Drawer } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { breakpoint } from '../../theme/tokens/breakpoint';
 import { MenuIcon } from '../../icons/MenuIcon';
-import { Button } from '../Button/Button';
+import { LabeledIconButton } from '../LabeledIconButton';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
 import { drawerLanguages, menuButton } from './AppHeader.css';
@@ -49,15 +49,14 @@ export function AppHeaderDrawer({
 
   return (
     <>
-      <Button
+      <LabeledIconButton
         className={cx(menuButton, className)}
-        rightIcon={<MenuIcon />}
+        icon={<MenuIcon />}
+        label={menuButtonLabel}
         onClick={open}
         aria-expanded={opened}
         aria-controls={drawerId}
-      >
-        {menuButtonLabel}
-      </Button>
+      />
       {/* Compositional form, not <Drawer id={drawerId}>: Mantine doesn't put that id on
           the element that becomes the dialog, leaving aria-controls dangling. */}
       <Drawer.Root opened={opened} onClose={close} position="right">
