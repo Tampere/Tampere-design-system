@@ -71,6 +71,10 @@ export const DrawerOpensAndWiresAria: StoryObj<typeof AppHeaderDrawer> = {
     // The drawer renders in a portal, so query the document, not the canvas.
     // findByRole (not getByRole): same mount-transition delay as above.
     const dialog = await within(document.body).findByRole('dialog');
+    // Confirms aria-controls points at the actual dialog, not merely *some*
+    // element with that id — a future regression could satisfy the earlier
+    // getElementById check while the real dialog goes unlabelled.
+    await expect(dialog.id).toBe(controls);
     await expect(within(dialog).getByRole('navigation', { name: 'Päänavigaatio' })).not.toBeNull();
   },
 };
@@ -102,5 +106,30 @@ export const DrawerClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderDraw
     await waitFor(async () => {
       await expect(document.activeElement).toBe(trigger);
     });
+  },
+};
+
+export const DrawerCloseButtonHasAccessibleName: StoryObj<typeof AppHeaderDrawer> = {
+  // Regression test for #94's bug class: Mantine's Drawer.CloseButton has no
+  // default aria-label, so an icon-only close button can ship with no
+  // accessible name (see Modal.stories.tsx's CloseButtonHasAccessibleName).
+  render: () => (
+    <AppHeaderDrawer
+      items={navigation}
+      navAriaLabel="Päänavigaatio"
+      menuButtonLabel="Valikko"
+      drawerTitle="Valikko"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+
+    await userEvent.click(trigger);
+    // findByRole: waits out Mantine's mount transition (see the stories above).
+    const closeButton = await within(document.body).findByRole('button', {
+      name: 'Sulje valikko',
+    });
+    await expect(closeButton).toBeInTheDocument();
   },
 };

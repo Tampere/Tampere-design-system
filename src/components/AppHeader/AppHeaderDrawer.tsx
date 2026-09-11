@@ -13,6 +13,7 @@ export interface AppHeaderDrawerProps {
   navAriaLabel: string;
   menuButtonLabel: string;
   drawerTitle: string;
+  closeButtonLabel?: string;
   className?: string;
 }
 
@@ -21,6 +22,7 @@ export function AppHeaderDrawer({
   navAriaLabel,
   menuButtonLabel,
   drawerTitle,
+  closeButtonLabel = 'Sulje valikko',
   className,
 }: AppHeaderDrawerProps) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -56,7 +58,8 @@ export function AppHeaderDrawer({
         <Drawer.Content id={drawerId}>
           <Drawer.Header>
             <Drawer.Title>{drawerTitle}</Drawer.Title>
-            <Drawer.CloseButton />
+            {/* Mantine supplies no default aria-label here (see #94, where Modal shipped the same gap). */}
+            <Drawer.CloseButton aria-label={closeButtonLabel} />
           </Drawer.Header>
           <Drawer.Body>
             <AppHeaderNav items={items} ariaLabel={navAriaLabel} />
