@@ -28,6 +28,7 @@ export function NavigationLink({
   variant = 'default',
   size = 'md',
   renderLink,
+  'aria-current': ariaCurrent,
   ...props
 }: NavigationLinkProps) {
   const classes = cx(
@@ -41,5 +42,16 @@ export function NavigationLink({
     return renderLink(classes);
   }
 
-  return <a href={href} className={classes} children={children} {...props} />;
+  return (
+    <a
+      href={href}
+      className={classes}
+      // Undefined rather than `false`: React omits the attribute entirely for
+      // undefined, whereas `aria-current="false"` is a real value to AT and
+      // would announce every unselected link as current.
+      aria-current={ariaCurrent ?? (isSelected ? 'page' : undefined)}
+      children={children}
+      {...props}
+    />
+  );
 }
