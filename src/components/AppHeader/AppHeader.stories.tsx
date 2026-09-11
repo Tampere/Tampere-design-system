@@ -176,6 +176,7 @@ const languages = [
 export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
+      layout="multi-row"
       siteName="{Nimi}"
       homeHref="/"
       navigation={navigation}
@@ -320,6 +321,7 @@ export const DoesNotOverflowWithLongSiteNameAt320: StoryObj<typeof AppHeader> = 
   // (WCAG 1.4.10 Reflow).
   render: () => (
     <AppHeader
+      layout="multi-row"
       siteName="Erittäin pitkä ja kuvitteellinen sivuston nimi joka ei mahdu yhdelle riville"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -442,7 +444,9 @@ export const ExactlyOneNavigationLandmarkWhenDrawerOpen: StoryObj<typeof AppHead
 };
 
 export const SecondaryLogoHiddenOnSmallest: StoryObj<typeof AppHeader> = {
-  render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
+  render: () => (
+    <AppHeader layout="multi-row" navigation={navigation} navAriaLabel="Päänavigaatio" />
+  ),
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
 
@@ -506,6 +510,7 @@ export const WithSearch: StoryObj<typeof AppHeader> = {
   tags: docExample,
   render: () => (
     <AppHeader
+      layout="multi-row"
       siteName="{Nimi}"
       homeHref="/"
       navigation={navigation}
@@ -542,4 +547,91 @@ export const WithoutSiteName: StoryObj<typeof AppHeader> = {
       currentLanguage="fi"
     />
   ),
+};
+
+export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader
+      siteName="{Nimi}"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      actions={<Button variant="secondary">Kirjaudu</Button>}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(1500, 800);
+
+    // One row: brand, nav, languages and actions are siblings under a single
+    // row, so the nav shares a parent with the brand link.
+    const header = canvas.getByRole('banner');
+    const nav = canvas.getByRole('navigation', { name: 'Päänavigaatio' });
+    const brand = canvas.getByRole('link', { name: 'Tampere' });
+    await expect(nav.closest('header')).toBe(header);
+    await expect(nav.parentElement?.parentElement).toBe(brand.closest('header')?.firstElementChild);
+
+    // Figma hides the Tampere.finland logo at every single-row breakpoint.
+    await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).toBeNull();
+  },
+};
+
+export const MultiRowIsOptIn: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader
+      layout="multi-row"
+      siteName="{Nimi}"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      search={<input aria-label="Etsi" placeholder="Etsi" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(1500, 800);
+
+    // Two rows, and the search slot lives in the second one.
+    const header = canvas.getByRole('banner');
+    await expect(header.children).toHaveLength(2);
+    await expect(header.children[1].contains(canvas.getByLabelText('Etsi'))).toBe(true);
+    await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).not.toBeNull();
+  },
+};
+
+// Locks decision 3 of the spec: `search` is meaningless in single-row, so the
+// union must reject it. `tsc --noEmit` fails if this ever stops erroring.
+export const SearchIsForbiddenInSingleRow: StoryObj<typeof AppHeader> = {
+  render: () => (
+    // TS attributes a JSX-prop-union mismatch to the opening tag, not the
+    // offending attribute, so the directive has to precede the tag itself.
+    // @ts-expect-error — `search` requires layout="multi-row"
+    <AppHeader navAriaLabel="Päänavigaatio" search={<input aria-label="Etsi" />} />
+  ),
+};
+
+export const LanguagesStayVisibleWithoutNavigation: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader navAriaLabel="Päänavigaatio" languages={languages} currentLanguage="fi" />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(320, 640);
+
+    // No navigation means no drawer, so hiding the language links below 1024
+    // would leave no way to switch language at all.
+    const languageNav = canvasElement.querySelector('nav[aria-label="Kieli"]') as HTMLElement;
+    await waitFor(async () => {
+      await expect(getComputedStyle(languageNav).display).not.toBe('none');
+    });
+    await expect(canvas.queryByRole('button', { name: 'Valikko' })).toBeNull();
+  },
 };
