@@ -167,12 +167,12 @@ export const ExplicitAriaCurrentWins: Story = {
   },
 };
 
-export const RenderLinkReceivesAriaCurrent: Story = {
+export const RenderLinkReceivesDerivedAriaCurrent: Story = {
   args: {
     isSelected: true,
     children: 'Navigointilinkki',
-    renderLink: (className: string) => (
-      <a className={className} href="#" aria-current="page">
+    renderLink: (className: string, ariaCurrent) => (
+      <a className={className} href="#" aria-current={ariaCurrent}>
         Navigointilinkki
       </a>
     ),

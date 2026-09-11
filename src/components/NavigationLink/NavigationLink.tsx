@@ -11,7 +11,10 @@ export interface NavigationLinkProps extends AnchorHTMLAttributes<HTMLAnchorElem
   className?: string;
   variant?: NavigationLinkVariant;
   size?: NavigationLinkSize;
-  renderLink?: (className: string) => ReactElement;
+  renderLink?: (
+    className: string,
+    ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
+  ) => ReactElement;
 }
 
 /**
@@ -38,20 +41,18 @@ export function NavigationLink({
     className
   );
 
+  // Undefined rather than `false`: React omits the attribute entirely for
+  // undefined, whereas `aria-current="false"` is a real value to AT and
+  // would announce every unselected link as current.
+  const currentValue = ariaCurrent ?? (isSelected ? 'page' : undefined);
+
   if (renderLink) {
-    return renderLink(classes);
+    // renderLink owns its own anchor, so the derived value is passed as an
+    // argument rather than applied — the consumer can decide how to wire it.
+    return renderLink(classes, currentValue);
   }
 
   return (
-    <a
-      href={href}
-      className={classes}
-      // Undefined rather than `false`: React omits the attribute entirely for
-      // undefined, whereas `aria-current="false"` is a real value to AT and
-      // would announce every unselected link as current.
-      aria-current={ariaCurrent ?? (isSelected ? 'page' : undefined)}
-      children={children}
-      {...props}
-    />
+    <a href={href} className={classes} aria-current={currentValue} children={children} {...props} />
   );
 }
