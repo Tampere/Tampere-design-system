@@ -334,6 +334,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -695,6 +696,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -1056,6 +1058,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -1831,6 +1834,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
     "inputStates": {
       "default": "#52525b",
     },
+    "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
     "selectionStates": {
       "unchecked": {
         "active": "#9999a0",
@@ -2193,6 +2197,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -2554,6 +2559,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -2915,6 +2921,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",

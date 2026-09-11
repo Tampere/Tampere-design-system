@@ -2,15 +2,28 @@ import type { AnchorHTMLAttributes, ReactElement, ReactNode } from 'react';
 import { NavigationLink } from '../NavigationLink';
 import { navList, navItem } from './AppHeader.css';
 
-export interface AppHeaderNavigationItem {
+interface AppHeaderNavigationItemBase {
   label: ReactNode;
-  href?: string;
   isSelected?: boolean;
-  renderLink?: (
-    className: string,
-    ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
-  ) => ReactElement;
 }
+
+/**
+ * Renders the item in place of the default `<a href={href}>`. The second
+ * argument is the derived `aria-current` value (from `isSelected`) — apply it
+ * to whatever element you render, it is not applied for you.
+ */
+type RenderLink = (
+  className: string,
+  ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
+) => ReactElement;
+
+// `href` and `renderLink` were both optional, so an item with neither rendered
+// an `<a>` with no href — inert, and not exposed to AT as a link. A
+// discriminated union makes one of the two required at compile time, using
+// the same technique as Button.tsx's `iconOnly`/`aria-label` pairing.
+export type AppHeaderNavigationItem =
+  | (AppHeaderNavigationItemBase & { href: string; renderLink?: undefined })
+  | (AppHeaderNavigationItemBase & { href?: undefined; renderLink: RenderLink });
 
 export interface AppHeaderNavProps {
   items: AppHeaderNavigationItem[];

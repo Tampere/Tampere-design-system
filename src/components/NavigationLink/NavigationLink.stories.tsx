@@ -108,8 +108,8 @@ export const WithCustomLink: Story = {
       />
       <NavigationLink
         isSelected
-        renderLink={(className) => (
-          <a href="#custom-selected" className={className}>
+        renderLink={(className, ariaCurrent) => (
+          <a href="#custom-selected" className={className} aria-current={ariaCurrent}>
             Selected Custom Link
           </a>
         )}

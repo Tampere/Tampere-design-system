@@ -195,6 +195,59 @@ export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
   },
 };
 
+export const LanguageLinksMeetTouchTargetAt320: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // The 24px touch-target assertion in HeaderLandmarksAndSlots runs at 1500px
+  // (xxl tier) since Task 7 set that story's viewport there — it can no
+  // longer catch a regression at the small breakpoints, where p2 (14px) at
+  // 150% line-height plus linkBase's 2px bottom border and no padding leaves
+  // the least headroom above the floor.
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(320, 640);
+
+    const height = canvas.getByRole('link', { name: 'FI' }).getBoundingClientRect().height;
+    await expect(height).toBeGreaterThanOrEqual(24);
+  },
+};
+
+export const DoesNotOverflowWithLongSiteNameAt320: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // `siteName` is free consumer text with no length limit; at 320px it must
+  // wrap rather than force the header (and the page) wider than the viewport
+  // (WCAG 1.4.10 Reflow).
+  render: () => (
+    <AppHeader
+      siteName="Erittäin pitkä ja kuvitteellinen sivuston nimi joka ei mahdu yhdelle riville"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+
+    await page.viewport(320, 640);
+
+    const header = canvasElement.querySelector('header') as HTMLElement;
+    await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+      document.documentElement.clientWidth
+    );
+  },
+};
+
 export const LanguagesAreOptional: StoryObj<typeof AppHeader> = {
   render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
@@ -202,6 +255,20 @@ export const LanguagesAreOptional: StoryObj<typeof AppHeader> = {
     await expect(canvas.getByRole('banner')).not.toBeNull();
     await expect(canvas.queryByRole('navigation', { name: 'Kieli' })).toBeNull();
     await expect(canvas.getByRole('link', { name: 'Tampere' })).toHaveAttribute('href', '/');
+  },
+};
+
+export const NavigationIsOptional: StoryObj<typeof AppHeader> = {
+  // Regression test: `navigation` defaults to `[]`, and AppHeaderDrawer used
+  // to render unconditionally regardless — an omitted `navigation` produced a
+  // "Valikko" button that opened an empty dialog, plus an empty named `<nav>`
+  // at desktop. Both are now gated on `navigation.length > 0` in AppHeader.tsx.
+  render: () => <AppHeader navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('banner')).not.toBeNull();
+    await expect(canvas.queryByRole('button', { name: 'Valikko' })).toBeNull();
+    await expect(canvas.queryByRole('navigation', { name: 'Päänavigaatio' })).toBeNull();
   },
 };
 
@@ -258,6 +325,30 @@ export const DrawerClosesWhenViewportReachesDesktop: StoryObj<typeof AppHeader> 
   },
 };
 
+export const ExactlyOneNavigationLandmarkWhenDrawerOpen: StoryObj<typeof AppHeader> = {
+  // Locks the architecture's central invariant: the inline nav (hidden below
+  // 1440 via CSS) and the drawer nav share the same `navAriaLabel`, and the
+  // whole design relies on only one of them ever being in the accessibility
+  // tree at once — Mantine not mounting the drawer's children while closed,
+  // nothing else. If that assumption ever breaks, AT sees two identically
+  // named "navigation" landmarks with the drawer open.
+  render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(1000, 800);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+    await userEvent.click(trigger);
+    // findByRole: waits out Mantine's mount transition (see DrawerOpensAndWiresAria).
+    await within(document.body).findByRole('dialog');
+
+    await expect(
+      within(document.body).getAllByRole('navigation', { name: 'Päänavigaatio' })
+    ).toHaveLength(1);
+  },
+};
+
 export const SecondaryLogoHiddenOnSmallest: StoryObj<typeof AppHeader> = {
   render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
@@ -278,7 +369,6 @@ export const SecondaryLogoHiddenOnSmallest: StoryObj<typeof AppHeader> = {
 };
 
 export const RenderLinkReceivesAriaCurrent: StoryObj<typeof AppHeaderNav> = {
-  tags: ['!dev', '!autodocs'],
   // Proves the second renderLink argument actually flows AppHeaderNav ->
   // NavigationLink -> a consumer's own anchor, not just that the type checks.
   render: () => (
