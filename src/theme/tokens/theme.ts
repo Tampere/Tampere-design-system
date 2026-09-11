@@ -73,6 +73,13 @@ const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
 
+// The kit's minimum touch target (WCAG 2.5.5-style floor), breakpoint-independent
+// unlike `bpTokens` below — a component sizes to content by default and opts into
+// this only where content alone would fall under it (e.g. AppHeader's small-text
+// language links; `components.iconButton.minTouchTarget` is the pre-existing
+// component-scoped equivalent for a different control family).
+const minTouchTarget = rem('24px');
+
 const dropShadow = 'rgba(0, 0, 0, 0.5000)';
 // Figma's Card/Accordion dropshadow spec (offset 0/1, blur 4, spread 0) — shared
 // so the two components' shadows can't drift apart by editing one.
@@ -446,6 +453,7 @@ export function getTheme(bp: BreakpointKey) {
     divider: colors.neutral['200'],
     cornerRadius,
     strokeWeight,
+    minTouchTarget,
     dropShadow,
     dropShadowTile,
     states,

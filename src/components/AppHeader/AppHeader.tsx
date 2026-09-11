@@ -18,9 +18,11 @@ import {
   inlineNav,
   navList,
   navItem,
+  languageLink,
 } from './AppHeader.css';
 
 export interface AppHeaderLanguage {
+  /** Matched against `currentLanguage` to determine the selected link — not `label`, which is only display text. */
   code: string;
   label: string;
   href: string;
@@ -28,20 +30,28 @@ export interface AppHeaderLanguage {
 
 export interface AppHeaderProps {
   siteName?: ReactNode;
+  /** Default `'/'` — the brand logo always links somewhere, so an app mounted under a sub-path should pass its own. */
   homeHref?: string;
+  /** Omit entirely (rather than passing `[]`) to render a header with no navigation at all — both the inline nav and the drawer trigger are hidden when empty. */
   navigation?: AppHeaderNavigationItem[];
+  /** Required: names the `navigation` landmark for AT, since a header can contain more than one `<nav>` (this one, plus the language switcher). No sensible Finnish default exists — it depends on the consumer's own navigation structure. */
   navAriaLabel: string;
   languages?: AppHeaderLanguage[];
+  /** A language's `code` (not `label`) to mark as selected. */
   currentLanguage?: string;
   languagesAriaLabel?: string;
+  /** Search input slot, rendered as-is — AppHeader supplies layout only. */
   search?: ReactNode;
+  /** Slot rendered after the language links, e.g. a login button. */
   actions?: ReactNode;
   menuButtonLabel?: string;
   drawerTitle?: string;
+  /** Accessible name for the drawer's close button. Default `'Sulje valikko'`. */
   closeButtonLabel?: string;
   className?: string;
 }
 
+/** The site chrome header: brand logo, optional site name, primary navigation (inline at xl/xxl, a drawer below), language switcher, and search/actions slots. */
 export function AppHeader({
   siteName,
   homeHref = '/',
@@ -78,6 +88,7 @@ export function AppHeader({
                     <NavigationLink
                       href={language.href}
                       size="sm"
+                      className={languageLink}
                       isSelected={language.code === currentLanguage}
                       // "true", not the derived "page": switching language
                       // stays on the same page in another translation.
@@ -97,14 +108,18 @@ export function AppHeader({
       <div className={row}>
         <div className={searchContainer}>{search}</div>
         <div className={rightSection}>
-          <AppHeaderNav items={navigation} ariaLabel={navAriaLabel} className={inlineNav} />
-          <AppHeaderDrawer
-            items={navigation}
-            navAriaLabel={navAriaLabel}
-            menuButtonLabel={menuButtonLabel}
-            drawerTitle={drawerTitle}
-            closeButtonLabel={closeButtonLabel}
-          />
+          {navigation.length > 0 ? (
+            <>
+              <AppHeaderNav items={navigation} ariaLabel={navAriaLabel} className={inlineNav} />
+              <AppHeaderDrawer
+                items={navigation}
+                navAriaLabel={navAriaLabel}
+                menuButtonLabel={menuButtonLabel}
+                drawerTitle={drawerTitle}
+                closeButtonLabel={closeButtonLabel}
+              />
+            </>
+          ) : null}
         </div>
       </div>
     </header>

@@ -7,6 +7,7 @@ const {
     divider,
     strokeWeight,
     background,
+    minTouchTarget,
     components: { appHeader, typography },
   },
 } = vars;
@@ -30,10 +31,21 @@ export const navList = style({
 
 export const navItem = style({ display: 'flex' });
 
+// NavigationLink's own `sm` size sizes to its text (p2 line-height + a 2px
+// bottom border, no padding) — ~23px at the xs/sm breakpoints, under the
+// kit's 24px touch-target floor. Applied only to the language links here
+// rather than widening NavigationLink itself, which would resize every other
+// `sm` consumer.
+export const languageLink = style({ minHeight: minTouchTarget });
+
 export const menuButton = style({
   // `!important`: Button's own `root` class sets an unconditional `display:
   // flex` at the same (0,1,0) specificity; without it, whichever class's CSS
   // happens to land later in the bundle wins, regardless of this media query.
+  // The compound-selector remedy Button.css.ts uses for its own `tertiary`/
+  // `pill` conflict (a `(0,2,0)` selector beating `pill`'s `(0,1,0)` without
+  // `!important`) isn't available here: that trick needs a selector built
+  // from Button's `root` class, which Button.css.ts doesn't export.
   '@media': { [inlineNavWidth]: { display: 'none !important' } },
 });
 
@@ -51,18 +63,28 @@ export const row = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: appHeader.spacing,
+  // `siteName` is free consumer text with no length limit, so at narrow
+  // widths it (and the row generally) needs to wrap rather than force the
+  // header wider than the viewport (WCAG 1.4.10 Reflow).
+  flexWrap: 'wrap',
 });
 
 export const leftSection = style({
   display: 'flex',
   alignItems: 'center',
   gap: appHeader.spacing,
+  // Flex children default to `min-width: auto`, i.e. their content's
+  // intrinsic width — without this, a long `siteName` (or any child here)
+  // keeps the row from shrinking below that width, overflowing at narrow
+  // viewports instead of wrapping.
+  minWidth: 0,
 });
 
 export const rightSection = style({
   display: 'flex',
   alignItems: 'center',
   gap: appHeader.spacing,
+  minWidth: 0,
 });
 
 export const brandLink = style({ display: 'flex', alignItems: 'center' });
@@ -89,10 +111,20 @@ export const siteName = style({
   fontFamily: typography.h5.fontFamily,
   fontWeight: typography.h5.fontWeight,
   lineHeight: typography.h5.lineHeight,
+  // Same reflow fix as `leftSection`, one level down: as a flex item of
+  // `leftSection`, this span's own default `min-width: auto` would otherwise
+  // still hold it — and `leftSection` with it — to its unwrapped text width.
+  minWidth: 0,
+  // `word-break: normal` only wraps at whitespace, so a single long word (a
+  // Finnish compound is one word with no space to break at) still overflows
+  // its box even with `min-width: 0` above — allow a mid-word break as a
+  // last resort once whitespace-wrapping alone can't fit it.
+  overflowWrap: 'anywhere',
 });
 
 export const searchContainer = style({
   display: 'flex',
   maxWidth: appHeader.searchMaxWidth,
   width: '100%',
+  minWidth: 0,
 });

@@ -11,6 +11,12 @@ export interface NavigationLinkProps extends AnchorHTMLAttributes<HTMLAnchorElem
   className?: string;
   variant?: NavigationLinkVariant;
   size?: NavigationLinkSize;
+  /**
+   * Renders the link in place of the default `<a>`. The second argument is
+   * the derived `aria-current` value (from `isSelected`, or an explicit
+   * override) — apply it to whatever element you render, it is not applied
+   * for you.
+   */
   renderLink?: (
     className: string,
     ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
