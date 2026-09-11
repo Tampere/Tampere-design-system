@@ -525,22 +525,6 @@ export const MultiRow: StoryObj<typeof AppHeader> = {
   ),
 };
 
-export const WithSearch: StoryObj<typeof AppHeader> = {
-  tags: docExample,
-  render: () => (
-    <AppHeader
-      layout="multi-row"
-      siteName="{Nimi}"
-      homeHref="/"
-      navigation={navigation}
-      navAriaLabel="Päänavigaatio"
-      languages={languages}
-      currentLanguage="fi"
-      search={<input aria-label="Etsi" placeholder="Etsi" />}
-    />
-  ),
-};
-
 export const WithActions: StoryObj<typeof AppHeader> = {
   tags: docExample,
   render: () => (
