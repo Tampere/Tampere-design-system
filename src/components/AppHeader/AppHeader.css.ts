@@ -19,6 +19,7 @@ const {
 // reference cannot work here; media conditions require a literal length.
 const inlineNavWidth = `screen and (min-width: ${breakpoint.xl.appWidth})`;
 const wideEnoughForSecondaryLogo = `screen and (min-width: ${breakpoint.sm.appWidth})`;
+const inlineLanguagesWidth = `screen and (min-width: ${breakpoint.lg.appWidth})`;
 
 export const navList = style({
   display: 'flex',
@@ -104,6 +105,22 @@ export const secondaryLogo = style({
 export const inlineNav = style({
   display: 'none',
   '@media': { [inlineNavWidth]: { display: 'block' } },
+});
+
+export const inlineLanguages = style({
+  display: 'none',
+  '@media': { [inlineLanguagesWidth]: { display: 'block' } },
+});
+
+// The mirror of `inlineLanguages`, and load-bearing rather than cosmetic:
+// between 1024 and 1440 the drawer trigger exists *and* the inline copy is
+// visible, so without this an open drawer puts a second nav with the same
+// accessible name into the tree.
+export const drawerLanguages = style({
+  borderTop: `${strokeWeight} solid ${divider}`,
+  marginTop: appHeader.spacing,
+  paddingTop: appHeader.spacing,
+  '@media': { [inlineLanguagesWidth]: { display: 'none' } },
 });
 
 export const siteName = style({

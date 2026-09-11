@@ -12,6 +12,7 @@ import {
   secondaryLogo,
   searchContainer,
   inlineNav,
+  inlineLanguages,
 } from './AppHeader.css';
 
 // Re-exported so `index.ts` (and the package barrel) keep exporting it from here.
@@ -66,6 +67,7 @@ export function AppHeader({
               languages={languages}
               currentLanguage={currentLanguage}
               ariaLabel={languagesAriaLabel}
+              className={inlineLanguages}
             />
           ) : null}
           {actions}
@@ -84,6 +86,9 @@ export function AppHeader({
                 menuButtonLabel={menuButtonLabel}
                 drawerTitle={drawerTitle}
                 closeButtonLabel={closeButtonLabel}
+                languages={languages}
+                currentLanguage={currentLanguage}
+                languagesAriaLabel={languagesAriaLabel}
               />
             </>
           ) : null}
