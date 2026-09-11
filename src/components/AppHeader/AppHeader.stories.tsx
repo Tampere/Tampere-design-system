@@ -496,6 +496,14 @@ export const RenderLinkReceivesAriaCurrent: StoryObj<typeof AppHeaderNav> = {
 
 export const Default: StoryObj<typeof AppHeader> = {
   tags: docExample,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "This docs frame is ~1000px wide — below both breakpoints — so the header renders in its fully collapsed form: no inline navigation, no inline language links, drawer trigger only. Open the story's Canvas view at 1440px+ to see the inline navigation and language links.",
+      },
+    },
+  },
   render: () => (
     <AppHeader
       siteName="{Nimi}"
@@ -569,7 +577,7 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
 
     await page.viewport(1500, 800);
 
-    // One row: the nav's parent (rightSection) is the brand's sibling, so
+    // One row: the nav's parent (rightSection) is leftSection's sibling, so
     // both share the same grandparent — the row div checked below.
     const header = canvas.getByRole('banner');
     const nav = canvas.getByRole('navigation', { name: 'Päänavigaatio' });
@@ -579,6 +587,20 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
 
     // Figma hides the Tampere.finland logo at every single-row breakpoint.
     await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).toBeNull();
+
+    // Right-section child order per Figma node 14147:8543: nav -> languages
+    // -> actions -> drawer trigger. Regression lock for the order the final
+    // review found swapped (nav rendered last instead of first).
+    const rightSectionEl = nav.parentElement as HTMLElement;
+    const languageNav = canvas.getByRole('navigation', { name: 'Kieli' });
+    const trigger = canvasElement.querySelector('button[class*="menuButton"]') as HTMLElement;
+    const rightChildren = Array.from(rightSectionEl.children);
+    const navIndex = rightChildren.indexOf(nav);
+    const languageIndex = rightChildren.indexOf(languageNav);
+    const triggerIndex = rightChildren.indexOf(trigger);
+    await expect(navIndex).toBeGreaterThanOrEqual(0);
+    await expect(languageIndex).toBeGreaterThan(navIndex);
+    await expect(triggerIndex).toBeGreaterThan(languageIndex);
   },
 };
 

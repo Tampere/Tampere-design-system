@@ -7,11 +7,18 @@ export interface AppHeaderBrandProps {
   homeHref: string;
   /** The site name's type class — `h5` in multi-row, `subheader` in single-row, per Figma. */
   siteNameClassName: string;
+  /** The wrapping div's class. Default `leftSection`; single-row passes its own gapped variant. */
+  className?: string;
 }
 
-export function AppHeaderBrand({ siteName, homeHref, siteNameClassName }: AppHeaderBrandProps) {
+export function AppHeaderBrand({
+  siteName,
+  homeHref,
+  siteNameClassName,
+  className = leftSection,
+}: AppHeaderBrandProps) {
   return (
-    <div className={leftSection}>
+    <div className={className}>
       {/* The link wraps the logo only: an accessible name concatenating
           "Tampere" with an arbitrary site name reads poorly and changes
           per consumer. */}

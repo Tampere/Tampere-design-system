@@ -18,9 +18,11 @@ export interface AppHeaderLanguagesProps {
 
 /**
  * The language switcher, rendered both inline in the header and inside the
- * drawer. Only ever one of the two is in the accessibility tree at a time: the
- * inline copy is `display: none` below 1024, the drawer copy above it, and
- * Mantine's Drawer does not mount its children while closed.
+ * drawer. Only ever one of the two is in the accessibility tree at a time when
+ * a drawer exists: the inline copy is `display: none` below 1024, the drawer
+ * copy above it, and Mantine's Drawer does not mount its children while
+ * closed. With no drawer (no `navigation`), the inline copy stays visible at
+ * every width.
  */
 export function AppHeaderLanguages({
   languages,
