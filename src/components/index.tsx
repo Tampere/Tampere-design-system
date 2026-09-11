@@ -1,4 +1,10 @@
 export { Accordion, AccordionItem } from './Accordion/Accordion';
+export {
+  AppHeader,
+  type AppHeaderProps,
+  type AppHeaderLanguage,
+  type AppHeaderNavigationItem,
+} from './AppHeader';
 export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { Button } from './Button/Button';
 export { Card, type CardProps } from './Card/Card';

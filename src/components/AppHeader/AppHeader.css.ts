@@ -31,7 +31,10 @@ export const navList = style({
 export const navItem = style({ display: 'flex' });
 
 export const menuButton = style({
-  '@media': { [inlineNavWidth]: { display: 'none' } },
+  // `!important`: Button's own `root` class sets an unconditional `display:
+  // flex` at the same (0,1,0) specificity; without it, whichever class's CSS
+  // happens to land later in the bundle wins, regardless of this media query.
+  '@media': { [inlineNavWidth]: { display: 'none !important' } },
 });
 
 export const root = style({
