@@ -70,6 +70,11 @@ export const row = style({
   flexWrap: 'wrap',
 });
 
+// Single-row's own row: Figma gaps its First/Left/Right sections with the
+// grid's layout/gutter (32/24/16 at xl/lg/md), not appHeader.spacing —
+// verified against nodes 14147:8543/14147:10912/14147:10973.
+export const singleRowRow = style([row, { gap: appHeader.rowGap }]);
+
 export const leftSection = style({
   display: 'flex',
   alignItems: 'center',
@@ -136,6 +141,17 @@ export const siteName = style({
   // Finnish compound is one word with no space to break at) still overflows
   // its box even with `min-width: 0` above — allow a mid-word break as a
   // last resort once whitespace-wrapping alone can't fit it.
+  overflowWrap: 'anywhere',
+});
+
+// Single-row's Site name resolves to the subheader token in Figma (20px at
+// 1440), not h5 (24px) — the two layouts intentionally diverge here.
+export const siteNameSubheader = style({
+  fontSize: typography.subheader.fontSize,
+  fontFamily: typography.subheader.fontFamily,
+  fontWeight: typography.subheader.fontWeight,
+  lineHeight: typography.subheader.lineHeight,
+  minWidth: 0,
   overflowWrap: 'anywhere',
 });
 

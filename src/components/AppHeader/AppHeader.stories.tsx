@@ -566,8 +566,8 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
 
     await page.viewport(1500, 800);
 
-    // One row: brand, nav, languages and actions are siblings under a single
-    // row, so the nav shares a parent with the brand link.
+    // One row: the nav's parent (rightSection) is the brand's sibling, so
+    // both share the same grandparent — the row div checked below.
     const header = canvas.getByRole('banner');
     const nav = canvas.getByRole('navigation', { name: 'Päänavigaatio' });
     const brand = canvas.getByRole('link', { name: 'Tampere' });
@@ -576,6 +576,23 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
 
     // Figma hides the Tampere.finland logo at every single-row breakpoint.
     await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).toBeNull();
+  },
+};
+
+export const SingleRowSiteNameUsesSubheader: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader siteName="{Nimi}" navigation={navigation} navAriaLabel="Päänavigaatio" />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+
+    await page.viewport(1500, 800);
+    const siteNameEl = canvasElement.querySelector('span[class*="siteName"]') as HTMLElement;
+
+    // subheader is 20px at xl/xxl, h5 is 24px — the two layouts differ here.
+    await waitFor(async () => {
+      await expect(getComputedStyle(siteNameEl).fontSize).toBe('20px');
+    });
   },
 };
 

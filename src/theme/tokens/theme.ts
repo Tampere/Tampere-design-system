@@ -208,6 +208,11 @@ export function getTheme(bp: BreakpointKey) {
         secondaryHeight: bpTokens.appHeader.logo.secondaryLogoHeight,
       },
       searchMaxWidth: bpTokens.appHeader.search.maxWidth,
+      // Single-row's First/Left/Right section gap in Figma (nodes 14147:8543,
+      // 14147:10912, 14147:10973) is the grid's own layout/gutter — 32/24/16
+      // across xl/lg/md — not appHeader.spacing. Multi-row's rows don't use
+      // this; keep it separate so appHeader.spacing stays untouched.
+      rowGap: bpTokens.layout.gutter,
     },
     footer: {
       spacing: primitives.spacing['4'],
