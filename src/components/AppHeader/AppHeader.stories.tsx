@@ -154,7 +154,12 @@ export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
     />
   ),
   play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
     const canvas = within(canvasElement);
+
+    // Task 7 hides the inline nav below 1440 (breakpoint.xl.appWidth); this
+    // story exercises the full desktop slot set, so it needs that width.
+    await page.viewport(1500, 800);
 
     await expect(canvas.getByRole('banner')).not.toBeNull();
 
@@ -193,5 +198,77 @@ export const LanguagesAreOptional: StoryObj<typeof AppHeader> = {
     await expect(canvas.getByRole('banner')).not.toBeNull();
     await expect(canvas.queryByRole('navigation', { name: 'Kieli' })).toBeNull();
     await expect(canvas.getByRole('link', { name: 'Tampere' })).toHaveAttribute('href', '/');
+  },
+};
+
+export const InlineNavAtDesktopDrawerBelow: StoryObj<typeof AppHeader> = {
+  render: () => (
+    <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" languages={languages} />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+
+    // 1440 is breakpoint.xl.appWidth — inline nav only at xl/xxl, drawer at
+    // the four breakpoints below, per Figma node 5870:42434.
+    // getByRole excludes a display:none element from a real browser's
+    // accessibility tree — that's the point of the CSS switch — so the two
+    // elements under test here are located by a stable DOM attribute/class
+    // instead, the same technique SecondaryLogoHiddenOnSmallest uses below.
+    const nav = canvasElement.querySelector('nav[aria-label="Päänavigaatio"]') as HTMLElement;
+    const trigger = canvasElement.querySelector('button[class*="menuButton"]') as HTMLElement;
+
+    await page.viewport(1500, 800);
+    await waitFor(async () => {
+      await expect(getComputedStyle(nav).display).not.toBe('none');
+    });
+    await expect(getComputedStyle(trigger).display).toBe('none');
+
+    await page.viewport(1000, 800);
+    await waitFor(async () => {
+      await expect(getComputedStyle(nav).display).toBe('none');
+    });
+    await expect(getComputedStyle(trigger).display).not.toBe('none');
+  },
+};
+
+export const DrawerClosesWhenViewportReachesDesktop: StoryObj<typeof AppHeader> = {
+  render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(1000, 800);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+    await userEvent.click(trigger);
+    // findByRole: waits out Mantine's mount transition (see DrawerOpensAndWiresAria).
+    // Reaching the next line already confirms the dialog exists — findByRole
+    // throws otherwise.
+    await within(document.body).findByRole('dialog');
+
+    // Crossing to the inline-nav width hides the trigger in CSS; leaving the
+    // drawer open would strand its focus trap with no visible way back.
+    await page.viewport(1500, 800);
+    await waitFor(async () => {
+      await expect(within(document.body).queryByRole('dialog')).toBeNull();
+    });
+  },
+};
+
+export const SecondaryLogoHiddenOnSmallest: StoryObj<typeof AppHeader> = {
+  render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+
+    // Figma hides the Tampere.finland logo at 320 and shows it from 480 up.
+    await page.viewport(320, 640);
+    const logo = canvasElement.querySelector('svg[class*="secondaryLogo"]') as HTMLElement;
+    await waitFor(async () => {
+      await expect(getComputedStyle(logo).display).toBe('none');
+    });
+
+    await page.viewport(600, 640);
+    await waitFor(async () => {
+      await expect(getComputedStyle(logo).display).not.toBe('none');
+    });
   },
 };

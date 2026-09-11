@@ -1,5 +1,6 @@
 import { style } from '@vanilla-extract/css';
 import { vars } from '../../theme';
+import { breakpoint } from '../../theme/tokens/breakpoint';
 
 const {
   theme: {
@@ -9,6 +10,14 @@ const {
     components: { appHeader, typography },
   },
 } = vars;
+
+// Deliberately the real viewport token, unlike Linkbox's component-local
+// `containerQueryBreakpoint`: AppHeader is page chrome and its collapse point
+// *is* the site's responsive grid (Figma node 5870:42434 — inline nav exists
+// only at 1440), so it should follow xl if xl is ever retuned. A `var()`
+// reference cannot work here; media conditions require a literal length.
+const inlineNavWidth = `screen and (min-width: ${breakpoint.xl.appWidth})`;
+const wideEnoughForSecondaryLogo = `screen and (min-width: ${breakpoint.sm.appWidth})`;
 
 export const navList = style({
   display: 'flex',
@@ -21,8 +30,9 @@ export const navList = style({
 
 export const navItem = style({ display: 'flex' });
 
-// Empty for now — Task 7 adds the @media rule that hides this above 1440px.
-export const menuButton = style({});
+export const menuButton = style({
+  '@media': { [inlineNavWidth]: { display: 'none' } },
+});
 
 export const root = style({
   display: 'flex',
@@ -60,13 +70,16 @@ export const primaryLogo = style({
 });
 
 export const secondaryLogo = style({
+  display: 'none',
   height: appHeader.logo.secondaryHeight,
   width: 'auto',
+  '@media': { [wideEnoughForSecondaryLogo]: { display: 'block' } },
 });
 
-// Declared here so Task 6's import resolves; Task 7 adds the `@media` rules
-// that make these two the actual inline-nav ↔ drawer switch.
-export const inlineNav = style({});
+export const inlineNav = style({
+  display: 'none',
+  '@media': { [inlineNavWidth]: { display: 'block' } },
+});
 
 export const siteName = style({
   fontSize: typography.h5.fontSize,
