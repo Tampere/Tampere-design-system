@@ -4,6 +4,7 @@ import { expect } from 'storybook/test';
 import { AppHeaderNav } from './AppHeaderNav';
 import { AppHeaderDrawer } from './AppHeaderDrawer';
 import { AppHeader } from './AppHeader';
+import { Button } from '../Button/Button';
 
 const navigation = [
   { label: 'Palvelut', href: '/palvelut' },
@@ -12,15 +13,18 @@ const navigation = [
 ];
 
 const meta = {
-  component: AppHeaderNav,
+  component: AppHeader,
   tags: ['!dev', '!autodocs'],
-} satisfies Meta<typeof AppHeaderNav>;
+} satisfies Meta<typeof AppHeader>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const NavRendersLabelledLandmark: Story = {
-  args: { items: navigation, ariaLabel: 'Päänavigaatio' },
+const docExample = ['dev', 'autodocs'];
+
+export const NavRendersLabelledLandmark: StoryObj<typeof AppHeaderNav> = {
+  // render (not args): meta.component is now AppHeader, so args-based
+  // auto-render would mount AppHeader with AppHeaderNav's props instead.
+  render: () => <AppHeaderNav items={navigation} ariaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -271,4 +275,89 @@ export const SecondaryLogoHiddenOnSmallest: StoryObj<typeof AppHeader> = {
       await expect(getComputedStyle(logo).display).not.toBe('none');
     });
   },
+};
+
+export const RenderLinkReceivesAriaCurrent: StoryObj<typeof AppHeaderNav> = {
+  tags: ['!dev', '!autodocs'],
+  // Proves the second renderLink argument actually flows AppHeaderNav ->
+  // NavigationLink -> a consumer's own anchor, not just that the type checks.
+  render: () => (
+    <AppHeaderNav
+      ariaLabel="Päänavigaatio"
+      items={[
+        {
+          label: 'Asiointi',
+          isSelected: true,
+          renderLink: (className, ariaCurrent) => (
+            <a className={className} href="/asiointi" aria-current={ariaCurrent}>
+              Asiointi
+            </a>
+          ),
+        },
+      ]}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('link', { name: 'Asiointi' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
+  },
+};
+
+export const Default: StoryObj<typeof AppHeader> = {
+  tags: docExample,
+  render: () => (
+    <AppHeader
+      siteName="{Nimi}"
+      homeHref="/"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+};
+
+export const WithSearch: StoryObj<typeof AppHeader> = {
+  tags: docExample,
+  render: () => (
+    <AppHeader
+      siteName="{Nimi}"
+      homeHref="/"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      search={<input aria-label="Etsi" placeholder="Etsi" />}
+    />
+  ),
+};
+
+export const WithActions: StoryObj<typeof AppHeader> = {
+  tags: docExample,
+  render: () => (
+    <AppHeader
+      siteName="{Nimi}"
+      homeHref="/"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      actions={<Button variant="secondary">Kirjaudu</Button>}
+    />
+  ),
+};
+
+export const WithoutSiteName: StoryObj<typeof AppHeader> = {
+  tags: docExample,
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
 };

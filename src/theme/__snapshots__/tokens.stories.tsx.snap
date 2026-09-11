@@ -15,10 +15,15 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "logo": {
+        "primaryHeight": "calc(2rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.75rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
+      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
@@ -365,10 +370,15 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "logo": {
+        "primaryHeight": "calc(1.75rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.5rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
+      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
@@ -715,10 +725,15 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "logo": {
+        "primaryHeight": "calc(1.5rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.25rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
+      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
@@ -1479,10 +1494,15 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "appHeader": {
+        "logo": {
+          "primaryHeight": "calc(1.75rem * var(--mantine-scale))",
+          "secondaryHeight": "calc(1.5rem * var(--mantine-scale))",
+        },
         "padding": {
           "horizontal": "calc(1.5rem * var(--mantine-scale))",
           "vertical": "calc(0.75rem * var(--mantine-scale))",
         },
+        "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
         "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "breadcrumbs": {
@@ -1830,10 +1850,15 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "logo": {
+        "primaryHeight": "calc(2.125rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(2rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(2rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
+      "searchMaxWidth": "calc(20rem * var(--mantine-scale))",
       "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
@@ -2180,10 +2205,15 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "logo": {
+        "primaryHeight": "calc(1.5rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.25rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(0.75rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
+      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
@@ -2530,10 +2560,15 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "logo": {
+        "primaryHeight": "calc(2.25rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(2rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(2rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
+      "searchMaxWidth": "calc(20rem * var(--mantine-scale))",
       "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
