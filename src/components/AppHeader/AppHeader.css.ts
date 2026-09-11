@@ -17,3 +17,6 @@ export const navList = style({
 });
 
 export const navItem = style({ display: 'flex' });
+
+// Empty for now — Task 7 adds the @media rule that hides this above 1440px.
+export const menuButton = style({});
