@@ -4,9 +4,10 @@ import { expect } from 'storybook/test';
 import { AppHeaderNav } from './AppHeaderNav';
 import { AppHeaderDrawer } from './AppHeaderDrawer';
 import { AppHeader } from './AppHeader';
-import { Button } from '../Button/Button';
 import { LabeledIconButton } from '../LabeledIconButton';
 import { SearchIcon } from '../../icons/SearchIcon';
+import { UserIcon } from '../../icons/UserIcon';
+import { CartIcon } from '../../icons/CartIcon';
 
 const navigation = [
   { label: 'Palvelut', href: '/palvelut' },
@@ -179,14 +180,15 @@ export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       layout="multi-row"
-      siteName="{Nimi}"
+      siteName="Site name"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
       languages={languages}
       currentLanguage="fi"
       search={<input aria-label="Etsi" placeholder="Etsi" />}
-      actions={<button type="button">Kirjaudu</button>}
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+      login={{ label: 'Kirjaudu', onClick: () => {} }}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -217,13 +219,14 @@ export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
     ).toBeGreaterThanOrEqual(24);
 
     await expect(canvas.getByLabelText('Etsi')).not.toBeNull();
+    await expect(canvas.getByRole('button', { name: 'Ostoskori' })).not.toBeNull();
     await expect(canvas.getByRole('button', { name: 'Kirjaudu' })).not.toBeNull();
 
     // The brand link names itself from the logo alone — concatenating an
     // arbitrary site name would make the accessible name unstable per consumer.
     const brand = canvas.getByRole('link', { name: 'Tampere' });
     await expect(brand).toHaveAttribute('href', '/');
-    await expect(within(brand).queryByText('{Nimi}')).toBeNull();
+    await expect(within(brand).queryByText('Site name')).toBeNull();
   },
 };
 
@@ -316,11 +319,12 @@ export const ExactlyOneLanguageLandmarkAt1200: StoryObj<typeof AppHeader> = {
   },
 };
 
-export const DoesNotOverflowWithLongSiteNameAt320: StoryObj<typeof AppHeader> = {
+export const DoesNotOverflowWithLongSiteNameAtMd: StoryObj<typeof AppHeader> = {
   tags: ['!dev', '!autodocs'],
-  // `siteName` is free consumer text with no length limit; at 320px it must
-  // wrap rather than force the header (and the page) wider than the viewport
-  // (WCAG 1.4.10 Reflow).
+  // `siteName` is free consumer text with no length limit; at md (768,
+  // the narrowest width where it's visible at all — it's hidden below md)
+  // it must wrap rather than force the header (and the page) wider than the
+  // viewport (WCAG 1.4.10 Reflow).
   render: () => (
     <AppHeader
       layout="multi-row"
@@ -334,7 +338,7 @@ export const DoesNotOverflowWithLongSiteNameAt320: StoryObj<typeof AppHeader> = 
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
 
-    await page.viewport(320, 640);
+    await page.viewport(768, 640);
 
     const header = canvasElement.querySelector('header') as HTMLElement;
     await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
@@ -506,7 +510,7 @@ export const Default: StoryObj<typeof AppHeader> = {
   },
   render: () => (
     <AppHeader
-      siteName="{Nimi}"
+      siteName="Site name"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -522,7 +526,7 @@ export const MultiRow: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       layout="multi-row"
-      siteName="{Nimi}"
+      siteName="Site name"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -537,13 +541,14 @@ export const WithActions: StoryObj<typeof AppHeader> = {
   tags: docExample,
   render: () => (
     <AppHeader
-      siteName="{Nimi}"
+      siteName="Site name"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
       languages={languages}
       currentLanguage="fi"
-      actions={<Button variant="secondary">Kirjaudu</Button>}
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+      login={{ label: 'Kirjaudu', onClick: () => {} }}
     />
   ),
 };
@@ -563,12 +568,13 @@ export const WithoutSiteName: StoryObj<typeof AppHeader> = {
 export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
-      siteName="{Nimi}"
+      siteName="Site name"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
       languages={languages}
       currentLanguage="fi"
-      actions={<Button variant="secondary">Kirjaudu</Button>}
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+      login={{ label: 'Kirjaudu', onClick: () => {} }}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -588,25 +594,102 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
     // Figma hides the Tampere.finland logo at every single-row breakpoint.
     await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).toBeNull();
 
-    // Right-section child order per Figma node 14147:8543: nav -> languages
-    // -> actions -> drawer trigger. Regression lock for the order the final
-    // review found swapped (nav rendered last instead of first).
+    // Right-section child order per Figma node 14147:11664: nav -> languages
+    // -> actions -> login -> drawer trigger. Regression lock for the order
+    // the final review previously found swapped (nav rendered last instead
+    // of first), extended to cover the dedicated login slot.
     const rightSectionEl = nav.parentElement as HTMLElement;
     const languageNav = canvas.getByRole('navigation', { name: 'Kieli' });
+    const actionsButton = canvas.getByRole('button', { name: 'Ostoskori' });
+    const login = canvas.getByRole('button', { name: 'Kirjaudu' });
     const trigger = canvasElement.querySelector('button[class*="menuButton"]') as HTMLElement;
     const rightChildren = Array.from(rightSectionEl.children);
     const navIndex = rightChildren.indexOf(nav);
     const languageIndex = rightChildren.indexOf(languageNav);
+    // The inline `actions` copy is wrapped in a div (hidden below md, shown
+    // md+) now that it can move into the drawer — the wrapper, not the
+    // button itself, is rightSectionEl's direct child.
+    const actionsIndex = rightChildren.indexOf(actionsButton.parentElement as HTMLElement);
+    const loginIndex = rightChildren.indexOf(login);
     const triggerIndex = rightChildren.indexOf(trigger);
     await expect(navIndex).toBeGreaterThanOrEqual(0);
     await expect(languageIndex).toBeGreaterThan(navIndex);
-    await expect(triggerIndex).toBeGreaterThan(languageIndex);
+    await expect(actionsIndex).toBeGreaterThan(languageIndex);
+    await expect(loginIndex).toBeGreaterThan(actionsIndex);
+    await expect(triggerIndex).toBeGreaterThan(loginIndex);
+  },
+};
+
+export const LoginInvokesOnClickAndDefaultsToLoginIcon: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  render: () => {
+    const onLoginClick = () => {
+      document.body.dataset.loginClicked = 'true';
+    };
+    return (
+      <AppHeader
+        navigation={navigation}
+        navAriaLabel="Päänavigaatio"
+        login={{ label: 'Kirjaudu', onClick: onLoginClick }}
+      />
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    delete document.body.dataset.loginClicked;
+
+    const login = canvas.getByRole('button', { name: 'Kirjaudu' });
+    // Icon-over-label layout, same as LabeledIconButton elsewhere — confirms
+    // `login` renders through it rather than some bespoke markup.
+    await expect(getComputedStyle(login).flexDirection).toBe('column');
+    await expect(login.querySelector('svg')).not.toBeNull();
+
+    await userEvent.click(login);
+    await expect(document.body.dataset.loginClicked).toBe('true');
+  },
+};
+
+export const LoginIconAndLabelAreOverridable: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // Matches Figma node 14166:4271 — the same dedicated slot shows a person
+  // icon + the user's name once authenticated, rather than a second slot.
+  render: () => (
+    <AppHeader
+      navAriaLabel="Päänavigaatio"
+      login={{ label: 'Etunimi', icon: <UserIcon />, onClick: () => {} }}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('button', { name: 'Etunimi' })).not.toBeNull();
+    await expect(canvas.queryByRole('button', { name: 'Kirjaudu' })).toBeNull();
+  },
+};
+
+export const LoginRendersAsLinkViaRenderRoot: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // Proves `renderRoot` actually flows AppHeader -> LabeledIconButton ->
+  // Mantine's Box, not just that the type checks.
+  render: () => (
+    <AppHeader
+      navAriaLabel="Päänavigaatio"
+      login={{
+        label: 'Kirjaudu',
+        renderRoot: (props) => <a href="/kirjaudu" {...props} />,
+      }}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const login = canvas.getByRole('link', { name: 'Kirjaudu' });
+    await expect(login).toHaveAttribute('href', '/kirjaudu');
+    await expect(canvas.queryByRole('button', { name: 'Kirjaudu' })).toBeNull();
   },
 };
 
 export const SingleRowSiteNameUsesSubheader: StoryObj<typeof AppHeader> = {
   render: () => (
-    <AppHeader siteName="{Nimi}" navigation={navigation} navAriaLabel="Päänavigaatio" />
+    <AppHeader siteName="Site name" navigation={navigation} navAriaLabel="Päänavigaatio" />
   ),
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
@@ -621,11 +704,26 @@ export const SingleRowSiteNameUsesSubheader: StoryObj<typeof AppHeader> = {
   },
 };
 
+export const SiteNameIsLiftedTwoPixels: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <AppHeader siteName="Site name" navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    await page.viewport(1500, 800);
+
+    const siteNameEl = canvasElement.querySelector('span[class*="siteName"]') as HTMLElement;
+    await waitFor(async () => {
+      // matrix(1, 0, 0, 1, tx, ty) — ty is the translateY in px.
+      await expect(getComputedStyle(siteNameEl).transform).toBe('matrix(1, 0, 0, 1, 0, -2)');
+    });
+  },
+};
+
 export const MultiRowIsOptIn: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       layout="multi-row"
-      siteName="{Nimi}"
+      siteName="Site name"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
       languages={languages}
@@ -647,8 +745,49 @@ export const MultiRowIsOptIn: StoryObj<typeof AppHeader> = {
   },
 };
 
+export const MultiRowLoginSitsBetweenActionsAndSecondaryLogo: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // Right-section child order per Figma node 3898:2196 (multi-row): languages
+  // -> actions -> login -> secondary logo.
+  render: () => (
+    <AppHeader
+      layout="multi-row"
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+      login={{ label: 'Kirjaudu', onClick: () => {} }}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(1500, 800);
+
+    const languageNav = canvas.getByRole('navigation', { name: 'Kieli' });
+    const actionsButton = canvas.getByRole('button', { name: 'Ostoskori' });
+    const login = canvas.getByRole('button', { name: 'Kirjaudu' });
+    const secondaryLogoEl = canvasElement.querySelector(
+      'svg[class*="secondaryLogo"]'
+    ) as SVGElement;
+
+    const rightSectionEl = languageNav.parentElement as HTMLElement;
+    const rightChildren = Array.from(rightSectionEl.children);
+    const languageIndex = rightChildren.indexOf(languageNav);
+    const actionsIndex = rightChildren.indexOf(actionsButton);
+    const loginIndex = rightChildren.indexOf(login);
+    const logoIndex = rightChildren.indexOf(secondaryLogoEl);
+
+    await expect(languageIndex).toBeGreaterThanOrEqual(0);
+    await expect(actionsIndex).toBeGreaterThan(languageIndex);
+    await expect(loginIndex).toBeGreaterThan(actionsIndex);
+    await expect(logoIndex).toBeGreaterThan(loginIndex);
+  },
+};
+
 export const MultiRowOmitsTheSecondRowWhenEmpty: StoryObj<typeof AppHeader> = {
-  render: () => <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" siteName="{Nimi}" />,
+  render: () => <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" siteName="Site name" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     // An empty second row still costs a row gap under the header.
@@ -683,6 +822,107 @@ export const LanguagesStayVisibleWithoutNavigation: StoryObj<typeof AppHeader> =
     await waitFor(async () => {
       await expect(getComputedStyle(languageNav).display).not.toBe('none');
     });
+    await expect(canvas.queryByRole('button', { name: 'Valikko' })).toBeNull();
+  },
+};
+
+export const SiteNameHiddenAtSmAndBelow: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // Figma's breakpoint sheet (node 14147:8539) drops the site name entirely
+  // at sm/xs (480/320) — it only appears from md (768) up.
+  render: () => <AppHeader siteName="Site name" navAriaLabel="Päänavigaatio" />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const siteNameEl = canvasElement.querySelector('span[class*="siteName"]') as HTMLElement;
+
+    await page.viewport(480, 640);
+    await waitFor(async () => {
+      await expect(getComputedStyle(siteNameEl).display).toBe('none');
+    });
+
+    await page.viewport(768, 640);
+    await waitFor(async () => {
+      await expect(getComputedStyle(siteNameEl).display).not.toBe('none');
+    });
+  },
+};
+
+export const ActionsMoveIntoDrawerAtSmAndBelow: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(480, 800);
+
+    // DOM selector, not getByRole: a display:none node has no accessible
+    // name — mirrors LanguagesMoveIntoDrawerBelow1024's technique.
+    const inlineActionsEl = canvasElement.querySelector(
+      'div[class*="inlineActions"]'
+    ) as HTMLElement;
+    await waitFor(async () => {
+      await expect(getComputedStyle(inlineActionsEl).display).toBe('none');
+    });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    await expect(within(dialog).getByRole('button', { name: 'Ostoskori' })).not.toBeNull();
+  },
+};
+
+export const ActionsStayInlineFromMdUp: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // Complements ActionsMoveIntoDrawerAtSmAndBelow: at md+ the inline copy is
+  // the only one visible, and the drawer's own copy (present whenever
+  // `navigation` exists) must not also show, or the accessible name
+  // "Ostoskori" would exist twice at once if the drawer were ever opened.
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(768, 800);
+    await waitFor(async () => {
+      await expect(canvas.getByRole('button', { name: 'Ostoskori' })).toBeVisible();
+    });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
+    await within(document.body).findByRole('dialog');
+    await expect(within(document.body).getAllByRole('button', { name: 'Ostoskori' })).toHaveLength(
+      1
+    );
+  },
+};
+
+export const ActionsStayInlineWithoutNavigation: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // No navigation means no drawer, so moving `actions` there below md would
+  // strand it entirely — same reasoning as LanguagesStayVisibleWithoutNavigation.
+  render: () => (
+    <AppHeader
+      navAriaLabel="Päänavigaatio"
+      actions={<LabeledIconButton icon={<CartIcon />} label="Ostoskori" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(320, 640);
+    await expect(canvas.getByRole('button', { name: 'Ostoskori' })).toBeVisible();
     await expect(canvas.queryByRole('button', { name: 'Valikko' })).toBeNull();
   },
 };

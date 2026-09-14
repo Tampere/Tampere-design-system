@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react';
+import type { MouseEventHandler, ReactNode } from 'react';
 import cx from 'clsx';
 import { TampereLogo } from '../../logos/TampereLogo';
+import { LabeledIconButton, type LabeledIconButtonProps } from '../LabeledIconButton';
+import { LoginIcon } from '../../icons/LoginIcon';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderDrawer } from './AppHeaderDrawer';
 import { AppHeaderBrand } from './AppHeaderBrand';
@@ -16,12 +18,26 @@ import {
   searchContainer,
   inlineNav,
   inlineLanguages,
+  inlineActions,
   siteName as siteNameClass,
   siteNameSubheader,
 } from './AppHeader.css';
 
 // Re-exported so `index.ts` (and the package barrel) keep exporting it from here.
 export type { AppHeaderLanguage };
+
+export type AppHeaderLoginProps = {
+  /** Visible + accessible label — e.g. "Kirjaudu" logged out, the user's name
+   * once authenticated. No default: the right value depends on auth state,
+   * which AppHeader doesn't model itself. */
+  label: string;
+  /** Defaults to `<LoginIcon />`; override with e.g. `<UserIcon />` once authenticated. */
+  icon?: ReactNode;
+  className?: string;
+} & (
+  | { onClick: MouseEventHandler<HTMLButtonElement>; renderRoot?: undefined }
+  | { onClick?: undefined; renderRoot: NonNullable<LabeledIconButtonProps['renderRoot']> }
+);
 
 export interface AppHeaderBaseProps {
   siteName?: ReactNode;
@@ -36,8 +52,15 @@ export interface AppHeaderBaseProps {
   /** A language's `code` (not `label`) to mark as selected. */
   currentLanguage?: string;
   languagesAriaLabel?: string;
-  /** Slot rendered after the language links, e.g. a login button. */
+  /** Slot rendered after the language links, before `login`. */
   actions?: ReactNode;
+  /** Dedicated login control, rendered as a `LabeledIconButton` between
+   * `actions` and the menu button/secondary logo (Figma node 14147:11664's
+   * `Login container`). Reuse the same slot for the authenticated look by
+   * swapping `icon`/`label` (e.g. `<UserIcon />` + the user's name) — Figma
+   * has no separate design for that; it's the same control with different
+   * content (node 14166:4271). */
+  login?: AppHeaderLoginProps;
   menuButtonLabel?: string;
   drawerTitle?: string;
   /** Accessible name for the drawer's close button. Default `'Sulje valikko'`. */
@@ -83,6 +106,7 @@ export function AppHeader({
   layout,
   search,
   actions,
+  login,
   menuButtonLabel = 'Valikko',
   drawerTitle = 'Valikko',
   closeButtonLabel,
@@ -109,6 +133,22 @@ export function AppHeader({
       languages={languages}
       currentLanguage={currentLanguage}
       languagesAriaLabel={languagesAriaLabel}
+      actions={actions}
+    />
+  ) : null;
+
+  // Wrapped (and hidden below md) only when a drawer exists to carry it —
+  // with no navigation there is no drawer, and hiding `actions` would strand
+  // it entirely, same reasoning as `inlineLanguageNav` below.
+  const inlineActionsEl = hasDrawer ? <div className={inlineActions}>{actions}</div> : actions;
+
+  const loginEl = login ? (
+    <LabeledIconButton
+      className={login.className}
+      icon={login.icon ?? <LoginIcon />}
+      label={login.label}
+      onClick={login.onClick}
+      renderRoot={login.renderRoot}
     />
   ) : null;
 
@@ -135,7 +175,8 @@ export function AppHeader({
           />
           <div className={rightSection}>
             {inlineLanguageNav}
-            {actions}
+            {inlineActionsEl}
+            {loginEl}
             <TampereLogo className={secondaryLogo} />
           </div>
         </div>
@@ -153,9 +194,9 @@ export function AppHeader({
   }
 
   // Single row: brand on the left; the right section runs inline navigation,
-  // then languages, then the actions slot, then the drawer trigger last —
-  // matching Figma node 14147:8543's right-section child order. No secondary
-  // logo — Figma hides it at every single-row breakpoint.
+  // then languages, then the actions slot, then login, then the drawer
+  // trigger last — matching Figma node 14147:11664's right-section child
+  // order. No secondary logo — Figma hides it at every single-row breakpoint.
   return (
     <header className={cx(root, className)}>
       <div className={singleRowRow}>
@@ -168,7 +209,8 @@ export function AppHeader({
         <div className={singleRowRightSection}>
           {inlineNavEl}
           {inlineLanguageNav}
-          {actions}
+          {inlineActionsEl}
+          {loginEl}
           {drawerEl}
         </div>
       </div>

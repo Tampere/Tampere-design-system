@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react';
+import { useEffect, useId, type ReactNode } from 'react';
 import cx from 'clsx';
 import { Drawer } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
@@ -7,7 +7,7 @@ import { MenuIcon } from '../../icons/MenuIcon';
 import { LabeledIconButton } from '../LabeledIconButton';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
-import { drawerLanguages, menuButton } from './AppHeader.css';
+import { drawerLanguages, drawerActions, menuButton } from './AppHeader.css';
 
 export interface AppHeaderDrawerProps {
   items: AppHeaderNavigationItem[];
@@ -18,6 +18,9 @@ export interface AppHeaderDrawerProps {
   languages?: AppHeaderLanguage[];
   currentLanguage?: string;
   languagesAriaLabel: string;
+  /** AppHeader's `actions` slot, mirrored here — shown only below md, where
+   * it has moved out of the inline row (see AppHeader.css.ts's `drawerActions`). */
+  actions?: ReactNode;
   className?: string;
 }
 
@@ -30,6 +33,7 @@ export function AppHeaderDrawer({
   languages,
   currentLanguage,
   languagesAriaLabel,
+  actions,
   className,
 }: AppHeaderDrawerProps) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -77,6 +81,7 @@ export function AppHeaderDrawer({
                 className={drawerLanguages}
               />
             ) : null}
+            {actions ? <div className={drawerActions}>{actions}</div> : null}
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>

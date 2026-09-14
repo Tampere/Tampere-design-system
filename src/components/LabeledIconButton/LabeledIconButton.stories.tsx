@@ -237,6 +237,27 @@ export const AriaLabelPropCannotOverrideVisibleLabel: Story = {
   },
 };
 
+export const RenderRootReplacesRootElement: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Mirrors AppHeaderNav's renderLink escape hatch, but via Mantine's own
+  // UnstyledButton/Box renderRoot mechanism: swaps the rendered root element
+  // (e.g. a router Link) while the icon/label children stay exactly as this
+  // component builds them.
+  render: (args) => (
+    <LabeledIconButton
+      {...args}
+      icon={<AddIcon />}
+      renderRoot={(props) => <a href="/target" {...props} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Label' });
+    await expect(link).toHaveAttribute('href', '/target');
+    await expect(canvas.queryByRole('button')).toBeNull();
+  },
+};
+
 export const DisabledDoesNotShowHoverBackground: Story = {
   tags: ['!dev', '!autodocs'],
   // A disabled <button> still matches the CSS `:hover` pseudo-class in this

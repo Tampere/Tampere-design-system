@@ -20,6 +20,10 @@ const {
 const inlineNavWidth = `screen and (min-width: ${breakpoint.xl.appWidth})`;
 const wideEnoughForSecondaryLogo = `screen and (min-width: ${breakpoint.sm.appWidth})`;
 const inlineLanguagesWidth = `screen and (min-width: ${breakpoint.lg.appWidth})`;
+// Figma's breakpoint sheet (node 14147:8539) collapses the site name and the
+// generic `actions` slot together at sm/xs: the site name disappears
+// entirely and `actions` moves into the drawer — both share this threshold.
+const wideEnoughForSiteNameAndActions = `screen and (min-width: ${breakpoint.md.appWidth})`;
 
 export const navList = style({
   display: 'flex',
@@ -142,8 +146,11 @@ export const drawerLanguages = style({
 // box even with `min-width: 0` alone — `overflowWrap: anywhere` allows a
 // mid-word break as a last resort.
 const siteNameBase = style({
+  display: 'none',
   minWidth: 0,
   overflowWrap: 'anywhere',
+  transform: 'translateY(-2px)',
+  '@media': { [wideEnoughForSiteNameAndActions]: { display: 'block' } },
 });
 
 export const siteName = style([
@@ -167,6 +174,21 @@ export const siteNameSubheader = style([
     lineHeight: typography.subheader.lineHeight,
   },
 ]);
+
+// Wraps the inline `actions` render when a drawer exists to carry it below
+// md — mirrors inlineLanguages/drawerLanguages. Without a drawer, `actions`
+// renders unwrapped and always inline (see AppHeader.tsx's `hasDrawer` guard).
+export const inlineActions = style({
+  display: 'none',
+  '@media': { [wideEnoughForSiteNameAndActions]: { display: 'block' } },
+});
+
+// The drawer's own copy of `actions`, shown only while it has moved there
+// (below md) — the mirror image of inlineActions, same as drawerLanguages
+// mirrors inlineLanguages.
+export const drawerActions = style({
+  '@media': { [wideEnoughForSiteNameAndActions]: { display: 'none' } },
+});
 
 export const searchContainer = style({
   display: 'flex',
