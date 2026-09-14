@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { AppHeaderNav } from './AppHeaderNav';
-import { AppHeaderDrawer } from './AppHeaderDrawer';
+import { AppHeaderMenu } from './AppHeaderMenu';
 import { AppHeader } from './AppHeader';
 import { LabeledIconButton } from '../LabeledIconButton';
 import { SearchIcon } from '../../icons/SearchIcon';
@@ -14,6 +14,22 @@ const navigation = [
   { label: 'Asiointi', href: '/asiointi', isSelected: true },
   { label: 'Yhteystiedot', href: '/yhteystiedot' },
 ];
+
+// Clicks the menu trigger and waits out Mantine's Popover mount transition —
+// the dropdown's content renders a tick after `opened` flips (same gotcha as
+// Modal.stories.tsx). Returns the dropdown by id (via the trigger's
+// aria-controls) rather than by role, since a non-modal Popover carries no
+// role="dialog" the way Drawer did.
+async function openMenuAndGetDropdown(trigger: HTMLElement) {
+  await userEvent.click(trigger);
+  const controls = trigger.getAttribute('aria-controls') as string;
+  let dropdown: HTMLElement | null = null;
+  await waitFor(() => {
+    dropdown = document.getElementById(controls);
+    expect(dropdown).not.toBeNull();
+  });
+  return dropdown as unknown as HTMLElement;
+}
 
 const meta = {
   component: AppHeader,
@@ -47,13 +63,12 @@ export const NavRendersLabelledLandmark: StoryObj<typeof AppHeaderNav> = {
   },
 };
 
-export const DrawerOpensAndWiresAria: StoryObj<typeof AppHeaderDrawer> = {
+export const PopoverOpensAndWiresAria: StoryObj<typeof AppHeaderMenu> = {
   render: () => (
-    <AppHeaderDrawer
+    <AppHeaderMenu
       items={navigation}
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
-      drawerTitle="Valikko"
       languagesAriaLabel="Kieli"
     />
   ),
@@ -66,35 +81,25 @@ export const DrawerOpensAndWiresAria: StoryObj<typeof AppHeaderDrawer> = {
     const controls = trigger.getAttribute('aria-controls');
     await expect(controls).not.toBeNull();
 
-    await userEvent.click(trigger);
+    // aria-controls must resolve to a real element once the panel exists,
+    // otherwise the relationship is a dangling reference — openMenuAndGetDropdown
+    // waits out Mantine's Popover mount transition before returning it.
+    const dropdown = await openMenuAndGetDropdown(trigger);
 
     await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    // aria-controls must resolve to a real element once the panel exists,
-    // otherwise the relationship is a dangling reference. waitFor because
-    // Mantine's Drawer mount transition renders its content a tick after
-    // `opened` flips (see Modal.stories.tsx for the same gotcha).
-    await waitFor(() => {
-      expect(document.getElementById(controls as string)).not.toBeNull();
-    });
-
-    // The drawer renders in a portal, so query the document, not the canvas.
-    // findByRole (not getByRole): same mount-transition delay as above.
-    const dialog = await within(document.body).findByRole('dialog');
-    // Confirms aria-controls points at the actual dialog, not merely *some*
-    // element with that id — a future regression could satisfy the earlier
-    // getElementById check while the real dialog goes unlabelled.
-    await expect(dialog.id).toBe(controls);
-    await expect(within(dialog).getByRole('navigation', { name: 'Päänavigaatio' })).not.toBeNull();
+    // The popover renders in a portal, so query the document, not the canvas.
+    await expect(
+      within(dropdown).getByRole('navigation', { name: 'Päänavigaatio' })
+    ).not.toBeNull();
   },
 };
 
-export const MenuButtonIsALabeledIconButton: StoryObj<typeof AppHeaderDrawer> = {
+export const MenuButtonIsALabeledIconButton: StoryObj<typeof AppHeaderMenu> = {
   render: () => (
-    <AppHeaderDrawer
+    <AppHeaderMenu
       items={navigation}
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
-      drawerTitle="Valikko"
       languagesAriaLabel="Kieli"
     />
   ),
@@ -107,20 +112,23 @@ export const MenuButtonIsALabeledIconButton: StoryObj<typeof AppHeaderDrawer> = 
     await expect(getComputedStyle(trigger).flexDirection).toBe('column');
 
     // It omits and strips aria-label/aria-labelledby, so confirm the ARIA
-    // the drawer relies on still reaches the element.
+    // the menu relies on still reaches the element.
     await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     await expect(trigger.getAttribute('aria-controls')).not.toBeNull();
     await expect(within(trigger).getByText('Valikko')).not.toBeNull();
   },
 };
 
-export const DrawerClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderDrawer> = {
+export const MenuButtonSwapsIconAndLabelWhenOpen: StoryObj<typeof AppHeaderMenu> = {
+  // The Figma "Main menu" frames (node 10718:2886 / 10718:4713) show the
+  // trigger itself swapping to a close icon + "Sulje" while the popover is
+  // open — unlike a modal Drawer, this trigger stays visible and interactive
+  // the whole time, so leaving it saying "Valikko" while open would be stale.
   render: () => (
-    <AppHeaderDrawer
+    <AppHeaderMenu
       items={navigation}
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
-      drawerTitle="Valikko"
       languagesAriaLabel="Kieli"
     />
   ),
@@ -129,13 +137,64 @@ export const DrawerClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderDraw
     const trigger = canvas.getByRole('button', { name: 'Valikko' });
 
     await userEvent.click(trigger);
-    // findByRole: waits out Mantine's mount transition (see above story).
-    await within(document.body).findByRole('dialog');
+
+    await waitFor(async () => {
+      await expect(within(trigger).getByText('Sulje')).not.toBeNull();
+    });
+    await expect(within(trigger).queryByText('Valikko')).toBeNull();
+
+    await userEvent.click(trigger);
+
+    await waitFor(async () => {
+      await expect(within(trigger).getByText('Valikko')).not.toBeNull();
+    });
+    await expect(within(trigger).queryByText('Sulje')).toBeNull();
+  },
+};
+
+export const MenuButtonOpenLabelIsOverridable: StoryObj<typeof AppHeaderMenu> = {
+  render: () => (
+    <AppHeaderMenu
+      items={navigation}
+      navAriaLabel="Päänavigaatio"
+      menuButtonLabel="Valikko"
+      menuButtonLabelOpen="Piilota valikko"
+      languagesAriaLabel="Kieli"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+
+    await userEvent.click(trigger);
+
+    await waitFor(async () => {
+      await expect(within(trigger).getByText('Piilota valikko')).not.toBeNull();
+    });
+  },
+};
+
+export const PopoverClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderMenu> = {
+  render: () => (
+    <AppHeaderMenu
+      items={navigation}
+      navAriaLabel="Päänavigaatio"
+      menuButtonLabel="Valikko"
+      languagesAriaLabel="Kieli"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+
+    await openMenuAndGetDropdown(trigger);
 
     await userEvent.keyboard('{Escape}');
 
-    // Mantine supplies escape handling and focus restoration; assert we get
-    // them rather than reimplementing either.
+    // Mantine's Popover supplies Escape handling (via onChange, since we run
+    // fully controlled — see AppHeaderMenu.tsx); focus restoration back to
+    // the trigger is ours to implement, since a non-modal Popover has no
+    // built-in focus trap/return the way Drawer did.
     await waitFor(async () => {
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
@@ -145,29 +204,32 @@ export const DrawerClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderDraw
   },
 };
 
-export const DrawerCloseButtonHasAccessibleName: StoryObj<typeof AppHeaderDrawer> = {
-  // Regression test for #94's bug class: Mantine's Drawer.CloseButton has no
-  // default aria-label, so an icon-only close button can ship with no
-  // accessible name (see Modal.stories.tsx's CloseButtonHasAccessibleName).
+export const PopoverWidthIsAnchoredWideAndFullBleedNarrow: StoryObj<typeof AppHeaderMenu> = {
+  // Figma frames 10718:2886 (≥md) and 10718:4713 (320) — a fixed ~400px box
+  // anchored under the trigger at wide viewports, full viewport width at 320.
   render: () => (
-    <AppHeaderDrawer
+    <AppHeaderMenu
       items={navigation}
       navAriaLabel="Päänavigaatio"
       menuButtonLabel="Valikko"
-      drawerTitle="Valikko"
       languagesAriaLabel="Kieli"
     />
   ),
   play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', { name: 'Valikko' });
 
+    await page.viewport(1500, 800);
+    const wideDropdown = await openMenuAndGetDropdown(trigger);
+    await expect(wideDropdown.getBoundingClientRect().width).toBeCloseTo(400, -1);
+
     await userEvent.click(trigger);
-    // findByRole: waits out Mantine's mount transition (see the stories above).
-    const closeButton = await within(document.body).findByRole('button', {
-      name: 'Sulje valikko',
-    });
-    await expect(closeButton).toBeInTheDocument();
+
+    await page.viewport(320, 640);
+    const narrowDropdown = await openMenuAndGetDropdown(trigger);
+    await expect(narrowDropdown.getBoundingClientRect().width).toBe(320);
+    await expect(narrowDropdown.getBoundingClientRect().left).toBe(0);
   },
 };
 
@@ -250,18 +312,17 @@ export const LanguageLinksMeetTouchTargetAt320: StoryObj<typeof AppHeader> = {
     const canvas = within(canvasElement);
 
     await page.viewport(320, 640);
-    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
-    const dialog = await within(document.body).findByRole('dialog');
+    const dropdown = await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
 
     // The kit's floor is 24px and `sm` NavigationLinks land within a pixel
     // of it at the small breakpoints — see `languageLink`.
     await expect(
-      within(dialog).getByRole('link', { name: 'FI' }).getBoundingClientRect().height
+      within(dropdown).getByRole('link', { name: 'FI' }).getBoundingClientRect().height
     ).toBeGreaterThanOrEqual(24);
   },
 };
 
-export const LanguagesMoveIntoDrawerBelow1024: StoryObj<typeof AppHeader> = {
+export const LanguagesMoveIntoMenuBelow1024: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       navigation={navigation}
@@ -283,10 +344,9 @@ export const LanguagesMoveIntoDrawerBelow1024: StoryObj<typeof AppHeader> = {
       await expect(getComputedStyle(inline).display).toBe('none');
     });
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
-    const dialog = await within(document.body).findByRole('dialog');
-    await expect(within(dialog).getByRole('navigation', { name: 'Kieli' })).not.toBeNull();
-    await expect(within(dialog).getByRole('link', { name: 'FI' })).toHaveAttribute(
+    const dropdown = await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
+    await expect(within(dropdown).getByRole('navigation', { name: 'Kieli' })).not.toBeNull();
+    await expect(within(dropdown).getByRole('link', { name: 'FI' })).toHaveAttribute(
       'aria-current',
       'true'
     );
@@ -306,12 +366,11 @@ export const ExactlyOneLanguageLandmarkAt1200: StoryObj<typeof AppHeader> = {
     const { page } = await import('@vitest/browser/context');
     const canvas = within(canvasElement);
 
-    // 1200 is the band where the drawer trigger exists *and* the inline
+    // 1200 is the band where the menu trigger exists *and* the inline
     // language links are visible — the only width where both copies could
     // land in the accessibility tree at once.
     await page.viewport(1200, 800);
-    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
-    await within(document.body).findByRole('dialog');
+    await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
 
     await expect(within(document.body).getAllByRole('navigation', { name: 'Kieli' })).toHaveLength(
       1
@@ -359,9 +418,9 @@ export const LanguagesAreOptional: StoryObj<typeof AppHeader> = {
 };
 
 export const NavigationIsOptional: StoryObj<typeof AppHeader> = {
-  // Regression test: `navigation` defaults to `[]`, and AppHeaderDrawer used
+  // Regression test: `navigation` defaults to `[]`, and AppHeaderMenu used
   // to render unconditionally regardless — an omitted `navigation` produced a
-  // "Valikko" button that opened an empty dialog, plus an empty named `<nav>`
+  // "Valikko" button that opened an empty popover, plus an empty named `<nav>`
   // at desktop. Both are now gated on `navigation.length > 0` in AppHeader.tsx.
   render: () => <AppHeader navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
@@ -372,15 +431,15 @@ export const NavigationIsOptional: StoryObj<typeof AppHeader> = {
   },
 };
 
-export const InlineNavAtDesktopDrawerBelow: StoryObj<typeof AppHeader> = {
+export const InlineNavAtDesktopMenuBelow: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" languages={languages} />
   ),
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
 
-    // 1440 is breakpoint.xl.appWidth — inline nav only at xl/xxl, drawer at
-    // the four breakpoints below, per Figma node 5870:42434.
+    // 1440 is breakpoint.xl.appWidth — inline nav only at xl/xxl, the popover
+    // menu at the four breakpoints below, per Figma node 5870:42434.
     // getByRole excludes a display:none element from a real browser's
     // accessibility tree — that's the point of the CSS switch — so the two
     // elements under test here are located by a stable DOM attribute/class
@@ -402,7 +461,7 @@ export const InlineNavAtDesktopDrawerBelow: StoryObj<typeof AppHeader> = {
   },
 };
 
-export const DrawerClosesWhenViewportReachesDesktop: StoryObj<typeof AppHeader> = {
+export const PopoverClosesWhenViewportReachesDesktop: StoryObj<typeof AppHeader> = {
   render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
@@ -410,38 +469,32 @@ export const DrawerClosesWhenViewportReachesDesktop: StoryObj<typeof AppHeader> 
 
     await page.viewport(1000, 800);
     const trigger = canvas.getByRole('button', { name: 'Valikko' });
-    await userEvent.click(trigger);
-    // findByRole: waits out Mantine's mount transition (see DrawerOpensAndWiresAria).
-    // Reaching the next line already confirms the dialog exists — findByRole
-    // throws otherwise.
-    await within(document.body).findByRole('dialog');
+    const controls = trigger.getAttribute('aria-controls') as string;
+    await openMenuAndGetDropdown(trigger);
 
     // Crossing to the inline-nav width hides the trigger in CSS; leaving the
-    // drawer open would strand its focus trap with no visible way back.
+    // popover open would strand a non-dismissable, orphaned menu.
     await page.viewport(1500, 800);
     await waitFor(async () => {
-      await expect(within(document.body).queryByRole('dialog')).toBeNull();
+      await expect(document.getElementById(controls)).toBeNull();
     });
   },
 };
 
-export const ExactlyOneNavigationLandmarkWhenDrawerOpen: StoryObj<typeof AppHeader> = {
+export const ExactlyOneNavigationLandmarkWhenMenuOpen: StoryObj<typeof AppHeader> = {
   // Locks the architecture's central invariant: the inline nav (hidden below
-  // 1440 via CSS) and the drawer nav share the same `navAriaLabel`, and the
+  // 1440 via CSS) and the popover's nav share the same `navAriaLabel`, and the
   // whole design relies on only one of them ever being in the accessibility
-  // tree at once — Mantine not mounting the drawer's children while closed,
+  // tree at once — Mantine not mounting the popover's children while closed,
   // nothing else. If that assumption ever breaks, AT sees two identically
-  // named "navigation" landmarks with the drawer open.
+  // named "navigation" landmarks with the menu open.
   render: () => <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
     const canvas = within(canvasElement);
 
     await page.viewport(1000, 800);
-    const trigger = canvas.getByRole('button', { name: 'Valikko' });
-    await userEvent.click(trigger);
-    // findByRole: waits out Mantine's mount transition (see DrawerOpensAndWiresAria).
-    await within(document.body).findByRole('dialog');
+    await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
 
     await expect(
       within(document.body).getAllByRole('navigation', { name: 'Päänavigaatio' })
@@ -504,7 +557,7 @@ export const Default: StoryObj<typeof AppHeader> = {
     docs: {
       description: {
         story:
-          "This docs frame is ~1000px wide — below both breakpoints — so the header renders in its fully collapsed form: no inline navigation, no inline language links, drawer trigger only. Open the story's Canvas view at 1440px+ to see the inline navigation and language links.",
+          "This docs frame is ~1000px wide — below both breakpoints — so the header renders in its fully collapsed form: no inline navigation, no inline language links, menu trigger only. Open the story's Canvas view at 1440px+ to see the inline navigation and language links.",
       },
     },
   },
@@ -595,7 +648,7 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
     await expect(canvasElement.querySelector('svg[class*="secondaryLogo"]')).toBeNull();
 
     // Right-section child order per Figma node 14147:11664: nav -> languages
-    // -> actions -> login -> drawer trigger. Regression lock for the order
+    // -> actions -> login -> menu trigger. Regression lock for the order
     // the final review previously found swapped (nav rendered last instead
     // of first), extended to cover the dedicated login slot.
     const rightSectionEl = nav.parentElement as HTMLElement;
@@ -607,7 +660,7 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
     const navIndex = rightChildren.indexOf(nav);
     const languageIndex = rightChildren.indexOf(languageNav);
     // The inline `actions` copy is wrapped in a div (hidden below md, shown
-    // md+) now that it can move into the drawer — the wrapper, not the
+    // md+) now that it can move into the popover menu — the wrapper, not the
     // button itself, is rightSectionEl's direct child.
     const actionsIndex = rightChildren.indexOf(actionsButton.parentElement as HTMLElement);
     const loginIndex = rightChildren.indexOf(login);
@@ -816,7 +869,7 @@ export const LanguagesStayVisibleWithoutNavigation: StoryObj<typeof AppHeader> =
 
     await page.viewport(320, 640);
 
-    // No navigation means no drawer, so hiding the language links below 1024
+    // No navigation means no menu, so hiding the language links below 1024
     // would leave no way to switch language at all.
     const languageNav = canvasElement.querySelector('nav[aria-label="Kieli"]') as HTMLElement;
     await waitFor(async () => {
@@ -847,7 +900,7 @@ export const SiteNameHiddenAtSmAndBelow: StoryObj<typeof AppHeader> = {
   },
 };
 
-export const ActionsMoveIntoDrawerAtSmAndBelow: StoryObj<typeof AppHeader> = {
+export const ActionsMoveIntoMenuAtSmAndBelow: StoryObj<typeof AppHeader> = {
   tags: ['!dev', '!autodocs'],
   render: () => (
     <AppHeader
@@ -863,7 +916,7 @@ export const ActionsMoveIntoDrawerAtSmAndBelow: StoryObj<typeof AppHeader> = {
     await page.viewport(480, 800);
 
     // DOM selector, not getByRole: a display:none node has no accessible
-    // name — mirrors LanguagesMoveIntoDrawerBelow1024's technique.
+    // name — mirrors LanguagesMoveIntoMenuBelow1024's technique.
     const inlineActionsEl = canvasElement.querySelector(
       'div[class*="inlineActions"]'
     ) as HTMLElement;
@@ -871,18 +924,17 @@ export const ActionsMoveIntoDrawerAtSmAndBelow: StoryObj<typeof AppHeader> = {
       await expect(getComputedStyle(inlineActionsEl).display).toBe('none');
     });
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
-    const dialog = await within(document.body).findByRole('dialog');
-    await expect(within(dialog).getByRole('button', { name: 'Ostoskori' })).not.toBeNull();
+    const dropdown = await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
+    await expect(within(dropdown).getByRole('button', { name: 'Ostoskori' })).not.toBeNull();
   },
 };
 
 export const ActionsStayInlineFromMdUp: StoryObj<typeof AppHeader> = {
   tags: ['!dev', '!autodocs'],
-  // Complements ActionsMoveIntoDrawerAtSmAndBelow: at md+ the inline copy is
-  // the only one visible, and the drawer's own copy (present whenever
+  // Complements ActionsMoveIntoMenuAtSmAndBelow: at md+ the inline copy is
+  // the only one visible, and the popover's own copy (present whenever
   // `navigation` exists) must not also show, or the accessible name
-  // "Ostoskori" would exist twice at once if the drawer were ever opened.
+  // "Ostoskori" would exist twice at once if the menu were ever opened.
   render: () => (
     <AppHeader
       navigation={navigation}
@@ -899,8 +951,7 @@ export const ActionsStayInlineFromMdUp: StoryObj<typeof AppHeader> = {
       await expect(canvas.getByRole('button', { name: 'Ostoskori' })).toBeVisible();
     });
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Valikko' }));
-    await within(document.body).findByRole('dialog');
+    await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
     await expect(within(document.body).getAllByRole('button', { name: 'Ostoskori' })).toHaveLength(
       1
     );
@@ -909,7 +960,7 @@ export const ActionsStayInlineFromMdUp: StoryObj<typeof AppHeader> = {
 
 export const ActionsStayInlineWithoutNavigation: StoryObj<typeof AppHeader> = {
   tags: ['!dev', '!autodocs'],
-  // No navigation means no drawer, so moving `actions` there below md would
+  // No navigation means no menu, so moving `actions` there below md would
   // strand it entirely — same reasoning as LanguagesStayVisibleWithoutNavigation.
   render: () => (
     <AppHeader

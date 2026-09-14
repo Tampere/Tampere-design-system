@@ -8,6 +8,7 @@ const {
     strokeWeight,
     background,
     minTouchTarget,
+    dropShadow,
     components: { appHeader, typography },
   },
 } = vars;
@@ -22,7 +23,7 @@ const wideEnoughForSecondaryLogo = `screen and (min-width: ${breakpoint.sm.appWi
 const inlineLanguagesWidth = `screen and (min-width: ${breakpoint.lg.appWidth})`;
 // Figma's breakpoint sheet (node 14147:8539) collapses the site name and the
 // generic `actions` slot together at sm/xs: the site name disappears
-// entirely and `actions` moves into the drawer — both share this threshold.
+// entirely and `actions` moves into the popover menu — both share this threshold.
 const wideEnoughForSiteNameAndActions = `screen and (min-width: ${breakpoint.md.appWidth})`;
 
 export const navList = style({
@@ -128,14 +129,55 @@ export const inlineLanguages = style({
 });
 
 // The mirror of `inlineLanguages`, and load-bearing rather than cosmetic:
-// between 1024 and 1440 the drawer trigger exists *and* the inline copy is
-// visible, so without this an open drawer puts a second nav with the same
+// between 1024 and 1440 the menu trigger exists *and* the inline copy is
+// visible, so without this an open menu puts a second nav with the same
 // accessible name into the tree.
-export const drawerLanguages = style({
+export const menuLanguages = style({
   borderTop: `${strokeWeight} solid ${divider}`,
   marginTop: appHeader.spacing,
   paddingTop: appHeader.spacing,
   '@media': { [inlineLanguagesWidth]: { display: 'none' } },
+});
+
+// The popover panel itself (Figma's "Main menu", nodes 10718:2886/10718:4713):
+// a fixed ~400px box anchored under the trigger at md+, full viewport width
+// below it — those are the only two widths Figma provides frames for, so the
+// md threshold (already used for actions/site-name collapse) is a best-effort
+// stand-in rather than a verified intermediate breakpoint.
+const narrowMenuWidth = `screen and (max-width: ${parseInt(breakpoint.md.appWidth) - 1}px)`;
+
+export const menuDropdown = style({
+  background: background.default,
+  border: `${strokeWeight} solid ${divider}`,
+  boxShadow: `0 1px 4px ${dropShadow}`,
+  padding: appHeader.padding.horizontal,
+  width: '400px',
+  maxWidth: '100vw',
+  '@media': {
+    // vanilla-extract's media-query parser rejects calc() inside a media
+    // feature, so this can't share `breakpoint.md.appWidth` via calc(); the
+    // -1px keeps it from overlapping `wideEnoughForSiteNameAndActions`'s own
+    // min-width: md query at exactly 768px.
+    [narrowMenuWidth]: {
+      width: '100vw',
+      padding: 0,
+    },
+  },
+});
+
+// Popover.Dropdown itself (not menuDropdown above, which is an inner div
+// that owns all the visible box styling) — just a positioning shell, so
+// Mantine's own default dropdown padding is cleared here. Mantine positions
+// it with an inline `left` from floating-ui's `shift` middleware, which only
+// approximately clamps to the viewport edge (a few px of padding). Figma's
+// 320 frame wants it flush at 0, so this forces that edge at the same narrow
+// breakpoint, overriding the inline style.
+export const menuDropdownPositioner = style({
+  padding: 0,
+  border: 'none',
+  '@media': {
+    [narrowMenuWidth]: { left: '0px !important' },
+  },
 });
 
 // Reflow protection shared by both type-scale variants below: as a flex item
@@ -175,18 +217,18 @@ export const siteNameSubheader = style([
   },
 ]);
 
-// Wraps the inline `actions` render when a drawer exists to carry it below
-// md — mirrors inlineLanguages/drawerLanguages. Without a drawer, `actions`
-// renders unwrapped and always inline (see AppHeader.tsx's `hasDrawer` guard).
+// Wraps the inline `actions` render when a menu exists to carry it below
+// md — mirrors inlineLanguages/menuLanguages. Without a menu, `actions`
+// renders unwrapped and always inline (see AppHeader.tsx's `hasMenu` guard).
 export const inlineActions = style({
   display: 'none',
   '@media': { [wideEnoughForSiteNameAndActions]: { display: 'block' } },
 });
 
-// The drawer's own copy of `actions`, shown only while it has moved there
-// (below md) — the mirror image of inlineActions, same as drawerLanguages
+// The popover's own copy of `actions`, shown only while it has moved there
+// (below md) — the mirror image of inlineActions, same as menuLanguages
 // mirrors inlineLanguages.
-export const drawerActions = style({
+export const menuActions = style({
   '@media': { [wideEnoughForSiteNameAndActions]: { display: 'none' } },
 });
 

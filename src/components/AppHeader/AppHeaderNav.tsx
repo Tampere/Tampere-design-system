@@ -33,9 +33,9 @@ export interface AppHeaderNavProps {
 
 /**
  * The navigation link list, rendered both inline in the header and inside the
- * drawer. Only ever one of the two is in the accessibility tree at a time: the
- * inline copy is `display: none` below 1440, and Mantine's Drawer does not
- * mount its children while closed.
+ * popover menu. Only ever one of the two is in the accessibility tree at a
+ * time: the inline copy is `display: none` below 1440, and Mantine's Popover
+ * does not mount its children while closed.
  */
 export function AppHeaderNav({ items, ariaLabel, className }: AppHeaderNavProps) {
   return (

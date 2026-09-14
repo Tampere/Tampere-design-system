@@ -4,7 +4,7 @@ import { TampereLogo } from '../../logos/TampereLogo';
 import { LabeledIconButton, type LabeledIconButtonProps } from '../LabeledIconButton';
 import { LoginIcon } from '../../icons/LoginIcon';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
-import { AppHeaderDrawer } from './AppHeaderDrawer';
+import { AppHeaderMenu } from './AppHeaderMenu';
 import { AppHeaderBrand } from './AppHeaderBrand';
 import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
 import {
@@ -43,11 +43,11 @@ export interface AppHeaderBaseProps {
   siteName?: ReactNode;
   /** Default `'/'` — the brand logo always links somewhere, so an app mounted under a sub-path should pass its own. */
   homeHref?: string;
-  /** Omit entirely (rather than passing `[]`) to render a header with no navigation at all — both the inline nav and the drawer trigger are hidden when empty. */
+  /** Omit entirely (rather than passing `[]`) to render a header with no navigation at all — both the inline nav and the menu trigger are hidden when empty. */
   navigation?: AppHeaderNavigationItem[];
   /** Required: names the `navigation` landmark for AT, since a header can contain more than one `<nav>` (this one, plus the language switcher). No sensible Finnish default exists — it depends on the consumer's own navigation structure. */
   navAriaLabel: string;
-  /** With `navigation`, the links move into the drawer below 1024px; without it, they stay inline at every width since there is no drawer to carry them. */
+  /** With `navigation`, the links move into the popover menu below 1024px; without it, they stay inline at every width since there is no menu to carry them. */
   languages?: AppHeaderLanguage[];
   /** A language's `code` (not `label`) to mark as selected. */
   currentLanguage?: string;
@@ -59,12 +59,12 @@ export interface AppHeaderBaseProps {
    * `Login container`). Reuse the same slot for the authenticated look by
    * swapping `icon`/`label` (e.g. `<UserIcon />` + the user's name) — Figma
    * has no separate design for that; it's the same control with different
-   * content (node 14166:4271). */
+   * content (node 14166:4271). Unlike `actions`/`languages`, this always
+   * stays inline — it never collapses into the popover menu. */
   login?: AppHeaderLoginProps;
   menuButtonLabel?: string;
-  drawerTitle?: string;
-  /** Accessible name for the drawer's close button. Default `'Sulje valikko'`. */
-  closeButtonLabel?: string;
+  /** Label (and icon) the menu trigger shows while the menu is open. Default `'Sulje'`. */
+  menuButtonLabelOpen?: string;
   className?: string;
 }
 
@@ -91,9 +91,9 @@ export type AppHeaderProps =
  * instead).
  *
  * Both layouts share the same responsive collapse: the primary navigation
- * renders inline from 1440px up (`breakpoint.xl`) and drops into a drawer
- * below it, and the language links move into that drawer below 1024px
- * (`breakpoint.lg`) whenever a drawer exists — see the `languages` prop.
+ * renders inline from 1440px up (`breakpoint.xl`) and drops into a popover
+ * menu below it, and the language links move into that menu below 1024px
+ * (`breakpoint.lg`) whenever a menu exists — see the `languages` prop.
  */
 export function AppHeader({
   siteName,
@@ -108,28 +108,26 @@ export function AppHeader({
   actions,
   login,
   menuButtonLabel = 'Valikko',
-  drawerTitle = 'Valikko',
-  closeButtonLabel,
+  menuButtonLabelOpen,
   className,
 }: AppHeaderProps) {
-  const hasDrawer = navigation.length > 0;
+  const hasMenu = navigation.length > 0;
 
-  // Split so single-row can place the inline nav and the drawer trigger on
+  // Split so single-row can place the inline nav and the menu trigger on
   // opposite ends of its right section (Fix 1) while multi-row keeps them
   // adjacent, as `nav` did before. The two never coexist visibly — inline
   // nav shows ≥1440, the trigger below it — so splitting changes nothing at
   // any single width.
-  const inlineNavEl = hasDrawer ? (
+  const inlineNavEl = hasMenu ? (
     <AppHeaderNav items={navigation} ariaLabel={navAriaLabel} className={inlineNav} />
   ) : null;
 
-  const drawerEl = hasDrawer ? (
-    <AppHeaderDrawer
+  const menuEl = hasMenu ? (
+    <AppHeaderMenu
       items={navigation}
       navAriaLabel={navAriaLabel}
       menuButtonLabel={menuButtonLabel}
-      drawerTitle={drawerTitle}
-      closeButtonLabel={closeButtonLabel}
+      menuButtonLabelOpen={menuButtonLabelOpen}
       languages={languages}
       currentLanguage={currentLanguage}
       languagesAriaLabel={languagesAriaLabel}
@@ -137,10 +135,10 @@ export function AppHeader({
     />
   ) : null;
 
-  // Wrapped (and hidden below md) only when a drawer exists to carry it —
-  // with no navigation there is no drawer, and hiding `actions` would strand
-  // it entirely, same reasoning as `inlineLanguageNav` below.
-  const inlineActionsEl = hasDrawer ? <div className={inlineActions}>{actions}</div> : actions;
+  // Wrapped (and hidden below md) only when a menu exists to carry it — with
+  // no navigation there is no menu, and hiding `actions` would strand it
+  // entirely, same reasoning as `inlineLanguageNav` below.
+  const inlineActionsEl = hasMenu ? <div className={inlineActions}>{actions}</div> : actions;
 
   const loginEl = login ? (
     <LabeledIconButton
@@ -157,10 +155,10 @@ export function AppHeader({
       languages={languages}
       currentLanguage={currentLanguage}
       ariaLabel={languagesAriaLabel}
-      // Hidden below 1024 only when the drawer exists to carry them — with no
-      // navigation there is no drawer, and hiding them would strand the
+      // Hidden below 1024 only when the menu exists to carry them — with no
+      // navigation there is no menu, and hiding them would strand the
       // language switcher entirely.
-      className={hasDrawer ? inlineLanguages : undefined}
+      className={hasMenu ? inlineLanguages : undefined}
     />
   ) : null;
 
@@ -180,12 +178,12 @@ export function AppHeader({
             <TampereLogo className={secondaryLogo} />
           </div>
         </div>
-        {search || hasDrawer ? (
+        {search || hasMenu ? (
           <div className={row}>
             <div className={searchContainer}>{search}</div>
             <div className={rightSection}>
               {inlineNavEl}
-              {drawerEl}
+              {menuEl}
             </div>
           </div>
         ) : null}
@@ -194,7 +192,7 @@ export function AppHeader({
   }
 
   // Single row: brand on the left; the right section runs inline navigation,
-  // then languages, then the actions slot, then login, then the drawer
+  // then languages, then the actions slot, then login, then the menu
   // trigger last — matching Figma node 14147:11664's right-section child
   // order. No secondary logo — Figma hides it at every single-row breakpoint.
   return (
@@ -211,7 +209,7 @@ export function AppHeader({
           {inlineLanguageNav}
           {inlineActionsEl}
           {loginEl}
-          {drawerEl}
+          {menuEl}
         </div>
       </div>
     </header>
