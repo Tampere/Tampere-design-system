@@ -1,4 +1,7 @@
-export function TampereLogo({ className }: { className?: string }) {
+export function TampereLogo({
+  className,
+  ...props
+}: { className?: string } & React.SVGProps<SVGSVGElement>) {
   // The viewBox is cropped to the ink instead of starting at `0 0` because the
   // paths keep their original Figma coordinates. A 0-origin re-adds 11 units of
   // blank space above and below, rendering the logo at 58% of any CSS height.
@@ -10,6 +13,7 @@ export function TampereLogo({ className }: { className?: string }) {
       height="50"
       viewBox="0.600098 11 131.4 30"
       fill="none"
+      {...props}
     >
       <g>
         <path

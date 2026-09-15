@@ -43,6 +43,10 @@ export type AppHeaderActionProps = {
   /** Visible + accessible label. */
   label: string;
   icon?: ReactNode;
+  /** Applied to *both* renderings of this action — the inline
+   * `LabeledIconButton` (AppHeader.tsx) and the menu's `NavigationLink`/
+   * `UnstyledButton` (AppHeaderMenu.tsx) — not just whichever one happens to
+   * be visible at the current width. */
   className?: string;
 } & (
   | { href: string; onClick?: undefined }

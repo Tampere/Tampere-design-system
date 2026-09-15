@@ -146,10 +146,10 @@ export function AppHeader({
   const hasMenu = navigation.length > 0;
 
   // Split so single-row can place the inline nav and the menu trigger on
-  // opposite ends of its right section (Fix 1) while multi-row keeps them
-  // adjacent, as `nav` did before. The two never coexist visibly — inline
-  // nav shows ≥1440, the trigger below it — so splitting changes nothing at
-  // any single width.
+  // opposite ends of its right section, while multi-row keeps them adjacent,
+  // as `nav` did before. The two never coexist visibly — inline nav shows
+  // ≥1440, the trigger below it — so splitting changes nothing at any single
+  // width.
   const inlineNavEl = hasMenu ? (
     <AppHeaderNav items={navigation} ariaLabel={navAriaLabel} className={inlineNav} />
   ) : null;
@@ -247,7 +247,7 @@ export function AppHeader({
             {inlineLanguageNav}
             {inlineActionsEl}
             {loginEl}
-            <TampereLogo className={secondaryLogo} />
+            <TampereLogo className={secondaryLogo} aria-hidden="true" />
           </div>
         </div>
         {search || hasMenu ? (

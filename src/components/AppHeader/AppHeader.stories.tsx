@@ -816,10 +816,9 @@ export const BrandLinkHasFocusVisibleRing: StoryObj<typeof AppHeader> = {
 export const LanguageLinksMeetTouchTargetAt320: StoryObj<typeof AppHeader> = {
   tags: ['!dev', '!autodocs'],
   // The 24px touch-target assertion in HeaderLandmarksAndSlots runs at 1500px
-  // (xxl tier) since Task 7 set that story's viewport there — it can no
-  // longer catch a regression at the small breakpoints, where p2 (14px) at
-  // 150% line-height plus linkBase's 2px bottom border and no padding leaves
-  // the least headroom above the floor.
+  // (xl tier) — it can no longer catch a regression at the small
+  // breakpoints, where p2 (14px) at 150% line-height plus linkBase's 2px
+  // bottom border and no padding leaves the least headroom above the floor.
   render: () => (
     <AppHeader
       navigation={navigation}

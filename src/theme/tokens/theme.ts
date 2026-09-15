@@ -73,7 +73,7 @@ const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
 
-// The kit's minimum touch target (WCAG 2.5.5-style floor), breakpoint-independent
+// The kit's minimum touch target (WCAG 2.5.8-style floor), breakpoint-independent
 // unlike `bpTokens` below — a component sizes to content by default and opts into
 // this only where content alone would fall under it (e.g. AppHeader's small-text
 // language links; `components.iconButton.minTouchTarget` is the pre-existing
