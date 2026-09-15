@@ -180,8 +180,11 @@ export function AppHeader({
 
   // Wrapped (and hidden below md) only when a menu exists to carry it — with
   // no navigation there is no menu, and hiding `actions` would strand it
-  // entirely, same reasoning as `inlineLanguageNav` below.
-  const inlineActionsEl = hasMenu ? (
+  // entirely, same reasoning as `inlineLanguageNav` below. Skipped entirely
+  // (not just left unwrapped) when there are no actions at all, so an empty
+  // wrapper never becomes a real flex child stealing a gap from its
+  // neighbours.
+  const inlineActionsEl = !actions?.length ? null : hasMenu ? (
     <div className={inlineActions}>{inlineActionsList}</div>
   ) : (
     inlineActionsList
@@ -242,10 +245,12 @@ export function AppHeader({
         {search || hasMenu ? (
           <div className={multiRowSearchRow}>
             <div className={searchContainer}>{search}</div>
-            <div className={rightSection}>
-              {inlineNavEl}
-              {menuEl}
-            </div>
+            {hasMenu ? (
+              <div className={rightSection}>
+                {inlineNavEl}
+                {menuEl}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </header>

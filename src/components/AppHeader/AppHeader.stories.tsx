@@ -1583,6 +1583,54 @@ export const MultiRowLoginSitsBetweenActionsAndSecondaryLogo: StoryObj<typeof Ap
   },
 };
 
+export const MultiRowRightSectionHasNoPhantomActionsGap: StoryObj<typeof AppHeader> = {
+  // inlineActionsEl wrapped `actions` in a div whenever a menu existed, even
+  // with no `actions` at all — an empty flex child still takes a full
+  // appHeader.spacing gap from its neighbours (MultiRow/WithoutSiteName hit
+  // this silently since neither has a play function).
+  render: () => (
+    <AppHeader
+      layout="multi-row"
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    await page.viewport(1500, 800);
+
+    const rightSectionEl = canvasElement.querySelectorAll(
+      'div[class*="rightSection"]'
+    )[0] as HTMLElement;
+    // Without the bug: language nav + secondary logo, nothing else.
+    await expect(rightSectionEl.children).toHaveLength(2);
+  },
+};
+
+export const MultiRowSearchSpansFullWidthWithoutNavigation: StoryObj<typeof AppHeader> = {
+  // The second row's `rightSection` wrapper rendered unconditionally too —
+  // with no `navigation` both its children are null, but the empty wrapper
+  // still counted as a flex item, so multiRowSearchRow's row-gap token was
+  // subtracted from search's own flexGrow:1 width for nothing.
+  render: () => (
+    <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" search={<AppHeaderSearchField />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    await page.viewport(1500, 800);
+
+    const searchRow = canvasElement.querySelector('div[class*="multiRowSearchRow"]') as HTMLElement;
+    const searchContainerEl = canvasElement.querySelector(
+      'div[class*="searchContainer"]'
+    ) as HTMLElement;
+    await expect(searchContainerEl.getBoundingClientRect().right).toBe(
+      searchRow.getBoundingClientRect().right
+    );
+  },
+};
+
 export const MultiRowOmitsTheSecondRowWhenEmpty: StoryObj<typeof AppHeader> = {
   render: () => <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" siteName="Site name" />,
   play: async ({ canvasElement }) => {
