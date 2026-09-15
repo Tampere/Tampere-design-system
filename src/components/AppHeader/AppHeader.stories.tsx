@@ -814,7 +814,6 @@ export const BrandLinkHasFocusVisibleRing: StoryObj<typeof AppHeader> = {
 };
 
 export const LanguageLinksMeetTouchTargetAt320: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // The 24px touch-target assertion in HeaderLandmarksAndSlots runs at 1500px
   // (xl tier) — it can no longer catch a regression at the small
   // breakpoints, where p2 (14px) at 150% line-height plus linkBase's 2px
@@ -1005,7 +1004,6 @@ export const ExactlyOneLanguageLandmarkAt1200: StoryObj<typeof AppHeader> = {
 };
 
 export const DoesNotOverflowWithLongSiteNameAtMd: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // `siteName` is free consumer text with no length limit; at md (768,
   // the narrowest width where it's visible at all — it's hidden below md)
   // it must wrap rather than force the header (and the page) wider than the
@@ -1034,7 +1032,6 @@ export const DoesNotOverflowWithLongSiteNameAtMd: StoryObj<typeof AppHeader> = {
 };
 
 export const SearchAndPrimaryNavGapIs32pxAtXl: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Multi-row's second row (search + primary nav/menu, node 14151:15442) is
   // gapped with the grid's layout/gutter (32px at xl), not appHeader.spacing
   // (16px) — same fix as singleRowRow's own gap override, extended here.
@@ -1416,7 +1413,6 @@ export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
 };
 
 export const LoginInvokesOnClickAndDefaultsToLoginIcon: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   render: () => {
     const onLoginClick = () => {
       document.body.dataset.loginClicked = 'true';
@@ -1445,7 +1441,6 @@ export const LoginInvokesOnClickAndDefaultsToLoginIcon: StoryObj<typeof AppHeade
 };
 
 export const LoginIconAndLabelAreOverridable: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Matches Figma node 14166:4271 — the same dedicated slot shows a person
   // icon + the user's name once authenticated, rather than a second slot.
   render: () => (
@@ -1462,7 +1457,6 @@ export const LoginIconAndLabelAreOverridable: StoryObj<typeof AppHeader> = {
 };
 
 export const LoginRendersAsLinkViaRenderRoot: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Proves `renderRoot` actually flows AppHeader -> LabeledIconButton ->
   // Mantine's Box, not just that the type checks.
   render: () => (
@@ -1483,7 +1477,6 @@ export const LoginRendersAsLinkViaRenderRoot: StoryObj<typeof AppHeader> = {
 };
 
 export const LoginRendersAsLinkViaHref: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Mirrors LoginRendersAsLinkViaRenderRoot's assertion, through the simpler
   // `href` shorthand `actions` already had — added so the common "login is a
   // link" case doesn't need a hand-rolled renderRoot.
@@ -1518,7 +1511,6 @@ export const SiteNameUsesSubheaderStyle: StoryObj<typeof AppHeader> = {
 };
 
 export const SiteNameIsLiftedTwoPixels: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   render: () => <AppHeader siteName="Site name" navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
@@ -1559,7 +1551,6 @@ export const MultiRowIsOptIn: StoryObj<typeof AppHeader> = {
 };
 
 export const MultiRowLoginSitsBetweenActionsAndSecondaryLogo: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Right-section child order per Figma node 3898:2196 (multi-row): languages
   // -> actions -> login -> secondary logo.
   render: () => (
@@ -1699,7 +1690,6 @@ export const LanguagesStayVisibleWithoutNavigation: StoryObj<typeof AppHeader> =
 };
 
 export const SiteNameHiddenAtSmAndBelow: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Figma's breakpoint sheet (node 14147:8539) drops the site name entirely
   // at sm/xs (480/320) — it only appears from md (768) up.
   render: () => <AppHeader siteName="Site name" navAriaLabel="Päänavigaatio" />,
@@ -1720,7 +1710,6 @@ export const SiteNameHiddenAtSmAndBelow: StoryObj<typeof AppHeader> = {
 };
 
 export const ActionsMoveIntoMenuAtSmAndBelow: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Figma node 14187:18169's Actions section renders as NavigationLink +
   // startIcon in the menu — but LabeledIconButton inline (node 14147:11664),
   // so `actions` is structured data, not a single shared ReactNode: AppHeader
@@ -1753,7 +1742,6 @@ export const ActionsMoveIntoMenuAtSmAndBelow: StoryObj<typeof AppHeader> = {
 };
 
 export const ActionsStayInlineFromMdUp: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // Complements ActionsMoveIntoMenuAtSmAndBelow: at md+ the inline copy is
   // the only one visible, and the popover's own copy (present whenever
   // `navigation` exists) must not also show, or the accessible name
@@ -1782,7 +1770,6 @@ export const ActionsStayInlineFromMdUp: StoryObj<typeof AppHeader> = {
 };
 
 export const ActionsStayInlineWithoutNavigation: StoryObj<typeof AppHeader> = {
-  tags: ['!dev', '!autodocs'],
   // No navigation means no menu, so moving `actions` there below md would
   // strand it entirely — same reasoning as LanguagesStayVisibleWithoutNavigation.
   render: () => (
