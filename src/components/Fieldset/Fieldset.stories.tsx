@@ -245,13 +245,9 @@ export const WithBorder: Story = {
 
     await expect(style.borderStyle).toBe('solid');
     await expect(style.borderWidth).toBe('2px');
-    // Same resting border color inputs use (`inputStates.default`), not the
-    // lighter `divider` token, so the box reads as part of the same form
-    // surface family as the fields inside it.
+    // Border/padding/radius rationale: see Fieldset.css.ts's `withBorder` comment.
     await expect(style.borderColor).toBe('rgb(82, 82, 91)');
-    // Sharp corners only, per FieldsetProps.withBorder's own doc comment.
     await expect(style.borderRadius).toBe('0px');
-    // Padding/border rationale: see Fieldset.css.ts's `withBorder` comment.
     await expect(style.paddingTop).toBe('0px');
     await expect(style.paddingRight).toBe('24px');
     await expect(style.paddingBottom).toBe('24px');
