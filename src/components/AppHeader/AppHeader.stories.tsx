@@ -191,6 +191,42 @@ export const MenuButtonIsAButtonInMultiRow: StoryObj<typeof AppHeaderMenu> = {
   },
 };
 
+export const MultiRowButtonTriggerActuallyOpensAndClosesTheMenu: StoryObj<typeof AppHeaderMenu> = {
+  // MenuButtonIsAButtonInMultiRow only asserts the trigger's static
+  // attributes (flexDirection, aria-expanded="false") — every open/close/
+  // escape/focus-restoration story elsewhere uses the default `labeledIcon`
+  // variant, so a wiring mistake specific to the `Button` branch (both share
+  // the same onClick handler, but nothing exercised it) wouldn't be caught.
+  render: () => (
+    <AppHeaderMenu
+      items={navigation}
+      navAriaLabel="Päänavigaatio"
+      menuButtonLabel="Valikko"
+      languagesAriaLabel="Kieli"
+      triggerVariant="button"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+
+    await userEvent.click(trigger);
+    await waitFor(async () => {
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+    await waitFor(async () => {
+      await expect(
+        within(document.body).getByRole('navigation', { name: 'Päänavigaatio' })
+      ).not.toBeNull();
+    });
+
+    await userEvent.click(trigger);
+    await waitFor(async () => {
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  },
+};
+
 export const AppHeaderMultiRowMenuButtonIsAButton: StoryObj<typeof AppHeader> = {
   // End-to-end wiring check: AppHeader itself picks triggerVariant from its
   // own `layout` prop, so this goes through the real component instead of
@@ -1848,6 +1884,32 @@ export const MultipleInlineActionsShareOneRow: StoryObj<typeof AppHeader> = {
     await expect(kori.getBoundingClientRect().left).toBeGreaterThan(
       haku.getBoundingClientRect().right
     );
+  },
+};
+
+export const InlineOnClickActionInvokesHandler: StoryObj<typeof AppHeader> = {
+  // Every action-onClick story elsewhere (MenuClosesWhenAnActionIsActivated-
+  // ClientSide etc.) drives the *menu's* rendering of an onClick action —
+  // none click the *inline* LabeledIconButton rendering (no navigation, so
+  // actions render inline rather than moving to the popover).
+  render: () => {
+    const onCartClick = () => {
+      document.body.dataset.cartClicked = 'true';
+    };
+    return (
+      <AppHeader
+        navAriaLabel="Päänavigaatio"
+        actions={[{ label: 'Ostoskori (0)', icon: <CartIcon />, onClick: onCartClick }]}
+      />
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    delete document.body.dataset.cartClicked;
+
+    const cart = canvas.getByRole('button', { name: 'Ostoskori (0)' });
+    await userEvent.click(cart);
+    await expect(document.body.dataset.cartClicked).toBe('true');
   },
 };
 
