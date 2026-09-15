@@ -4,7 +4,7 @@ import { TampereLogo } from '../../logos/TampereLogo';
 import { LabeledIconButton, type LabeledIconButtonProps } from '../LabeledIconButton';
 import { LoginIcon } from '../../icons/LoginIcon';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
-import { AppHeaderMenu } from './AppHeaderMenu';
+import { AppHeaderMenu, type AppHeaderActionProps } from './AppHeaderMenu';
 import { AppHeaderBrand } from './AppHeaderBrand';
 import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
 import {
@@ -16,15 +16,16 @@ import {
   rightSection,
   secondaryLogo,
   searchContainer,
+  multiRowSearchRow,
   inlineNav,
   inlineLanguages,
+  inlineSecondaryNav,
   inlineActions,
   siteName as siteNameClass,
-  siteNameSubheader,
 } from './AppHeader.css';
 
 // Re-exported so `index.ts` (and the package barrel) keep exporting it from here.
-export type { AppHeaderLanguage };
+export type { AppHeaderLanguage, AppHeaderActionProps };
 
 export type AppHeaderLoginProps = {
   /** Visible + accessible label — e.g. "Kirjaudu" logged out, the user's name
@@ -52,8 +53,17 @@ export interface AppHeaderBaseProps {
   /** A language's `code` (not `label`) to mark as selected. */
   currentLanguage?: string;
   languagesAriaLabel?: string;
-  /** Slot rendered after the language links, before `login`. */
-  actions?: ReactNode;
+  /** Names the secondary navigation landmark for AT — only meaningful with
+   * `secondaryNavigation`. Defaults to a generic Finnish label since, unlike
+   * `navAriaLabel`, "secondary navigation" reads fine without knowing the
+   * consumer's specific link set. */
+  secondaryNavAriaLabel?: string;
+  /** Rendered after the language links, before `login` — as `LabeledIconButton`
+   * inline, `NavigationLink` + `startIcon` once collapsed into the popover
+   * menu (Figma nodes 14147:11664 and 14187:18169 respectively). Structured
+   * data, not a single shared element, since the two contexts need different
+   * markup for the same items. */
+  actions?: AppHeaderActionProps[];
   /** Dedicated login control, rendered as a `LabeledIconButton` between
    * `actions` and the menu button/secondary logo (Figma node 14147:11664's
    * `Login container`). Reuse the same slot for the authenticated look by
@@ -63,7 +73,9 @@ export interface AppHeaderBaseProps {
    * stays inline — it never collapses into the popover menu. */
   login?: AppHeaderLoginProps;
   menuButtonLabel?: string;
-  /** Label (and icon) the menu trigger shows while the menu is open. Default `'Sulje'`. */
+  /** Label (and icon) the menu trigger shows while the menu is open.
+   * Defaults to `menuButtonLabel`, so only the icon signals the open state
+   * unless a consumer opts into different text. */
   menuButtonLabelOpen?: string;
   className?: string;
 }
@@ -74,12 +86,22 @@ export type AppHeaderProps =
       layout?: 'single-row';
       /** Single-row has no search slot — put a search trigger in `actions` instead. */
       search?: never;
+      /** Single-row has no secondary navigation slot either (Figma node
+       * 14151:15442 is multi-row only). */
+      secondaryNavigation?: never;
     })
   | (AppHeaderBaseProps & {
       /** Two rows, with a dedicated search slot below the brand row. Figma's Multi-row variant. */
       layout: 'multi-row';
       /** Search input slot, rendered as-is — AppHeader supplies layout only. */
       search?: ReactNode;
+      /** Secondary navigation, rendered inline in the first row between the
+       * site name and the language switcher (Figma node 14151:15442's
+       * "Secondary navigation") — small/secondary-colored links, distinct
+       * from the primary `navigation` prop. Collapses into the popover menu
+       * below `lg` alongside `languages`, as its own section between the
+       * primary nav and `actions`. */
+      secondaryNavigation?: AppHeaderNavigationItem[];
     });
 
 /**
@@ -103,9 +125,11 @@ export function AppHeader({
   languages,
   currentLanguage,
   languagesAriaLabel = 'Kieli',
+  secondaryNavAriaLabel = 'Toissijainen navigaatio',
   layout,
   search,
   actions,
+  secondaryNavigation,
   login,
   menuButtonLabel = 'Valikko',
   menuButtonLabelOpen,
@@ -132,13 +156,36 @@ export function AppHeader({
       currentLanguage={currentLanguage}
       languagesAriaLabel={languagesAriaLabel}
       actions={actions}
+      secondaryNavigation={secondaryNavigation}
+      secondaryNavAriaLabel={secondaryNavAriaLabel}
+      triggerVariant={layout === 'multi-row' ? 'button' : 'labeledIcon'}
     />
   ) : null;
+
+  // Built as LabeledIconButton here (Figma node 14147:11664) — AppHeaderMenu
+  // builds the same `actions` array as NavigationLink + startIcon for its own
+  // collapsed rendering (node 14187:18169). An `href` action still renders as
+  // a LabeledIconButton visually; `renderRoot` swaps its root to a real `<a>`,
+  // same technique as `login`'s own `renderRoot` (see LoginRendersAsLinkViaRenderRoot).
+  const inlineActionsList = actions?.map((action, index) => (
+    <LabeledIconButton
+      key={index}
+      className={action.className}
+      icon={action.icon}
+      label={action.label}
+      onClick={action.onClick}
+      renderRoot={action.href ? (props) => <a href={action.href} {...props} /> : undefined}
+    />
+  ));
 
   // Wrapped (and hidden below md) only when a menu exists to carry it — with
   // no navigation there is no menu, and hiding `actions` would strand it
   // entirely, same reasoning as `inlineLanguageNav` below.
-  const inlineActionsEl = hasMenu ? <div className={inlineActions}>{actions}</div> : actions;
+  const inlineActionsEl = hasMenu ? (
+    <div className={inlineActions}>{inlineActionsList}</div>
+  ) : (
+    inlineActionsList
+  );
 
   const loginEl = login ? (
     <LabeledIconButton
@@ -162,6 +209,19 @@ export function AppHeader({
     />
   ) : null;
 
+  // Multi-row only (enforced at the type level, see AppHeaderProps) — same
+  // hasMenu-gated collapse behavior as inlineLanguageNav above: without a
+  // menu, secondary nav has nowhere to collapse to, so it stays inline at
+  // every width instead of disappearing below lg.
+  const inlineSecondaryNavEl = secondaryNavigation?.length ? (
+    <AppHeaderNav
+      items={secondaryNavigation}
+      ariaLabel={secondaryNavAriaLabel}
+      size="sm"
+      className={hasMenu ? inlineSecondaryNav : undefined}
+    />
+  ) : null;
+
   if (layout === 'multi-row') {
     return (
       <header className={cx(root, className)}>
@@ -172,6 +232,7 @@ export function AppHeader({
             siteNameClassName={siteNameClass}
           />
           <div className={rightSection}>
+            {inlineSecondaryNavEl}
             {inlineLanguageNav}
             {inlineActionsEl}
             {loginEl}
@@ -179,7 +240,7 @@ export function AppHeader({
           </div>
         </div>
         {search || hasMenu ? (
-          <div className={row}>
+          <div className={multiRowSearchRow}>
             <div className={searchContainer}>{search}</div>
             <div className={rightSection}>
               {inlineNavEl}
@@ -201,7 +262,7 @@ export function AppHeader({
         <AppHeaderBrand
           siteName={siteName}
           homeHref={homeHref}
-          siteNameClassName={siteNameSubheader}
+          siteNameClassName={siteNameClass}
           className={singleRowLeftSection}
         />
         <div className={singleRowRightSection}>

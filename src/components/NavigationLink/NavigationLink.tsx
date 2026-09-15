@@ -1,6 +1,6 @@
-import type { AnchorHTMLAttributes, ReactElement } from 'react';
+import type { AnchorHTMLAttributes, ReactElement, ReactNode } from 'react';
 import cx from 'clsx';
-import { linkSize, linkVariant, selected } from './NavigationLink.css';
+import { linkSize, linkVariant, selected, iconWrapper, withIcon } from './NavigationLink.css';
 
 type NavigationLinkVariant = 'default' | 'inverted';
 type NavigationLinkSize = 'sm' | 'md';
@@ -11,11 +11,18 @@ export interface NavigationLinkProps extends AnchorHTMLAttributes<HTMLAnchorElem
   className?: string;
   variant?: NavigationLinkVariant;
   size?: NavigationLinkSize;
+  /** Icon shown before the label (Figma node 3992:2329's `startIcon`) — a
+   * fixed 18px regardless of `size`, spaced 8px from the label. */
+  startIcon?: ReactNode;
+  /** Icon shown after the label (Figma node 3992:2329's `endIcon`) — same
+   * fixed size/spacing as `startIcon`. */
+  endIcon?: ReactNode;
   /**
    * Renders the link in place of the default `<a>`. The second argument is
    * the derived `aria-current` value (from `isSelected`, or an explicit
    * override) — apply it to whatever element you render, it is not applied
-   * for you.
+   * for you. `startIcon`/`endIcon` are not applied either — include them in
+   * your own rendered content if needed.
    */
   renderLink?: (
     className: string,
@@ -36,6 +43,8 @@ export function NavigationLink({
   className,
   variant = 'default',
   size = 'md',
+  startIcon,
+  endIcon,
   renderLink,
   'aria-current': ariaCurrent,
   ...props
@@ -43,7 +52,7 @@ export function NavigationLink({
   const classes = cx(
     linkSize[size],
     linkVariant[variant],
-    { [selected[variant]]: isSelected },
+    { [selected[variant]]: isSelected, [withIcon]: !!(startIcon || endIcon) },
     className
   );
 
@@ -59,6 +68,10 @@ export function NavigationLink({
   }
 
   return (
-    <a href={href} className={classes} aria-current={currentValue} children={children} {...props} />
+    <a href={href} className={classes} aria-current={currentValue} {...props}>
+      {startIcon ? <span className={iconWrapper}>{startIcon}</span> : null}
+      {children}
+      {endIcon ? <span className={iconWrapper}>{endIcon}</span> : null}
+    </a>
   );
 }

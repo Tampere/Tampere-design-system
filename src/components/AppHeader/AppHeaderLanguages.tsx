@@ -1,12 +1,17 @@
+import type { AnchorHTMLAttributes, MouseEventHandler } from 'react';
+import cx from 'clsx';
+import { UnstyledButton } from '@mantine/core';
 import { NavigationLink } from '../NavigationLink';
-import { languageLink, navItem, navList } from './AppHeader.css';
+import { languageLink, languageLinkSelected, navItem, navList } from './AppHeader.css';
 
-export interface AppHeaderLanguage {
+export type AppHeaderLanguage = {
   /** Matched against `currentLanguage` to determine the selected link — not `label`, which is only display text. */
   code: string;
   label: string;
-  href: string;
-}
+} & (
+  | { href: string; onClick?: undefined }
+  | { href?: undefined; onClick: MouseEventHandler<HTMLButtonElement> }
+);
 
 export interface AppHeaderLanguagesProps {
   languages: AppHeaderLanguage[];
@@ -33,21 +38,46 @@ export function AppHeaderLanguages({
   return (
     <nav aria-label={ariaLabel} className={className}>
       <ul className={navList}>
-        {languages.map((language) => (
-          <li key={language.code} className={navItem}>
-            <NavigationLink
-              href={language.href}
-              size="sm"
-              className={languageLink}
-              isSelected={language.code === currentLanguage}
-              // "true", not the derived "page": switching language
-              // stays on the same page in another translation.
-              aria-current={language.code === currentLanguage ? 'true' : undefined}
-            >
-              {language.label}
-            </NavigationLink>
-          </li>
-        ))}
+        {languages.map((language) => {
+          const isSelected = language.code === currentLanguage;
+          const linkClassName = cx(languageLink, isSelected && languageLinkSelected);
+          return (
+            <li key={language.code} className={navItem}>
+              <NavigationLink
+                size="sm"
+                className={linkClassName}
+                isSelected={isSelected}
+                // "true", not the derived "page": switching language stays
+                // on the same page in another translation.
+                aria-current={isSelected ? 'true' : undefined}
+                {...(language.href
+                  ? { href: language.href }
+                  : {
+                      // No `href` means there's nothing to navigate to — an
+                      // `<a>` without one loses its link semantics/keyboard
+                      // focusability, so this renders a real `<button>`
+                      // instead (same technique as AppHeaderMenu.tsx's
+                      // onClick-based actions).
+                      renderLink: (
+                        linkClassNameFromNavigationLink: string,
+                        ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
+                      ) => (
+                        <UnstyledButton
+                          type="button"
+                          className={linkClassNameFromNavigationLink}
+                          aria-current={ariaCurrent}
+                          onClick={language.onClick}
+                        >
+                          {language.label}
+                        </UnstyledButton>
+                      ),
+                    })}
+              >
+                {language.label}
+              </NavigationLink>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

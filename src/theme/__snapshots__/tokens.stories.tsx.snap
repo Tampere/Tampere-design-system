@@ -15,6 +15,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
       "logo": {
         "primaryHeight": "calc(2rem * var(--mantine-scale))",
         "secondaryHeight": "calc(1.75rem * var(--mantine-scale))",
@@ -24,8 +27,14 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "rowGap": "calc(1.5rem * var(--mantine-scale))",
-      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -168,6 +177,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -206,6 +218,16 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+    },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
       },
     },
     "pagination": {
@@ -378,6 +400,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
       "logo": {
         "primaryHeight": "calc(1.75rem * var(--mantine-scale))",
         "secondaryHeight": "calc(1.5rem * var(--mantine-scale))",
@@ -387,8 +412,14 @@ exports[`Token Values Match Snapshot > md 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "rowGap": "calc(1rem * var(--mantine-scale))",
-      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -531,6 +562,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -569,6 +603,16 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+    },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
       },
     },
     "pagination": {
@@ -741,6 +785,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
       "logo": {
         "primaryHeight": "calc(1.5rem * var(--mantine-scale))",
         "secondaryHeight": "calc(1.25rem * var(--mantine-scale))",
@@ -750,8 +797,14 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "rowGap": "calc(0.75rem * var(--mantine-scale))",
-      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -894,6 +947,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -932,6 +988,16 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+    },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
       },
     },
     "pagination": {
@@ -1107,9 +1173,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "primaryLogoHeight": "calc(2rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.75rem * var(--mantine-scale))",
         },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
-        },
       },
       "appWidth": "1024px",
       "components": {
@@ -1159,9 +1222,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "logo": {
           "primaryLogoHeight": "calc(1.75rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.5rem * var(--mantine-scale))",
-        },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
         },
       },
       "appWidth": "768px",
@@ -1213,9 +1273,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "primaryLogoHeight": "calc(1.5rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.25rem * var(--mantine-scale))",
         },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
-        },
       },
       "appWidth": "480px",
       "components": {
@@ -1265,9 +1322,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "logo": {
           "primaryLogoHeight": "calc(2.125rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(2rem * var(--mantine-scale))",
-        },
-        "search": {
-          "maxWidth": "calc(20rem * var(--mantine-scale))",
         },
       },
       "appWidth": "1440px",
@@ -1319,9 +1373,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "primaryLogoHeight": "calc(1.5rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.25rem * var(--mantine-scale))",
         },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
-        },
       },
       "appWidth": "320px",
       "components": {
@@ -1371,9 +1422,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "logo": {
           "primaryLogoHeight": "calc(2.25rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(2rem * var(--mantine-scale))",
-        },
-        "search": {
-          "maxWidth": "calc(20rem * var(--mantine-scale))",
         },
       },
       "appWidth": "1920px",
@@ -1518,6 +1566,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "appHeader": {
+        "language": {
+          "selectedFontWeight": "700",
+        },
         "logo": {
           "primaryHeight": "calc(1.75rem * var(--mantine-scale))",
           "secondaryHeight": "calc(1.5rem * var(--mantine-scale))",
@@ -1527,8 +1578,14 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "vertical": "calc(0.75rem * var(--mantine-scale))",
         },
         "rowGap": "calc(1rem * var(--mantine-scale))",
-        "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
         "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "appHeaderMenu": {
+        "sectionPadding": {
+          "horizontal": "calc(1.5rem * var(--mantine-scale))",
+          "vertical": "calc(0.75rem * var(--mantine-scale))",
+        },
+        "width": "calc(17.75rem * var(--mantine-scale))",
       },
       "breadcrumbs": {
         "activePageFontWeight": "600",
@@ -1671,6 +1728,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "highlightFontWeight": "600",
       },
       "labeledIconButton": {
+        "label": {
+          "fontWeight": "600",
+        },
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "link": {
@@ -1709,6 +1769,16 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "padding": {
           "horizontal": "calc(1rem * var(--mantine-scale))",
           "vertical": "calc(0.5rem * var(--mantine-scale))",
+        },
+      },
+      "navigationLink": {
+        "icon": {
+          "size": "calc(1.125rem * var(--mantine-scale))",
+          "spacing": "calc(0.5rem * var(--mantine-scale))",
+          "verticalOffset": "-0.1em",
+        },
+        "label": {
+          "mediumFontWeight": "600",
         },
       },
       "pagination": {
@@ -1882,6 +1952,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
       "logo": {
         "primaryHeight": "calc(2.125rem * var(--mantine-scale))",
         "secondaryHeight": "calc(2rem * var(--mantine-scale))",
@@ -1891,8 +1964,14 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "rowGap": "calc(2rem * var(--mantine-scale))",
-      "searchMaxWidth": "calc(20rem * var(--mantine-scale))",
       "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2035,6 +2114,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -2073,6 +2155,16 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+    },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
       },
     },
     "pagination": {
@@ -2245,6 +2337,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
       "logo": {
         "primaryHeight": "calc(1.5rem * var(--mantine-scale))",
         "secondaryHeight": "calc(1.25rem * var(--mantine-scale))",
@@ -2254,8 +2349,14 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "rowGap": "calc(0.5rem * var(--mantine-scale))",
-      "searchMaxWidth": "calc(624.9375rem * var(--mantine-scale))",
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2398,6 +2499,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -2436,6 +2540,16 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+    },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
       },
     },
     "pagination": {
@@ -2608,6 +2722,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
       "logo": {
         "primaryHeight": "calc(2.25rem * var(--mantine-scale))",
         "secondaryHeight": "calc(2rem * var(--mantine-scale))",
@@ -2617,8 +2734,14 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "rowGap": "calc(2rem * var(--mantine-scale))",
-      "searchMaxWidth": "calc(20rem * var(--mantine-scale))",
       "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2761,6 +2884,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -2799,6 +2925,16 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+    },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
       },
     },
     "pagination": {

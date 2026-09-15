@@ -1,7 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NavigationLink } from './NavigationLink';
-import { Flex, Stack } from '@mantine/core';
+import { Flex, Stack, UnstyledButton } from '@mantine/core';
 import { within, expect } from 'storybook/test';
+import { SearchIcon } from '../../icons/SearchIcon';
+import { CartIcon } from '../../icons/CartIcon';
+import { iconWrapper } from './NavigationLink.css';
+import { TextLink } from '../TextLink/TextLink';
+
+// childNodes (not children) so the label's bare text node is comparable
+// against an icon wrapper span's position — `children` only lists elements.
+function childNodeIndex(parent: HTMLElement, node: Node | null) {
+  return Array.from(parent.childNodes).indexOf(node as ChildNode);
+}
+function labelTextNodeIndex(parent: HTMLElement, text: string) {
+  return Array.from(parent.childNodes).findIndex(
+    (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === text
+  );
+}
 
 const meta = {
   component: NavigationLink,
@@ -93,6 +108,61 @@ export const AllStates: Story = {
   ),
 };
 
+export const WithIcons: Story = {
+  // Figma node 3992:2329's showStartIcon/showEndIcon variants — used e.g. by
+  // AppHeader's collapsed-menu Actions section (search/cart), node 14187:18169.
+  render: () => (
+    <Stack gap="md">
+      <NavigationLink href="#" startIcon={<SearchIcon />}>
+        Haku
+      </NavigationLink>
+      <NavigationLink href="#" startIcon={<CartIcon />}>
+        Ostoskori (0)
+      </NavigationLink>
+      <NavigationLink href="#" size="sm" endIcon={<CartIcon />}>
+        Ostoskori (0)
+      </NavigationLink>
+    </Stack>
+  ),
+};
+
+export const AsLinkOrAsButton: Story = {
+  // Same look, two different underlying elements: a real destination gets an
+  // `<a href>` (the default render); a stateful trigger (opens a cart
+  // drawer, no navigation) uses `renderLink` to render a `<button>` instead.
+  // `startIcon` is still passed on the button variant even though
+  // `renderLink` skips NavigationLink's own icon rendering — it's what puts
+  // the icon/gap layout class into the `className` renderLink receives, so
+  // the hand-built icon markup lines up the same way. `UnstyledButton` (not
+  // a plain `<button>`) is what strips the browser's native button chrome —
+  // NavigationLink's own classes only add link typography/hover, they don't
+  // reset an arbitrary element to look unstyled.
+  render: () => (
+    <Stack gap="md">
+      <div>
+        <h3>Link (navigates to a destination)</h3>
+        <NavigationLink href="/ostoskori" startIcon={<CartIcon />}>
+          Ostoskori (0)
+        </NavigationLink>
+      </div>
+      <div>
+        <h3>Button (opens something in place, e.g. a cart drawer)</h3>
+        <NavigationLink
+          startIcon={<CartIcon />}
+          renderLink={(className) => (
+            <UnstyledButton className={className} onClick={() => {}}>
+              <span className={iconWrapper}>
+                <CartIcon />
+              </span>
+              Ostoskori (0)
+            </UnstyledButton>
+          )}
+        />
+      </div>
+    </Stack>
+  ),
+};
+
 export const WithCustomLink: Story = {
   render: () => (
     <Stack gap="md">
@@ -164,6 +234,108 @@ export const ExplicitAriaCurrentWins: Story = {
       'aria-current',
       'step'
     );
+  },
+};
+
+export const StartIconRendersBeforeLabel: Story = {
+  // Figma node 3992:2329's showStartIcon/showEndIcon variants — a fixed 18px
+  // icon, spaced 8px from the text on whichever side it's on.
+  args: {
+    href: '#',
+    children: 'Navigointilinkki',
+    startIcon: <svg data-testid="start-icon" />,
+  },
+  tags: ['!dev', '!autodocs'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Navigointilinkki' });
+    const icon = canvas.getByTestId('start-icon');
+
+    const iconIndex = childNodeIndex(link, icon.parentElement);
+    const labelIndex = labelTextNodeIndex(link, 'Navigointilinkki');
+    await expect(iconIndex).toBeGreaterThanOrEqual(0);
+    await expect(labelIndex).toBeGreaterThanOrEqual(0);
+    await expect(iconIndex).toBeLessThan(labelIndex);
+    await expect(icon.parentElement?.getBoundingClientRect().width).toBeCloseTo(18, 0);
+  },
+};
+
+export const EndIconRendersAfterLabel: Story = {
+  args: {
+    href: '#',
+    children: 'Navigointilinkki',
+    endIcon: <svg data-testid="end-icon" />,
+  },
+  tags: ['!dev', '!autodocs'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Navigointilinkki' });
+    const icon = canvas.getByTestId('end-icon');
+
+    const iconIndex = childNodeIndex(link, icon.parentElement);
+    const labelIndex = labelTextNodeIndex(link, 'Navigointilinkki');
+    await expect(iconIndex).toBeGreaterThanOrEqual(0);
+    await expect(labelIndex).toBeGreaterThanOrEqual(0);
+    await expect(labelIndex).toBeLessThan(iconIndex);
+    await expect(icon.parentElement?.getBoundingClientRect().width).toBeCloseTo(18, 0);
+  },
+};
+
+export const BothIconsRenderOnBothSides: Story = {
+  args: {
+    href: '#',
+    children: 'Navigointilinkki',
+    startIcon: <svg data-testid="start-icon" />,
+    endIcon: <svg data-testid="end-icon" />,
+  },
+  tags: ['!dev', '!autodocs'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Navigointilinkki' });
+    const start = canvas.getByTestId('start-icon');
+    const end = canvas.getByTestId('end-icon');
+
+    const startIndex = childNodeIndex(link, start.parentElement);
+    const endIndex = childNodeIndex(link, end.parentElement);
+    const labelIndex = labelTextNodeIndex(link, 'Navigointilinkki');
+    await expect(startIndex).toBeLessThan(labelIndex);
+    await expect(labelIndex).toBeLessThan(endIndex);
+  },
+};
+
+export const IconVerticalOffsetIsHalfOfTextLinks: Story = {
+  // TextLink's trailing external-link icon (TextLink.css.ts's `externalIcon`)
+  // nudges up with `top: components.link.iconVerticalOffset` (-0.2em) to
+  // visually balance against the underline — NavigationLink's start/end
+  // icons use the same technique, tuned to half that nudge (-0.1em) for its
+  // fixed 18px icon.
+  render: () => (
+    <Stack gap="md">
+      <NavigationLink href="#" startIcon={<svg data-testid="start-icon" />}>
+        Navigointilinkki
+      </NavigationLink>
+      <NavigationLink href="#" endIcon={<svg data-testid="end-icon" />}>
+        Navigointilinkki
+      </NavigationLink>
+      <TextLink href="#" openExternal>
+        Navigointilinkki
+      </TextLink>
+    </Stack>
+  ),
+  tags: ['!dev', '!autodocs'],
+  play: async ({ canvasElement }) => {
+    const start = canvasElement.querySelector('[data-testid="start-icon"]')
+      ?.parentElement as HTMLElement;
+    const end = canvasElement.querySelector('[data-testid="end-icon"]')
+      ?.parentElement as HTMLElement;
+    const textLinkIcon = canvasElement.querySelector('svg[class*="externalIcon"]') as HTMLElement;
+
+    // Both default to p1 (20px), so comparing resolved em→px values directly
+    // is meaningful rather than comparing raw em strings.
+    const textLinkOffset = parseFloat(getComputedStyle(textLinkIcon).top);
+    await expect(textLinkOffset).toBeLessThan(0);
+    await expect(parseFloat(getComputedStyle(start).top)).toBeCloseTo(textLinkOffset / 2, 5);
+    await expect(parseFloat(getComputedStyle(end).top)).toBeCloseTo(textLinkOffset / 2, 5);
   },
 };
 

@@ -2,7 +2,10 @@ export { Accordion, AccordionItem } from './Accordion/Accordion';
 export {
   AppHeader,
   type AppHeaderProps,
+  type AppHeaderBaseProps,
+  type AppHeaderActionProps,
   type AppHeaderLanguage,
+  type AppHeaderLoginProps,
   type AppHeaderNavigationItem,
 } from './AppHeader';
 export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';

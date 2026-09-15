@@ -1,11 +1,14 @@
 export function TampereLogo({ className }: { className?: string }) {
+  // The viewBox is cropped to the ink instead of starting at `0 0` because the
+  // paths keep their original Figma coordinates. A 0-origin re-adds 11 units of
+  // blank space above and below, rendering the logo at 58% of any CSS height.
   return (
     <svg
       className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="132"
-      height="52"
-      viewBox="0 0 132 52"
+      width="219"
+      height="50"
+      viewBox="0.600098 11 131.4 30"
       fill="none"
     >
       <g>
@@ -64,11 +67,6 @@ export function TampereLogo({ className }: { className?: string }) {
           fill="#39A7D7"
         />
       </g>
-      <defs>
-        <clipPath>
-          <rect width="131.4" height="30" fill="white" transform="translate(0.600098 11)" />
-        </clipPath>
-      </defs>
     </svg>
   );
 }

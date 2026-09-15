@@ -21,7 +21,6 @@ export type BreakpointValues = {
   layout: { columns: string; gutter: string; margin: string };
   appHeader: {
     logo: { primaryLogoHeight: string; secondaryLogoHeight: string };
-    search: { maxWidth: string };
   };
   components: {
     button: { lineHeight: string };
@@ -51,7 +50,6 @@ export const breakpoint = {
     layout: { columns: '12', gutter: rem('32px'), margin: rem('32px') },
     appHeader: {
       logo: { primaryLogoHeight: rem('36px'), secondaryLogoHeight: rem('32px') },
-      search: { maxWidth: rem('320px') },
     },
     components: {
       button: { lineHeight: rem('20px') },
@@ -87,7 +85,6 @@ export const breakpoint = {
     layout: { columns: '12', gutter: rem('32px'), margin: rem('32px') },
     appHeader: {
       logo: { primaryLogoHeight: rem('34px'), secondaryLogoHeight: rem('32px') },
-      search: { maxWidth: rem('320px') },
     },
     components: {
       button: { lineHeight: rem('20px') },
@@ -123,7 +120,6 @@ export const breakpoint = {
     layout: { columns: '12', gutter: rem('24px'), margin: rem('24px') },
     appHeader: {
       logo: { primaryLogoHeight: rem('32px'), secondaryLogoHeight: rem('28px') },
-      search: { maxWidth: rem('9999px') },
     },
     components: {
       button: { lineHeight: rem('20px') },
@@ -159,7 +155,6 @@ export const breakpoint = {
     layout: { columns: '8', gutter: rem('16px'), margin: rem('24px') },
     appHeader: {
       logo: { primaryLogoHeight: rem('28px'), secondaryLogoHeight: rem('24px') },
-      search: { maxWidth: rem('9999px') },
     },
     components: {
       button: { lineHeight: rem('18px') },
@@ -195,7 +190,6 @@ export const breakpoint = {
     layout: { columns: '4', gutter: rem('12px'), margin: rem('16px') },
     appHeader: {
       logo: { primaryLogoHeight: rem('24px'), secondaryLogoHeight: rem('20px') },
-      search: { maxWidth: rem('9999px') },
     },
     components: {
       button: { lineHeight: rem('16px') },
@@ -231,7 +225,6 @@ export const breakpoint = {
     layout: { columns: '4', gutter: rem('8px'), margin: rem('12px') },
     appHeader: {
       logo: { primaryLogoHeight: rem('24px'), secondaryLogoHeight: rem('20px') },
-      search: { maxWidth: rem('9999px') },
     },
     components: {
       button: { lineHeight: rem('16px') },
