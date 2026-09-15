@@ -1668,6 +1668,17 @@ export const SearchIsForbiddenInSingleRow: StoryObj<typeof AppHeader> = {
   ),
 };
 
+// Locks the same decision as SearchIsForbiddenInSingleRow above, for
+// secondaryNavigation — Figma node 14151:15442 is multi-row only, so the
+// union must reject it in single-row too. `tsc --noEmit` fails if this ever
+// stops erroring.
+export const SecondaryNavigationIsForbiddenInSingleRow: StoryObj<typeof AppHeader> = {
+  render: () => (
+    // @ts-expect-error — `secondaryNavigation` requires layout="multi-row"
+    <AppHeader navAriaLabel="Päänavigaatio" secondaryNavigation={secondaryNavigation} />
+  ),
+};
+
 export const LanguagesStayVisibleWithoutNavigation: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader navAriaLabel="Päänavigaatio" languages={languages} currentLanguage="fi" />
