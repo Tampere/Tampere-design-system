@@ -15,7 +15,10 @@ import { CloseIcon } from '../../icons/CloseIcon';
 import { LabeledIconButton } from '../LabeledIconButton';
 import { Button } from '../Button';
 import { NavigationLink } from '../NavigationLink';
-import { iconWrapper as navigationLinkIconWrapper } from '../NavigationLink/NavigationLink.css';
+import {
+  iconWrapper as navigationLinkIconWrapper,
+  withIcon,
+} from '../NavigationLink/NavigationLink.css';
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
 import {
@@ -330,10 +333,13 @@ export function AppHeaderMenu({
                 ) : (
                   <NavigationLink
                     key={index}
-                    startIcon={action.icon}
                     renderLink={(linkClassName) => (
                       <UnstyledButton
-                        className={cx(linkClassName, action.className)}
+                        // withIcon applied directly (not via NavigationLink's startIcon) —
+                        // renderLink already renders its own icon below, and passing
+                        // startIcon here would trip NavigationLink's dev warning for a
+                        // dropped icon, which doesn't apply to this self-handled case.
+                        className={cx(linkClassName, withIcon, action.className)}
                         onClick={(event) => {
                           action.onClick?.(event);
                           handleClose();

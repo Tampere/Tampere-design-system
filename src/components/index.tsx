@@ -21,7 +21,7 @@ export {
 export { Linkbox, type LinkboxProps } from './Linkbox/Linkbox';
 export { LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { Modal } from './Modal/Modal';
-export { NavigationLink } from './NavigationLink/NavigationLink';
+export { NavigationLink, type NavigationLinkRenderLink } from './NavigationLink/NavigationLink';
 export { Pagination } from './Pagination/Pagination';
 export { Paper, type PaperProps } from './Paper/Paper';
 export { RadioButton } from './RadioButton/RadioButton';
