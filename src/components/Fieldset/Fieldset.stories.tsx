@@ -2,8 +2,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
-import { Fieldset } from './Fieldset';
-import { selectionGroup } from './Fieldset.css';
+import { Fieldset, fieldsetSelectionGroup } from './Fieldset';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { RadioButton } from '../RadioButton/RadioButton';
 import { TextField } from '../TextField/TextField';
@@ -52,13 +51,15 @@ export const LegendUsesInputLabelTypography: Story = {
     const legend = canvas.getByText('Hakijan tiedot');
     const style = getComputedStyle(legend);
 
-    // Same recipe as TextField's own label (TextField.css.ts): Figma's "Inputs
-    // and forms/Input label" style — P2 size, Subheader/Semi-Bold weight,
-    // text.primary color. A bare <legend> otherwise falls back to the
-    // browser's own small default legend font, not any TREDS type scale.
+    // Recipe is Fieldset.css.ts's `legend` style — a bare <legend> otherwise
+    // falls back to the browser's own small default font, not any TREDS type
+    // scale.
     await expect(style.fontWeight).toBe('600');
     await expect(style.color).toBe('rgb(45, 45, 50)');
-    await expect(parseFloat(style.fontSize)).toBeGreaterThanOrEqual(14);
+    // P2 resolves to 18px at this test viewport's breakpoint — pin the exact
+    // value so a regression that picks a different (but still >=14px) type
+    // scale step doesn't slip through.
+    await expect(parseFloat(style.fontSize)).toBe(18);
   },
 };
 
@@ -76,8 +77,10 @@ export const Required: Story = {
     await expect(asterisk?.textContent).toBe('*');
     await expect(getComputedStyle(asterisk as Element).color).toBe('rgb(174, 30, 32)');
     // Visual gap from the legend text — without it, "<legend>*" reads as
-    // flush/cramped rather than "<legend> *".
-    await expect(parseFloat(getComputedStyle(asterisk as Element).marginLeft)).toBeGreaterThan(0);
+    // flush/cramped rather than "<legend> *". Pin the exact
+    // requiredIndicatorGap token value (4px, fixed/non-responsive) rather
+    // than just "any positive gap".
+    await expect(parseFloat(getComputedStyle(asterisk as Element).marginLeft)).toBe(4);
   },
 };
 
@@ -91,14 +94,11 @@ export const WithHelperText: Story = {
 
     await expect(group).toHaveAttribute('aria-describedby', helper.id);
 
-    // Regression: a flex `<fieldset>`'s `<legend>` is excluded from the flex
-    // formatting context (browsers wrap the rest of the children in an
-    // anonymous "fieldset content box" per the CSS Fieldsets spec) — the
-    // root's flex `gap` therefore never applies between the legend and its
-    // next sibling, only among children after it (that gap measures 0
-    // without an explicit margin on the legend). Assert equality against the
-    // description→children gap (both use the same `forms.fieldset.spacing`
-    // token) rather than a breakpoint-dependent hardcoded pixel value.
+    // Regression: see Fieldset.css.ts's `legend` comment for why the legend
+    // needs its own explicit `marginBottom` (flex `gap` doesn't reach it).
+    // Assert equality against the description→children gap (both use the
+    // same `forms.fieldset.spacing` token) rather than a hardcoded pixel
+    // value.
     const legend = canvas.getByText('Hakijan tiedot');
     const descriptionGroup = helper.parentElement as HTMLElement;
     const childrenWrapper = descriptionGroup.nextElementSibling as HTMLElement;
@@ -131,14 +131,18 @@ export const WithError: Story = {
     await expect(getComputedStyle(helper).color).not.toBe('rgb(174, 30, 32)');
 
     // Regression: helper→error gap must be the tight TextField-matching gap
-    // (input.spacing.verticalSpacing), strictly smaller than the looser
-    // legend→helper gap (forms.fieldset.spacing) the pair sits inside.
+    // (input.spacing.verticalSpacing, 8px at this test viewport's
+    // breakpoint), strictly smaller than the looser legend→helper gap
+    // (forms.fieldset.spacing) the pair sits inside. Pin the actual token
+    // value, not just the ordering — a regression that swaps in some other
+    // smaller-but-wrong value would still satisfy a bare inequality.
     const legend = canvas.getByText('Hakijan tiedot');
     const legendToHelperGap =
       helper.getBoundingClientRect().top - legend.getBoundingClientRect().bottom;
     const helperToErrorGap =
       error.getBoundingClientRect().top - helper.getBoundingClientRect().bottom;
 
+    await expect(Math.abs(helperToErrorGap - 8)).toBeLessThan(1);
     await expect(helperToErrorGap).toBeLessThan(legendToHelperGap);
   },
 };
@@ -208,16 +212,16 @@ export const MultipleChildrenAreSpaced: Story = {
     const a = canvas.getByTestId('field-a');
     const b = canvas.getByTestId('field-b');
 
-    // Both gaps are responsive (legend-stack: 16/12, field-group: 24/16), so
-    // don't assume which breakpoint tier the test viewport lands on — instead
-    // assert the relationship that holds at every tier: the gap between two
-    // distinct fields must be strictly larger than the tighter legend-stack
-    // gap (helper text → first field), proving they're driven by two
-    // different tokens rather than one gap value applied uniformly.
+    // Both gaps are responsive (legend-stack: 16/12, field-group: 24/16) —
+    // pin both to their actual token values at this test viewport's
+    // breakpoint (16px/24px) rather than only checking their relative order,
+    // so a regression that swaps in some other smaller/larger value can't
+    // slip through.
     const legendStackGap = a.getBoundingClientRect().top - helper.getBoundingClientRect().bottom;
     const fieldGroupGap = b.getBoundingClientRect().top - a.getBoundingClientRect().bottom;
 
-    await expect(fieldGroupGap).toBeGreaterThan(legendStackGap);
+    await expect(Math.abs(legendStackGap - 16)).toBeLessThan(1);
+    await expect(Math.abs(fieldGroupGap - 24)).toBeLessThan(1);
   },
 };
 
@@ -245,18 +249,9 @@ export const WithBorder: Story = {
     // lighter `divider` token, so the box reads as part of the same form
     // surface family as the fields inside it.
     await expect(style.borderColor).toBe('rgb(82, 82, 91)');
-    // Sharp corners only — no rounded/pill radius option (needs more design
-    // work before it's offered here).
+    // Sharp corners only, per FieldsetProps.withBorder's own doc comment.
     await expect(style.borderRadius).toBe('0px');
-    // The legend and content must not hug the border — no Figma spec exists
-    // for this Mantine-style addition, so this reuses `forms.spacing` (24px),
-    // the only pre-existing token actually named for this purpose. `top` is
-    // 0: a flex `<fieldset>`'s `<legend>` always renders flush with the
-    // fieldset's own top edge regardless of padding-top (browsers exclude it
-    // from the padding box entirely), so a nonzero padding-top would only
-    // double up with the legend's own marginBottom below (see the regression
-    // check further down) without giving the legend itself any more
-    // clearance from the top border.
+    // Padding/border rationale: see Fieldset.css.ts's `withBorder` comment.
     await expect(style.paddingTop).toBe('0px');
     await expect(style.paddingRight).toBe('24px');
     await expect(style.paddingBottom).toBe('24px');
@@ -264,9 +259,9 @@ export const WithBorder: Story = {
 
     // Regression: the gap from the legend to the first content below it must
     // match the fieldset's normal legend-stack gap (`forms.fieldset.spacing`,
-    // the same value `root`'s own flex `rowGap` resolves to), not double up
-    // with `withBorder`'s own padding-top stacking on top of the legend's
-    // marginBottom.
+    // the same value `root`'s own flex `rowGap` resolves to) — see
+    // Fieldset.css.ts's `withBorder` comment for why `paddingTop: 0` above
+    // matters here.
     const legend = canvas.getByText('Hakijan tiedot');
     const firstField = canvas.getByText('Etunimi');
     const fieldset = canvas.getByTestId('fieldset');
@@ -299,7 +294,7 @@ export const WithCheckboxGroup: Story = {
   // via `onClick` (not `onChange` — see Checkbox.stories.tsx's own
   // convention) — a story-local `useState` is required for the checkboxes to
   // actually respond to clicks, not just render a static unchecked snapshot.
-  // Grouped as a single Fieldset child (via `selectionGroup`) so the items
+  // Grouped as a single Fieldset child (via `fieldsetSelectionGroup`) so the items
   // get their own dedicated "Selection-items-spacing" gap token, not the
   // larger field-group gap meant for stacking distinct field types.
   render: (args) => {
@@ -308,7 +303,7 @@ export const WithCheckboxGroup: Story = {
 
     return (
       <Fieldset {...args}>
-        <div data-testid="checkbox-group" className={selectionGroup}>
+        <div data-testid="checkbox-group" className={fieldsetSelectionGroup}>
           {days.map((label, i) => (
             <Checkbox
               key={label}
@@ -337,19 +332,21 @@ export const WithCheckboxGroup: Story = {
     await expect(first.checked).toBe(true);
 
     // Regression: checkbox items must use the tighter `selectionItemsSpacing`
-    // gap, strictly less than `fieldGroupSpacing` (the larger gap meant for
-    // stacking distinct field types) — compared against the actual
-    // field-group gap (the checkbox group's own parent, Fieldset's
-    // `childrenWrapper`) so this survives `selectionItemsSpacing` and
-    // `spacing` diverging from each other later, which is the whole point of
-    // giving them separate tokens.
+    // gap (16px at this test viewport's breakpoint), not `fieldGroupSpacing`
+    // (24px, the larger gap meant for stacking distinct field types) —
+    // compared against the actual field-group gap (the checkbox group's own
+    // parent, Fieldset's `childrenWrapper`). Pin both exact values, not just
+    // their order, so this survives `selectionItemsSpacing` and `spacing`
+    // diverging from each other later, which is the whole point of giving
+    // them separate tokens.
     const checkboxGroup = canvas.getByTestId('checkbox-group');
     const fieldGroupGap = parseFloat(
       getComputedStyle(checkboxGroup.parentElement as HTMLElement).rowGap
     );
     const groupGap = parseFloat(getComputedStyle(checkboxGroup).rowGap);
 
-    await expect(groupGap).toBeLessThan(fieldGroupGap);
+    await expect(groupGap).toBe(16);
+    await expect(fieldGroupGap).toBe(24);
   },
 };
 
@@ -373,7 +370,7 @@ export const WithRadioGroup: Story = {
 
     return (
       <Fieldset {...args}>
-        <div data-testid="radio-group" className={selectionGroup}>
+        <div data-testid="radio-group" className={fieldsetSelectionGroup}>
           {options.map((option) => (
             <RadioButton
               key={option.value}
@@ -409,7 +406,8 @@ export const WithRadioGroup: Story = {
     );
     const groupGap = parseFloat(getComputedStyle(radioGroup).rowGap);
 
-    await expect(groupGap).toBeLessThan(fieldGroupGap);
+    await expect(groupGap).toBe(16);
+    await expect(fieldGroupGap).toBe(24);
   },
 };
 

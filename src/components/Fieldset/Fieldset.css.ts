@@ -58,13 +58,9 @@ export const asterisk = style({
 // padding or inventing a new token with no source of truth to check it against.
 // Border color matches the resting border color inputs use (`inputStates.default`),
 // not the lighter `divider` token, so the box reads as part of the same form
-// surface family as the fields inside it. `paddingTop` stays 0: a flex
-// `<fieldset>`'s `<legend>` always renders flush with the fieldset's own top
-// edge regardless of padding-top (browsers exclude it from the padding box
-// entirely, per the CSS Fieldsets spec — see `legend`'s own comment above),
-// so a nonzero padding-top here would only double up with the legend's
-// `marginBottom`, not give the legend itself any more clearance from the top
-// border.
+// surface family as the fields inside it. `paddingTop` stays 0 — see
+// `legend`'s own comment above for why a nonzero value here would only double
+// up with the legend's `marginBottom` instead of adding clearance.
 export const withBorder = style({
   borderWidth: strokeWeight,
   borderStyle: 'solid',
@@ -84,10 +80,11 @@ export const childrenWrapper = style({
 // Groups same-type selection controls (Checkbox/RadioButton items) into a
 // single Fieldset child, matching Figma's "Checkbox group"/"Radio button
 // group" sub-components. TREDS has no dedicated CheckboxGroup/RadioGroup
-// component yet, so this is used directly by Fieldset.stories.tsx's doc
-// examples. Uses its own `selectionItemsSpacing` token (not the larger
-// `fieldGroupSpacing` meant for grouping distinct field types) — see that
-// token's own comment in theme.ts for why it's separate from `spacing`.
+// component yet, so this is re-exported as `fieldsetSelectionGroup` for
+// consumers (and the doc examples) to apply directly. Uses its own
+// `selectionItemsSpacing` token (not the larger `fieldGroupSpacing` meant for
+// grouping distinct field types) — see that token's own comment in theme.ts
+// for why it's separate from `spacing`.
 export const selectionGroup = style({
   display: 'flex',
   flexDirection: 'column',
