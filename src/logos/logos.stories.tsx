@@ -67,3 +67,16 @@ export const VaakunaAcceptsClassName: Story = {
   },
   tags: ['!dev', '!autodocs'],
 };
+
+export const TampereLogoViewBoxIsCroppedToInk: Story = {
+  // A Figma re-export can silently reintroduce the original 0-origin viewBox
+  // (see TampereLogo.tsx's own comment: it renders at 58% of any CSS height
+  // if that happens) — pinning the cropped value so a regression is caught
+  // immediately instead of by visual review.
+  render: () => <TampereLogo />,
+  play: async ({ canvasElement }) => {
+    const svg = canvasElement.querySelector('svg') as SVGElement;
+    await expect(svg.getAttribute('viewBox')).toBe('0.600098 11 131.4 30');
+  },
+  tags: ['!dev', '!autodocs'],
+};
