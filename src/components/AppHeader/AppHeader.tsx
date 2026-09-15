@@ -36,8 +36,16 @@ export type AppHeaderLoginProps = {
   icon?: ReactNode;
   className?: string;
 } & (
-  | { onClick: MouseEventHandler<HTMLButtonElement>; renderRoot?: undefined }
-  | { onClick?: undefined; renderRoot: NonNullable<LabeledIconButtonProps['renderRoot']> }
+  | { onClick: MouseEventHandler<HTMLButtonElement>; renderRoot?: undefined; href?: undefined }
+  | {
+      onClick?: undefined;
+      renderRoot: NonNullable<LabeledIconButtonProps['renderRoot']>;
+      href?: undefined;
+    }
+  // Shorthand for the common "login is a link" case — same technique
+  // AppHeaderActionProps already uses, so a consumer doesn't need to
+  // hand-write a renderRoot just to render an <a>.
+  | { onClick?: undefined; renderRoot?: undefined; href: string }
 );
 
 export interface AppHeaderBaseProps {
@@ -196,7 +204,7 @@ export function AppHeader({
       icon={login.icon ?? <LoginIcon />}
       label={login.label}
       onClick={login.onClick}
-      renderRoot={login.renderRoot}
+      renderRoot={login.href ? (props) => <a href={login.href} {...props} /> : login.renderRoot}
     />
   ) : null;
 

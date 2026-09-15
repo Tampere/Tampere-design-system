@@ -1483,6 +1483,22 @@ export const LoginRendersAsLinkViaRenderRoot: StoryObj<typeof AppHeader> = {
   },
 };
 
+export const LoginRendersAsLinkViaHref: StoryObj<typeof AppHeader> = {
+  tags: ['!dev', '!autodocs'],
+  // Mirrors LoginRendersAsLinkViaRenderRoot's assertion, through the simpler
+  // `href` shorthand `actions` already had — added so the common "login is a
+  // link" case doesn't need a hand-rolled renderRoot.
+  render: () => (
+    <AppHeader navAriaLabel="Päänavigaatio" login={{ label: 'Kirjaudu', href: '/kirjaudu' }} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const login = canvas.getByRole('link', { name: 'Kirjaudu' });
+    await expect(login).toHaveAttribute('href', '/kirjaudu');
+    await expect(canvas.queryByRole('button', { name: 'Kirjaudu' })).toBeNull();
+  },
+};
+
 export const SiteNameUsesSubheaderStyle: StoryObj<typeof AppHeader> = {
   // Both layouts share one siteName class, resolving to the subheader token
   // (20px at xl/xxl) — single-row's node 14147:8543 and multi-row's own
