@@ -27,6 +27,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "appHeaderMenu": {
@@ -412,6 +415,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "rowGap": "calc(1rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeaderMenu": {
@@ -797,6 +803,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeaderMenu": {
@@ -1578,6 +1587,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "vertical": "calc(0.75rem * var(--mantine-scale))",
         },
         "rowGap": "calc(1rem * var(--mantine-scale))",
+        "siteName": {
+          "verticalOffset": "-2px",
+        },
         "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "appHeaderMenu": {
@@ -1964,6 +1976,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "rowGap": "calc(2rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "appHeaderMenu": {
@@ -2349,6 +2364,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeaderMenu": {
@@ -2734,6 +2752,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
       "rowGap": "calc(2rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(1rem * var(--mantine-scale))",
     },
     "appHeaderMenu": {
