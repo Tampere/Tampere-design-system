@@ -5,7 +5,8 @@ import { brandLink, leftSection, primaryLogo } from './AppHeader.css';
 export interface AppHeaderBrandProps {
   siteName?: ReactNode;
   homeHref: string;
-  /** The site name's type class — `h5` in multi-row, `subheader` in single-row, per Figma. */
+  /** The site name's type class — both layouts share one class resolving to
+   * the subheader type style (see `AppHeader.css.ts`'s `siteName`). */
   siteNameClassName: string;
   /** The wrapping div's class. Default `leftSection`; single-row passes its own gapped variant. */
   className?: string;
