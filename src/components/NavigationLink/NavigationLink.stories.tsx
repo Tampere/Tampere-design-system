@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NavigationLink } from './NavigationLink';
 import { Flex, Stack, UnstyledButton } from '@mantine/core';
-import { within, expect } from 'storybook/test';
+import { within, expect, waitFor } from 'storybook/test';
 import { SearchIcon } from '../../icons/SearchIcon';
 import { CartIcon } from '../../icons/CartIcon';
 import { iconWrapper } from './NavigationLink.css';
@@ -355,6 +355,41 @@ export const RenderLinkReceivesDerivedAriaCurrent: Story = {
     await expect(canvas.getByRole('link', { name: 'Navigointilinkki' })).toHaveAttribute(
       'aria-current',
       'page'
+    );
+  },
+};
+
+// Captures console.error calls for the dev-warning test below.
+let capturedConsoleErrors: string[] = [];
+
+export const WarnsWhenRenderLinkIsGivenWithAnIcon: StoryObj<typeof NavigationLink> = {
+  // `startIcon`/`endIcon` only render in the default <a> branch — passing
+  // either alongside `renderLink` type-checks but silently drops the icon,
+  // since renderLink returns its own element instead.
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <NavigationLink
+      startIcon={<SearchIcon />}
+      renderLink={(className) => <UnstyledButton className={className}>Palvelut</UnstyledButton>}
+    >
+      Palvelut
+    </NavigationLink>
+  ),
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async () => {
+    await waitFor(() =>
+      expect(
+        capturedConsoleErrors.some((m) => /startIcon.*renderLink|renderLink.*startIcon/i.test(m))
+      ).toBe(true)
     );
   },
 };

@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ReactElement, ReactNode } from 'react';
+import { useEffect, type AnchorHTMLAttributes, type ReactElement, type ReactNode } from 'react';
 import cx from 'clsx';
 import { linkSize, linkVariant, selected, iconWrapper, withIcon } from './NavigationLink.css';
 
@@ -60,6 +60,17 @@ export function NavigationLink({
   // undefined, whereas `aria-current="false"` is a real value to AT and
   // would announce every unselected link as current.
   const currentValue = ariaCurrent ?? (isSelected ? 'page' : undefined);
+
+  // Dev-only guard: startIcon/endIcon render only in the default <a> branch
+  // below — renderLink returns its own element instead, so either icon prop
+  // would otherwise be silently dropped with no error.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && renderLink && (startIcon || endIcon)) {
+      console.error(
+        'NavigationLink: `startIcon`/`endIcon` have no effect when `renderLink` is provided — include them in your own rendered content instead.'
+      );
+    }
+  }, [renderLink, startIcon, endIcon]);
 
   if (renderLink) {
     // renderLink owns its own anchor, so the derived value is passed as an
