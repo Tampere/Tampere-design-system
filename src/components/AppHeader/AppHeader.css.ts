@@ -282,7 +282,7 @@ const siteNameBase = style({
   display: 'none',
   minWidth: 0,
   overflowWrap: 'anywhere',
-  transform: 'translateY(-2px)',
+  transform: `translateY(${appHeader.siteName.verticalOffset})`,
   '@media': { [wideEnoughForSiteNameAndActions]: { display: 'block' } },
 });
 

@@ -219,6 +219,13 @@ export function getTheme(bp: BreakpointKey) {
         // button, chip), so it gets its own token rather than reusing theirs.
         selectedFontWeight: '700',
       },
+      siteName: {
+        // Optical correction against the subheader type style's own
+        // line-height box — same technique as navigationLink.icon's own
+        // verticalOffset below, tuned separately per Figma's visual spec
+        // rather than derived from it.
+        verticalOffset: '-2px',
+      },
     },
     // The popover menu (Figma node 14187:18169, "Main menu"): a fixed,
     // non-responsive box, unlike appHeader's own per-breakpoint padding —
