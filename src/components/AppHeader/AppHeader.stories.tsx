@@ -7,6 +7,7 @@ import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderMenu } from './AppHeaderMenu';
 import { AppHeader } from './AppHeader';
 import type { AppHeaderActionProps } from '../index';
+import { Paper } from '../Paper';
 import { SearchField } from '../SearchField';
 import { SearchIcon } from '../../icons/SearchIcon';
 import { UserIcon } from '../../icons/UserIcon';
@@ -2140,6 +2141,32 @@ export const IconfulMenuActionHasIconBoxInOnClickBranch: StoryObj<typeof AppHead
     const wrapper = action.querySelector(`.${navigationLinkIconWrapper}`);
     await expect(wrapper).not.toBeNull();
     await expect(wrapper?.querySelector('svg')).not.toBeNull();
+  },
+};
+
+export const MenuDropdownSharesPaperDropShadowToken: StoryObj<typeof AppHeaderMenu> = {
+  // menuDropdown re-inlined the same shadow shape dropShadowTile already
+  // captures (Paper/Accordion's shared tile shadow) as a raw literal instead
+  // of reusing the token — this pins them to stay identical.
+  render: () => (
+    <>
+      <Paper withShadow data-testid="reference-shadow">
+        reference
+      </Paper>
+      <AppHeaderMenu
+        items={navigation}
+        navAriaLabel="Päänavigaatio"
+        menuButtonLabel="Valikko"
+        languagesAriaLabel="Kieli"
+      />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const reference = canvas.getByTestId('reference-shadow');
+    const dropdown = await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
+
+    await expect(getComputedStyle(dropdown).boxShadow).toBe(getComputedStyle(reference).boxShadow);
   },
 };
 

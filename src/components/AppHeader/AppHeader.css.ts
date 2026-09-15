@@ -8,7 +8,7 @@ const {
     strokeWeight,
     background,
     minTouchTarget,
-    dropShadow,
+    dropShadowTile,
     focusRing,
     components: { appHeader, appHeaderMenu, typography },
   },
@@ -195,7 +195,7 @@ const narrowMenuWidth = `screen and (max-width: ${parseInt(breakpoint.md.appWidt
 
 export const menuDropdown = style({
   background: background.default,
-  boxShadow: `0 1px 4px ${dropShadow}`,
+  boxShadow: dropShadowTile,
   width: appHeaderMenu.width,
   maxWidth: '100vw',
   '@media': {
