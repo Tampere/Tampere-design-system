@@ -5,6 +5,13 @@ import { linkSize, linkVariant, selected, iconWrapper, withIcon } from './Naviga
 type NavigationLinkVariant = 'default' | 'inverted';
 type NavigationLinkSize = 'sm' | 'md';
 
+/** The shape `NavigationLinkProps.renderLink` (and callers building their own
+ * item lists around it, e.g. AppHeaderNav) must match. */
+export type NavigationLinkRenderLink = (
+  className: string,
+  ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
+) => ReactElement;
+
 export interface NavigationLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href?: string;
   isSelected?: boolean;
@@ -24,10 +31,7 @@ export interface NavigationLinkProps extends AnchorHTMLAttributes<HTMLAnchorElem
    * for you. `startIcon`/`endIcon` are not applied either — include them in
    * your own rendered content if needed.
    */
-  renderLink?: (
-    className: string,
-    ariaCurrent?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-current']
-  ) => ReactElement;
+  renderLink?: NavigationLinkRenderLink;
 }
 
 /**
