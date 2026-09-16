@@ -179,17 +179,12 @@ export function TimeField({
   // range/step arithmetic. `badInput` is separated from the range flags because
   // it means something different to the user (incomplete entry, not a value
   // outside the allowed window) and needs its own message.
+  // `TextField` forwards `ref` straight to the underlying `<input>` (see
+  // TextField.tsx), which mounts unconditionally, so `inputRef.current` is
+  // always attached by the time this runs — a post-commit effect or a blur
+  // handler on an already-mounted input never race the ref.
   const revalidate = useCallback(() => {
-    const input = inputRef.current;
-    if (!input) {
-      // The ref is the only route to `validity`; losing it would silently
-      // disable every range and step check for the lifetime of the component.
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('TimeField: input ref is not attached — validation is inactive.');
-      }
-      return;
-    }
-    const { rangeUnderflow, rangeOverflow, stepMismatch, badInput } = input.validity;
+    const { rangeUnderflow, rangeOverflow, stepMismatch, badInput } = inputRef.current!.validity;
     setValidity({
       incomplete: badInput,
       outOfRange: rangeUnderflow || rangeOverflow,
