@@ -253,8 +253,16 @@ export function TimeField({
       try {
         input.showPicker();
         return;
-      } catch {
-        // fall through to focus
+      } catch (err) {
+        const isDocumentedFailure =
+          err instanceof DOMException &&
+          (err.name === 'NotAllowedError' || err.name === 'InvalidStateError');
+        // Anything else is a real bug, not one of the two documented
+        // showPicker() failure modes — still fall back to focus (the button
+        // must not be inert either way), but don't let it vanish silently.
+        if (!isDocumentedFailure && process.env.NODE_ENV !== 'production') {
+          console.error('TimeField: unexpected error opening the native time picker.', err);
+        }
       }
     }
     input.focus();

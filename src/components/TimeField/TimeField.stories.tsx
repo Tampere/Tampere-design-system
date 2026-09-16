@@ -264,6 +264,38 @@ export const TriggerFallsBackToFocus: Story = {
   },
 };
 
+export const TriggerLogsAndFallsBackOnUnexpectedError: Story = {
+  // NotAllowedError and InvalidStateError are the only documented showPicker()
+  // failure modes (see TriggerFallsBackToFocus) — anything else is a real bug
+  // and must not vanish silently just because it happened inside the catch.
+  beforeEach: () => {
+    capturedConsoleErrors = [];
+    const original = console.error;
+    console.error = (...messageArgs: unknown[]) => {
+      capturedConsoleErrors.push(String(messageArgs[0]));
+    };
+    return () => {
+      console.error = original;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
+    Object.defineProperty(input, 'showPicker', {
+      value: () => {
+        throw new Error('boom');
+      },
+      configurable: true,
+    });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+    await expect(input).toHaveFocus();
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /unexpected error/i.test(m))).toBe(true)
+    );
+  },
+};
+
 export const DisabledDisablesBothParts: Story = {
   tags: docExample,
   args: { disabled: true, defaultValue: '09:30' },
