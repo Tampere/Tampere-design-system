@@ -625,6 +625,49 @@ export const StepMismatchHasItsOwnMessage: Story = {
   },
 };
 
+// The two prior stories each flip one flag at a time. A value that is both
+// outside [min, max] AND off the step grid must show only the range message —
+// the precedence order in `shownError` puts range ahead of step.
+export const RangeErrorOutranksStepMismatch: Story = {
+  args: { min: '08:00', max: '17:00', stepMinutes: 15 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // 05:07 is below `min` (range) and not a multiple of 15 (step) at once.
+    await userEvent.type(canvas.getByLabelText('Valitse kellonaika'), '0507');
+    await waitFor(() =>
+      expect(canvas.getByText('Kellonaika on sallitun välin ulkopuolella')).toBeVisible()
+    );
+    await expect(
+      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
+    ).not.toBeInTheDocument();
+  },
+};
+
+export const ConsumerErrorWinsOverStepMismatchError: Story = {
+  render: function Render(args) {
+    const [error, setError] = useState<string | undefined>('Varaus on jo täynnä');
+    return (
+      <>
+        <TimeField {...args} error={error} />
+        <button onClick={() => setError(undefined)}>Clear consumer error</button>
+      </>
+    );
+  },
+  args: { min: '00:00', stepMinutes: 15 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByLabelText('Valitse kellonaika'), '0905'); // off the 15-min grid
+    await expect(canvas.getByText('Varaus on jo täynnä')).toBeVisible();
+    await expect(
+      canvas.queryByText('Valitse kellonaika sallitulla tarkkuudella')
+    ).not.toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Clear consumer error' }));
+    await waitFor(() =>
+      expect(canvas.getByText('Valitse kellonaika sallitulla tarkkuudella')).toBeVisible()
+    );
+  },
+};
+
 // This story asserts the '00:00' default is applied; it types its value, so it
 // would be flagged even without the default. The story that fails when the
 // default is removed is OffGridControlledValueIsFlaggedAtMount.
@@ -1008,6 +1051,40 @@ export const ConsumerErrorWinsOverIncompleteError: Story = {
     await waitFor(() =>
       expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
     );
+  },
+};
+
+// Every other story leaves outOfRangeError/stepMismatchError/invalidTimeError/
+// clearButtonLabel at their hardcoded Finnish defaults, so a prop that stopped
+// being threaded through would still pass every one of them.
+export const CustomMessagesAndClearLabelAreUsed: Story = {
+  args: {
+    min: '08:00',
+    max: '17:00',
+    stepMinutes: 15,
+    defaultValue: '09:30',
+    outOfRangeError: 'Aika on väärä',
+    stepMismatchError: 'Aika ei osu ruudukkoon',
+    invalidTimeError: 'Aika on kesken',
+    clearButtonLabel: 'Poista aika',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Valitse kellonaika');
+    await expect(canvas.getByRole('button', { name: 'Poista aika' })).toBeInTheDocument();
+
+    await userEvent.clear(input);
+    await userEvent.type(input, '0600');
+    await waitFor(() => expect(canvas.getByText('Aika on väärä')).toBeVisible());
+
+    await userEvent.clear(input);
+    await userEvent.type(input, '0905');
+    await waitFor(() => expect(canvas.getByText('Aika ei osu ruudukkoon')).toBeVisible());
+
+    await userEvent.clear(input);
+    await browserUserEvent.type(input, '09');
+    await blurTimeInput(canvas);
+    await waitFor(() => expect(canvas.getByText('Aika on kesken')).toBeVisible());
   },
 };
 
