@@ -8,8 +8,7 @@ const {
   },
 } = vars;
 
-// The trigger icon scales with the responsive control size, exactly as
-// DateField's calendar icon does (Figma Components/Button/Icon/Size).
+// Scales with the responsive control size (Figma Components/Button/Icon/Size).
 export const triggerIcon = style({
   width: buttonVars.lineHeight,
   height: 'auto',

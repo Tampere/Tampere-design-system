@@ -148,13 +148,13 @@ export function TimeField({
     }
   }, [stepMinutes, effectiveStepMinutes]);
 
-  // Correct a swapped pair, the way DateField.tsx does: left alone, `min="17:00"
-  // max="08:00"` makes every value in the intended window report an error while
-  // every value outside it passes, with nothing pointing at the swapped props.
-  // Only well-formed bounds are compared — the browser ignores an unparseable
-  // min/max, so swapping on one would invent a range the browser never had (the
-  // dev guard further down warns about those separately). "HH:mm" is zero-padded
-  // and fixed-width, so a plain string comparison is a time comparison.
+  // Correct a swapped pair: left alone, `min="17:00" max="08:00"` makes every
+  // value in the intended window report an error while every value outside it
+  // passes, with nothing pointing at the swapped props. Only well-formed bounds
+  // are compared — the browser ignores an unparseable min/max, so swapping on
+  // one would invent a range the browser never had (the dev guard further down
+  // warns about those separately). "HH:mm" is zero-padded and fixed-width, so a
+  // plain string comparison is a time comparison.
   const boundsSwapped = !!min && !!max && TIME_RE.test(min) && TIME_RE.test(max) && max < min;
   const rangeMin = boundsSwapped ? max : min;
   const rangeMax = boundsSwapped ? min : max;
@@ -200,9 +200,8 @@ export function TimeField({
   // effect can actually see it flip.
   useEffect(revalidate, [revalidate, currentValue, effectiveMin, rangeMax, domStep]);
 
-  // Consumer error first, then incomplete entry (the user can't fix a range
-  // problem they haven't finished typing), then the range window, then
-  // granularity — each with the message that actually names the problem.
+  // Incomplete entry outranks range/step: the user can't fix a range problem
+  // in an input they haven't finished typing.
   const shownError =
     error ??
     (validity.incomplete

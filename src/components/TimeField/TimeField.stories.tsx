@@ -384,17 +384,12 @@ export const ClearMovesFocusToTrigger: Story = {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' });
     await userEvent.click(canvas.getByRole('button', { name: 'Tyhjennä kellonaika' }));
-    // The ✕ unmounts the moment the field empties, so focus would otherwise
-    // fall to <body>. Same fix as DateField.handleClear.
     await waitFor(() => expect(trigger).toHaveFocus());
   },
 };
 
-// The other side of ClearButtonClearsControlledValue: a controlled consumer that
-// ignores `onChange` keeps the value, so the ✕ stays and the clear did nothing
-// visible. Moving focus to the trigger anyway would be the visible half of an
-// action that had no effect — and unlike the uncontrolled case, there is no
-// re-render to notice, so the component has to check the value itself.
+// See TimeField.tsx's clear-focus effect for why this is conditional on the
+// value actually emptying.
 export const IgnoredControlledClearLeavesFocusAlone: Story = {
   args: { value: '09:30', onChange: fn() },
   play: async ({ canvasElement, args }) => {
