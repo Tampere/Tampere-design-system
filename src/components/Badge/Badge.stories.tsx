@@ -189,10 +189,8 @@ export const IsFullyRounded: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const root = canvas.getByText('Leima');
-    const style = getComputedStyle(root);
-    const radius = parseFloat(style.borderRadius);
-    const height = parseFloat(style.height);
-    await expect(radius).toBeGreaterThanOrEqual(height / 2);
+    // The pill token (9999px), not Chip's own 20px radius.
+    await expect(getComputedStyle(root).borderRadius).toBe('9999px');
   },
 };
 

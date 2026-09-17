@@ -2,14 +2,14 @@ import { style, globalStyle } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 
 const {
-  theme: { components, text, contrast },
+  theme: { components, text, contrast, cornerRadius },
 } = vars;
 
 export const badgeRoot = style({
   display: 'inline-flex',
   alignItems: 'center',
   height: components.chip.height,
-  borderRadius: components.chip.cornerRadius,
+  borderRadius: cornerRadius.rounded,
   paddingInline: components.chip.padding.horizontal,
   gap: components.chip.spacing,
   fontFamily: components.chip.label.fontFamily,
