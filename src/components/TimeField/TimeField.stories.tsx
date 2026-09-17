@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
-import { userEvent as browserUserEvent } from 'vitest/browser';
 import { expect, fn } from 'storybook/test';
 import { TimeField } from './TimeField';
 import { timeInput } from './TimeField.css';
@@ -960,10 +959,17 @@ export const RangeErrorFollowsMaxChanges: Story = {
 // stub it for the same reason). Stub it here too so the click still moves
 // focus for real without depending on whatever headless Chromium does with
 // an unmocked `showPicker()` call.
-const blurTimeInput = (canvas: ReturnType<typeof within>) => {
+//
+// `vitest/browser` only resolves inside browser-mode test runs, so it is
+// imported dynamically (same pattern as Checkbox.stories.tsx) — a static
+// import breaks rendering these stories under a plain `npm run storybook`.
+const trustedUserEvent = async () => (await import('vitest/browser')).userEvent;
+
+const blurTimeInput = async (canvas: ReturnType<typeof within>) => {
   const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
   Object.defineProperty(input, 'showPicker', { value: () => {}, configurable: true });
-  return browserUserEvent.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
+  const click = await trustedUserEvent();
+  return click.click(canvas.getByRole('button', { name: 'Avaa kellonaikavalitsin' }));
 };
 
 export const IncompleteEntryShowsError: Story = {
@@ -971,7 +977,7 @@ export const IncompleteEntryShowsError: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
-    await browserUserEvent.type(input, '09'); // hour only — minute left as `--`
+    await (await trustedUserEvent()).type(input, '09'); // hour only — minute left as `--`
     await blurTimeInput(canvas);
     await waitFor(() =>
       expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
@@ -988,7 +994,7 @@ export const IncompleteEntryIsNotMarkedEmpty: Story = {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
     await expect(input).toHaveAttribute('data-empty', 'true');
-    await browserUserEvent.type(input, '09');
+    await (await trustedUserEvent()).type(input, '09');
     await blurTimeInput(canvas);
     await waitFor(() => expect(input).not.toHaveAttribute('data-empty'));
   },
@@ -999,7 +1005,7 @@ export const CompletingTheTimeClearsIncompleteError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
-    await browserUserEvent.type(input, '09');
+    await (await trustedUserEvent()).type(input, '09');
     await blurTimeInput(canvas);
     await waitFor(() =>
       expect(canvas.getByText('Anna kellonaika muodossa tunnit:minuutit')).toBeVisible()
@@ -1007,7 +1013,7 @@ export const CompletingTheTimeClearsIncompleteError: Story = {
     // Re-focus the field before typing again — blurring for the check above
     // moved focus to the picker trigger. `@storybook/testing-library`'s
     // `userEvent.clear`/`type` reliably resets focus to the first (hour)
-    // segment here, where `browserUserEvent`'s click-then-type left focus on
+    // segment here, where the `vitest/browser` driver's click-then-type left focus on
     // whichever segment its default click position happened to hit (verified
     // empirically) — so this one step reverts to the other driver.
     await userEvent.clear(input);
@@ -1039,7 +1045,7 @@ export const ConsumerErrorWinsOverIncompleteError: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await browserUserEvent.type(canvas.getByLabelText('Valitse kellonaika'), '09');
+    await (await trustedUserEvent()).type(canvas.getByLabelText('Valitse kellonaika'), '09');
     await blurTimeInput(canvas);
     // Both are live: the consumer error wins.
     await expect(canvas.getByText('Varaus on jo täynnä')).toBeVisible();
@@ -1082,7 +1088,7 @@ export const CustomMessagesAndClearLabelAreUsed: Story = {
     await waitFor(() => expect(canvas.getByText('Aika ei osu ruudukkoon')).toBeVisible());
 
     await userEvent.clear(input);
-    await browserUserEvent.type(input, '09');
+    await (await trustedUserEvent()).type(input, '09');
     await blurTimeInput(canvas);
     await waitFor(() => expect(canvas.getByText('Aika on kesken')).toBeVisible());
   },
@@ -1144,13 +1150,14 @@ export const KeyboardArrowsIncrementByStep: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
-    await browserUserEvent.click(input);
+    const click = await trustedUserEvent();
+    await click.click(input);
     // Focus lands on the hour segment; ArrowUp steps the hour by one.
-    await browserUserEvent.keyboard('{ArrowUp}');
+    await click.keyboard('{ArrowUp}');
     await expect(input).toHaveValue('10:00');
     await expect(args.onChange).toHaveBeenLastCalledWith('10:00');
     // Move to the minute segment: ArrowUp there steps by `stepMinutes`, not by 1.
-    await browserUserEvent.keyboard('{ArrowRight}{ArrowUp}');
+    await click.keyboard('{ArrowRight}{ArrowUp}');
     await expect(input).toHaveValue('10:15');
     await expect(args.onChange).toHaveBeenLastCalledWith('10:15');
     // Every value handed upward is still "HH:mm".
@@ -1166,8 +1173,9 @@ export const KeyboardArrowsDecrementByStep: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika') as HTMLInputElement;
-    await browserUserEvent.click(input);
-    await browserUserEvent.keyboard('{ArrowRight}{ArrowDown}');
+    const click = await trustedUserEvent();
+    await click.click(input);
+    await click.keyboard('{ArrowRight}{ArrowDown}');
     await expect(input).toHaveValue('10:00');
   },
 };
@@ -1205,7 +1213,7 @@ export const SubmitsUnderItsName: Story = {
 // A consumer `onBlur` must run without displacing the internal revalidation
 // that the incomplete-entry check depends on.
 //
-// Uses `browserUserEvent`/`blurTimeInput` rather than plain
+// Uses the `trustedUserEvent`/`blurTimeInput` driver rather than plain
 // `userEvent.type` + `.tab()`: per the comment above `blurTimeInput`, the
 // `@storybook/testing-library` driver is inert for reaching `badInput` on
 // this native input, and `.tab()` moves between the input's own hour/minute
@@ -1216,7 +1224,7 @@ export const ConsumerBlurRunsAlongsideRevalidation: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByLabelText('Valitse kellonaika');
-    await browserUserEvent.type(input, '09'); // incomplete on purpose
+    await (await trustedUserEvent()).type(input, '09'); // incomplete on purpose
     await blurTimeInput(canvas);
     await expect(args.onBlur).toHaveBeenCalledTimes(1);
     // The internal revalidation still ran: the incomplete error is showing.
