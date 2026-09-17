@@ -5,8 +5,9 @@ const {
   theme: { components, text, contrast, cornerRadius },
 } = vars;
 
-// `height` and `label` stay on `components.chip.*`: Figma's Badge binds the
-// `Chip/Label` composite itself, so the two must move together.
+// `label` stays on `components.chip.*` because Figma's Badge binds the
+// `Chip/Label` composite itself; `height` follows because it's derived from
+// that same composite's vertical padding (2×`chip.padding.vertical` + caption × 150%).
 export const badgeRoot = style({
   display: 'inline-flex',
   alignItems: 'center',

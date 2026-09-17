@@ -341,8 +341,8 @@ export function getTheme(bp: BreakpointKey) {
       // font size (`chipLineHeightPercent`, matching `label.lineHeight`
       // above). Mantine's Chip has no vertical-padding concept of its own
       // (it sets height directly via --chip-size), so this is computed once
-      // here and fed to both the Mantine-wrapped filter role and the bespoke
-      // removable-tag role, keeping their heights identical.
+      // here and fed to the Mantine-wrapped filter role, the bespoke
+      // removable-tag role, and Badge, keeping all three heights identical.
       height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * ${chipLineHeightPercent / 100})`,
       // Figma's "Neutral/100" tag fill — distinct from `background.disabled`
       // even though the raw value is the same, since that token means

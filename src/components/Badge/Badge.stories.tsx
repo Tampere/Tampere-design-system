@@ -9,6 +9,9 @@ import { Badge } from './Badge';
 const meta = {
   component: Badge,
   tags: ['!dev', '!autodocs'],
+  // Satisfies the discriminated union's required-args check so `args` isn't required
+  // again on every individual story below (each overrides via its own `render`,
+  // ignoring these defaults entirely) — removing this breaks `tsc`, not just unused-code lint.
   args: { children: 'Leima' },
 } satisfies Meta<typeof Badge>;
 
@@ -251,7 +254,7 @@ export const WarningAndErrorUseDistinctGlyphs: Story = {
     const error = canvas.getByTestId('error-wrapper').querySelector('svg');
     await expect(warning).not.toBeNull();
     await expect(error).not.toBeNull();
-    // Status must not be signalled to sighted users by fill colour alone.
+    // When a glyph is shown, warning and error must not share one.
     await expect(warning!.innerHTML).not.toBe(error!.innerHTML);
     await expect(warning!.getAttribute('aria-hidden')).toBe('true');
     await expect(error!.getAttribute('aria-hidden')).toBe('true');

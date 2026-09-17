@@ -22,6 +22,7 @@ export interface BadgeNeutralProps {
 }
 
 export interface BadgeStatusProps {
+  /** Presentational only (not exposed to assistive tech) — the label text must carry the status meaning on its own. */
   status: BadgeStatus;
   /** Toggles the status's own fixed icon — not a custom-icon slot, since the icon shape is part of how status is conveyed without relying on color alone. */
   showIcon?: boolean;
