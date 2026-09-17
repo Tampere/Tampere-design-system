@@ -49,16 +49,16 @@ export const WithIcon: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16 }}>
       <Badge icon={<InfoIcon />}>Neutraali</Badge>
-      <Badge status="info" icon>
+      <Badge status="info" showIcon>
         Tiedote
       </Badge>
-      <Badge status="warning" icon>
+      <Badge status="warning" showIcon>
         Huomio
       </Badge>
-      <Badge status="success" icon>
+      <Badge status="success" showIcon>
         Valmis
       </Badge>
-      <Badge status="error" icon>
+      <Badge status="error" showIcon>
         Virhe
       </Badge>
     </div>
@@ -111,22 +111,22 @@ export const StatusIconTogglesFixedGlyph: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16 }}>
       <div data-testid="info-wrapper">
-        <Badge status="info" icon>
+        <Badge status="info" showIcon>
           Tiedote
         </Badge>
       </div>
       <div data-testid="success-wrapper">
-        <Badge status="success" icon>
+        <Badge status="success" showIcon>
           Valmis
         </Badge>
       </div>
       <div data-testid="warning-wrapper">
-        <Badge status="warning" icon>
+        <Badge status="warning" showIcon>
           Huomio
         </Badge>
       </div>
       <div data-testid="error-wrapper">
-        <Badge status="error" icon>
+        <Badge status="error" showIcon>
           Virhe
         </Badge>
       </div>
@@ -230,12 +230,12 @@ export const WarningAndErrorUseDistinctGlyphs: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16 }}>
       <div data-testid="warning-wrapper">
-        <Badge status="warning" icon>
+        <Badge status="warning" showIcon>
           Huomio
         </Badge>
       </div>
       <div data-testid="error-wrapper">
-        <Badge status="error" icon>
+        <Badge status="error" showIcon>
           Virhe
         </Badge>
       </div>

@@ -18,12 +18,14 @@ export interface BadgeNeutralProps {
   status?: undefined;
   /** No status has no inherent icon, so the caller picks whichever fits. */
   icon?: ReactElement;
+  showIcon?: never;
 }
 
 export interface BadgeStatusProps {
   status: BadgeStatus;
   /** Toggles the status's own fixed icon — not a custom-icon slot, since the icon shape is part of how status is conveyed without relying on color alone. */
-  icon?: boolean;
+  showIcon?: boolean;
+  icon?: never;
 }
 
 export type BadgeProps = BadgeCommonProps & (BadgeNeutralProps | BadgeStatusProps);
@@ -38,7 +40,7 @@ const statusIcons: Record<BadgeStatus, ReactElement> = {
 /** A non-interactive status/category label — no hover, focus, or dismiss/selection affordance. For an interactive filter toggle or removable tag, use `Chip` instead. */
 export function Badge(props: BadgeProps) {
   const { children, className, 'data-testid': dataTestId } = props;
-  const icon = props.status ? (props.icon ? statusIcons[props.status] : undefined) : props.icon;
+  const icon = props.status ? (props.showIcon ? statusIcons[props.status] : undefined) : props.icon;
 
   return (
     <span className={cx(badgeRoot, className)} data-status={props.status} data-testid={dataTestId}>
