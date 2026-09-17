@@ -274,3 +274,46 @@ export const LongLabelStaysOnOneLine: Story = {
     await expect(badge.scrollHeight).toBeLessThanOrEqual(badge.clientHeight);
   },
 };
+
+export const StatusIsSilentByDefault: Story = {
+  render: () => (
+    <Badge status="error" data-testid="badge">
+      Virhe
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The label already states the status; announcing it again says "Virhe Virhe".
+    await expect(canvas.getByTestId('badge').textContent?.trim()).toBe('Virhe');
+  },
+};
+
+export const StatusLabelIsAnnouncedWhenOptedIn: Story = {
+  render: () => (
+    <Badge status="error" statusLabel data-testid="badge">
+      Maksamaton
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const badge = canvas.getByTestId('badge');
+    await expect(badge.textContent).toContain('Virhe');
+    const hidden = badge.querySelector('span');
+    await expect(hidden).not.toBeNull();
+    await expect(getComputedStyle(hidden!).width).toBe('1px');
+  },
+};
+
+export const StatusLabelCanBeACustomString: Story = {
+  render: () => (
+    <Badge status="warning" statusLabel="Vanhentumassa" data-testid="badge">
+      3 päivää
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const text = canvas.getByTestId('badge').textContent ?? '';
+    await expect(text).toContain('Vanhentumassa');
+    await expect(text).not.toContain('Varoitus');
+  },
+};
