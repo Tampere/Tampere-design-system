@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { SVGProps, ComponentType } from 'react';
 import { AddIcon } from './AddIcon';
+import { AiIcon } from './AiIcon';
 import { AirplaneIcon } from './AirplaneIcon';
 import { ArrowDownIcon } from './ArrowDownIcon';
 import { ArrowLeftIcon } from './ArrowLeftIcon';
@@ -98,6 +99,7 @@ const icons: {
   props?: Record<string, unknown>;
 }[] = [
   { name: 'Add', Component: AddIcon },
+  { name: 'Ai', Component: AiIcon },
   { name: 'Airplane', Component: AirplaneIcon },
   { name: 'ArrowDown', Component: ArrowDownIcon },
   { name: 'ArrowLeft', Component: ArrowLeftIcon },
