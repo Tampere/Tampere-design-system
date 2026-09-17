@@ -161,11 +161,11 @@ export const StatusColors: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const neutral = canvas.getByText('Leima');
-    const info = canvas.getByText('Tiedote');
-    const success = canvas.getByText('Valmis');
-    const warning = canvas.getByText('Huomio');
-    const error = canvas.getByText('Virhe');
+    const neutral = canvas.getByTestId('neutral');
+    const info = canvas.getByTestId('info');
+    const success = canvas.getByTestId('success');
+    const warning = canvas.getByTestId('warning');
+    const error = canvas.getByTestId('error');
 
     await expect(getComputedStyle(neutral).backgroundColor).toBe('rgb(241, 238, 235)');
     await expect(getComputedStyle(neutral).color).toBe('rgb(45, 45, 50)');
@@ -177,6 +177,7 @@ export const StatusColors: Story = {
     await expect(getComputedStyle(success).color).toBe('rgb(255, 255, 255)');
 
     await expect(getComputedStyle(warning).backgroundColor).toBe('rgb(244, 210, 64)');
+    // Warning keeps the dark label: white on this fill is 1.49:1, well under AA.
     await expect(getComputedStyle(warning).color).toBe('rgb(45, 45, 50)');
 
     await expect(getComputedStyle(error).backgroundColor).toBe('rgb(174, 30, 32)');
@@ -220,9 +221,12 @@ export const IconMatchesIconSizeToken: Story = {
 export const ClassNameLandsOnRoot: Story = {
   render: () => <Badge className="custom-badge">Leima</Badge>,
   play: async ({ canvasElement }) => {
-    const root = canvasElement.querySelector('.custom-badge');
+    const root = canvasElement.querySelector<HTMLElement>('.custom-badge');
     await expect(root).not.toBeNull();
     await expect(root?.textContent).toContain('Leima');
+    await expect(root!.tagName).toBe('SPAN');
+    // The base class must survive alongside the custom one.
+    await expect(getComputedStyle(root!).backgroundColor).toBe('rgb(241, 238, 235)');
   },
 };
 
