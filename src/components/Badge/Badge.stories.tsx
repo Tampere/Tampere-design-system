@@ -69,6 +69,7 @@ export const WithIcon: Story = {
 // variant's custom-icon slot with `AiIcon` rather than a `status`, since
 // "used/edited/created by AI" isn't a severity level.
 export const AiBadgeExamples: Story = {
+  name: 'AI Badge Examples',
   tags: docExample,
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 40 }}>
