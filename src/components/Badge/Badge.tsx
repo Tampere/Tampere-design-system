@@ -34,6 +34,7 @@ const statusIcons: Record<BadgeStatus, ReactElement> = {
   error: <WarningIcon />,
 };
 
+/** A non-interactive status/category label — no hover, focus, or dismiss/selection affordance. For an interactive filter toggle or removable tag, use `Chip` instead. */
 export function Badge(props: BadgeProps) {
   const { children, className, 'data-testid': dataTestId } = props;
   const icon = props.status ? (props.icon ? statusIcons[props.status] : undefined) : props.icon;
