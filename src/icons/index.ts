@@ -27,6 +27,7 @@ export * from './DateTimeIcon';
 export * from './DownloadIcon';
 export * from './EditIcon';
 export * from './EnlargeIcon';
+export * from './ErrorIcon';
 export * from './EuroIcon';
 export * from './FavouritesFilledIcon';
 export * from './FavouritesOutlinedIcon';

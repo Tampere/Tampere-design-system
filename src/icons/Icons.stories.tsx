@@ -29,6 +29,7 @@ import { DateTimeIcon } from './DateTimeIcon';
 import { DownloadIcon } from './DownloadIcon';
 import { EditIcon } from './EditIcon';
 import { EnlargeIcon } from './EnlargeIcon';
+import { ErrorIcon } from './ErrorIcon';
 import { EuroIcon } from './EuroIcon';
 import { FavouritesFilledIcon } from './FavouritesFilledIcon';
 import { FavouritesOutlinedIcon } from './FavouritesOutlinedIcon';
@@ -127,6 +128,7 @@ const icons: {
   { name: 'Download', Component: DownloadIcon },
   { name: 'Edit', Component: EditIcon },
   { name: 'Enlarge', Component: EnlargeIcon },
+  { name: 'Error', Component: ErrorIcon },
   { name: 'Euro', Component: EuroIcon },
   { name: 'FavouritesFilled', Component: FavouritesFilledIcon },
   { name: 'FavouritesOutlined', Component: FavouritesOutlinedIcon },
