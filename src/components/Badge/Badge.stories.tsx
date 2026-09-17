@@ -65,9 +65,9 @@ export const WithIcon: Story = {
   ),
 };
 
-// Split's #72 body — a badge conveying AI involvement, using the Neutral
-// variant's custom-icon slot with `AiIcon` rather than a `status`, since
-// "used/edited/created by AI" isn't a severity level.
+// AI involvement isn't a severity level, so this uses the neutral variant's
+// icon slot rather than a `status`.
+// Source: Figma "Add AI chip examples" (2DU77Aev4peJufseXyOjYY).
 export const AiBadgeExamples: Story = {
   name: 'AI Badge Examples',
   tags: docExample,
@@ -247,8 +247,8 @@ export const WarningAndErrorUseDistinctGlyphs: Story = {
     const error = canvas.getByTestId('error-wrapper').querySelector('svg');
     await expect(warning).not.toBeNull();
     await expect(error).not.toBeNull();
-    await expect(warning!.innerHTML).not.toBe(error!.innerHTML);
     // Status must not be signalled to sighted users by fill colour alone.
+    await expect(warning!.innerHTML).not.toBe(error!.innerHTML);
     await expect(warning!.getAttribute('aria-hidden')).toBe('true');
     await expect(error!.getAttribute('aria-hidden')).toBe('true');
   },

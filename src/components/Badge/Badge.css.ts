@@ -43,9 +43,6 @@ export const badgeRoot = style({
   },
 });
 
-// Shared fixed-size slot for the leading icon, same purpose as Chip's
-// `chipIcon` — normalizes whatever icon a consumer passes to the Figma
-// spec's 18×18px size regardless of that icon component's own default width.
 export const badgeIcon = style({
   width: components.badge.iconSize,
   height: components.badge.iconSize,
@@ -55,6 +52,8 @@ export const badgeIcon = style({
   flexShrink: 0,
 });
 
+// CSS width/height on the root <svg> outrank its own width attribute, so any
+// icon fills the slot instead of rendering at its own default size.
 globalStyle(`${badgeIcon} svg`, {
   width: '100%',
   height: '100%',

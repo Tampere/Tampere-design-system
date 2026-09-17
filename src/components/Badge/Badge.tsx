@@ -16,7 +16,7 @@ interface BadgeCommonProps {
 
 export interface BadgeNeutralProps {
   status?: undefined;
-  /** No status has no inherent icon, so the caller picks whichever fits. */
+  /** The neutral variant has no inherent icon, so the caller picks whichever fits. */
   icon?: ReactElement;
   showIcon?: never;
 }
