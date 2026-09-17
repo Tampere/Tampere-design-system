@@ -47,6 +47,17 @@ export const Error: Story = {
   render: () => <Badge status="error">Virhe</Badge>,
 };
 
+// The label doesn't state the status, so it's announced for screen readers.
+export const StatusWithNonStatusLabel: Story = {
+  name: 'Status With Non-Status Label',
+  tags: docExample,
+  render: () => (
+    <Badge status="error" statusLabel>
+      Maksamaton
+    </Badge>
+  ),
+};
+
 export const WithIcon: Story = {
   tags: docExample,
   render: () => (
