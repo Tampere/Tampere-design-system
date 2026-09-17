@@ -312,6 +312,9 @@ export function getTheme(bp: BreakpointKey) {
         warning: colors.yellow['200'],
         error: colors.red['300'],
       },
+      padding: { horizontal: bpTokens.spacing.sm },
+      spacing: bpTokens.spacing.xxs,
+      iconSize: rem('18px'),
     },
     chip: {
       // Figma's "spacing/2-extra-small" — confirmed against the dedicated

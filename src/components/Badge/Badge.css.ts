@@ -5,13 +5,15 @@ const {
   theme: { components, text, contrast, cornerRadius },
 } = vars;
 
+// `height` and `label` stay on `components.chip.*`: Figma's Badge binds the
+// `Chip/Label` composite itself, so the two must move together.
 export const badgeRoot = style({
   display: 'inline-flex',
   alignItems: 'center',
   height: components.chip.height,
   borderRadius: cornerRadius.rounded,
-  paddingInline: components.chip.padding.horizontal,
-  gap: components.chip.spacing,
+  paddingInline: components.badge.padding.horizontal,
+  gap: components.badge.spacing,
   fontFamily: components.chip.label.fontFamily,
   fontWeight: components.chip.label.fontWeight,
   lineHeight: components.chip.label.lineHeight,
@@ -44,8 +46,8 @@ export const badgeRoot = style({
 // `chipIcon` — normalizes whatever icon a consumer passes to the Figma
 // spec's 18×18px size regardless of that icon component's own default width.
 export const badgeIcon = style({
-  width: components.chip.iconSize,
-  height: components.chip.iconSize,
+  width: components.badge.iconSize,
+  height: components.badge.iconSize,
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',

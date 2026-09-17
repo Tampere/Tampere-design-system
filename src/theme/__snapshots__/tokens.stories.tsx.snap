@@ -47,6 +47,11 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         "success": "#386f49",
         "warning": "#f4d240",
       },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -444,6 +449,11 @@ exports[`Token Values Match Snapshot > md 1`] = `
         "success": "#386f49",
         "warning": "#f4d240",
       },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -841,6 +851,11 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "success": "#386f49",
         "warning": "#f4d240",
       },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -1634,6 +1649,11 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "success": "#386f49",
           "warning": "#f4d240",
         },
+        "iconSize": "calc(1.125rem * var(--mantine-scale))",
+        "padding": {
+          "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        },
+        "spacing": "calc(0.25rem * var(--mantine-scale))",
       },
       "breadcrumbs": {
         "activePageFontWeight": "600",
@@ -2032,6 +2052,11 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         "success": "#386f49",
         "warning": "#f4d240",
       },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2429,6 +2454,11 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         "success": "#386f49",
         "warning": "#f4d240",
       },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2826,6 +2856,11 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "success": "#386f49",
         "warning": "#f4d240",
       },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
