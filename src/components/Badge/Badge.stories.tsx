@@ -227,3 +227,31 @@ export const ClassNameLandsOnRoot: Story = {
     await expect(root?.textContent).toContain('Leima');
   },
 };
+
+export const WarningAndErrorUseDistinctGlyphs: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="warning-wrapper">
+        <Badge status="warning" icon>
+          Huomio
+        </Badge>
+      </div>
+      <div data-testid="error-wrapper">
+        <Badge status="error" icon>
+          Virhe
+        </Badge>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const warning = canvas.getByTestId('warning-wrapper').querySelector('svg');
+    const error = canvas.getByTestId('error-wrapper').querySelector('svg');
+    await expect(warning).not.toBeNull();
+    await expect(error).not.toBeNull();
+    await expect(warning!.innerHTML).not.toBe(error!.innerHTML);
+    // Status must not be signalled to sighted users by fill colour alone.
+    await expect(warning!.getAttribute('aria-hidden')).toBe('true');
+    await expect(error!.getAttribute('aria-hidden')).toBe('true');
+  },
+};
