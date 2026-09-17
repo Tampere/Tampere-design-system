@@ -297,6 +297,22 @@ export function getTheme(bp: BreakpointKey) {
         pink: colors.pink['200'],
       },
     },
+    // Figma's `Common/*` semantic variables — `info`/`success`/`warning` were
+    // added alongside `Common/Error` (which `error` above already aliases to
+    // `colors.red['300']`) so all four status colors have a semantic Figma
+    // binding rather than three of them pointing at raw palette swatches.
+    badge: {
+      background: {
+        // Distinct from `chip.tagFill` (`Neutral/100`, #f2f2f4) even though both
+        // are neutral fills — Figma's Badge default is bound to `Gray/Warm`
+        // instead, a different (warmer) swatch.
+        neutral: colors.neutral.warm['100'],
+        info: colors.blue['400'],
+        success: colors.green['600'],
+        warning: colors.yellow['200'],
+        error: colors.red['300'],
+      },
+    },
     chip: {
       // Figma's "spacing/2-extra-small" — confirmed against the dedicated
       // "Breakpoints" reference frame (5870:41586) in the redesign file,

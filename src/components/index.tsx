@@ -8,6 +8,7 @@ export {
   type AppHeaderLoginProps,
   type AppHeaderNavigationItem,
 } from './AppHeader';
+export { Badge, type BadgeProps, type BadgeStatus } from './Badge';
 export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { Button } from './Button/Button';
 export { Card, type CardProps } from './Card/Card';
