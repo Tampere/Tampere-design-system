@@ -253,3 +253,17 @@ export const WarningAndErrorUseDistinctGlyphs: Story = {
     await expect(error!.getAttribute('aria-hidden')).toBe('true');
   },
 };
+
+export const LongLabelStaysOnOneLine: Story = {
+  render: () => (
+    <div style={{ width: 160 }} data-testid="narrow">
+      <Badge data-testid="badge">Muokattu tekoälyllä</Badge>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const badge = canvas.getByTestId('badge');
+    // The label must not wrap out of the fixed-height pill background.
+    await expect(badge.scrollHeight).toBeLessThanOrEqual(badge.clientHeight);
+  },
+};

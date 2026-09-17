@@ -20,6 +20,7 @@ export const badgeRoot = style({
   fontSize: components.chip.label.fontSize,
   backgroundColor: components.badge.background.neutral,
   color: text.primary,
+  whiteSpace: 'nowrap',
   selectors: {
     '&[data-status="info"]': {
       backgroundColor: components.badge.background.info,
