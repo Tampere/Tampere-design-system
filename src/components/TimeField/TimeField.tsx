@@ -227,13 +227,17 @@ export function TimeField({
   // value having actually emptied: a controlled consumer that ignores `onChange`
   // keeps both the value and the ✕, and moving focus there would be the visible
   // half of an action that did nothing. Keyed on the click counter rather than on
-  // the value alone, because an ignored clear re-renders nothing to observe; the
-  // ref then marks the request consumed either way, so a later manual emptying
-  // (deleting the segments by hand) can't inherit a stale focus move.
+  // the value alone, because an ignored clear re-renders nothing to observe. The
+  // ref is only marked consumed once the value actually empties — not on the
+  // first render after the click — so a controlled consumer that applies the
+  // clear asynchronously (e.g. after its own state update settles) still gets
+  // focus moved once `currentValue` catches up.
   useEffect(() => {
     if (clearRequests === handledClearRequest.current) return;
-    handledClearRequest.current = clearRequests;
-    if (currentValue === '') pickerButtonRef.current?.focus();
+    if (currentValue === '') {
+      handledClearRequest.current = clearRequests;
+      pickerButtonRef.current?.focus();
+    }
   }, [clearRequests, currentValue]);
 
   function openPicker() {

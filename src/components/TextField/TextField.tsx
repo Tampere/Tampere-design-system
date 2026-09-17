@@ -88,10 +88,13 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const inputStatus = getInputStatus(error, disabled);
 
     const [textValue, setTextValue] = useState('');
+    // Cast: TextField is a single-line text input, so `value` is always a string
+    // in practice even though the inherited HTML input type also allows number/array.
+    const currentValue = (props.value as string | undefined) ?? textValue;
 
     // TextField padding is calculated based on which icons are shown in
     // right and left sections
-    const hasClearButton = !!showClearButton && textValue.length > 0;
+    const hasClearButton = !!showClearButton && currentValue.length > 0;
     const rightIconCount = hasClearButton ? 1 : Children.count(props.rightSection);
     const hasRightSection = rightIconCount > 0;
     const hasLeftSection = !!showSearchIcon || !!props.leftSection;
@@ -128,7 +131,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           onChange?.(e);
           setTextValue(e.currentTarget.value);
         }}
-        value={props.value ?? textValue}
+        value={currentValue}
         unstyled
         classNames={mergeClassNames(defaultClassNames, classNames)}
         disabled={disabled}
