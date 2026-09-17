@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { StarFilledIcon } from '../../icons/StarFilledIcon';
+import { InfoIcon } from '../../icons/InfoIcon';
+import { AiIcon } from '../../icons/AiIcon';
 import { Badge } from './Badge';
 
 const meta = {
@@ -46,10 +48,33 @@ export const WithIcon: Story = {
   tags: docExample,
   render: () => (
     <div style={{ display: 'flex', gap: 16 }}>
-      <Badge icon={<StarFilledIcon data-testid="custom-icon" />}>Suosikki</Badge>
+      <Badge icon={<InfoIcon />}>Neutraali</Badge>
+      <Badge status="info" icon>
+        Tiedote
+      </Badge>
+      <Badge status="warning" icon>
+        Huomio
+      </Badge>
+      <Badge status="success" icon>
+        Valmis
+      </Badge>
       <Badge status="error" icon>
         Virhe
       </Badge>
+    </div>
+  ),
+};
+
+// Split's #72 body — a badge conveying AI involvement, using the Neutral
+// variant's custom-icon slot with `AiIcon` rather than a `status`, since
+// "used/edited/created by AI" isn't a severity level.
+export const AiBadgeExamples: Story = {
+  tags: docExample,
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 40 }}>
+      <Badge icon={<AiIcon />}>Käyttää tekoälyä</Badge>
+      <Badge icon={<AiIcon />}>Muokattu tekoälyllä</Badge>
+      <Badge icon={<AiIcon />}>Luotu tekoälyllä</Badge>
     </div>
   ),
 };
