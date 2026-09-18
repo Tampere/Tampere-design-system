@@ -32,9 +32,8 @@ export function SkipLink({
       }
       return;
     }
-    // Not natively focusable and no tabindex set — make it a valid focus
-    // target so activation works even if the consumer forgot
-    // tabIndex={-1} on their landmark.
+    // No positive/zero tabIndex — not yet a valid focus target. Covers both a bare
+    // landmark (no tabindex at all) and a consumer who forgot tabIndex={-1}.
     if (target.tabIndex < 0) {
       target.setAttribute('tabindex', '-1');
     }

@@ -89,6 +89,29 @@ export const HrefAndChildrenAreOverridable: Story = {
   },
 };
 
+export const ClassNameLandsOnRoot: Story = {
+  render: () => <SkipLink className="custom-skip-link" />,
+  play: async ({ canvasElement }) => {
+    const root = canvasElement.querySelector('.custom-skip-link');
+    await expect(root).not.toBeNull();
+    await expect(root?.textContent).toBe('Hyppää pääsisältöön');
+  },
+};
+
+export const NonFragmentHrefIsLeftToNormalNavigation: Story = {
+  // A non-`#` href (external URL, app route, …) falls through to the browser's
+  // own navigation — SkipLink's focus-management only applies to fragment links.
+  render: () => <SkipLink href="/etsi">Etsi</SkipLink>,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Etsi' });
+    link.addEventListener('click', (e) => e.preventDefault());
+    await userEvent.click(link);
+    // No fragment lookup performed — clicking never touches focus.
+    await expect(document.activeElement).toBe(link);
+  },
+};
+
 export const IsFirstInTabOrder: Story = {
   render: () => (
     <>

@@ -10,10 +10,9 @@ const {
 // #144 explicitly calls out `display: none` as the common mistake here, since it would
 // remove the link from the tab order). Composed from the shared `visuallyHidden` base
 // plus a `:focus-visible` override — vanilla-extract's `style([...])` composition applies
-// both classes to the element, and the override reliably wins because `:focus-visible`
-// makes its selector strictly more specific than the bare `visuallyHidden` class it
-// refines (order-independent; no cross-file specificity ordering risk like AppHeader's
-// menuButton `!important` case).
+// both classes to the element as separate class names, so the override reliably wins:
+// `:focus-visible` makes its class strictly more specific than the bare `visuallyHidden`
+// class it refines, independent of source order.
 export const root = style([
   visuallyHidden,
   {
