@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
@@ -9,10 +9,12 @@ import { AppHeader } from './AppHeader';
 import type { AppHeaderActionProps } from '../index';
 import { Paper } from '../Paper';
 import { SearchField } from '../SearchField';
+import { SkipLink } from '../SkipLink';
 import { SearchIcon } from '../../icons/SearchIcon';
 import { UserIcon } from '../../icons/UserIcon';
 import { CartIcon } from '../../icons/CartIcon';
 import { iconWrapper as navigationLinkIconWrapper } from '../NavigationLink/NavigationLink.css';
+import { vars } from '../../theme';
 
 const navigation = [
   { label: 'Palvelut', href: '/palvelut' },
@@ -2244,6 +2246,57 @@ export const MenuDropdownSharesPaperDropShadowToken: StoryObj<typeof AppHeaderMe
     const dropdown = await openMenuAndGetDropdown(canvas.getByRole('button', { name: 'Valikko' }));
 
     await expect(getComputedStyle(dropdown).boxShadow).toBe(getComputedStyle(reference).boxShadow);
+  },
+};
+
+// Not a real Footer component — #60 (Footer) doesn't exist yet. Styled with
+// the already-defined-but-currently-unused footer tokens so it reads as
+// plausible rather than a bare gray box; swap for the real <Footer /> once
+// #60 ships.
+const placeholderFooterStyle: CSSProperties = {
+  backgroundColor: vars.theme.components.footer.backgroundBottom,
+  color: vars.theme.contrast,
+  padding: `${vars.theme.components.footer.padding.verticalBottom} ${vars.theme.components.footer.padding.horizontal}`,
+};
+
+export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
+  tags: docExample,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The page-shell composition pattern: SkipLink first in the document, then ' +
+          "AppHeader, then the page's <main> landmark, then Footer. There is " +
+          'deliberately no PageShell component wrapping these — each app composes them ' +
+          'directly. Two accessibility requirements this composition depends on: (1) ' +
+          'SkipLink must be the very first element in the document for it to be the ' +
+          "first tab stop; (2) the <main> landmark needs `tabIndex={-1}` — it isn't " +
+          'natively focusable, so without it, activating the skip link would move focus ' +
+          "nowhere. (Footer here is a plain placeholder — #60 Footer doesn't exist yet.)",
+      },
+    },
+  },
+  render: () => (
+    <>
+      <SkipLink />
+      <AppHeader navAriaLabel="Päänavigaatio" siteName="Esimerkkisivusto" />
+      <main id="main-content" tabIndex={-1}>
+        Sivun pääsisältö.
+      </main>
+      <footer style={placeholderFooterStyle}>Alatunniste (placeholder, ks. #60)</footer>
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
+    await expect(canvas.getByRole('banner')).not.toBeNull();
+    await expect(canvas.getByRole('main')).not.toBeNull();
+    await expect(canvas.getByRole('contentinfo')).not.toBeNull();
+
+    // Not just presence — the whole point of the composition: activating the
+    // skip link inside a real AppHeader must still move focus to <main>.
+    await userEvent.click(link);
+    await expect(document.activeElement).toBe(canvas.getByRole('main'));
   },
 };
 
