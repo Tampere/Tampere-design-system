@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { userEvent, within } from '@storybook/testing-library';
+import { userEvent, waitFor, within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { SkipLink } from './SkipLink';
 
@@ -12,6 +12,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const docExample = ['dev', 'autodocs'];
+
+// Captures console.error calls for the missing-target dev-warning test below.
+let capturedConsoleErrors: string[] = [];
+
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  const original = console.error;
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+  };
+  return () => {
+    console.error = original;
+  };
+};
 
 export const HiddenByDefault: Story = {
   render: () => <SkipLink />,
@@ -109,13 +123,6 @@ export const ActivatingMovesFocusToMainLandmark: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
-    // Prevents the real fragment navigation the browser performs on click —
-    // in this Storybook/vitest-browser-mode harness that navigation crashes
-    // the runner's connection to the page (a harness limitation, not
-    // something the component does; SkipLink itself never calls
-    // preventDefault). This isolates the test to the onClick handler's
-    // focus-management effect.
-    link.addEventListener('click', (e) => e.preventDefault());
     await userEvent.click(link);
     const main = canvas.getByRole('main');
     await expect(document.activeElement).toBe(main);
@@ -132,9 +139,6 @@ export const MovesFocusEvenWithoutExplicitTabIndex: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
-    // See ActivatingMovesFocusToMainLandmark above for why this is needed in
-    // this test harness.
-    link.addEventListener('click', (e) => e.preventDefault());
     await userEvent.click(link);
     const main = canvas.getByRole('main');
     await expect(document.activeElement).toBe(main);
@@ -142,14 +146,40 @@ export const MovesFocusEvenWithoutExplicitTabIndex: Story = {
   },
 };
 
-export const DoesNotThrowWhenTargetIsMissing: Story = {
-  render: () => <SkipLink href="#does-not-exist" />,
+export const DoesNotTouchTabIndexWhenTargetIsAlreadyFocusable: Story = {
+  render: () => (
+    <>
+      <SkipLink href="#already-focusable" />
+      <button type="button" id="already-focusable">
+        Jo kohdistettavissa
+      </button>
+    </>
+  ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
-    link.addEventListener('click', (e) => e.preventDefault());
+    await userEvent.click(link);
+    const button = canvas.getByRole('button', { name: 'Jo kohdistettavissa' });
+    await expect(document.activeElement).toBe(button);
+    // Already a natively focusable element — SkipLink must not add tabindex,
+    // which would leave it in the tab order but change its native semantics.
+    await expect(button).not.toHaveAttribute('tabindex');
+  },
+};
+
+export const DoesNotThrowWhenTargetIsMissing: Story = {
+  render: () => <SkipLink href="#does-not-exist" />,
+  beforeEach: captureConsoleErrors,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
     await userEvent.click(link);
     // No target to move focus to — clicking is a safe no-op, focus stays put.
     await expect(document.activeElement).toBe(link);
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /no element with id "does-not-exist"/.test(m))).toBe(
+        true
+      )
+    );
   },
 };

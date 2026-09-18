@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import cx from 'clsx';
 import { root } from './SkipLink.css';
 
@@ -15,10 +15,23 @@ export function SkipLink({
   children = 'Hyppää pääsisältöön',
   className,
 }: SkipLinkProps) {
-  const handleClick = () => {
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (!href.startsWith('#')) return;
+    // Own the navigation ourselves as soon as we've decided to handle this href —
+    // before the target lookup, so a missing target can't fall through to the
+    // browser's default fragment navigation, which would push a history entry and
+    // rewrite location.hash to a dead fragment as an undocumented side effect.
+    event.preventDefault();
     const target = document.getElementById(href.slice(1));
-    if (!target) return;
+    if (!target) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(
+          `SkipLink: no element with id "${href.slice(1)}" found for \`href="${href}"\`. ` +
+            'The skip link will not move focus anywhere.'
+        );
+      }
+      return;
+    }
     // Not natively focusable and no tabindex set — make it a valid focus
     // target so activation works even if the consumer forgot
     // tabIndex={-1} on their landmark.

@@ -454,12 +454,14 @@ export function getTheme(bp: BreakpointKey) {
     mainMenu: { spacing: primitives.spacing['4'] },
     menuItem: { padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xs } },
     skipLink: {
-      // Must clear arbitrary consumer chrome (e.g. AppHeader) once focused.
-      // Matches Mantine's own "app" elevation (getDefaultZIndex('app') === 100)
-      // and stays below its "modal" elevation (200), so a skip link can never
-      // paint over a modal. String, not number — every other leaf in this tree
-      // is a string (the vanilla-extract CSS-variable contract requires it).
-      zIndex: '100',
+      // One above Mantine's "app" elevation (getDefaultZIndex('app') === 100):
+      // equal z-index would lose the stacking tie against fixed app-layer chrome
+      // (e.g. AppShell.Header), since ties fall back to DOM tree order and the
+      // skip link must render first in the document to be the first tab stop.
+      // Still below "modal" (200), so it can never paint over a modal. String,
+      // not number — every other leaf in this tree is a string (the
+      // vanilla-extract CSS-variable contract requires it).
+      zIndex: '101',
     },
     switch: { height: rem('24px'), backgroundUnchecked: colors.neutral['200'] },
   };

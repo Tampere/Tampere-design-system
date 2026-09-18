@@ -27,10 +27,9 @@ export const root = style([
       '&:focus-visible': {
         position: 'fixed',
         zIndex: components.skipLink.zIndex,
-        // Raw primitive, not a semantic/component token — nothing else fits without
-        // inventing a coupling to AppHeader (whose own padding.vertical happens to
-        // equal 16px too, but SkipLink is explicitly designed to work independently
-        // of it). Matches Figma's absolute 16px offset.
+        // Raw primitive, not a semantic/component token — the pill's offset is
+        // deliberately fixed (not responsive) per Figma, so no component token exists
+        // to reach for.
         top: primitives.spacing['2'],
         left: '50%',
         transform: 'translateX(-50%)',

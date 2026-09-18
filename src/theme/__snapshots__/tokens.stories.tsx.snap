@@ -226,7 +226,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "skipLink": {
-      "zIndex": "100",
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -582,7 +582,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "skipLink": {
-      "zIndex": "100",
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -938,7 +938,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "skipLink": {
-      "zIndex": "100",
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -1708,7 +1708,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
       },
       "skipLink": {
-        "zIndex": "100",
+        "zIndex": "101",
       },
       "switch": {
         "backgroundUnchecked": "#dedee2",
@@ -2065,7 +2065,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "skipLink": {
-      "zIndex": "100",
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -2421,7 +2421,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "skipLink": {
-      "zIndex": "100",
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -2777,7 +2777,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
     },
     "skipLink": {
-      "zIndex": "100",
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
