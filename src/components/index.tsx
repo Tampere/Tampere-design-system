@@ -18,6 +18,7 @@ export { Paper, type PaperProps } from './Paper/Paper';
 export { RadioButton } from './RadioButton/RadioButton';
 export { SearchField } from './SearchField/SearchField';
 export { Select } from './Select/Select';
+export { SkipLink, type SkipLinkProps } from './SkipLink/SkipLink';
 export { Switch } from './Switch/Switch';
 export {
   Table,

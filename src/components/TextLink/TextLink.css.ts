@@ -18,19 +18,7 @@ export const externalIcon = style({
   marginLeft: components.link.iconSpacing,
 });
 
-// Screen-reader-only text — visually hidden but still announced. Mirrors
-// DateField.css.ts's `visuallyHidden` (no shared helper exists yet).
-export const visuallyHidden = style({
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  padding: '0',
-  margin: '-1px',
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  border: '0',
-});
+export { visuallyHidden } from '../../theme';
 
 // Typography scale keys shaped like a font style (excludes e.g. `margin`,
 // which is a bare spacing value, not a font record) — structural rather than
