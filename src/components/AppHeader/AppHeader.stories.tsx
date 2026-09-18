@@ -783,7 +783,7 @@ export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       layout="multi-row"
-      siteName="Site name"
+      siteName="Sivuston nimi"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -829,7 +829,7 @@ export const HeaderLandmarksAndSlots: StoryObj<typeof AppHeader> = {
     // arbitrary site name would make the accessible name unstable per consumer.
     const brand = canvas.getByRole('link', { name: 'Tampere' });
     await expect(brand).toHaveAttribute('href', '/');
-    await expect(within(brand).queryByText('Site name')).toBeNull();
+    await expect(within(brand).queryByText('Sivuston nimi')).toBeNull();
   },
 };
 
@@ -1250,7 +1250,7 @@ export const Default: StoryObj<typeof AppHeader> = {
   },
   render: () => (
     <AppHeader
-      siteName="Site name"
+      siteName="Sivuston nimi"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -1266,7 +1266,7 @@ export const MultiRow: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       layout="multi-row"
-      siteName="Site name"
+      siteName="Sivuston nimi"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -1282,7 +1282,7 @@ export const WithActions: StoryObj<typeof AppHeader> = {
   tags: docExample,
   render: () => (
     <AppHeader
-      siteName="Site name"
+      siteName="Sivuston nimi"
       homeHref="/"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
@@ -1396,7 +1396,7 @@ export const InteractiveNavigationAndLanguageSelection: StoryObj<typeof AppHeade
 export const SingleRowIsTheDefault: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
-      siteName="Site name"
+      siteName="Sivuston nimi"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
       languages={languages}
@@ -1532,7 +1532,7 @@ export const SiteNameUsesSubheaderStyle: StoryObj<typeof AppHeader> = {
   // (20px at xl/xxl) — single-row's node 14147:8543 and multi-row's own
   // 14151:15447 agree on this, so nothing layout-specific to assert here.
   render: () => (
-    <AppHeader siteName="Site name" navigation={navigation} navAriaLabel="Päänavigaatio" />
+    <AppHeader siteName="Sivuston nimi" navigation={navigation} navAriaLabel="Päänavigaatio" />
   ),
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
@@ -1547,7 +1547,7 @@ export const SiteNameUsesSubheaderStyle: StoryObj<typeof AppHeader> = {
 };
 
 export const SiteNameIsLiftedTwoPixels: StoryObj<typeof AppHeader> = {
-  render: () => <AppHeader siteName="Site name" navAriaLabel="Päänavigaatio" />,
+  render: () => <AppHeader siteName="Sivuston nimi" navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
     await page.viewport(1500, 800);
@@ -1564,7 +1564,7 @@ export const MultiRowIsOptIn: StoryObj<typeof AppHeader> = {
   render: () => (
     <AppHeader
       layout="multi-row"
-      siteName="Site name"
+      siteName="Sivuston nimi"
       navigation={navigation}
       navAriaLabel="Päänavigaatio"
       languages={languages}
@@ -1675,7 +1675,9 @@ export const MultiRowSearchSpansFullWidthWithoutNavigation: StoryObj<typeof AppH
 };
 
 export const MultiRowOmitsTheSecondRowWhenEmpty: StoryObj<typeof AppHeader> = {
-  render: () => <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" siteName="Site name" />,
+  render: () => (
+    <AppHeader layout="multi-row" navAriaLabel="Päänavigaatio" siteName="Sivuston nimi" />
+  ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     // An empty second row still costs a row gap under the header.
@@ -1728,7 +1730,7 @@ export const LanguagesStayVisibleWithoutNavigation: StoryObj<typeof AppHeader> =
 export const SiteNameHiddenAtSmAndBelow: StoryObj<typeof AppHeader> = {
   // Figma's breakpoint sheet (node 14147:8539) drops the site name entirely
   // at sm/xs (480/320) — it only appears from md (768) up.
-  render: () => <AppHeader siteName="Site name" navAriaLabel="Päänavigaatio" />,
+  render: () => <AppHeader siteName="Sivuston nimi" navAriaLabel="Päänavigaatio" />,
   play: async ({ canvasElement }) => {
     const { page } = await import('@vitest/browser/context');
     const siteNameEl = canvasElement.querySelector('span[class*="siteName"]') as HTMLElement;
