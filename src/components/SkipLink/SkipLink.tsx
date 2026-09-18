@@ -15,8 +15,16 @@ export function SkipLink({
   children = 'Hyppää pääsisältöön',
   className,
 }: SkipLinkProps) {
+  const handleClick = () => {
+    const targetId = href.startsWith('#') ? href.slice(1) : href;
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.focus();
+    }
+  };
+
   return (
-    <a href={href} className={cx(root, className)}>
+    <a href={href} className={cx(root, className)} onClick={handleClick}>
       {children}
     </a>
   );
