@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { SVGProps, ComponentType } from 'react';
 import { AddIcon } from './AddIcon';
+import { AiIcon } from './AiIcon';
 import { AirplaneIcon } from './AirplaneIcon';
 import { ArrowDownIcon } from './ArrowDownIcon';
 import { ArrowLeftIcon } from './ArrowLeftIcon';
@@ -28,6 +29,7 @@ import { DateTimeIcon } from './DateTimeIcon';
 import { DownloadIcon } from './DownloadIcon';
 import { EditIcon } from './EditIcon';
 import { EnlargeIcon } from './EnlargeIcon';
+import { ErrorIcon } from './ErrorIcon';
 import { EuroIcon } from './EuroIcon';
 import { FavouritesFilledIcon } from './FavouritesFilledIcon';
 import { FavouritesOutlinedIcon } from './FavouritesOutlinedIcon';
@@ -98,6 +100,7 @@ const icons: {
   props?: Record<string, unknown>;
 }[] = [
   { name: 'Add', Component: AddIcon },
+  { name: 'Ai', Component: AiIcon },
   { name: 'Airplane', Component: AirplaneIcon },
   { name: 'ArrowDown', Component: ArrowDownIcon },
   { name: 'ArrowLeft', Component: ArrowLeftIcon },
@@ -125,6 +128,7 @@ const icons: {
   { name: 'Download', Component: DownloadIcon },
   { name: 'Edit', Component: EditIcon },
   { name: 'Enlarge', Component: EnlargeIcon },
+  { name: 'Error', Component: ErrorIcon },
   { name: 'Euro', Component: EuroIcon },
   { name: 'FavouritesFilled', Component: FavouritesFilledIcon },
   { name: 'FavouritesOutlined', Component: FavouritesOutlinedIcon },

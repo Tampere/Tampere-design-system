@@ -49,6 +49,7 @@ export interface ChipTagProps {
 
 export type ChipProps = ChipCommonProps & (ChipFilterProps | ChipTagProps);
 
+/** Always interactive — a filter/selection toggle or a removable tag. For a static, read-only status or category label, use `Badge` instead. */
 export function Chip(props: ChipProps) {
   // `onRemove?: never` still permits a filter-chip caller to explicitly pass
   // `onRemove: undefined`, and `in` returns true for a present-but-undefined

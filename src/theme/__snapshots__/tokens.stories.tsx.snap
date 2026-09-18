@@ -39,6 +39,21 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       },
       "width": "calc(17.75rem * var(--mantine-scale))",
     },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
+    },
     "breadcrumbs": {
       "activePageFontWeight": "600",
     },
@@ -427,6 +442,21 @@ exports[`Token Values Match Snapshot > md 1`] = `
       },
       "width": "calc(17.75rem * var(--mantine-scale))",
     },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
+    },
     "breadcrumbs": {
       "activePageFontWeight": "600",
     },
@@ -814,6 +844,21 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -1516,6 +1561,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "black": "#000000",
         "warm": {
           "100": "#f1eeeb",
+          "700": "#3f3e3e",
         },
         "white": "#ffffff",
       },
@@ -1598,6 +1644,21 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "vertical": "calc(0.75rem * var(--mantine-scale))",
         },
         "width": "calc(17.75rem * var(--mantine-scale))",
+      },
+      "badge": {
+        "background": {
+          "error": "#ae1e20",
+          "info": "#29549a",
+          "neutral": "#f1eeeb",
+          "neutralInverted": "#3f3e3e",
+          "success": "#386f49",
+          "warning": "#f4d240",
+        },
+        "iconSize": "calc(1.125rem * var(--mantine-scale))",
+        "padding": {
+          "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        },
+        "spacing": "calc(0.25rem * var(--mantine-scale))",
       },
       "breadcrumbs": {
         "activePageFontWeight": "600",
@@ -1988,6 +2049,21 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       },
       "width": "calc(17.75rem * var(--mantine-scale))",
     },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
+    },
     "breadcrumbs": {
       "activePageFontWeight": "600",
     },
@@ -2376,6 +2452,21 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       },
       "width": "calc(17.75rem * var(--mantine-scale))",
     },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
+    },
     "breadcrumbs": {
       "activePageFontWeight": "600",
     },
@@ -2763,6 +2854,21 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
       "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",

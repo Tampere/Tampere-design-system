@@ -1,0 +1,394 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { within } from '@storybook/testing-library';
+import { expect } from 'storybook/test';
+import { StarFilledIcon } from '../../icons/StarFilledIcon';
+import { InfoIcon } from '../../icons/InfoIcon';
+import { AiIcon } from '../../icons/AiIcon';
+import { Badge } from './Badge';
+
+const meta = {
+  component: Badge,
+  tags: ['!dev', '!autodocs'],
+  // Satisfies the discriminated union's required-args check so `args` isn't required
+  // again on every individual story below (each overrides via its own `render`,
+  // ignoring these defaults entirely) — removing this breaks `tsc`, not just unused-code lint.
+  args: { children: 'Leima' },
+} satisfies Meta<typeof Badge>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+const docExample = ['dev', 'autodocs'];
+
+// ── Documentation examples (visible in sidebar + autodocs) ───────────────────
+
+export const Neutral: Story = {
+  tags: docExample,
+  render: () => <Badge>Leima</Badge>,
+};
+
+export const NeutralInverted: Story = {
+  tags: docExample,
+  render: () => <Badge inverted>Leima</Badge>,
+};
+
+export const NeutralInvertedWithIcon: Story = {
+  tags: docExample,
+  render: () => (
+    <Badge inverted icon={<AiIcon />}>
+      Käyttää tekoälyä
+    </Badge>
+  ),
+};
+
+export const Info: Story = {
+  tags: docExample,
+  render: () => <Badge status="info">Tiedote</Badge>,
+};
+
+export const Success: Story = {
+  tags: docExample,
+  render: () => <Badge status="success">Valmis</Badge>,
+};
+
+export const Warning: Story = {
+  tags: docExample,
+  render: () => <Badge status="warning">Varoitus</Badge>,
+};
+
+export const Error: Story = {
+  tags: docExample,
+  render: () => <Badge status="error">Virhe</Badge>,
+};
+
+// The label doesn't state the status, so it's announced for screen readers.
+export const StatusWithNonStatusLabel: Story = {
+  name: 'Status With Non-Status Label',
+  tags: docExample,
+  render: () => (
+    <Badge status="error" statusLabel>
+      Maksamaton
+    </Badge>
+  ),
+};
+
+export const WithIcon: Story = {
+  tags: docExample,
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <Badge icon={<InfoIcon />}>Neutraali</Badge>
+      <Badge status="info" showIcon>
+        Tiedote
+      </Badge>
+      <Badge status="warning" showIcon>
+        Varoitus
+      </Badge>
+      <Badge status="success" showIcon>
+        Valmis
+      </Badge>
+      <Badge status="error" showIcon>
+        Virhe
+      </Badge>
+    </div>
+  ),
+};
+
+// AI involvement isn't a severity level, so this uses the neutral variant's
+// icon slot rather than a `status`.
+// Source: Figma "Add AI chip examples" (2DU77Aev4peJufseXyOjYY).
+export const AiBadgeExamples: Story = {
+  name: 'AI Badge Examples',
+  tags: docExample,
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 40 }}>
+      <Badge icon={<AiIcon />}>Käyttää tekoälyä</Badge>
+      <Badge icon={<AiIcon />}>Muokattu tekoälyllä</Badge>
+      <Badge icon={<AiIcon />}>Luotu tekoälyllä</Badge>
+    </div>
+  ),
+};
+
+// ── Test-only specs (hidden from sidebar/autodocs, still run as browser tests) ─
+
+export const NoIconByDefault: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="neutral-wrapper">
+        <Badge>Leima</Badge>
+      </div>
+      <div data-testid="error-wrapper">
+        <Badge status="error">Virhe</Badge>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByTestId('neutral-wrapper').querySelector('svg')).toBeNull();
+    await expect(canvas.getByTestId('error-wrapper').querySelector('svg')).toBeNull();
+  },
+};
+
+export const NeutralAcceptsCustomIcon: Story = {
+  render: () => <Badge icon={<StarFilledIcon data-testid="custom-icon" />}>Suosikki</Badge>,
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('[data-testid="custom-icon"]')).not.toBeNull();
+  },
+};
+
+export const InvertedAcceptsCustomIcon: Story = {
+  render: () => (
+    <Badge inverted icon={<StarFilledIcon data-testid="custom-icon" />}>
+      Suosikki
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('[data-testid="custom-icon"]')).not.toBeNull();
+  },
+};
+
+export const InvertedColors: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <Badge inverted data-testid="inverted">
+        Leima
+      </Badge>
+      <Badge inverted={false} data-testid="not-inverted">
+        Leima
+      </Badge>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const inverted = canvas.getByTestId('inverted');
+    await expect(getComputedStyle(inverted).backgroundColor).toBe('rgb(63, 62, 62)');
+    await expect(getComputedStyle(inverted).color).toBe('rgb(255, 255, 255)');
+
+    // `inverted={false}` must fall back to the plain neutral fill, not merely
+    // render `data-inverted="false"` — which the presence selector would match.
+    const notInverted = canvas.getByTestId('not-inverted');
+    await expect(getComputedStyle(notInverted).backgroundColor).toBe('rgb(241, 238, 235)');
+    await expect(getComputedStyle(notInverted).color).toBe('rgb(45, 45, 50)');
+  },
+};
+
+// Locks the union split in Badge.tsx: `inverted` has no status form in Figma,
+// so the status branch must reject it. `tsc --noEmit` fails if this ever
+// stops erroring.
+export const InvertedIsForbiddenOnStatusVariant: Story = {
+  render: () => (
+    // TS attributes a JSX-prop-union mismatch to the opening tag, not the
+    // offending attribute, so the directive has to precede the tag itself.
+    // @ts-expect-error — `inverted` is only valid on the neutral variant
+    <Badge status="warning" inverted>
+      Varoitus
+    </Badge>
+  ),
+};
+
+export const StatusIconTogglesFixedGlyph: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="info-wrapper">
+        <Badge status="info" showIcon>
+          Tiedote
+        </Badge>
+      </div>
+      <div data-testid="success-wrapper">
+        <Badge status="success" showIcon>
+          Valmis
+        </Badge>
+      </div>
+      <div data-testid="warning-wrapper">
+        <Badge status="warning" showIcon>
+          Varoitus
+        </Badge>
+      </div>
+      <div data-testid="error-wrapper">
+        <Badge status="error" showIcon>
+          Virhe
+        </Badge>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByTestId('info-wrapper').querySelector('svg')).not.toBeNull();
+    await expect(canvas.getByTestId('success-wrapper').querySelector('svg')).not.toBeNull();
+    await expect(canvas.getByTestId('warning-wrapper').querySelector('svg')).not.toBeNull();
+    await expect(canvas.getByTestId('error-wrapper').querySelector('svg')).not.toBeNull();
+  },
+};
+
+export const StatusColors: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <Badge data-testid="neutral">Leima</Badge>
+      <Badge status="info" data-testid="info">
+        Tiedote
+      </Badge>
+      <Badge status="success" data-testid="success">
+        Valmis
+      </Badge>
+      <Badge status="warning" data-testid="warning">
+        Varoitus
+      </Badge>
+      <Badge status="error" data-testid="error">
+        Virhe
+      </Badge>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const neutral = canvas.getByTestId('neutral');
+    const info = canvas.getByTestId('info');
+    const success = canvas.getByTestId('success');
+    const warning = canvas.getByTestId('warning');
+    const error = canvas.getByTestId('error');
+
+    await expect(getComputedStyle(neutral).backgroundColor).toBe('rgb(241, 238, 235)');
+    await expect(getComputedStyle(neutral).color).toBe('rgb(45, 45, 50)');
+
+    await expect(getComputedStyle(info).backgroundColor).toBe('rgb(41, 84, 154)');
+    await expect(getComputedStyle(info).color).toBe('rgb(255, 255, 255)');
+
+    await expect(getComputedStyle(success).backgroundColor).toBe('rgb(56, 111, 73)');
+    await expect(getComputedStyle(success).color).toBe('rgb(255, 255, 255)');
+
+    await expect(getComputedStyle(warning).backgroundColor).toBe('rgb(244, 210, 64)');
+    // Warning keeps the dark label: white on this fill is 1.49:1, well under AA.
+    await expect(getComputedStyle(warning).color).toBe('rgb(45, 45, 50)');
+
+    await expect(getComputedStyle(error).backgroundColor).toBe('rgb(174, 30, 32)');
+    await expect(getComputedStyle(error).color).toBe('rgb(255, 255, 255)');
+  },
+};
+
+export const IsFullyRounded: Story = {
+  render: () => <Badge>Leima</Badge>,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const root = canvas.getByText('Leima');
+    // The pill token (9999px), not Chip's own 20px radius.
+    await expect(getComputedStyle(root).borderRadius).toBe('9999px');
+  },
+};
+
+export const HeightTracksLabelFontSize: Story = {
+  render: () => <Badge>Leima</Badge>,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const root = canvas.getByText('Leima');
+    const style = getComputedStyle(root);
+    const fontSize = parseFloat(style.fontSize);
+    const height = parseFloat(style.height);
+    await expect(height).toBeCloseTo(2 * 4 + fontSize * 1.5, 0);
+  },
+};
+
+export const IconMatchesIconSizeToken: Story = {
+  render: () => <Badge icon={<StarFilledIcon />}>Suosikki</Badge>,
+  play: async ({ canvasElement }) => {
+    const icon = canvasElement.querySelector('svg');
+    await expect(icon).not.toBeNull();
+    const style = getComputedStyle(icon!);
+    await expect(style.width).toBe('18px');
+    await expect(style.height).toBe('18px');
+  },
+};
+
+export const ClassNameLandsOnRoot: Story = {
+  render: () => <Badge className="custom-badge">Leima</Badge>,
+  play: async ({ canvasElement }) => {
+    const root = canvasElement.querySelector<HTMLElement>('.custom-badge');
+    await expect(root).not.toBeNull();
+    await expect(root?.textContent).toContain('Leima');
+    await expect(root!.tagName).toBe('SPAN');
+    // The base class must survive alongside the custom one.
+    await expect(getComputedStyle(root!).backgroundColor).toBe('rgb(241, 238, 235)');
+  },
+};
+
+export const WarningAndErrorUseDistinctGlyphs: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="warning-wrapper">
+        <Badge status="warning" showIcon>
+          Varoitus
+        </Badge>
+      </div>
+      <div data-testid="error-wrapper">
+        <Badge status="error" showIcon>
+          Virhe
+        </Badge>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const warning = canvas.getByTestId('warning-wrapper').querySelector('svg');
+    const error = canvas.getByTestId('error-wrapper').querySelector('svg');
+    await expect(warning).not.toBeNull();
+    await expect(error).not.toBeNull();
+    // When a glyph is shown, warning and error must not share one.
+    await expect(warning!.innerHTML).not.toBe(error!.innerHTML);
+    await expect(warning!.getAttribute('aria-hidden')).toBe('true');
+    await expect(error!.getAttribute('aria-hidden')).toBe('true');
+  },
+};
+
+export const LongLabelStaysOnOneLine: Story = {
+  render: () => (
+    <div style={{ width: 160 }} data-testid="narrow">
+      <Badge data-testid="badge">Muokattu tekoälyllä</Badge>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const badge = canvas.getByTestId('badge');
+    // The label must not wrap out of the fixed-height pill background.
+    await expect(badge.scrollHeight).toBeLessThanOrEqual(badge.clientHeight);
+  },
+};
+
+export const StatusIsSilentByDefault: Story = {
+  render: () => (
+    <Badge status="error" data-testid="badge">
+      Virhe
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The label already states the status; announcing it again says "Virhe Virhe".
+    await expect(canvas.getByTestId('badge').textContent?.trim()).toBe('Virhe');
+  },
+};
+
+export const StatusLabelIsAnnouncedWhenOptedIn: Story = {
+  render: () => (
+    <Badge status="error" statusLabel data-testid="badge">
+      Maksamaton
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const badge = canvas.getByTestId('badge');
+    await expect(badge.textContent).toContain('Virhe');
+    const hidden = badge.querySelector('span');
+    await expect(hidden).not.toBeNull();
+    await expect(getComputedStyle(hidden!).width).toBe('1px');
+  },
+};
+
+export const StatusLabelCanBeACustomString: Story = {
+  render: () => (
+    <Badge status="warning" statusLabel="Vanhentumassa" data-testid="badge">
+      3 päivää
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const text = canvas.getByTestId('badge').textContent ?? '';
+    await expect(text).toContain('Vanhentumassa');
+    await expect(text).not.toContain('Varoitus');
+  },
+};

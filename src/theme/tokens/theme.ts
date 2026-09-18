@@ -297,6 +297,20 @@ export function getTheme(bp: BreakpointKey) {
         pink: colors.pink['200'],
       },
     },
+    badge: {
+      background: {
+        // Deliberately not `chip.tagFill` — Figma binds Badge's default to the warm swatch.
+        neutral: colors.neutral.warm['100'],
+        neutralInverted: colors.neutral.warm['700'],
+        info: colors.blue['400'],
+        success: colors.green['600'],
+        warning: colors.yellow['200'],
+        error: colors.red['300'],
+      },
+      padding: { horizontal: bpTokens.spacing.sm },
+      spacing: bpTokens.spacing.xxs,
+      iconSize: rem('18px'),
+    },
     chip: {
       // Figma's "spacing/2-extra-small" — confirmed against the dedicated
       // "Breakpoints" reference frame (5870:41586) in the redesign file,
@@ -328,8 +342,8 @@ export function getTheme(bp: BreakpointKey) {
       // font size (`chipLineHeightPercent`, matching `label.lineHeight`
       // above). Mantine's Chip has no vertical-padding concept of its own
       // (it sets height directly via --chip-size), so this is computed once
-      // here and fed to both the Mantine-wrapped filter role and the bespoke
-      // removable-tag role, keeping their heights identical.
+      // here and fed to the Mantine-wrapped filter role, the bespoke
+      // removable-tag role, and Badge, keeping all three heights identical.
       height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * ${chipLineHeightPercent / 100})`,
       // Figma's "Neutral/100" tag fill — distinct from `background.disabled`
       // even though the raw value is the same, since that token means
