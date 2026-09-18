@@ -453,6 +453,14 @@ export function getTheme(bp: BreakpointKey) {
     },
     mainMenu: { spacing: primitives.spacing['4'] },
     menuItem: { padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xs } },
+    skipLink: {
+      // Must clear arbitrary consumer chrome (e.g. AppHeader) once focused.
+      // Matches Mantine's own "app" elevation (getDefaultZIndex('app') === 100)
+      // and stays below its "modal" elevation (200), so a skip link can never
+      // paint over a modal. String, not number — every other leaf in this tree
+      // is a string (the vanilla-extract CSS-variable contract requires it).
+      zIndex: '100',
+    },
     switch: { height: rem('24px'), backgroundUnchecked: colors.neutral['200'] },
   };
 

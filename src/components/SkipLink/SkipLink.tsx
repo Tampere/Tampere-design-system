@@ -3,7 +3,7 @@ import cx from 'clsx';
 import { root } from './SkipLink.css';
 
 export interface SkipLinkProps {
-  /** id of the page's <main> landmark. Default '#main-content' by convention. */
+  /** Fragment target to focus on activation. Made focusable automatically if it isn't already. */
   href?: string;
   /** Visible + accessible label. Default is Figma's own copy. */
   children?: ReactNode;
@@ -16,11 +16,16 @@ export function SkipLink({
   className,
 }: SkipLinkProps) {
   const handleClick = () => {
-    const targetId = href.startsWith('#') ? href.slice(1) : href;
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.focus();
+    if (!href.startsWith('#')) return;
+    const target = document.getElementById(href.slice(1));
+    if (!target) return;
+    // Not natively focusable and no tabindex set — make it a valid focus
+    // target so activation works even if the consumer forgot
+    // tabIndex={-1} on their landmark.
+    if (target.tabIndex < 0) {
+      target.setAttribute('tabindex', '-1');
     }
+    target.focus();
   };
 
   return (

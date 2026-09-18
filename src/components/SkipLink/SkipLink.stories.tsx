@@ -81,9 +81,10 @@ export const ActivatingMovesFocusToMainLandmark: Story = {
   render: () => (
     <>
       <SkipLink href="#main-content" />
-      {/* tabIndex={-1}: a bare <main> isn't natively focusable — a real
-          consumer's own <main id="main-content"> needs this too, called out
-          in the PageShell story's docs (Task 4). */}
+      {/* tabIndex={-1}: makes a bare <main> a valid focus target. SkipLink
+          also sets this automatically if a consumer forgets it — see
+          MovesFocusEvenWithoutExplicitTabIndex below — but setting it
+          explicitly here keeps this story's own intent obvious. */}
       <main id="main-content" tabIndex={-1}>
         Sisältö
       </main>
@@ -102,5 +103,37 @@ export const ActivatingMovesFocusToMainLandmark: Story = {
     await userEvent.click(link);
     const main = canvas.getByRole('main');
     await expect(document.activeElement).toBe(main);
+  },
+};
+
+export const MovesFocusEvenWithoutExplicitTabIndex: Story = {
+  render: () => (
+    <>
+      <SkipLink href="#content" />
+      <main id="content">Sisältö</main>
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
+    // See ActivatingMovesFocusToMainLandmark above for why this is needed in
+    // this test harness.
+    link.addEventListener('click', (e) => e.preventDefault());
+    await userEvent.click(link);
+    const main = canvas.getByRole('main');
+    await expect(document.activeElement).toBe(main);
+    await expect(main).toHaveAttribute('tabindex', '-1');
+  },
+};
+
+export const DoesNotThrowWhenTargetIsMissing: Story = {
+  render: () => <SkipLink href="#does-not-exist" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
+    link.addEventListener('click', (e) => e.preventDefault());
+    await userEvent.click(link);
+    // No target to move focus to — clicking is a safe no-op, focus stays put.
+    await expect(document.activeElement).toBe(link);
   },
 };
