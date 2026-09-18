@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within } from '@storybook/testing-library';
+import { userEvent, within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { SkipLink } from './SkipLink';
 
@@ -56,5 +56,51 @@ export const HrefAndChildrenAreOverridable: Story = {
     const canvas = within(canvasElement);
     const link = canvas.getByRole('link', { name: 'Siirry sisältöön' });
     await expect(link).toHaveAttribute('href', '#sisalto');
+  },
+};
+
+export const IsFirstInTabOrder: Story = {
+  render: () => (
+    <>
+      <SkipLink />
+      <button type="button">Jokin muu</button>
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Reset focus to a neutral state, then Tab once — the first focusable
+    // element in DOM order should be the skip link, not the button after it.
+    (document.activeElement as HTMLElement | null)?.blur();
+    await userEvent.tab();
+    const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
+    await expect(document.activeElement).toBe(link);
+  },
+};
+
+export const ActivatingMovesFocusToMainLandmark: Story = {
+  render: () => (
+    <>
+      <SkipLink href="#main-content" />
+      {/* tabIndex={-1}: a bare <main> isn't natively focusable — a real
+          consumer's own <main id="main-content"> needs this too, called out
+          in the PageShell story's docs (Task 4). */}
+      <main id="main-content" tabIndex={-1}>
+        Sisältö
+      </main>
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Hyppää pääsisältöön' });
+    // Prevents the real fragment navigation the browser performs on click —
+    // in this Storybook/vitest-browser-mode harness that navigation crashes
+    // the runner's connection to the page (a harness limitation, not
+    // something the component does; SkipLink itself never calls
+    // preventDefault). This isolates the test to the onClick handler's
+    // focus-management effect.
+    link.addEventListener('click', (e) => e.preventDefault());
+    await userEvent.click(link);
+    const main = canvas.getByRole('main');
+    await expect(document.activeElement).toBe(main);
   },
 };
