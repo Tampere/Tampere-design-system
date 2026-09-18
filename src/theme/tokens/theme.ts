@@ -73,6 +73,13 @@ const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
 
+// The kit's minimum touch target (WCAG 2.5.8-style floor), breakpoint-independent
+// unlike `bpTokens` below — a component sizes to content by default and opts into
+// this only where content alone would fall under it (e.g. AppHeader's small-text
+// language links; `components.iconButton.minTouchTarget` is the pre-existing
+// component-scoped equivalent for a different control family).
+const minTouchTarget = rem('24px');
+
 const dropShadow = 'rgba(0, 0, 0, 0.5000)';
 // Figma's Card/Accordion dropshadow spec (offset 0/1, blur 4, spread 0) — shared
 // so the two components' shadows can't drift apart by editing one.
@@ -196,6 +203,40 @@ export function getTheme(bp: BreakpointKey) {
     appHeader: {
       spacing: bpTokens.spacing.sm,
       padding: { horizontal: bpTokens.layout.margin, vertical: bpTokens.spacing.sm },
+      logo: {
+        primaryHeight: bpTokens.appHeader.logo.primaryLogoHeight,
+        secondaryHeight: bpTokens.appHeader.logo.secondaryLogoHeight,
+      },
+      // Single-row's First/Left/Right section gap in Figma (nodes 14147:8543,
+      // 14147:10912, 14147:10973) is the grid's own layout/gutter — 32/24/16
+      // across xl/lg/md — not appHeader.spacing. Multi-row's rows don't use
+      // this; keep it separate so appHeader.spacing stays untouched.
+      rowGap: bpTokens.layout.gutter,
+      language: {
+        // Figma's selected language link (node 4250:40872, "FI") is a local
+        // Bold override on top of its own P2/400 base style — a literal
+        // Open Sans Bold face, not the 600 Semi-Bold used elsewhere (p1,
+        // button, chip), so it gets its own token rather than reusing theirs.
+        selectedFontWeight: '700',
+      },
+      siteName: {
+        // Optical correction against the subheader type style's own
+        // line-height box — same technique as navigationLink.icon's own
+        // verticalOffset below, tuned separately per Figma's visual spec
+        // rather than derived from it.
+        verticalOffset: '-2px',
+      },
+    },
+    // The popover menu (Figma node 14187:18169, "Main menu"): a fixed,
+    // non-responsive box, unlike appHeader's own per-breakpoint padding —
+    // Figma gives it one width and one section padding at every breakpoint
+    // where it appears (below the breakpoint where the trigger disappears).
+    appHeaderMenu: {
+      width: rem('284px'),
+      sectionPadding: {
+        horizontal: primitives.spacing['3'],
+        vertical: primitives.spacing['1,5'],
+      },
     },
     footer: {
       spacing: primitives.spacing['4'],
@@ -381,6 +422,13 @@ export function getTheme(bp: BreakpointKey) {
     labeledIconButton: {
       // Figma Spacing/1 = 8, a fixed constant (not per-breakpoint).
       spacing: primitives.spacing['1'],
+      // Figma's label uses the Button/Medium text style: Caption's own
+      // size/family/line-height, but Subheader-style Semi-Bold weight rather
+      // than Caption's own Regular — same borrowed-weight pattern as
+      // `chip.label.fontWeight`, kept as its own token for the same reason.
+      label: {
+        fontWeight: '600',
+      },
     },
     input: {
       font: {
@@ -453,6 +501,35 @@ export function getTheme(bp: BreakpointKey) {
     },
     mainMenu: { spacing: primitives.spacing['4'] },
     menuItem: { padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xs } },
+    navigationLink: {
+      icon: {
+        // Figma's startIcon/endIcon (node 3992:2329) are a fixed 18×18px
+        // square at both the Medium and Small size variants — a literal
+        // like Chip's own `iconSize` above, not derived from the generic
+        // `icon.size` scale (this codebase's precedent: component-specific
+        // icon sizing is its own constant even when the value coincides).
+        size: rem('18px'),
+        // Figma's Spacing/2-extra-small = 8px, same value on both sides —
+        // a fixed constant like labeledIconButton.spacing above, not part
+        // of the responsive scale.
+        spacing: primitives.spacing['1'],
+        // Same technique as `link.iconVerticalOffset` above (can't reference
+        // that key directly — it's a sibling in this same object literal):
+        // nudges the icon up to visually balance it against the link's
+        // underline, the same optical correction TextLink's trailing icon
+        // needs — but only half the nudge, tuned separately for this fixed
+        // 18px icon rather than TextLink's em-scaled one.
+        verticalOffset: '-0.1em',
+      },
+      // Figma's Medium size (node 3992:2329) reuses Subheader's Semi-Bold weight
+      // rather than P1's own Regular — same "borrow a heavier style's weight"
+      // pattern as Chip's `chip.label.fontWeight` and Button's `button.fontWeight`,
+      // kept as its own token so a future Subheader change can't silently
+      // restyle every link. Small size keeps P2's own Regular weight as-is.
+      label: {
+        mediumFontWeight: '600',
+      },
+    },
     skipLink: {
       // One above Mantine's "app" elevation (getDefaultZIndex('app') === 100):
       // equal z-index would lose the stacking tie against fixed app-layer chrome
@@ -475,6 +552,7 @@ export function getTheme(bp: BreakpointKey) {
     divider: colors.neutral['200'],
     cornerRadius,
     strokeWeight,
+    minTouchTarget,
     dropShadow,
     dropShadowTile,
     states,

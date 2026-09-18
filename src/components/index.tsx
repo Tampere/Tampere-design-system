@@ -1,4 +1,13 @@
 export { Accordion, AccordionItem } from './Accordion/Accordion';
+export {
+  AppHeader,
+  type AppHeaderProps,
+  type AppHeaderBaseProps,
+  type AppHeaderActionProps,
+  type AppHeaderLanguage,
+  type AppHeaderLoginProps,
+  type AppHeaderNavigationItem,
+} from './AppHeader';
 export { Breadcrumbs } from './Breadcrumbs/Breadcrumbs';
 export { Button } from './Button/Button';
 export { Card, type CardProps } from './Card/Card';
@@ -12,7 +21,7 @@ export {
 export { Linkbox, type LinkboxProps } from './Linkbox/Linkbox';
 export { LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { Modal } from './Modal/Modal';
-export { NavigationLink } from './NavigationLink/NavigationLink';
+export { NavigationLink, type NavigationLinkRenderLink } from './NavigationLink/NavigationLink';
 export { Pagination } from './Pagination/Pagination';
 export { Paper, type PaperProps } from './Paper/Paper';
 export { RadioButton } from './RadioButton/RadioButton';
