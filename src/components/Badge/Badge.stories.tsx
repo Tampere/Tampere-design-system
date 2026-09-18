@@ -44,7 +44,7 @@ export const Success: Story = {
 
 export const Warning: Story = {
   tags: docExample,
-  render: () => <Badge status="warning">Huomio</Badge>,
+  render: () => <Badge status="warning">Varoitus</Badge>,
 };
 
 export const Error: Story = {
@@ -72,7 +72,7 @@ export const WithIcon: Story = {
         Tiedote
       </Badge>
       <Badge status="warning" showIcon>
-        Huomio
+        Varoitus
       </Badge>
       <Badge status="success" showIcon>
         Valmis
@@ -177,7 +177,7 @@ export const StatusIconTogglesFixedGlyph: Story = {
       </div>
       <div data-testid="warning-wrapper">
         <Badge status="warning" showIcon>
-          Huomio
+          Varoitus
         </Badge>
       </div>
       <div data-testid="error-wrapper">
@@ -207,7 +207,7 @@ export const StatusColors: Story = {
         Valmis
       </Badge>
       <Badge status="warning" data-testid="warning">
-        Huomio
+        Varoitus
       </Badge>
       <Badge status="error" data-testid="error">
         Virhe
@@ -290,7 +290,7 @@ export const WarningAndErrorUseDistinctGlyphs: Story = {
     <div style={{ display: 'flex', gap: 16 }}>
       <div data-testid="warning-wrapper">
         <Badge status="warning" showIcon>
-          Huomio
+          Varoitus
         </Badge>
       </div>
       <div data-testid="error-wrapper">
