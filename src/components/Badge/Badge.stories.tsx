@@ -32,6 +32,15 @@ export const NeutralInverted: Story = {
   render: () => <Badge inverted>Leima</Badge>,
 };
 
+export const NeutralInvertedWithIcon: Story = {
+  tags: docExample,
+  render: () => (
+    <Badge inverted icon={<AiIcon />}>
+      Käyttää tekoälyä
+    </Badge>
+  ),
+};
+
 export const Info: Story = {
   tags: docExample,
   render: () => <Badge status="info">Tiedote</Badge>,
@@ -160,6 +169,20 @@ export const InvertedColors: Story = {
     await expect(getComputedStyle(notInverted).backgroundColor).toBe('rgb(241, 238, 235)');
     await expect(getComputedStyle(notInverted).color).toBe('rgb(45, 45, 50)');
   },
+};
+
+// Locks the union split in Badge.tsx: `inverted` has no status form in Figma,
+// so the status branch must reject it. `tsc --noEmit` fails if this ever
+// stops erroring.
+export const InvertedIsForbiddenOnStatusVariant: Story = {
+  render: () => (
+    // TS attributes a JSX-prop-union mismatch to the opening tag, not the
+    // offending attribute, so the directive has to precede the tag itself.
+    // @ts-expect-error — `inverted` is only valid on the neutral variant
+    <Badge status="warning" inverted>
+      Varoitus
+    </Badge>
+  ),
 };
 
 export const StatusIconTogglesFixedGlyph: Story = {
