@@ -1,4 +1,5 @@
 export { vars } from './theme.css.ts';
+export { visuallyHidden } from './visuallyHidden.css.ts';
 export {
   primitives,
   brand,
