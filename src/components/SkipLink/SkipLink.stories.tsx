@@ -11,6 +11,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const docExample = ['dev', 'autodocs'];
+
 export const HiddenByDefault: Story = {
   render: () => <SkipLink />,
   play: async ({ canvasElement }) => {
@@ -25,6 +27,20 @@ export const HiddenByDefault: Story = {
 };
 
 export const BecomesVisibleOnFocus: Story = {
+  tags: docExample,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Visually hidden until keyboard focus; once focused, renders as a fixed, ' +
+          'centered pill near the top of the viewport. Render SkipLink first in the ' +
+          "document — before any other focusable element — for it to be the page's " +
+          'first tab stop. Activating it moves focus to the fragment target named by ' +
+          "`href` (default `'#main-content'`); if that element isn't already " +
+          'focusable, SkipLink adds `tabindex="-1"` to it automatically.',
+      },
+    },
+  },
   render: () => <SkipLink />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
