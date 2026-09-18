@@ -312,22 +312,124 @@ export const PopoverClosesOnEscapeAndRestoresFocus: StoryObj<typeof AppHeaderMen
     />
   ),
   play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', { name: 'Valikko' });
 
-    await openMenuAndGetDropdown(trigger);
+    await page.viewport(480, 800);
+    const dropdown = await openMenuAndGetDropdown(trigger);
+
+    // Focus has to actually be inside the panel before Escape: handleClose
+    // restores focus only when it was still there at the moment of closing,
+    // so pressing Escape straight after the opening click — which leaves
+    // focus on the trigger — asserts nothing, and would pass just the same
+    // with the whole restoration branch deleted.
+    trigger.focus();
+    await userEvent.tab();
+    await expect(dropdown.contains(document.activeElement)).toBe(true);
 
     await userEvent.keyboard('{Escape}');
 
-    // Mantine's Popover supplies Escape handling (via onChange, since we run
-    // fully controlled — see AppHeaderMenu.tsx); focus restoration back to
-    // the trigger is ours to implement, since a non-modal Popover has no
-    // built-in focus trap/return the way Drawer did.
+    // Both halves of this come from Mantine for *this* path: PopoverDropdown
+    // wires `onTrigger: returnFocus` into its own `closeOnEscape`, and
+    // useFocusReturn recorded the trigger as the last-active element when the
+    // panel opened. Asserted anyway as a regression guard on that behaviour —
+    // AppHeaderMenu's own restoration covers the activation path instead, see
+    // MenuReturnsFocusToTriggerAfterClientSideActivation.
     await waitFor(async () => {
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
     await waitFor(async () => {
       await expect(document.activeElement).toBe(trigger);
+    });
+  },
+};
+
+export const MenuReturnsFocusToTriggerAfterClientSideActivation: StoryObj<typeof AppHeaderMenu> = {
+  // The path where handleClose's own focus restoration is load-bearing:
+  // clicking an in-panel control leaves focus on that control, and closing
+  // unmounts it. Mantine returns focus only from its own Escape handler
+  // (PopoverDropdown's `closeOnEscape`), so without handleClose focus would
+  // fall back to <body> here.
+  render: function Render() {
+    const [count, setCount] = useState(0);
+    return (
+      <AppHeaderMenu
+        items={navigation}
+        navAriaLabel="Päänavigaatio"
+        menuButtonLabel="Valikko"
+        languagesAriaLabel="Kieli"
+        actions={[
+          {
+            label: `Ostoskori (${count})`,
+            icon: <CartIcon />,
+            onClick: () => setCount((previous) => previous + 1),
+          },
+        ]}
+      />
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    await page.viewport(480, 800);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+    const dropdown = await openMenuAndGetDropdown(trigger);
+
+    await userEvent.click(within(dropdown).getByRole('button', { name: /Ostoskori/ }));
+
+    await waitFor(async () => {
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+    await waitFor(async () => {
+      await expect(document.activeElement).toBe(trigger);
+    });
+  },
+};
+
+export const MenuClosingOnResizeHandsFocusToTheInlineNav: StoryObj<typeof AppHeader> = {
+  // Crossing to the inline-nav width is the one close path that cannot return
+  // focus to the trigger — that width is exactly what hides it. Without the
+  // handoff in AppHeaderMenu's isInlineNav effect the panel unmounts with
+  // focus still inside it, the browser falls back to <body>, and a keyboard
+  // user's tab order restarts at the top of the page.
+  render: () => (
+    <AppHeader
+      navigation={navigation}
+      navAriaLabel="Päänavigaatio"
+      languages={languages}
+      currentLanguage="fi"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const canvas = within(canvasElement);
+
+    // 1200: the menu trigger exists and the inline nav is still hidden.
+    await page.viewport(1200, 800);
+    const trigger = canvas.getByRole('button', { name: 'Valikko' });
+    const dropdown = await openMenuAndGetDropdown(trigger);
+
+    trigger.focus();
+    await userEvent.tab();
+    await expect(dropdown.contains(document.activeElement)).toBe(true);
+
+    await page.viewport(1500, 800);
+
+    await waitFor(async () => {
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    // Queried only after the close: at 1200 the menu carries its own copy of
+    // this landmark, so before it unmounts there are two matching nodes.
+    const inlineNavLandmark = canvasElement.querySelector(
+      'nav[aria-label="Päänavigaatio"]'
+    ) as HTMLElement;
+    await waitFor(async () => {
+      await expect(document.activeElement).toBe(
+        within(inlineNavLandmark).getByRole('link', { name: 'Palvelut' })
+      );
     });
   },
 };

@@ -33,8 +33,10 @@ export interface AppHeaderNavProps {
 /**
  * The navigation link list, rendered both inline in the header and inside the
  * popover menu. Only ever one of the two is in the accessibility tree at a
- * time: the inline copy is `display: none` below 1440, and Mantine's Popover
- * does not mount its children while closed.
+ * time: the inline copy is `display: none` below its caller's own threshold
+ * (1440 for AppHeader's primary `navigation`, 1024 for its `secondaryNavigation`
+ * — see `inlineNav` and `inlineSecondaryNav` in AppHeader.css.ts), and
+ * Mantine's Popover does not mount its children while closed.
  */
 export function AppHeaderNav({
   items,

@@ -54,13 +54,15 @@ export const languageLinkSelected = style({
 });
 
 export const menuButton = style({
-  // `!important`: LabeledIconButton's own `root` class sets an unconditional
-  // `display: flex` at the same (0,1,0) specificity; without it, whichever
-  // class's CSS happens to land later in the bundle wins, regardless of this
-  // media query. The compound-selector remedy Button.css.ts uses for its own
-  // `tertiary`/`pill` conflict isn't available here: that trick needs a
-  // selector built from the button's `root` class, which neither button
-  // component exports.
+  // `!important`: both trigger components set an unconditional `display:
+  // flex` on their own `root` class at the same (0,1,0) specificity; without
+  // it, whichever class's CSS happens to land later in the bundle wins,
+  // regardless of this media query. The compound-selector remedy Button.css.ts
+  // uses for its own `tertiary`/`pill` conflict needs a selector built from
+  // that `root` class, and Button.css.ts doesn't export its own — so the
+  // remedy is unavailable for the `triggerVariant='button'` path, and one
+  // class carrying two different mechanisms per variant is worse than one
+  // `!important` covering both.
   '@media': { [inlineNavWidth]: { display: 'none !important' } },
 });
 

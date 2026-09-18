@@ -22,6 +22,7 @@ import {
 import { AppHeaderNav, type AppHeaderNavigationItem } from './AppHeaderNav';
 import { AppHeaderLanguages, type AppHeaderLanguage } from './AppHeaderLanguages';
 import {
+  inlineNav,
   menuLanguages,
   menuActions,
   menuAnchor,
@@ -121,21 +122,39 @@ export function AppHeaderMenu({
 
   // The inline/menu switch itself is CSS (AppHeader.css.ts). Crossing to the
   // inline-nav width hides the trigger via CSS while the menu would otherwise
-  // stay open with no visible way back to a trigger. `undefined` on first
-  // render is therefore harmless.
+  // stay open with no visible way back to a trigger. Mantine's useMediaQuery
+  // returns `matches || false`, so first render reads `false` before
+  // matchMedia resolves — harmless here, since the menu starts closed and
+  // there is nothing to close.
   const isInlineNav = useMediaQuery(`(min-width: ${breakpoint.xl.appWidth})`);
   // Below md, the dropdown should span the header's own full width rather
   // than a fixed 284px box — `width="target"` (passed to Popover below) asks
   // Mantine to measure menuAnchor's *actual* width instead of assuming the
   // header sits flush against the viewport (it doesn't in Storybook's own
   // preview, which wraps every story in a margin, and a consumer may wrap it
-  // in a padded or max-width shell too). `undefined` on first render falls
-  // through to Popover's own default ('max-content'), same harmless gap as
-  // `isInlineNav` above.
+  // in a padded or max-width shell too). Same first-render `false` as
+  // `isInlineNav` above, so the width starts at 'max-content' — invisible,
+  // since the menu starts closed.
   const isNarrowMenu = useMediaQuery(`(max-width: ${parseInt(breakpoint.md.appWidth) - 1}px)`);
+
+  // Closing here can't return focus to the trigger the way handleClose does —
+  // crossing this width is exactly what hides the trigger. Letting the panel
+  // unmount with focus still inside it drops focus to <body>, restarting tab
+  // order at the top of the page, so focus moves to the inline nav instead:
+  // it carries the same links the panel was showing, and it is guaranteed to
+  // be rendered and visible here (AppHeader renders the inline nav and the
+  // menu from the same non-empty `navigation`). The lookup runs before
+  // `close()` — afterwards the dropdown is unmounted and has no ancestor to
+  // search from.
   useEffect(() => {
-    if (isInlineNav) {
-      close();
+    if (!isInlineNav) return;
+    const focusStillInMenu = dropdownRef.current?.contains(document.activeElement) ?? false;
+    const inlineNavTarget = dropdownRef.current
+      ?.closest('header')
+      ?.querySelector<HTMLElement>(`.${inlineNav} a, .${inlineNav} button`);
+    close();
+    if (focusStillInMenu) {
+      requestAnimationFrame(() => inlineNavTarget?.focus());
     }
   }, [isInlineNav, close]);
 
