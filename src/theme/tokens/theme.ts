@@ -301,6 +301,7 @@ export function getTheme(bp: BreakpointKey) {
       background: {
         // Deliberately not `chip.tagFill` — Figma binds Badge's default to the warm swatch.
         neutral: colors.neutral.warm['100'],
+        neutralInverted: colors.neutral.warm['700'],
         info: colors.blue['400'],
         success: colors.green['600'],
         warning: colors.yellow['200'],

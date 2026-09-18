@@ -27,6 +27,11 @@ export const Neutral: Story = {
   render: () => <Badge>Leima</Badge>,
 };
 
+export const NeutralInverted: Story = {
+  tags: docExample,
+  render: () => <Badge inverted>Leima</Badge>,
+};
+
 export const Info: Story = {
   tags: docExample,
   render: () => <Badge status="info">Tiedote</Badge>,
@@ -118,6 +123,42 @@ export const NeutralAcceptsCustomIcon: Story = {
   render: () => <Badge icon={<StarFilledIcon data-testid="custom-icon" />}>Suosikki</Badge>,
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector('[data-testid="custom-icon"]')).not.toBeNull();
+  },
+};
+
+export const InvertedAcceptsCustomIcon: Story = {
+  render: () => (
+    <Badge inverted icon={<StarFilledIcon data-testid="custom-icon" />}>
+      Suosikki
+    </Badge>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('[data-testid="custom-icon"]')).not.toBeNull();
+  },
+};
+
+export const InvertedColors: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <Badge inverted data-testid="inverted">
+        Leima
+      </Badge>
+      <Badge inverted={false} data-testid="not-inverted">
+        Leima
+      </Badge>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const inverted = canvas.getByTestId('inverted');
+    await expect(getComputedStyle(inverted).backgroundColor).toBe('rgb(63, 62, 62)');
+    await expect(getComputedStyle(inverted).color).toBe('rgb(255, 255, 255)');
+
+    // `inverted={false}` must fall back to the plain neutral fill, not merely
+    // render `data-inverted="false"` — which the presence selector would match.
+    const notInverted = canvas.getByTestId('not-inverted');
+    await expect(getComputedStyle(notInverted).backgroundColor).toBe('rgb(241, 238, 235)');
+    await expect(getComputedStyle(notInverted).color).toBe('rgb(45, 45, 50)');
   },
 };
 

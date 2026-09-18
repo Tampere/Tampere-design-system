@@ -23,6 +23,10 @@ export const badgeRoot = style({
   color: text.primary,
   whiteSpace: 'nowrap',
   selectors: {
+    '&[data-inverted]': {
+      backgroundColor: components.badge.background.neutralInverted,
+      color: contrast,
+    },
     '&[data-status="info"]': {
       backgroundColor: components.badge.background.info,
       color: contrast,

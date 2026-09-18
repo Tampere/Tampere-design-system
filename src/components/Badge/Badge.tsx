@@ -19,6 +19,8 @@ export interface BadgeNeutralProps {
   status?: undefined;
   /** The neutral variant has no inherent icon, so the caller picks whichever fits. */
   icon?: ReactElement;
+  /** Dark fill with a light label. Purely a recolor — the statuses have no inverted form in Figma. */
+  inverted?: boolean;
   showIcon?: never;
   statusLabel?: never;
 }
@@ -29,6 +31,7 @@ export interface BadgeStatusProps {
   /** Toggles the status's own fixed icon — not a custom-icon slot, since the icon shape is part of how status is conveyed without relying on color alone. */
   showIcon?: boolean;
   icon?: never;
+  inverted?: never;
   /** Announces the status to assistive tech ahead of the label, for labels that don't state it themselves. `true` uses the Finnish default. */
   statusLabel?: string | true;
 }
@@ -57,7 +60,13 @@ export function Badge(props: BadgeProps) {
     status && statusLabel ? (statusLabel === true ? statusLabels[status] : statusLabel) : undefined;
 
   return (
-    <span className={cx(badgeRoot, className)} data-status={status} data-testid={dataTestId}>
+    <span
+      className={cx(badgeRoot, className)}
+      data-status={status}
+      // `false` would still render the attribute, which the selector matches on presence alone.
+      data-inverted={(!status && props.inverted) || undefined}
+      data-testid={dataTestId}
+    >
       {/* Trailing space so the status isn't announced as one word with the label. */}
       {announced && <span className={visuallyHidden}>{announced} </span>}
       {icon && <span className={badgeIcon}>{icon}</span>}

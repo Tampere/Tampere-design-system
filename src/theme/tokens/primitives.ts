@@ -78,8 +78,12 @@ const colors = {
     '900': '#1e1e22',
     white: '#ffffff',
     black: '#000000',
+    // Figma's "Gray/Warm" and "Gray/Dark". Warm-toned, so neither has a
+    // stand-in on the cool ramp above — '700' is only a lightness match for
+    // `neutral['700']`, not a hue one.
     warm: {
       '100': '#f1eeeb',
+      '700': '#3f3e3e',
     },
   },
 } as const;
