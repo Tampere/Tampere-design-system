@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import cx from 'clsx';
 import { CloseIcon } from '../../icons/CloseIcon.tsx';
 import { IconButton } from '../IconButton/IconButton.tsx';
@@ -23,6 +24,26 @@ export const FileList = ({
   className,
   ...props
 }: FileListProps) => {
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  // A ref, not state: it only needs to survive until the effect below reads
+  // it after the owner's re-render — reading/clearing it shouldn't itself
+  // trigger a render.
+  const pendingFocusIndex = useRef<number | null>(null);
+
+  // Runs after the owner has re-rendered with the row gone: rows below the
+  // removed one have shifted up, so the button now at `pendingFocusIndex` is
+  // the *next* row; falling back one index lands on the *previous* row when
+  // the removed row was last. If neither exists the list is now empty — with
+  // no button left here to focus, FileList (stateless, no picker Button of
+  // its own) leaves that case to the owner.
+  useEffect(() => {
+    const index = pendingFocusIndex.current;
+    if (index === null) return;
+    const target = buttonRefs.current[index] ?? buttonRefs.current[index - 1];
+    target?.focus();
+    pendingFocusIndex.current = null;
+  }, [files]);
+
   if (files.length === 0) return null;
 
   return (
@@ -31,11 +52,17 @@ export const FileList = ({
         <li key={`${file.name}-${file.size}-${file.lastModified}`} className={row}>
           <span className={nameStyle}>{file.name}</span>
           <IconButton
+            ref={(el: HTMLButtonElement | null) => {
+              buttonRefs.current[index] = el;
+            }}
             size="sm"
             variant="default"
             disabled={disabled}
             aria-label={`${removeLabel}: ${file.name}`}
-            onClick={() => onRemove(index)}
+            onClick={() => {
+              pendingFocusIndex.current = index;
+              onRemove(index);
+            }}
           >
             <CloseIcon />
           </IconButton>

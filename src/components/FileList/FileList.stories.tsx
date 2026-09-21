@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
@@ -77,6 +78,42 @@ export const Disabled: Story = {
     for (const button of buttons) {
       await expect(button).toBeDisabled();
     }
+  },
+};
+
+/** Actually removes on click — the plain `args.files`/`fn()` stories don't
+ * re-render, so a focus-after-removal assertion needs a real owner. */
+const RemovableHarness = ({ initial }: { initial: File[] }) => {
+  const [files, setFiles] = useState(initial);
+  return (
+    <FileList
+      files={files}
+      onRemove={(index) => setFiles((f) => f.filter((_, i) => i !== index))}
+    />
+  );
+};
+
+export const RemovingMiddleRowFocusesNextRow: Story = {
+  render: () => (
+    <RemovableHarness initial={[makeFile('a.pdf'), makeFile('b.pdf'), makeFile('c.pdf')]} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Poista tiedosto: b.pdf' }));
+
+    await expect(canvas.getByRole('button', { name: 'Poista tiedosto: c.pdf' })).toHaveFocus();
+  },
+};
+
+export const RemovingLastRowFocusesPreviousRow: Story = {
+  render: () => (
+    <RemovableHarness initial={[makeFile('a.pdf'), makeFile('b.pdf'), makeFile('c.pdf')]} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Poista tiedosto: c.pdf' }));
+
+    await expect(canvas.getByRole('button', { name: 'Poista tiedosto: b.pdf' })).toHaveFocus();
   },
 };
 
