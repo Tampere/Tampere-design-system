@@ -42,6 +42,19 @@ export interface ValidateFilesResult {
 }
 
 /**
+ * The cap on how many files may be selected: `maxFiles` only applies in
+ * multi-file mode, where `undefined` means no cap at all. Single-file mode is
+ * always 1, whatever `maxFiles` says.
+ */
+const effectiveLimit = ({
+  multiple,
+  maxFiles,
+}: {
+  multiple?: boolean;
+  maxFiles?: number;
+}): number | undefined => (multiple ? maxFiles : 1);
+
+/**
  * Validates a batch of picked or dropped files in a fixed order — type, then
  * size, then remaining capacity — and returns both outcomes in one pass. Used
  * for the picker path and the drop path alike, so the two cannot disagree.
@@ -55,7 +68,7 @@ export const validateFiles = (
 
   // Single-file mode replaces the selection, so nothing already selected
   // occupies capacity; multi-file mode fills the remaining slots.
-  const limit = multiple ? maxFiles : 1;
+  const limit = effectiveLimit({ multiple, maxFiles });
   const alreadyUsed = multiple ? existing.length : 0;
 
   incoming.forEach((file) => {
@@ -129,8 +142,14 @@ export const deriveRejectionMessage = (
       return maxSize === undefined
         ? 'Tiedosto on liian suuri'
         : `Tiedosto on liian suuri (enintään ${formatFileSize(maxSize)})`;
-    case 'count':
-      return `Voit valita enintään ${multiple ? (maxFiles ?? 1) : 1} tiedostoa`;
+    case 'count': {
+      // Reached only when validateFiles found a limit, so this is never undefined.
+      const limit = effectiveLimit({ multiple, maxFiles }) ?? 1;
+      // Finnish count agreement: genitive for exactly one, partitive above it.
+      return limit === 1
+        ? 'Voit valita enintään yhden tiedoston'
+        : `Voit valita enintään ${limit} tiedostoa`;
+    }
     default:
       return undefined;
   }

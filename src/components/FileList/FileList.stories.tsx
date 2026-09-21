@@ -214,7 +214,7 @@ export const ValidationRules: Story = {
     ).toBe('Voit valita enintään 3 tiedostoa');
     await expect(
       deriveRejectionMessage([{ file: makeFile('a'), reason: 'count' }], { multiple: false })
-    ).toBe('Voit valita enintään 1 tiedostoa');
+    ).toBe('Voit valita enintään yhden tiedoston');
   },
 };
 
