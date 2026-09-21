@@ -45,13 +45,12 @@ export const FileInput = ({
 }: FileInputProps) => {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
-  // Input.Wrapper's own `describedBy`/`aria-invalid` wiring only reaches
-  // Mantine `Input` descendants via InputWrapperProvider context — our
-  // composed control (a div/span/Button) doesn't consume it, so nothing gets
-  // associated automatically. Mirror Input.Wrapper's own id scheme (read
-  // straight from its source: `${idBase}-label`, `${idBase}-description`,
-  // `${idBase}-error`, where idBase is the `id` we pass it below) and wire
-  // the picker Button explicitly instead.
+  // Input.Wrapper's `describedBy` reaches Mantine `Input` descendants through
+  // InputWrapperProvider context, which our composed control (a div/span/Button)
+  // doesn't consume — and `aria-invalid` isn't on that context at all, so even a
+  // real `Input` derives it from its own `error` prop. Mirror Input.Wrapper's id
+  // scheme (`${idBase}-label`, `${idBase}-description`, `${idBase}-error`, where
+  // idBase is the `id` we pass it below) and wire the picker Button explicitly.
   const labelId = `${fieldId}-label`;
   const descriptionId = `${fieldId}-description`;
   const errorId = `${fieldId}-error`;

@@ -381,9 +381,8 @@ export function getTheme(bp: BreakpointKey) {
       // deliberately NOT `bpTokens.spacing.lg`, which drops to 24 below 1024.
       spacing: primitives.spacing['4'],
       // Not designed in Figma — derived from existing tokens pending design input.
-      // See docs/superpowers/specs/2026-09-09-file-inputs-design.md ("Gaps in the
-      // design"). Replace these two with real variables once the drag states are
-      // drawn; do not treat them as Figma-backed.
+      // Replace these two with real variables once the drag states are drawn;
+      // do not treat them as Figma-backed.
       dragOver: { border: states.hover, background: colors.neutral['50'] },
       dragReject: { border: states.error, title: states.error },
     },
