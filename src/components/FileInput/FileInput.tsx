@@ -65,10 +65,6 @@ export const FileInput = ({
   // reference instead.
   const ariaLabelId = `${fieldId}-aria-label`;
   const usesAriaLabel = !inputLabel && !!ariaLabel;
-  // `labelId`/`ariaLabelId` reference real DOM nodes only in their
-  // respective cases above; when neither applies (no `inputLabel` and no
-  // `aria-label`), the Button's accessible name falls back to its own
-  // visible text alone via `buttonTextId`.
   const nameSourceId = inputLabel ? labelId : usesAriaLabel ? ariaLabelId : undefined;
 
   // Reset the hidden input after every pick so re-selecting the exact same
@@ -133,8 +129,13 @@ export const FileInput = ({
         <FileButton
           resetRef={resetRef}
           onChange={(picked) => {
-            addFiles(toFileArray(picked));
-            resetRef.current?.();
+            // A throwing consumer onChange must not skip the reset — the
+            // input would keep the picked file and never fire `change` again.
+            try {
+              addFiles(toFileArray(picked));
+            } finally {
+              resetRef.current?.();
+            }
           }}
           multiple={multiple}
           accept={accept}
@@ -148,27 +149,16 @@ export const FileInput = ({
             <Button
               {...fileButtonProps}
               id={fieldId}
-              // Referencing the label plus this button's own visible text
-              // keeps the accessible name "<label> <button text>" instead of
-              // replacing it outright. The second reference has to be a
-              // *separate* element (`buttonTextId` below, not the button's
-              // own id) — the accessible-name algorithm skips a
-              // self-referencing aria-labelledby entry (it's already the node
-              // being named, so recursing into it again is treated as a
-              // cycle and contributes nothing), confirmed empirically: a
-              // trial with `${labelId} ${fieldId}` here produced the
-              // accessible name "Liitetiedostot" alone, silently dropping the button
-              // text. The label's own `for` (Input.Wrapper always points it
-              // at `fieldId`) still targets this Button via its `id`, so
-              // clicking the label activates the picker too.
-              //
-              // Without `inputLabel`, `labelId` doesn't exist in the DOM
-              // (Input.Wrapper renders no `<label>` at all) and a browser
-              // simply skips a missing aria-labelledby reference — so this
-              // falls back to `ariaLabelId` (the visually-hidden span above,
-              // present only when a consumer `aria-label` was actually
-              // supplied) instead, keeping the same "<label> <button text>"
-              // shape either way.
+              // Referencing the label plus this button's own visible text keeps
+              // the accessible name "<label> <button text>" instead of replacing
+              // it. The second reference must be a *separate* element
+              // (`buttonTextId`, not this button's id): the accessible-name
+              // algorithm treats a self-reference as a cycle and contributes
+              // nothing, silently dropping the button's text. The label's own
+              // `for` still targets this Button via `id`, so clicking the label
+              // opens the picker. Without `inputLabel`, `labelId` isn't in the
+              // DOM and browsers skip the missing reference, falling back to
+              // `ariaLabelId` or to the button's text alone.
               aria-labelledby={[nameSourceId, buttonTextId].filter(Boolean).join(' ')}
               aria-describedby={describedBy || undefined}
               aria-invalid={message ? true : undefined}

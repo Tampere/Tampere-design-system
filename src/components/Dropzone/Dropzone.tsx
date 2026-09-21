@@ -115,10 +115,8 @@ export const Dropzone = ({
   // visible text alone via `buttonTextId`.
   const nameSourceId = inputLabel ? labelId : usesAriaLabel ? ariaLabelId : undefined;
 
-  // Reset the hidden input after every pick so re-selecting the exact same
-  // file fires `change` again — browsers don't fire it when the FileList a
-  // dialog returns is unchanged from the input's current value, which
-  // otherwise silently no-ops re-picking a file the user just removed.
+  // Reset the hidden input after every pick so re-selecting the same file
+  // fires `change` again — see FileInput.tsx.
   const resetRef = useRef<() => void>(null);
 
   // `data-testid` isn't part of InputHTMLAttributes' declared type, so it
@@ -234,19 +232,20 @@ export const Dropzone = ({
           <FileButton
             resetRef={resetRef}
             onChange={(picked) => {
-              addFiles(toFileArray(picked));
-              resetRef.current?.();
+              // A throwing consumer onChange must not skip the reset — the
+              // input would keep the picked file and never fire `change` again.
+              try {
+                addFiles(toFileArray(picked));
+              } finally {
+                resetRef.current?.();
+              }
             }}
             multiple={multiple}
             accept={accept}
             disabled={disabled}
-            // FileButton's `disabled` only guards its own onClick handler — it
-            // does not disable the native input it renders. Set the attribute
-            // directly so the real focus/pick path is actually disabled too.
-            // The `data-testid` gives tests an unambiguous handle on this
-            // input specifically — MantineDropzone renders its own separate
-            // (inert here) hidden input too, so a bare `input[type="file"]`
-            // selector is ambiguous between the two.
+            // See FileInput.tsx for why `disabled` must also be set on inputProps.
+            // The data-testid disambiguates this input from MantineDropzone's own
+            // hidden (and here inert) one.
             inputProps={fileInputProps}
           >
             {(fileButtonProps) => (
@@ -268,18 +267,15 @@ export const Dropzone = ({
               </Button>
             )}
           </FileButton>
-          {/* role="status" so a screen reader hears the selection change
-              passively; also referenced via aria-describedby above so it's
-              announced when the Button itself receives focus. */}
+          {/* Announced passively on change and via the Button's aria-describedby
+              on focus — see FileInput.tsx. */}
           <span role="status" id={statusId} className={statusStyle[status]}>
             {getStatusText({ files, multiple, placeholder, selectedCountLabel })}
           </span>
         </div>
       </MantineDropzone>
-      {/* Renders whenever a file is selected, single-file mode included: in
-          single-file mode the status line shows the filename but has no
-          remove affordance of its own, so the row's ✕ is the only way to
-          clear the selection rather than merely overwrite it. */}
+      {/* Rendered in single-file mode too: the row's ✕ is the only way to clear
+          rather than overwrite a selection — see FileInput.tsx. */}
       <FileList files={files} onRemove={removeFile} removeLabel={removeLabel} disabled={disabled} />
     </Input.Wrapper>
   );
