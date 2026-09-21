@@ -57,12 +57,12 @@ export const FileInput = ({
   const statusId = `${fieldId}-status`;
   const buttonTextId = `${fieldId}-button-label`;
   // Input.Wrapper renders no `<label>` at all when `inputLabel` is unset, so
-  // `labelId` above wouldn't reference anything real — and the AriaAttributes
-  // spread means a bare `aria-label` on Input.Wrapper would land on its
-  // role-less wrapper `<div>`, which takes no accessible name from it. Pull
-  // `aria-label` out of the spread (above) and, when there's no `inputLabel`
-  // to fall back to, park its text in a visually-hidden span the Button's
-  // own `aria-labelledby` can reference instead.
+  // `labelId` above wouldn't reference anything real — and an `aria-label`
+  // left in the spread would land on Input.Wrapper's role-less wrapper
+  // `<div>`, which takes no accessible name from it. Pull `aria-label` out of
+  // the spread (above) and, when there's no `inputLabel` to fall back to, park
+  // its text in a visually-hidden span the Button's own `aria-labelledby` can
+  // reference instead.
   const ariaLabelId = `${fieldId}-aria-label`;
   const usesAriaLabel = !inputLabel && !!ariaLabel;
   // `labelId`/`ariaLabelId` reference real DOM nodes only in their

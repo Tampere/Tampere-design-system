@@ -1,4 +1,4 @@
-import type { AriaAttributes, CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 export type FileRejectionReason = 'type' | 'size' | 'count';
 
@@ -15,7 +15,7 @@ export interface FileRejection {
  * native input's value, so a native multipart submit would post an empty
  * field regardless. Read the selection through `onChange` instead.
  */
-export interface FileSelectionProps extends AriaAttributes {
+export interface FileSelectionProps {
   /** Explicit id for the field. Falls back to a generated id. */
   id?: string;
   className?: string;
@@ -28,6 +28,14 @@ export interface FileSelectionProps extends AriaAttributes {
    * role of its own to take a name from. Ignored when `inputLabel` is set.
    */
   inputLabel?: string;
+  /**
+   * Accessible name when there is no `inputLabel`. Deliberately the only
+   * `aria-*` prop: every other one would land on the role-less wrapper `<div>`
+   * and do nothing, since the interactive element is the picker Button several
+   * levels down. Unlike TextField/TextArea, whose spread reaches a real
+   * `<input>`, this control composes its own ARIA — see FileInput.tsx.
+   */
+  'aria-label'?: string;
   helperText?: ReactNode;
   /** Consumer-level error (e.g. an upload failure). Takes precedence over any derived rejection message. */
   error?: string;
