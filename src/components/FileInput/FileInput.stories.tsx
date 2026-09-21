@@ -334,16 +334,23 @@ const ControlledHarness = ({ initial = [] as File[] }) => {
 };
 
 export const ControlledValueFlowsThroughTheComponent: Story = {
-  render: () => <ControlledHarness />,
+  render: () => <ControlledHarness initial={[makeFile('alku.pdf')]} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    injectFiles(hiddenInput(canvasElement), [makeFile('a.pdf')]);
-    // Proves the component forwards `value`/`onChange` into useFileSelection —
-    // the hook's own controlled branch is covered separately in FileList.
+
+    // Rendered straight from `value` on mount with nothing injected: the
+    // uncontrolled fallback starts empty, so this is absent unless the
+    // component really forwards `value` into useFileSelection.
+    await expect(canvas.getByText('alku.pdf')).toBeInTheDocument();
+    await expect(canvas.getByTestId('controlled-count')).toHaveTextContent('1');
+
+    // And the round trip back: in controlled mode the owner's state is the
+    // only thing that can change what renders.
+    injectFiles(hiddenInput(canvasElement), [makeFile('lisatty.pdf')]);
     await waitFor(() => {
-      expect(canvas.getByTestId('controlled-count')).toHaveTextContent('1');
+      expect(canvas.getByTestId('controlled-count')).toHaveTextContent('2');
     });
-    await expect(canvas.getByText('a.pdf')).toBeInTheDocument();
+    await expect(canvas.getByText('lisatty.pdf')).toBeInTheDocument();
   },
 };
 
