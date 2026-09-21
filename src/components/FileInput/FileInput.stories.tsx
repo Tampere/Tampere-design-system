@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, userEvent } from '@storybook/testing-library';
+import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fireEvent, fn } from 'storybook/test';
 import { FileInput } from './FileInput';
 
@@ -319,5 +320,47 @@ export const ReselectingTheSameFileAfterRemovalReappears: Story = {
     // silently fail to come back.
     await userEvent.upload(hiddenInput(canvasElement), file);
     await expect(canvas.getByRole('status')).toHaveTextContent('hakemus.pdf');
+  },
+};
+
+const ControlledHarness = ({ initial = [] as File[] }) => {
+  const [files, setFiles] = useState<File[]>(initial);
+  return (
+    <>
+      <FileInput inputLabel="Liitetiedostot" value={files} onChange={setFiles} multiple />
+      <output data-testid="controlled-count">{files.length}</output>
+    </>
+  );
+};
+
+export const ControlledValueFlowsThroughTheComponent: Story = {
+  render: () => <ControlledHarness />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [makeFile('a.pdf')]);
+    // Proves the component forwards `value`/`onChange` into useFileSelection —
+    // the hook's own controlled branch is covered separately in FileList.
+    await waitFor(() => {
+      expect(canvas.getByTestId('controlled-count')).toHaveTextContent('1');
+    });
+    await expect(canvas.getByText('a.pdf')).toBeInTheDocument();
+  },
+};
+
+export const MaxFilesCapsTheSelection: Story = {
+  args: { multiple: true, maxFiles: 2, onReject: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [
+      makeFile('a.pdf'),
+      makeFile('b.pdf'),
+      makeFile('c.pdf'),
+    ]);
+    await waitFor(() => {
+      expect(canvas.getByText('Voit valita enintään 2 tiedostoa')).toBeInTheDocument();
+    });
+    await expect(canvas.getByText('a.pdf')).toBeInTheDocument();
+    await expect(canvas.getByText('b.pdf')).toBeInTheDocument();
+    await expect(canvas.queryByText('c.pdf')).not.toBeInTheDocument();
   },
 };

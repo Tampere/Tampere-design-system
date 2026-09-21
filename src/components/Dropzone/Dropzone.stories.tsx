@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fireEvent, fn } from 'storybook/test';
@@ -461,5 +462,97 @@ export const AreaGapsMatchFigma: Story = {
       // Components/Input/Padding/Vertical, rendered here as a gap.
       expect(gapBetween(button, statusLine)).toBeCloseTo(16, 0);
     });
+  },
+};
+
+export const ConsumerErrorWinsOverRejection: Story = {
+  args: { accept: 'application/pdf', error: 'Lataus epäonnistui', onReject: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [makeFile('kuva.png', 'image/png')]);
+    // The rejection fires, but the consumer's own error owns the single slot.
+    await waitFor(() => {
+      expect(canvas.getByText('Lataus epäonnistui')).toBeInTheDocument();
+    });
+    await expect(canvas.queryByText('Tiedostomuotoa ei tueta')).not.toBeInTheDocument();
+  },
+};
+
+export const RejectsOversizeFile: Story = {
+  args: { maxSize: 512 * 1024, onReject: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [makeFile('iso.pdf', 'application/pdf', 600 * 1024)]);
+    await waitFor(() => {
+      expect(canvas.getByText('Tiedosto on liian suuri (enintään 512 kB)')).toBeInTheDocument();
+    });
+  },
+};
+
+export const ReselectingTheSameFileAfterRemovalReappears: Story = {
+  args: { onChange: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const file = makeFile('sopimus.pdf');
+
+    await userEvent.upload(hiddenInput(canvasElement), file);
+    await waitFor(() => {
+      expect(canvas.getByRole('status')).toHaveTextContent('sopimus.pdf');
+    });
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Poista tiedosto: sopimus.pdf' }));
+    await waitFor(() => {
+      expect(canvas.getByText('Ei valittua tiedostoa')).toBeInTheDocument();
+    });
+
+    // Re-picking the exact same File: without the resetRef call the hidden
+    // input still holds it, so the browser fires no `change` and the re-pick
+    // silently no-ops.
+    await userEvent.upload(hiddenInput(canvasElement), file);
+    await waitFor(() => {
+      expect(canvas.getByRole('status')).toHaveTextContent('sopimus.pdf');
+    });
+  },
+};
+
+const ControlledHarness = ({ initial = [] as File[] }) => {
+  const [files, setFiles] = useState<File[]>(initial);
+  return (
+    <>
+      <Dropzone inputLabel="Liitetiedostot" value={files} onChange={setFiles} multiple />
+      <output data-testid="controlled-count">{files.length}</output>
+    </>
+  );
+};
+
+export const ControlledValueFlowsThroughTheComponent: Story = {
+  render: () => <ControlledHarness />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [makeFile('a.pdf')]);
+    // Proves the component forwards `value`/`onChange` into useFileSelection —
+    // the hook's own controlled branch is covered separately in FileList.
+    await waitFor(() => {
+      expect(canvas.getByTestId('controlled-count')).toHaveTextContent('1');
+    });
+    await expect(canvas.getByText('a.pdf')).toBeInTheDocument();
+  },
+};
+
+export const MaxFilesCapsTheSelection: Story = {
+  args: { multiple: true, maxFiles: 2, onReject: fn() },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [
+      makeFile('a.pdf'),
+      makeFile('b.pdf'),
+      makeFile('c.pdf'),
+    ]);
+    await waitFor(() => {
+      expect(canvas.getByText('Voit valita enintään 2 tiedostoa')).toBeInTheDocument();
+    });
+    await expect(canvas.getByText('a.pdf')).toBeInTheDocument();
+    await expect(canvas.getByText('b.pdf')).toBeInTheDocument();
+    await expect(canvas.queryByText('c.pdf')).not.toBeInTheDocument();
   },
 };
