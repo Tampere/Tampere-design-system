@@ -418,6 +418,24 @@ export const ExtensionAcceptDrivesTheDragCue: Story = {
   },
 };
 
+export const PartiallyMappableAcceptStaysPermissive: Story = {
+  args: { accept: '.pdf,.md' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const area = canvas.getByTestId('dropzone-area');
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(makeFile('muistiinpanot.md', 'text/markdown'));
+
+    area.dispatchEvent(new DragEvent('dragenter', { bubbles: true, dataTransfer }));
+    // `.md` has no MIME mapping, so the cue can't be made accurate for this
+    // accept list — it must stay permissive rather than reject a file that
+    // `matchesAccept` will accept on drop.
+    await waitFor(() => {
+      expect(area).not.toHaveAttribute('data-reject', 'true');
+    });
+  },
+};
+
 /**
  * Measures the real rendered geometry rather than the declared CSS, because
  * the bug this guards against was invisible to a CSS reading: the flex column

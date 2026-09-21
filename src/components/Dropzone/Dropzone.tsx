@@ -13,7 +13,6 @@ import {
   useFileSelection,
 } from '../FileList/fileSelection.ts';
 import { description, errorMessage, label, visuallyHidden } from '../FileList/fieldChrome.css.ts';
-import { extensionMimeTypes } from '../FileList/extensionMimeTypes.ts';
 import type { FileSelectionProps } from '../FileList/types.ts';
 import {
   area,
@@ -23,6 +22,7 @@ import {
   status as statusStyle,
   title as titleStyle,
 } from './Dropzone.css.ts';
+import { extensionMimeTypes } from './extensionMimeTypes.ts';
 
 export interface DropzoneProps extends FileSelectionProps {
   /** Heading inside the drop area. */
@@ -34,21 +34,29 @@ export interface DropzoneProps extends FileSelectionProps {
  * (`.pdf`) can't join — and a dragged file exposes no filename to match it
  * against anyway. Translate known extensions to their MIME types so the drag
  * cue agrees with the drop; `useFileSelection` stays the authority on what is
- * actually accepted, extensions included. Returning `undefined` (every entry
- * unmappable) makes react-dropzone treat any dragged file as acceptable, so
- * the cue goes permissive rather than wrong in that last-resort case.
+ * actually accepted, extensions included. If any extension can't be mapped,
+ * return `undefined` for the whole list rather than the partial one: a
+ * partial map would show the reject cue for a file `useFileSelection` still
+ * accepts by filename on drop, silently blocking a valid action — the
+ * permissive fallback only risks a false accept, which ends in a clear error
+ * message instead.
  */
 const toMimeList = (accept?: string): string[] | undefined => {
   if (!accept) return undefined;
-  const mimeTypes = accept
+  const entries = accept
     .split(',')
     .map((entry) => entry.trim())
-    .filter(Boolean)
-    .flatMap((entry) => {
-      if (!entry.startsWith('.')) return [entry];
-      const mapped = extensionMimeTypes[entry.toLowerCase()];
-      return mapped ? [mapped] : [];
-    });
+    .filter(Boolean);
+  const mimeTypes: string[] = [];
+  for (const entry of entries) {
+    if (!entry.startsWith('.')) {
+      mimeTypes.push(entry);
+      continue;
+    }
+    const mapped = extensionMimeTypes[entry.toLowerCase()];
+    if (!mapped) return undefined;
+    mimeTypes.push(mapped);
+  }
   return mimeTypes.length > 0 ? [...new Set(mimeTypes)] : undefined;
 };
 
