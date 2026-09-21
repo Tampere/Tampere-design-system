@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fireEvent, fn } from 'storybook/test';
 import { Dropzone } from './Dropzone';
+import { extensionMimeTypes } from './extensionMimeTypes';
 
 const makeFile = (name: string, type = 'application/pdf', size = 1024) =>
   new File(['x'.repeat(size)], name, { type, lastModified: 1 });
@@ -561,5 +562,27 @@ export const MaxFilesCapsTheSelection: Story = {
     await expect(canvas.getByText('a.pdf')).toBeInTheDocument();
     await expect(canvas.getByText('b.pdf')).toBeInTheDocument();
     await expect(canvas.queryByText('c.pdf')).not.toBeInTheDocument();
+  },
+};
+
+export const ExtensionMimeTypesTableIsWellFormed: Story = {
+  play: async () => {
+    const entries = Object.entries(extensionMimeTypes);
+
+    for (const [extension, mimeType] of entries) {
+      // A typo dropping the leading dot or an uppercase letter would slip
+      // past the two mapping-lookup tests without this.
+      await expect(extension).toMatch(/^\.[a-z0-9]+$/);
+      await expect(mimeType).toMatch(/^[a-z0-9.+-]+\/[a-z0-9.+-]+$/);
+    }
+
+    // Known aliasing: both spellings of the same format must agree.
+    await expect(extensionMimeTypes['.jpg']).toBe(extensionMimeTypes['.jpeg']);
+    await expect(extensionMimeTypes['.jpg']).toBe('image/jpeg');
+
+    await expect(extensionMimeTypes['.pdf']).toBe('application/pdf');
+    await expect(extensionMimeTypes['.docx']).toBe(
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
   },
 };
