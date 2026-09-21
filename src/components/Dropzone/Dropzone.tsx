@@ -13,6 +13,7 @@ import {
   useFileSelection,
 } from '../FileList/fileSelection.ts';
 import { description, errorMessage, label, visuallyHidden } from '../FileList/fieldChrome.css.ts';
+import { extensionMimeTypes } from '../FileList/extensionMimeTypes.ts';
 import type { FileSelectionProps } from '../FileList/types.ts';
 import {
   area,
@@ -29,18 +30,26 @@ export interface DropzoneProps extends FileSelectionProps {
 }
 
 /**
- * Mantine's `accept` maps a string list onto react-dropzone's MIME map, so a
- * bare extension (`.pdf`) is meaningless there. Pass only MIME entries — this
- * drives Mantine's drag visuals only; `useFileSelection` remains the authority
- * on what is actually accepted, extensions included.
+ * Mantine maps `accept` onto react-dropzone's MIME map, which a bare extension
+ * (`.pdf`) can't join — and a dragged file exposes no filename to match it
+ * against anyway. Translate known extensions to their MIME types so the drag
+ * cue agrees with the drop; `useFileSelection` stays the authority on what is
+ * actually accepted, extensions included. Returning `undefined` (every entry
+ * unmappable) makes react-dropzone treat any dragged file as acceptable, so
+ * the cue goes permissive rather than wrong in that last-resort case.
  */
 const toMimeList = (accept?: string): string[] | undefined => {
   if (!accept) return undefined;
   const mimeTypes = accept
     .split(',')
     .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0 && !entry.startsWith('.'));
-  return mimeTypes.length > 0 ? mimeTypes : undefined;
+    .filter(Boolean)
+    .flatMap((entry) => {
+      if (!entry.startsWith('.')) return [entry];
+      const mapped = extensionMimeTypes[entry.toLowerCase()];
+      return mapped ? [mapped] : [];
+    });
+  return mimeTypes.length > 0 ? [...new Set(mimeTypes)] : undefined;
 };
 
 /**

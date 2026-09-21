@@ -391,6 +391,33 @@ export const MixedDropWithExtensionAcceptKeepsBothFiles: Story = {
   },
 };
 
+export const ExtensionAcceptDrivesTheDragCue: Story = {
+  args: { accept: '.pdf' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const area = canvas.getByTestId('dropzone-area');
+
+    // Dragging a PDF over a `.pdf`-only zone must read as accepted...
+    const accepted = new DataTransfer();
+    accepted.items.add(makeFile('drag.pdf'));
+    area.dispatchEvent(new DragEvent('dragenter', { bubbles: true, dataTransfer: accepted }));
+    await waitFor(() => {
+      expect(area).toHaveAttribute('data-accept', 'true');
+    });
+    area.dispatchEvent(new DragEvent('dragleave', { bubbles: true, dataTransfer: accepted }));
+
+    // ...and a PNG must read as rejected. Before the extension→MIME mapping,
+    // Mantine received no accept map at all and attr-accept returned true for
+    // everything, so this showed the accept cue for a file the drop rejects.
+    const rejected = new DataTransfer();
+    rejected.items.add(makeFile('drag.png', 'image/png'));
+    area.dispatchEvent(new DragEvent('dragenter', { bubbles: true, dataTransfer: rejected }));
+    await waitFor(() => {
+      expect(area).toHaveAttribute('data-reject', 'true');
+    });
+  },
+};
+
 /**
  * Measures the real rendered geometry rather than the declared CSS, because
  * the bug this guards against was invisible to a CSS reading: the flex column
