@@ -186,10 +186,11 @@ export const getStatusText = ({
 };
 
 /**
- * `FileButton`'s payload type collapses to `File | null` when `multiple` is a
- * runtime boolean rather than a literal, though it really hands back an array
- * when multiple is set. Normalises both shapes. Shared so `FileInput` and
- * `Dropzone` read the picker identically.
+ * `FileButton`'s payload type widens to `File | File[] | null` when `multiple`
+ * is a runtime boolean rather than a literal — TS can't pick a single branch
+ * of the conditional type, so every caller has to handle all three shapes.
+ * Normalises them. Shared so `FileInput` and `Dropzone` read the picker
+ * identically.
  */
 export const toFileArray = (picked: File[] | File | null): File[] => {
   if (!picked) return [];
