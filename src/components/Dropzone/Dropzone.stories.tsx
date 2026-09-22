@@ -438,6 +438,33 @@ export const PartiallyMappableAcceptStaysPermissive: Story = {
   },
 };
 
+// Captures console.error calls for the dev-warning test below — same
+// pattern as Paper.stories.tsx's WarnsOnInvalid* stories.
+let capturedConsoleErrors: string[] = [];
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  const original = console.error;
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+  };
+  return () => {
+    console.error = original;
+  };
+};
+
+export const WarnsInDevWhenAcceptHasAnUnmappableExtension: Story = {
+  // The drag cue silently falls back to accept-everything for an unmapped
+  // extension (see PartiallyMappableAcceptStaysPermissive) — that fallback
+  // must not also be silent to the developer who wrote the `accept` list.
+  args: { accept: '.pdf,.md' },
+  beforeEach: captureConsoleErrors,
+  play: async () => {
+    await waitFor(() =>
+      expect(capturedConsoleErrors.some((m) => /\.md/.test(m) && /MIME mapping/.test(m))).toBe(true)
+    );
+  },
+};
+
 /**
  * Measures the real rendered geometry rather than the declared CSS, because
  * the bug this guards against was invisible to a CSS reading: the flex column

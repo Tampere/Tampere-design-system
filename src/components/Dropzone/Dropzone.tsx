@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import { FileButton, Input } from '@mantine/core';
 import { Dropzone as MantineDropzone } from '@mantine/dropzone';
 import '@mantine/dropzone/styles.layer.css';
@@ -40,29 +40,40 @@ export interface DropzoneProps extends FileSelectionProps {
  * against anyway. Translate known extensions to their MIME types so the drag
  * cue agrees with the drop; `useFileSelection` stays the authority on what is
  * actually accepted, extensions included. If any extension can't be mapped,
- * return `undefined` for the whole list rather than the partial one: a
- * partial map would show the reject cue for a file `useFileSelection` still
- * accepts by filename on drop, silently blocking a valid action — the
- * permissive fallback only risks a false accept, which ends in a clear error
- * message instead.
+ * `mimeTypes` comes back `undefined` for the whole list rather than the
+ * partial one: a partial map would show the reject cue for a file
+ * `useFileSelection` still accepts by filename on drop, silently blocking a
+ * valid action — the permissive fallback only risks a false accept, which
+ * ends in a clear error message instead. `unmappedExtensions` lets the caller
+ * warn about that silent, dev-visible-only degradation.
  */
-const toMimeList = (accept?: string): string[] | undefined => {
-  if (!accept) return undefined;
+const toMimeList = (
+  accept?: string
+): { mimeTypes: string[] | undefined; unmappedExtensions: string[] } => {
+  if (!accept) return { mimeTypes: undefined, unmappedExtensions: [] };
   const entries = accept
     .split(',')
     .map((entry) => entry.trim())
     .filter(Boolean);
   const mimeTypes: string[] = [];
+  const unmappedExtensions: string[] = [];
   for (const entry of entries) {
     if (!entry.startsWith('.')) {
       mimeTypes.push(entry);
       continue;
     }
     const mapped = extensionMimeTypes[entry.toLowerCase()];
-    if (!mapped) return undefined;
+    if (!mapped) {
+      unmappedExtensions.push(entry);
+      continue;
+    }
     mimeTypes.push(mapped);
   }
-  return mimeTypes.length > 0 ? [...new Set(mimeTypes)] : undefined;
+  return {
+    mimeTypes:
+      unmappedExtensions.length === 0 && mimeTypes.length > 0 ? [...new Set(mimeTypes)] : undefined,
+    unmappedExtensions,
+  };
 };
 
 /**
@@ -127,6 +138,15 @@ export const Dropzone = ({
   // picker Button of its own, so it hands focus-return back here via
   // `onEmptied`.
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const { mimeTypes, unmappedExtensions } = useMemo(() => toMimeList(accept), [accept]);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production' || unmappedExtensions.length === 0) return;
+    console.error(
+      `Dropzone: \`accept\` extension(s) ${unmappedExtensions.join(', ')} have no known MIME mapping in extensionMimeTypes.ts — the drag-over cue will accept any file type instead of narrowing to these types.`
+    );
+  }, [unmappedExtensions]);
 
   // `data-testid` isn't part of InputHTMLAttributes' declared type, so it
   // has to reach `inputProps` through a variable rather than an inline
@@ -194,7 +214,7 @@ export const Dropzone = ({
         onDropAny={(accepted, rejections) =>
           addFiles([...accepted, ...rejections.map(({ file }) => file)])
         }
-        accept={toMimeList(accept)}
+        accept={mimeTypes}
         maxSize={maxSize}
         multiple={multiple}
         disabled={disabled}
