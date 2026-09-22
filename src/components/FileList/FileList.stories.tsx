@@ -12,7 +12,7 @@ import {
   useFileSelection,
   validateFiles,
   type UseFileSelectionOptions,
-} from './fileSelection';
+} from '../fileSelection/fileSelection';
 
 const makeFile = (name: string, type = 'application/pdf', size = 1024) =>
   new File(['x'.repeat(size)], name, { type, lastModified: 1 });

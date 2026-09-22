@@ -17,7 +17,7 @@ export { Chip, type ChipProps } from './Chip/Chip';
 export { Dropzone, type DropzoneProps } from './Dropzone/Dropzone';
 export { FileInput, type FileInputProps } from './FileInput/FileInput';
 export { FileList, type FileListProps } from './FileList/FileList';
-export type { FileRejection, FileRejectionReason, FileSelectionProps } from './FileList/types';
+export type { FileRejection, FileRejectionReason, FileSelectionProps } from './fileSelection/types';
 export { IconButton } from './IconButton/IconButton';
 export {
   LabeledIconButton,

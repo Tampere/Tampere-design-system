@@ -9,9 +9,14 @@ import {
   getStatusText,
   toFileArray,
   useFileSelection,
-} from '../FileList/fileSelection.ts';
-import { description, errorMessage, label, visuallyHidden } from '../FileList/fieldChrome.css.ts';
-import type { FileSelectionProps } from '../FileList/types.ts';
+} from '../fileSelection/fileSelection.ts';
+import {
+  description,
+  errorMessage,
+  label,
+  visuallyHidden,
+} from '../fileSelection/fieldChrome.css.ts';
+import type { FileSelectionProps } from '../fileSelection/types.ts';
 import { control, display, root, statusText } from './FileInput.css.ts';
 
 export type FileInputProps = FileSelectionProps;
