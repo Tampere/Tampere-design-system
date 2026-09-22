@@ -257,11 +257,13 @@ export const useFileSelection = ({
     });
 
     setRejections(rejected);
+    // Commit before notifying about rejections: a throwing onReject must not
+    // be able to abort the files this same batch already proved valid.
+    if (accepted.length > 0) {
+      // Single-file mode replaces; multi-file mode appends.
+      commit(multiple ? [...files, ...accepted] : accepted);
+    }
     if (rejected.length > 0) onReject?.(rejected);
-    if (accepted.length === 0) return;
-
-    // Single-file mode replaces; multi-file mode appends.
-    commit(multiple ? [...files, ...accepted] : accepted);
   };
 
   const removeFile = (index: number) => {

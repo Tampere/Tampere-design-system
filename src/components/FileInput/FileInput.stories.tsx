@@ -386,3 +386,31 @@ export const MaxFilesCapsTheSelection: Story = {
     await expect(canvas.queryByText('c.pdf')).not.toBeInTheDocument();
   },
 };
+
+let mixedBatchCallOrder: string[] = [];
+
+export const AcceptedFilesCommitBeforeOnRejectFires: Story = {
+  // onReject firing before commit would mean a throwing consumer onReject
+  // could abort addFiles before the already-validated accepted files are
+  // ever committed. Assert the order directly rather than by throwing —
+  // a real throw here would propagate out of the native `change` event with
+  // nothing left to catch it, which is exactly the bug being guarded against.
+  args: {
+    multiple: true,
+    accept: 'application/pdf',
+    onChange: () => mixedBatchCallOrder.push('onChange'),
+    onReject: () => mixedBatchCallOrder.push('onReject'),
+  },
+  play: async ({ canvasElement }) => {
+    mixedBatchCallOrder = [];
+    const canvas = within(canvasElement);
+    injectFiles(hiddenInput(canvasElement), [
+      makeFile('ok.pdf'),
+      makeFile('bad.exe', 'application/x-msdownload'),
+    ]);
+    await waitFor(() => {
+      expect(canvas.getByText('ok.pdf')).toBeInTheDocument();
+    });
+    await expect(mixedBatchCallOrder).toEqual(['onChange', 'onReject']);
+  },
+};
