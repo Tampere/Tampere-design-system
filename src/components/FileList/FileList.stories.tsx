@@ -6,6 +6,7 @@ import { FileList } from './FileList';
 import {
   defaultSelectedCountLabel,
   deriveRejectionMessage,
+  getFieldStatus,
   getStatusText,
   matchesAccept,
   toFileArray,
@@ -165,6 +166,15 @@ export const ValidationRules: Story = {
     await expect(sizeResult.accepted).toHaveLength(0);
     await expect(sizeResult.rejections[0].reason).toBe('size');
 
+    // --- validateFiles: a file exactly at maxSize is accepted (> not >=)
+    const sizeBoundaryResult = validateFiles([makeFile('exact.pdf', 'application/pdf', 1024)], {
+      maxSize: 1024,
+      multiple: true,
+      existing: [],
+    });
+    await expect(sizeBoundaryResult.accepted).toHaveLength(1);
+    await expect(sizeBoundaryResult.rejections).toHaveLength(0);
+
     // --- validateFiles: capacity, counting files already selected
     const countResult = validateFiles([makeFile('b.pdf'), makeFile('c.pdf')], {
       maxFiles: 2,
@@ -259,6 +269,11 @@ export const ValidationRules: Story = {
     await expect(
       deriveRejectionMessage([{ file: makeFile('a'), reason: 'count' }], { multiple: false })
     ).toBe('Voit valita enintään yhden tiedoston');
+
+    // --- getFieldStatus: a consumer error always wins over disabled
+    await expect(getFieldStatus(true, true)).toBe('error');
+    await expect(getFieldStatus(false, true)).toBe('disabled');
+    await expect(getFieldStatus(false, false)).toBe('default');
   },
 };
 
@@ -348,9 +363,14 @@ export const HookUncontrolled: Story = {
     await expect(canvas.getByTestId('count')).toHaveTextContent('1');
     await expect(canvas.getByText('added.pdf')).toBeInTheDocument();
 
-    // Removal drops the row and clears any stale message.
+    // A later rejection leaves a stale message...
+    await userEvent.click(canvas.getByRole('button', { name: 'add bad' }));
+    await expect(canvas.getByTestId('message')).toHaveTextContent('Tiedostomuotoa ei tueta');
+
+    // ...that removing an existing file must clear too, not only a later pick.
     await userEvent.click(canvas.getByRole('button', { name: /Poista tiedosto/ }));
     await expect(canvas.getByTestId('count')).toHaveTextContent('0');
+    await expect(canvas.getByTestId('message')).toHaveTextContent('');
   },
 };
 

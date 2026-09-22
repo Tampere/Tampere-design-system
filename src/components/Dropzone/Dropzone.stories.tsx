@@ -517,6 +517,24 @@ export const RejectsOversizeFile: Story = {
   },
 };
 
+export const DroppingAnOversizeFileIsRejected: Story = {
+  // RejectsOversizeFile only exercises the picker path. MantineDropzone
+  // applies its own maxSize check on a drop before useFileSelection ever
+  // sees the file — an architecturally different path that needs its own
+  // cover rather than assuming the picker test proves both.
+  args: { maxSize: 512 * 1024, onReject: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await dropFiles(canvas.getByTestId('dropzone-area'), [
+      makeFile('iso.pdf', 'application/pdf', 600 * 1024),
+    ]);
+    await waitFor(() => {
+      expect(canvas.getByText('Tiedosto on liian suuri (enintään 512 kB)')).toBeInTheDocument();
+    });
+    await expect(args.onReject).toHaveBeenCalled();
+  },
+};
+
 export const ReselectingTheSameFileAfterRemovalReappears: Story = {
   args: { onChange: fn() },
   play: async ({ canvasElement }) => {
