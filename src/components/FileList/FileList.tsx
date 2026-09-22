@@ -13,6 +13,12 @@ export interface FileListProps {
   disabled?: boolean;
   className?: string;
   'data-testid'?: string;
+  /**
+   * Called when a removal leaves the list empty. FileList is stateless and
+   * has no picker Button of its own to return focus to — the owner takes
+   * over so a keyboard/SR user isn't dropped back to `<body>`.
+   */
+  onEmptied?: () => void;
 }
 
 /** Renders selected files as removable rows. Stateless — the owner holds the files. */
@@ -22,6 +28,7 @@ export const FileList = ({
   removeLabel = 'Poista tiedosto',
   disabled,
   className,
+  onEmptied,
   ...props
 }: FileListProps) => {
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -33,16 +40,20 @@ export const FileList = ({
   // Runs after the owner has re-rendered with the row gone: rows below the
   // removed one have shifted up, so the button now at `pendingFocusIndex` is
   // the *next* row; falling back one index lands on the *previous* row when
-  // the removed row was last. If neither exists the list is now empty — with
-  // no button left here to focus, FileList (stateless, no picker Button of
-  // its own) leaves that case to the owner.
+  // the removed row was last. If neither exists the list is now empty —
+  // FileList has no picker Button of its own to focus, so `onEmptied` hands
+  // that back to the owner.
   useEffect(() => {
     const index = pendingFocusIndex.current;
     if (index === null) return;
     const target = buttonRefs.current[index] ?? buttonRefs.current[index - 1];
-    target?.focus();
     pendingFocusIndex.current = null;
-  }, [files]);
+    if (target) {
+      target.focus();
+    } else {
+      onEmptied?.();
+    }
+  }, [files, onEmptied]);
 
   if (files.length === 0) return null;
 

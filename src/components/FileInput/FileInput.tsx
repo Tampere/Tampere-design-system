@@ -72,6 +72,10 @@ export const FileInput = ({
   // dialog returns is unchanged from the input's current value, which
   // otherwise silently no-ops re-picking a file the user just removed.
   const resetRef = useRef<() => void>(null);
+  // Emptying the list unmounts the row that had focus — FileList has no
+  // picker Button of its own, so it hands focus-return back here via
+  // `onEmptied`.
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const {
     files,
@@ -148,6 +152,7 @@ export const FileInput = ({
           {(fileButtonProps) => (
             <Button
               {...fileButtonProps}
+              ref={buttonRef}
               id={fieldId}
               // Referencing the label plus this button's own visible text keeps
               // the accessible name "<label> <button text>" instead of replacing
@@ -182,7 +187,13 @@ export const FileInput = ({
           single-file mode the status line shows the filename but has no
           remove affordance of its own, so the row's ✕ is the only way to
           clear the selection rather than merely overwrite it. */}
-      <FileList files={files} onRemove={removeFile} removeLabel={removeLabel} disabled={disabled} />
+      <FileList
+        files={files}
+        onRemove={removeFile}
+        removeLabel={removeLabel}
+        disabled={disabled}
+        onEmptied={() => buttonRef.current?.focus()}
+      />
     </Input.Wrapper>
   );
 };

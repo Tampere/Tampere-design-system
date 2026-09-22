@@ -516,6 +516,22 @@ export const ReselectingTheSameFileAfterRemovalReappears: Story = {
   },
 };
 
+export const RemovingTheOnlyFileReturnsFocusToThePicker: Story = {
+  args: { defaultValue: [makeFile('sopimus.pdf')] },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Poista tiedosto: sopimus.pdf' }));
+
+    await expect(canvas.queryByRole('listitem')).not.toBeInTheDocument();
+    // Same fix as FileInput's story of the same intent — FileList has no
+    // picker Button of its own to fall back to once the list is empty.
+    await expect(
+      canvas.getByRole('button', { name: 'Liitetiedostot Valitse tiedostoja' })
+    ).toHaveFocus();
+  },
+};
+
 export const ControlledValueIsClampedToOneFileWhenNotMultiple: Story = {
   // Same clamp as FileInput's story of the same name — the fix lives in the
   // shared useFileSelection hook, so both controls need the regression test.

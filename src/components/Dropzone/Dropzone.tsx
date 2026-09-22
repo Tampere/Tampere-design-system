@@ -118,6 +118,10 @@ export const Dropzone = ({
   // Reset the hidden input after every pick so re-selecting the same file
   // fires `change` again — see FileInput.tsx.
   const resetRef = useRef<() => void>(null);
+  // Emptying the list unmounts the row that had focus — FileList has no
+  // picker Button of its own, so it hands focus-return back here via
+  // `onEmptied`.
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // `data-testid` isn't part of InputHTMLAttributes' declared type, so it
   // has to reach `inputProps` through a variable rather than an inline
@@ -251,6 +255,7 @@ export const Dropzone = ({
             {(fileButtonProps) => (
               <Button
                 {...fileButtonProps}
+                ref={buttonRef}
                 id={fieldId}
                 // See FileInput.tsx for why the second reference must be a
                 // *separate* element (`buttonTextId`, not this button's own
@@ -276,7 +281,13 @@ export const Dropzone = ({
       </MantineDropzone>
       {/* Rendered in single-file mode too: the row's ✕ is the only way to clear
           rather than overwrite a selection — see FileInput.tsx. */}
-      <FileList files={files} onRemove={removeFile} removeLabel={removeLabel} disabled={disabled} />
+      <FileList
+        files={files}
+        onRemove={removeFile}
+        removeLabel={removeLabel}
+        disabled={disabled}
+        onEmptied={() => buttonRef.current?.focus()}
+      />
     </Input.Wrapper>
   );
 };

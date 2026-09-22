@@ -222,6 +222,11 @@ export const RemovingTheFileInSingleFileModeClearsStatus: Story = {
 
     await expect(canvas.getByText('Ei valittua tiedostoa')).toBeInTheDocument();
     await expect(canvas.queryByRole('listitem')).not.toBeInTheDocument();
+    // The row's own button was just unmounted — with nothing left in
+    // FileList to focus, focus must land back on the picker, not <body>.
+    await expect(
+      canvas.getByRole('button', { name: 'Liitetiedostot Valitse tiedostoja' })
+    ).toHaveFocus();
   },
 };
 
