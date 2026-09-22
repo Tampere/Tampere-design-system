@@ -15,6 +15,10 @@ export const matchesAccept = (file: File, accept?: string): boolean => {
     .filter(Boolean)
     .some((entry) => {
       if (entry.startsWith('.')) return file.name.toLowerCase().endsWith(entry);
+      // `*/*` means "everything" — `entry.slice(0, -1)` would otherwise
+      // produce the literal prefix "*/", which no real MIME type starts
+      // with, silently rejecting every file.
+      if (entry === '*/*') return true;
       if (entry.endsWith('/*')) return file.type.toLowerCase().startsWith(entry.slice(0, -1));
       return file.type.toLowerCase() === entry;
     });

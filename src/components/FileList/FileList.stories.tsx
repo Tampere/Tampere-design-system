@@ -135,6 +135,13 @@ export const ValidationRules: Story = {
     await expect(matchesAccept(makeFile('a.pdf', 'application/pdf'), 'application/pdf')).toBe(true);
     await expect(matchesAccept(makeFile('a.png', 'image/png'), 'image/*')).toBe(true);
     await expect(matchesAccept(makeFile('a.pdf', 'application/pdf'), 'image/*')).toBe(false);
+
+    // `*/*` is a valid native accept token meaning "everything" — the
+    // wildcard-prefix branch below it can never match this literal, so it
+    // needs its own case rather than falling through to that check.
+    await expect(matchesAccept(makeFile('a.pdf', 'application/pdf'), '*/*')).toBe(true);
+    await expect(matchesAccept(makeFile('a.png', 'image/png'), '*/*')).toBe(true);
+
     await expect(matchesAccept(makeFile('a.PDF', ''), '.pdf')).toBe(true);
     await expect(matchesAccept(makeFile('a.pdf', 'application/pdf'), '.doc, .pdf')).toBe(true);
 
