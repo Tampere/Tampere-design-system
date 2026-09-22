@@ -354,6 +354,21 @@ export const ControlledValueFlowsThroughTheComponent: Story = {
   },
 };
 
+export const ControlledValueIsClampedToOneFileWhenNotMultiple: Story = {
+  // A controlled `value` longer than 1 is representable even though
+  // single-file mode only supports one selection — clamp it the same way
+  // `addFiles` already clamps newly picked files, so the control can't show
+  // two removable rows while documented as single-file.
+  args: { value: [makeFile('a.pdf'), makeFile('b.pdf')] },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByRole('listitem')).toHaveLength(1);
+    const row = canvas.getByRole('listitem');
+    await expect(within(row).getByText('a.pdf')).toBeInTheDocument();
+    await expect(canvas.queryByText('b.pdf')).not.toBeInTheDocument();
+  },
+};
+
 export const MaxFilesCapsTheSelection: Story = {
   args: { multiple: true, maxFiles: 2, onReject: fn() },
   play: async ({ canvasElement }) => {

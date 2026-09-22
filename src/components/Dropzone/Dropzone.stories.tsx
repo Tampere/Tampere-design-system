@@ -516,6 +516,19 @@ export const ReselectingTheSameFileAfterRemovalReappears: Story = {
   },
 };
 
+export const ControlledValueIsClampedToOneFileWhenNotMultiple: Story = {
+  // Same clamp as FileInput's story of the same name — the fix lives in the
+  // shared useFileSelection hook, so both controls need the regression test.
+  args: { value: [makeFile('a.pdf'), makeFile('b.pdf')] },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByRole('listitem')).toHaveLength(1);
+    const row = canvas.getByRole('listitem');
+    await expect(within(row).getByText('a.pdf')).toBeInTheDocument();
+    await expect(canvas.queryByText('b.pdf')).not.toBeInTheDocument();
+  },
+};
+
 const ControlledHarness = ({ initial = [] as File[] }) => {
   const [files, setFiles] = useState<File[]>(initial);
   return (

@@ -223,11 +223,19 @@ export const useFileSelection = ({
   multiple,
   rejectionMessage,
 }: UseFileSelectionOptions) => {
-  const [internalFiles, setInternalFiles] = useState<File[]>(defaultValue ?? []);
+  // Single-file mode allows only one selection, but `value`/`defaultValue`
+  // are plain `File[]` — nothing at the type level stops a caller from
+  // passing more than one. Clamp both the controlled and uncontrolled path
+  // here, alongside `effectiveLimit`'s clamp of newly *added* files below,
+  // so a longer controlled `value` can't render two removable rows in a
+  // control documented as single-file.
+  const clampToLimit = (candidates: File[]) => (multiple ? candidates : candidates.slice(0, 1));
+
+  const [internalFiles, setInternalFiles] = useState<File[]>(clampToLimit(defaultValue ?? []));
   const [rejections, setRejections] = useState<FileRejection[]>([]);
 
   const isControlled = value !== undefined;
-  const files = isControlled ? value : internalFiles;
+  const files = isControlled ? clampToLimit(value) : internalFiles;
 
   // Callers must invoke addFiles/removeFile at most once per user event: `next`
   // is computed from the `files` of the current render, not via a state updater,
