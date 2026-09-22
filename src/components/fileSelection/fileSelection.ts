@@ -1,3 +1,5 @@
+// Tests for this file live in ../FileList/FileList.stories.tsx (a Storybook
+// story needs a component to render; FileList hosts the shared hook's tests).
 import { useState } from 'react';
 import type { FileRejection, FileRejectionReason } from './types.ts';
 

@@ -59,7 +59,7 @@ const toMimeList = (
   const unmappedExtensions: string[] = [];
   for (const entry of entries) {
     if (!entry.startsWith('.')) {
-      mimeTypes.push(entry);
+      mimeTypes.push(entry.toLowerCase());
       continue;
     }
     const mapped = extensionMimeTypes[entry.toLowerCase()];
