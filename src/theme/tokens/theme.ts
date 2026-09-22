@@ -38,6 +38,11 @@ const states = {
 // they only borrow the brand blue from `states` on hover/focus.
 const inputStates = { default: colors.neutral['600'] } as const;
 
+// Figma's Effects/Divider — shared by the semantic `divider` token below and
+// by components (e.g. dropzone) whose border is specified against that same
+// effect, so the two can't drift apart by editing only one of them.
+const divider = colors.neutral['200'];
+
 const selectionStates = {
   unchecked: {
     hover: colors.neutral['500'],
@@ -374,7 +379,7 @@ export function getTheme(bp: BreakpointKey) {
       // Figma: File drop zone, component set 6814:2770. Border is Effects/Divider
       // at Effects/Stroke/Weight/Default; padding is Spacing/2 Extra-large (64px)
       // vertically, Spacing/Medium (24px) horizontally.
-      border: colors.neutral['200'],
+      border: divider,
       padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xxl },
       // The drop area's own auto-layout gap (heading → picker). Figma binds the
       // raw `Spacing/4` primitive here, so it stays 32px at every breakpoint —
@@ -590,7 +595,7 @@ export function getTheme(bp: BreakpointKey) {
     error: colors.red['300'],
     focus,
     hover,
-    divider: colors.neutral['200'],
+    divider,
     cornerRadius,
     strokeWeight,
     minTouchTarget,
