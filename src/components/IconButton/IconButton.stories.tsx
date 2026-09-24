@@ -235,6 +235,10 @@ export const InvertedVariantFocusVisibleHasBackground: Story = {
     button.focus();
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
+    // The default focus ring's dark outline drops below WCAG 1.4.11/2.4.13's
+    // 3:1 contrast requirement on a coloured background — inverted must use
+    // the white outline (focus.visibleInverted) instead.
+    await expect(style.outlineColor).toBe('rgb(255, 255, 255)');
     // iconButtonBackground.inverted = iconButton.states.contrast.overlay =
     // rgba(255, 255, 255, 0.1) — exact match, not just "some color".
     await expect(style.backgroundColor).toBe('rgba(255, 255, 255, 0.1)');
