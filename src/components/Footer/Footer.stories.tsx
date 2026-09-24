@@ -6,6 +6,7 @@ import { TextLink } from '../TextLink/TextLink';
 import { Typography } from '../Typography/Typography';
 import { Footer, type FooterSocialLink } from './Footer';
 import {
+  backToTop,
   coatOfArms,
   column,
   legalLinks,
@@ -298,6 +299,85 @@ export const ColumnTextIsWhite: Story = {
     await expect(
       getComputedStyle(canvas.getByRole('link', { name: 'palvelupiste@esimerkki.example' })).color
     ).toBe(white);
+  },
+};
+
+const overlapsVertically = (a: Element, b: Element) => {
+  const first = a.getBoundingClientRect();
+  const second = b.getBoundingClientRect();
+  return first.top < second.bottom && second.top < first.bottom;
+};
+
+export const ResponsiveLayout: Story = {
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    (Story) => (
+      <div style={{ margin: '-3rem' }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => <Footer {...legal} columns={exampleColumns} socialLinks={socials} />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    const get = (className: string) => canvasElement.querySelector(`.${className}`) as HTMLElement;
+    const cases = [
+      // [viewport, columns on the first row, socials beside wordmark,
+      //  copyright beside coat of arms, links beside copyright, back-to-top beside links]
+      [2200, 3, true, true, true, true], // xxl (Figma 1920)
+      [1000, 3, true, true, false, true], // lg (Figma 1024)
+      [740, 2, true, true, false, false], // md (Figma 768)
+      [470, 1, false, true, false, false], // sm (Figma 480)
+      [300, 1, false, false, false, false], // xs (Figma 320)
+    ] as const;
+
+    try {
+      await document.fonts.ready;
+      for (const [
+        width,
+        firstRowColumns,
+        socialsBeside,
+        copyrightBeside,
+        linksBeside,
+        topBeside,
+      ] of cases) {
+        await page.viewport(width, 900);
+        const columnEls = [...canvasElement.querySelectorAll(`.${column}`)];
+        const onFirstRow = columnEls.filter((el) => overlapsVertically(el, columnEls[0])).length;
+        const copyrightEl = within(canvasElement).getByText(/^Copyright ©/);
+
+        await expect({ width, onFirstRow }).toEqual({ width, onFirstRow: firstRowColumns });
+        await expect({
+          width,
+          socials: overlapsVertically(get(wordmarkBox), get(socialLinks)),
+        }).toEqual({
+          width,
+          socials: socialsBeside,
+        });
+        await expect({
+          width,
+          copyright: overlapsVertically(get(coatOfArms), copyrightEl),
+        }).toEqual({
+          width,
+          copyright: copyrightBeside,
+        });
+        await expect({ width, links: overlapsVertically(copyrightEl, get(legalLinks)) }).toEqual({
+          width,
+          links: linksBeside,
+        });
+        await expect({ width, top: overlapsVertically(get(legalLinks), get(backToTop)) }).toEqual({
+          width,
+          top: topBeside,
+        });
+        // The wave and the 348px wordmark minimum overflow at 300; neither may scroll the page.
+        await expect({ width, scroll: document.documentElement.scrollWidth }).toEqual({
+          width,
+          scroll: width,
+        });
+      }
+    } finally {
+      await page.viewport(1280, 720);
+    }
   },
 };
 
