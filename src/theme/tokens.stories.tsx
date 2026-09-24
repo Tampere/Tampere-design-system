@@ -57,11 +57,11 @@ export const ResponsiveCssMatchesBreakpoint: Story = {
     const probe = document.createElement('div');
     document.body.appendChild(probe);
     probe.style.fontSize = vars.theme.components.typography.h1.fontSize;
-    probe.style.minWidth = vars.theme.components.footer.columnMinWidth;
+    probe.style.minWidth = vars.theme.components.footer.navigationMinWidth;
 
     try {
       // [viewport width comfortably inside the breakpoint's range, expected
-      // h1 font-size, expected footer column min-width] — widths are chosen
+      // h1 font-size, expected footer legal-links min-width] — widths are chosen
       // away from exact boundaries, which is a separate tie-break concern.
       const cases: Array<[number, string, string]> = [
         [300, '28px', '280px'], // xs
@@ -72,12 +72,12 @@ export const ResponsiveCssMatchesBreakpoint: Story = {
         [2200, '40px', '768px'], // xxl
       ];
 
-      for (const [width, expectedH1FontSize, expectedFooterMinWidth] of cases) {
+      for (const [width, expectedH1FontSize, expectedNavigationMinWidth] of cases) {
         await page.viewport(width, 800);
         // eslint-disable-next-line storybook/use-storybook-expect -- see import comment above
         await expect(getComputedStyle(probe).fontSize).toBe(expectedH1FontSize);
         // eslint-disable-next-line storybook/use-storybook-expect -- see import comment above
-        await expect(getComputedStyle(probe).minWidth).toBe(expectedFooterMinWidth);
+        await expect(getComputedStyle(probe).minWidth).toBe(expectedNavigationMinWidth);
       }
     } finally {
       probe.remove();

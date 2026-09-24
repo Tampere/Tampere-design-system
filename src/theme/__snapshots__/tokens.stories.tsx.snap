@@ -125,13 +125,43 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(42.5rem * var(--mantine-scale))",
+      "bottomBar": {
+        "columnGap": "calc(2rem * var(--mantine-scale))",
+        "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.75rem * var(--mantine-scale))",
+      "columnGap": "calc(1.5rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(42.5rem * var(--mantine-scale))",
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1.5rem * var(--mantine-scale))",
+        "verticalDense": "calc(1rem * var(--mantine-scale))",
         "verticalTop": "calc(4rem * var(--mantine-scale))",
       },
+      "socialLinksGap": "calc(1.5rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
       "spacing": "calc(2rem * var(--mantine-scale))",
+      "wave": {
+        "color": "#e5eef8",
+        "height": "calc(24.58125rem * var(--mantine-scale))",
+        "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+        "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+        "opacity": "0.3",
+        "width": "calc(29.39375rem * var(--mantine-scale))",
+      },
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
     },
     "forms": {
       "fieldset": {
@@ -550,13 +580,43 @@ exports[`Token Values Match Snapshot > md 1`] = `
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(34.375rem * var(--mantine-scale))",
-      "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+      "bottomBar": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(1rem * var(--mantine-scale))",
       },
-      "spacing": "calc(2rem * var(--mantine-scale))",
+      "brandRowGap": "calc(1rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.5rem * var(--mantine-scale))",
+      "columnGap": "calc(1rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(34.375rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+        "verticalTop": "calc(3rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
+      "wave": {
+        "color": "#e5eef8",
+        "height": "calc(24.58125rem * var(--mantine-scale))",
+        "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+        "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+        "opacity": "0.3",
+        "width": "calc(29.39375rem * var(--mantine-scale))",
+      },
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
     },
     "forms": {
       "fieldset": {
@@ -975,13 +1035,43 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(18.75rem * var(--mantine-scale))",
-      "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+      "bottomBar": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(1rem * var(--mantine-scale))",
       },
-      "spacing": "calc(2rem * var(--mantine-scale))",
+      "brandRowGap": "calc(1rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.25rem * var(--mantine-scale))",
+      "columnGap": "calc(0.75rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(18.75rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+        "verticalTop": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
+      "wave": {
+        "color": "#e5eef8",
+        "height": "calc(24.58125rem * var(--mantine-scale))",
+        "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+        "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+        "opacity": "0.3",
+        "width": "calc(29.39375rem * var(--mantine-scale))",
+      },
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
     },
     "forms": {
       "fieldset": {
@@ -1797,13 +1887,43 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       "footer": {
         "backgroundBottom": "#22437b",
         "backgroundTop": "#29549a",
-        "columnMinWidth": "calc(34.375rem * var(--mantine-scale))",
-        "padding": {
-          "horizontal": "calc(2rem * var(--mantine-scale))",
-          "verticalBottom": "calc(1rem * var(--mantine-scale))",
-          "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "bottomBar": {
+          "columnGap": "calc(1.5rem * var(--mantine-scale))",
+          "rowGap": "calc(1rem * var(--mantine-scale))",
         },
-        "spacing": "calc(2rem * var(--mantine-scale))",
+        "brandRowGap": "calc(1rem * var(--mantine-scale))",
+        "coatOfArmsHeight": "calc(1.5rem * var(--mantine-scale))",
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+        "contentMaxWidth": "1920px",
+        "legalLinks": {
+          "columnGap": "calc(1rem * var(--mantine-scale))",
+          "rowGap": "calc(0.5rem * var(--mantine-scale))",
+        },
+        "navigationMinWidth": "calc(34.375rem * var(--mantine-scale))",
+        "padding": {
+          "horizontal": "calc(1.5rem * var(--mantine-scale))",
+          "verticalBottom": "calc(1rem * var(--mantine-scale))",
+          "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+          "verticalTop": "calc(3rem * var(--mantine-scale))",
+        },
+        "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+        "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+        "spacing": "calc(1.5rem * var(--mantine-scale))",
+        "wave": {
+          "color": "#e5eef8",
+          "height": "calc(24.58125rem * var(--mantine-scale))",
+          "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+          "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+          "opacity": "0.3",
+          "width": "calc(29.39375rem * var(--mantine-scale))",
+        },
+        "wordmark": {
+          "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+          "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+          "inset": "calc(4rem * var(--mantine-scale))",
+          "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+        },
       },
       "forms": {
         "fieldset": {
@@ -2223,13 +2343,43 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(48rem * var(--mantine-scale))",
+      "bottomBar": {
+        "columnGap": "calc(2rem * var(--mantine-scale))",
+        "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(2rem * var(--mantine-scale))",
+      "columnGap": "calc(2rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(48rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1.5rem * var(--mantine-scale))",
+        "verticalDense": "calc(1rem * var(--mantine-scale))",
         "verticalTop": "calc(4rem * var(--mantine-scale))",
       },
+      "socialLinksGap": "calc(1.5rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
       "spacing": "calc(2rem * var(--mantine-scale))",
+      "wave": {
+        "color": "#e5eef8",
+        "height": "calc(24.58125rem * var(--mantine-scale))",
+        "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+        "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+        "opacity": "0.3",
+        "width": "calc(29.39375rem * var(--mantine-scale))",
+      },
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
     },
     "forms": {
       "fieldset": {
@@ -2648,13 +2798,43 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(17.5rem * var(--mantine-scale))",
-      "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+      "bottomBar": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(1rem * var(--mantine-scale))",
       },
-      "spacing": "calc(2rem * var(--mantine-scale))",
+      "brandRowGap": "calc(1rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.25rem * var(--mantine-scale))",
+      "columnGap": "calc(0.5rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(17.5rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+        "verticalTop": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
+      "wave": {
+        "color": "#e5eef8",
+        "height": "calc(24.58125rem * var(--mantine-scale))",
+        "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+        "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+        "opacity": "0.3",
+        "width": "calc(29.39375rem * var(--mantine-scale))",
+      },
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
     },
     "forms": {
       "fieldset": {
@@ -3073,13 +3253,43 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     "footer": {
       "backgroundBottom": "#22437b",
       "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(48rem * var(--mantine-scale))",
+      "bottomBar": {
+        "columnGap": "calc(2rem * var(--mantine-scale))",
+        "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(2rem * var(--mantine-scale))",
+      "columnGap": "calc(2rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(48rem * var(--mantine-scale))",
       "padding": {
         "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1.5rem * var(--mantine-scale))",
+        "verticalDense": "calc(1rem * var(--mantine-scale))",
         "verticalTop": "calc(4rem * var(--mantine-scale))",
       },
+      "socialLinksGap": "calc(1.5rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
       "spacing": "calc(2rem * var(--mantine-scale))",
+      "wave": {
+        "color": "#e5eef8",
+        "height": "calc(24.58125rem * var(--mantine-scale))",
+        "offsetBottom": "calc(0.150625rem * var(--mantine-scale))",
+        "offsetRight": "calc(0.23125rem * var(--mantine-scale))",
+        "opacity": "0.3",
+        "width": "calc(29.39375rem * var(--mantine-scale))",
+      },
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
     },
     "forms": {
       "fieldset": {

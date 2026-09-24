@@ -244,15 +244,43 @@ export function getTheme(bp: BreakpointKey) {
       },
     },
     footer: {
-      spacing: primitives.spacing['4'],
+      // Figma's footer auto-layout (Implement-Footer node 5870:41782) spaces every
+      // row with the shared per-breakpoint scales, so these follow them too.
+      spacing: bpTokens.spacing.lg,
       padding: {
-        horizontal: primitives.spacing['4'],
-        verticalBottom: primitives.spacing['2'],
-        verticalTop: primitives.spacing['8'],
+        horizontal: bpTokens.layout.margin,
+        verticalTop: bpTokens.spacing.xxl,
+        verticalBottom: bpTokens.spacing.md,
+        verticalDense: bpTokens.spacing.sm,
       },
+      columnGap: bpTokens.layout.gutter,
+      brandRowGap: bpTokens.spacing.md,
+      bottomBar: { columnGap: bpTokens.spacing.lg, rowGap: bpTokens.spacing.md },
+      legalLinks: { columnGap: bpTokens.spacing.md, rowGap: bpTokens.spacing.xs },
+      socialLinksGap: bpTokens.spacing.md,
       backgroundBottom: brand.blue.mainDark,
       backgroundTop: brand.blue.main,
-      columnMinWidth: bpTokens.footer.navigationMinWidth,
+      contentMaxWidth: breakpoint.xxl.appWidth,
+      columnMinWidth: rem('250px'),
+      // The legal-links row's minimum, not a column minimum: Figma's links row is
+      // exactly this wide at 1920 and 1024.
+      navigationMinWidth: bpTokens.footer.navigationMinWidth,
+      coatOfArmsHeight: bpTokens.appHeader.logo.secondaryLogoHeight,
+      wordmark: {
+        boxMinWidth: rem('348px'),
+        boxMaxWidth: rem('555px'),
+        inset: primitives.spacing['8'],
+        maxWidth: rem('350px'),
+      },
+      socialLinksMinWidth: rem('248px'),
+      wave: {
+        width: rem('470.3px'),
+        height: rem('393.3px'),
+        offsetRight: rem('3.7px'),
+        offsetBottom: rem('2.41px'),
+        color: primitives.colors.blue['100'],
+        opacity: '0.3',
+      },
     },
     button: {
       fontSize: bpTokens.typography.size.p2,
