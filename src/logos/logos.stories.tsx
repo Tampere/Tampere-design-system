@@ -80,3 +80,46 @@ export const TampereLogoViewBoxIsCroppedToInk: Story = {
   },
   tags: ['!dev', '!autodocs'],
 };
+
+export const TampereLogoLightVariantIsAllWhite: Story = {
+  render: () => <TampereLogo variant="light" />,
+  play: async ({ canvasElement }) => {
+    const fills = [...canvasElement.querySelectorAll('path')].map((path) =>
+      path.getAttribute('fill')
+    );
+    await expect(fills).toHaveLength(15);
+    await expect(new Set(fills)).toEqual(new Set(['white']));
+  },
+  tags: ['!dev', '!autodocs'],
+};
+
+export const TampereLogoDefaultsToColored: Story = {
+  render: () => <TampereLogo />,
+  play: async ({ canvasElement }) => {
+    const fills = [...canvasElement.querySelectorAll('path')].map((path) =>
+      path.getAttribute('fill')
+    );
+    await expect(new Set(fills)).toEqual(new Set(['#EB5E58', '#39A7D7']));
+  },
+  tags: ['!dev', '!autodocs'],
+};
+
+export const VaakunaWhiteAcceptsClassNameAndAria: Story = {
+  render: () => <TampereVaakunaWhite className="probe-class" aria-hidden="true" />,
+  play: async ({ canvasElement }) => {
+    // The footer sizes the coat of arms from a per-breakpoint height token.
+    const svg = canvasElement.querySelector('svg.probe-class');
+    await expect(svg).not.toBeNull();
+    await expect(svg).toHaveAttribute('aria-hidden', 'true');
+  },
+  tags: ['!dev', '!autodocs'],
+};
+
+export const TampereVaakunaWhiteViewBoxIsCroppedToInk: Story = {
+  render: () => <TampereVaakunaWhite />,
+  play: async ({ canvasElement }) => {
+    const svg = canvasElement.querySelector('svg') as SVGElement;
+    await expect(svg.getAttribute('viewBox')).toBe('0 0.34 158 40.53');
+  },
+  tags: ['!dev', '!autodocs'],
+};
