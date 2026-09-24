@@ -33,3 +33,12 @@ export function mergeClassNames<T extends ClassNamesRecord>(
 
   return mergeClasses(optionalClassNames);
 }
+
+/** Focuses `target`, first making it focusable if it isn't: a bare landmark, or
+ * one whose consumer forgot `tabIndex={-1}`. */
+export function moveFocusTo(target: HTMLElement) {
+  if (target.tabIndex < 0) {
+    target.setAttribute('tabindex', '-1');
+  }
+  target.focus();
+}

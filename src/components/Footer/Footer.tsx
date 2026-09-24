@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import { ArrowUpIcon } from '../../icons';
 import { TampereVaakunaWhite } from '../../logos/TampereVaakunaWhite';
 import { NavigationLink } from '../NavigationLink/NavigationLink';
+import { moveFocusTo } from '../../utils';
 import { FooterBrand } from './FooterBrand';
 import {
   backToTop,
@@ -65,7 +66,8 @@ export type FooterProps =
       showCoatOfArms?: boolean;
       /** Default true. */
       backToTop?: boolean;
-      /** Default '#top', the browser's built-in top-of-document target. */
+      /** Default '#top', the browser's built-in top-of-document target. Activating the
+       * link also moves keyboard focus to the target. */
       backToTopHref?: string;
       /** Default 'Sivun alkuun'. */
       backToTopLabel?: string;
@@ -75,6 +77,19 @@ export type FooterProps =
       /** Icon links beside the wordmark, in the given order. Shown only with `columns`. */
       socialLinks?: FooterSocialLink[];
     });
+
+// The browser scrolls to a fragment but leaves keyboard focus on the link, so the
+// next Tab would continue from the bottom of the page.
+function focusBackToTopTarget(event: MouseEvent<HTMLAnchorElement>) {
+  const href = event.currentTarget.getAttribute('href') ?? '';
+  if (!href.startsWith('#')) return;
+  const id = href.slice(1);
+  // Same fallback as the browser's own fragment lookup: an empty fragment or an
+  // unmatched `#top` means the start of the document.
+  const isDocumentTop = id === '' || id.toLowerCase() === 'top';
+  const target = document.getElementById(id) ?? (isDocumentTop ? document.body : null);
+  if (target) moveFocusTo(target);
+}
 
 export function Footer(props: FooterProps) {
   const {
@@ -127,6 +142,7 @@ export function Footer(props: FooterProps) {
                 href={defaultVariant.backToTopHref ?? '#top'}
                 variant="inverted"
                 endIcon={<ArrowUpIcon />}
+                onClick={focusBackToTopTarget}
               >
                 {defaultVariant.backToTopLabel ?? 'Sivun alkuun'}
               </NavigationLink>

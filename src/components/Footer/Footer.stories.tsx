@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within } from '@storybook/testing-library';
+import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { PhoneIcon } from '../../icons';
 import { NavigationLink } from '../NavigationLink/NavigationLink';
@@ -123,7 +123,8 @@ export const Default: Story = {
       description: {
         story:
           'Adds the coat of arms and a "Sivun alkuun" link (`#top` by default: the ' +
-          "browser's own top-of-document target, so no JS or id is needed). Mount " +
+          "browser's own top-of-document target, so no id is needed). Activating it also " +
+          'moves keyboard focus to the start of the page. Mount ' +
           '`Footer` directly under `<body>`, not inside `<main>`, `<article>`, `<aside>`, ' +
           '`<nav>` or `<section>`: only a top-level `<footer>` gets the `contentinfo` landmark.',
       },
@@ -190,6 +191,46 @@ export const BackToTopHrefAndLabelOverride: Story = {
       'href',
       '#sidans-borjan'
     );
+  },
+};
+
+// The preventDefault listeners stop the harness's own fragment navigation (it
+// crashes vitest browser mode); React's onClick still runs.
+export const BackToTopMovesFocusToPageStart: Story = {
+  render: () => (
+    <>
+      <a href="#ensimmainen">Ensimmäinen linkki</a>
+      <Footer {...legal} />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const backToTopLink = canvas.getByRole('link', { name: 'Sivun alkuun' });
+    backToTopLink.addEventListener('click', (event) => event.preventDefault());
+    await userEvent.click(backToTopLink);
+    await expect(document.activeElement).toBe(document.body);
+    // A real Tab: testing-library's simulated one doesn't start from a focused <body>.
+    const { userEvent: trustedUserEvent } = await import('vitest/browser');
+    await trustedUserEvent.keyboard('{Tab}');
+    await expect(document.activeElement).toBe(
+      canvas.getByRole('link', { name: 'Ensimmäinen linkki' })
+    );
+  },
+};
+
+export const BackToTopFocusesCustomTarget: Story = {
+  render: () => (
+    <>
+      <h1 id="alku">Alku</h1>
+      <Footer {...legal} backToTopHref="#alku" />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const backToTopLink = canvas.getByRole('link', { name: 'Sivun alkuun' });
+    backToTopLink.addEventListener('click', (event) => event.preventDefault());
+    await userEvent.click(backToTopLink);
+    await expect(document.activeElement).toBe(canvas.getByRole('heading', { name: 'Alku' }));
   },
 };
 

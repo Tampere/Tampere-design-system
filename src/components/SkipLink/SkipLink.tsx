@@ -1,5 +1,6 @@
 import type { MouseEvent, ReactNode } from 'react';
 import cx from 'clsx';
+import { moveFocusTo } from '../../utils';
 import { root } from './SkipLink.css';
 
 export interface SkipLinkProps {
@@ -32,12 +33,7 @@ export function SkipLink({
       }
       return;
     }
-    // No positive/zero tabIndex — not yet a valid focus target. Covers both a bare
-    // landmark (no tabindex at all) and a consumer who forgot tabIndex={-1}.
-    if (target.tabIndex < 0) {
-      target.setAttribute('tabindex', '-1');
-    }
-    target.focus();
+    moveFocusTo(target);
   };
 
   return (
