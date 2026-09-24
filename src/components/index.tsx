@@ -18,6 +18,13 @@ export { Dropzone, type DropzoneProps } from './Dropzone/Dropzone';
 export { FileInput, type FileInputProps } from './FileInput/FileInput';
 export { FileList, type FileListProps } from './FileList/FileList';
 export type { FileRejection, FileRejectionReason, FileSelectionProps } from './fileSelection/types';
+export {
+  Footer,
+  type FooterProps,
+  type FooterLink,
+  type FooterSocialLink,
+  type FooterSocialService,
+} from './Footer';
 export { IconButton } from './IconButton/IconButton';
 export {
   LabeledIconButton,
