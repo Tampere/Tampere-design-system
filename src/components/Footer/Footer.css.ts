@@ -130,7 +130,12 @@ export const columns = style({
   rowGap: footer.spacing,
 });
 
+// A column's direct children are its items (Figma's `.Info column`).
 export const column = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: footer.columnItemGap,
   flex: '1 1 0',
   // Capped at the row, same as legalLinks: below ~274px of available width the
   // uncapped minimum would be clipped by the top section's overflow:hidden.

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
@@ -33,49 +34,45 @@ const socials: FooterSocialLink[] = [
   { service: 'youtube', href: 'https://youtube.example/esimerkki' },
 ];
 
+// Each column's direct children are its items; Footer spaces them as Figma does.
 const exampleColumns = [
-  <div key="contact">
-    <Typography variant="subheader" component="h2">
-      Esimerkkipalvelu
-    </Typography>
-    <Typography variant="p1">
-      PL 123
-      <br />
-      00000 Esimerkkilä
-    </Typography>
-    <Typography variant="subheader" component="h3">
-      Vaihde
-    </Typography>
-    <NavigationLink href="tel:+35830000000" variant="inverted" startIcon={<PhoneIcon />}>
-      03 000 000
-    </NavigationLink>
-  </div>,
-  <div key="service-point">
+  <Fragment key="contact">
+    <div>
+      <Typography variant="subheader" component="h2">
+        Esimerkkipalvelu
+      </Typography>
+      <Typography variant="p1">
+        PL 123
+        <br />
+        00000 Esimerkkilä
+      </Typography>
+    </div>
+    <div>
+      <Typography variant="subheader" component="h3">
+        Vaihde
+      </Typography>
+      <NavigationLink href="tel:+35830000000" variant="inverted" startIcon={<PhoneIcon />}>
+        03 000 000
+      </NavigationLink>
+    </div>
+  </Fragment>,
+  <Fragment key="service-point">
     <Typography variant="subheader" component="h2">
       Palvelupiste
     </Typography>
-    {/* Both links are inline: each needs its own block to sit on its own line. */}
-    <div>
-      <TextLink href="mailto:palvelupiste@esimerkki.example">
-        palvelupiste@esimerkki.example
-      </TextLink>
-    </div>
-    <div>
-      <NavigationLink href="tel:+358410000000" variant="inverted" startIcon={<PhoneIcon />}>
-        041 000 0000
-      </NavigationLink>
-    </div>
+    <TextLink href="mailto:palvelupiste@esimerkki.example">palvelupiste@esimerkki.example</TextLink>
+    <NavigationLink href="tel:+358410000000" variant="inverted" startIcon={<PhoneIcon />}>
+      041 000 0000
+    </NavigationLink>
     <Typography variant="p1">ma–pe klo 9–16</Typography>
-  </div>,
-  <ul key="links" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+  </Fragment>,
+  <Fragment key="links">
     {['Organisaatio', 'Päättäjät ja päätökset', 'Talous', 'Strategia'].map((label) => (
-      <li key={label}>
-        <NavigationLink href={`#${label}`} variant="inverted">
-          {label}
-        </NavigationLink>
-      </li>
+      <NavigationLink key={label} href={`#${label}`} variant="inverted">
+        {label}
+      </NavigationLink>
     ))}
-  </ul>,
+  </Fragment>,
 ];
 
 const meta = {
@@ -432,5 +429,21 @@ export const ColumnsStayWithinTopSectionAtExtremeNarrowWidths: Story = {
     } finally {
       await page.viewport(1280, 720);
     }
+  },
+};
+
+export const ColumnItemsAreSpacedLikeFigma: Story = {
+  // Figma's column item gap is spacing.sm: 16px at the default 1280px (xl) viewport.
+  render: () => <Footer {...legal} columns={exampleColumns} />,
+  play: async ({ canvasElement }) => {
+    const lastColumn = [...canvasElement.querySelectorAll(`.${column}`)].at(-1) as HTMLElement;
+    const links = within(lastColumn).getAllByRole('link');
+    const gaps = links
+      .slice(1)
+      .map(
+        (link, index) =>
+          link.getBoundingClientRect().top - links[index].getBoundingClientRect().bottom
+      );
+    await expect(gaps).toEqual([16, 16, 16]);
   },
 };

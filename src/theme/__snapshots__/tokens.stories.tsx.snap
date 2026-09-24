@@ -132,6 +132,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
       "coatOfArmsHeight": "calc(1.75rem * var(--mantine-scale))",
       "columnGap": "calc(1.5rem * var(--mantine-scale))",
+      "columnItemGap": "calc(1rem * var(--mantine-scale))",
       "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
       "contentMaxWidth": "1920px",
       "legalLinks": {
@@ -579,6 +580,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "brandRowGap": "calc(1rem * var(--mantine-scale))",
       "coatOfArmsHeight": "calc(1.5rem * var(--mantine-scale))",
       "columnGap": "calc(1rem * var(--mantine-scale))",
+      "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
       "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
       "contentMaxWidth": "1920px",
       "legalLinks": {
@@ -1026,6 +1028,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "brandRowGap": "calc(1rem * var(--mantine-scale))",
       "coatOfArmsHeight": "calc(1.25rem * var(--mantine-scale))",
       "columnGap": "calc(0.75rem * var(--mantine-scale))",
+      "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
       "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
       "contentMaxWidth": "1920px",
       "legalLinks": {
@@ -1870,6 +1873,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "brandRowGap": "calc(1rem * var(--mantine-scale))",
         "coatOfArmsHeight": "calc(1.5rem * var(--mantine-scale))",
         "columnGap": "calc(1rem * var(--mantine-scale))",
+        "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
         "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
         "contentMaxWidth": "1920px",
         "legalLinks": {
@@ -2318,6 +2322,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
       "coatOfArmsHeight": "calc(2rem * var(--mantine-scale))",
       "columnGap": "calc(2rem * var(--mantine-scale))",
+      "columnItemGap": "calc(1rem * var(--mantine-scale))",
       "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
       "contentMaxWidth": "1920px",
       "legalLinks": {
@@ -2765,6 +2770,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "brandRowGap": "calc(1rem * var(--mantine-scale))",
       "coatOfArmsHeight": "calc(1.25rem * var(--mantine-scale))",
       "columnGap": "calc(0.5rem * var(--mantine-scale))",
+      "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
       "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
       "contentMaxWidth": "1920px",
       "legalLinks": {
@@ -3212,6 +3218,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
       "coatOfArmsHeight": "calc(2rem * var(--mantine-scale))",
       "columnGap": "calc(2rem * var(--mantine-scale))",
+      "columnItemGap": "calc(1rem * var(--mantine-scale))",
       "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
       "contentMaxWidth": "1920px",
       "legalLinks": {

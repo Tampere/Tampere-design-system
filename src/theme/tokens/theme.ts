@@ -262,6 +262,7 @@ export function getTheme(bp: BreakpointKey) {
       backgroundTop: brand.blue.main,
       contentMaxWidth: breakpoint.xxl.appWidth,
       columnMinWidth: rem('250px'),
+      columnItemGap: bpTokens.spacing.sm,
       // The legal-links row's minimum, not a column minimum: Figma's links row is
       // exactly this wide at 1920 and 1024.
       navigationMinWidth: bpTokens.footer.navigationMinWidth,
