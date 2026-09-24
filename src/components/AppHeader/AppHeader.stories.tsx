@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
@@ -10,11 +10,11 @@ import type { AppHeaderActionProps } from '../index';
 import { Paper } from '../Paper';
 import { SearchField } from '../SearchField';
 import { SkipLink } from '../SkipLink';
+import { Footer } from '../Footer';
 import { SearchIcon } from '../../icons/SearchIcon';
 import { UserIcon } from '../../icons/UserIcon';
 import { CartIcon } from '../../icons/CartIcon';
 import { iconWrapper as navigationLinkIconWrapper } from '../NavigationLink/NavigationLink.css';
-import { vars } from '../../theme';
 
 const navigation = [
   { label: 'Palvelut', href: '/palvelut' },
@@ -2351,16 +2351,6 @@ export const MenuDropdownSharesPaperDropShadowToken: StoryObj<typeof AppHeaderMe
   },
 };
 
-// Not a real Footer component — #60 (Footer) doesn't exist yet. Styled with
-// the already-defined-but-currently-unused footer tokens so it reads as
-// plausible rather than a bare gray box; swap for the real <Footer /> once
-// #60 ships.
-const placeholderFooterStyle: CSSProperties = {
-  backgroundColor: vars.theme.components.footer.backgroundBottom,
-  color: vars.theme.contrast,
-  padding: `${vars.theme.components.footer.padding.verticalBottom} ${vars.theme.components.footer.padding.horizontal}`,
-};
-
 export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
   tags: docExample,
   parameters: {
@@ -2374,7 +2364,7 @@ export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
           'SkipLink must be the very first element in the document for it to be the ' +
           "first tab stop; (2) the <main> landmark needs `tabIndex={-1}` — it isn't " +
           'natively focusable, so without it, activating the skip link would move focus ' +
-          "nowhere. (Footer here is a plain placeholder — #60 Footer doesn't exist yet.)",
+          'nowhere.',
       },
     },
   },
@@ -2385,7 +2375,12 @@ export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
       <main id="main-content" tabIndex={-1}>
         Sivun pääsisältö.
       </main>
-      <footer style={placeholderFooterStyle}>Alatunniste (placeholder, ks. #60)</footer>
+      <Footer
+        accessibilityStatement={{
+          label: 'Saavutettavuusseloste',
+          href: '#saavutettavuusseloste',
+        }}
+      />
     </>
   ),
   play: async ({ canvasElement }) => {
