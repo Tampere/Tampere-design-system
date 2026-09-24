@@ -11,6 +11,9 @@ import { Paper } from '../Paper';
 import { SearchField } from '../SearchField';
 import { SkipLink } from '../SkipLink';
 import { Footer } from '../Footer';
+import { TextLink } from '../TextLink';
+import { Typography } from '../Typography';
+import { vars } from '../../theme';
 import { SearchIcon } from '../../icons/SearchIcon';
 import { UserIcon } from '../../icons/UserIcon';
 import { CartIcon } from '../../icons/CartIcon';
@@ -2351,6 +2354,9 @@ export const MenuDropdownSharesPaperDropShadowToken: StoryObj<typeof AppHeaderMe
   },
 };
 
+// The header's own content edge, so the page content lines up under it.
+const pageMargin = vars.theme.components.appHeader.padding.horizontal;
+
 export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
   tags: docExample,
   parameters: {
@@ -2371,9 +2377,21 @@ export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
   render: () => (
     <>
       <SkipLink />
-      <AppHeader navAriaLabel="Päänavigaatio" siteName="Esimerkkisivusto" />
-      <main id="main-content" tabIndex={-1}>
-        Sivun pääsisältö.
+      <AppHeader navigation={navigation} navAriaLabel="Päänavigaatio" siteName="Esimerkkisivusto" />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        style={{ display: 'grid', gap: pageMargin, padding: pageMargin }}
+      >
+        <Typography variant="h1">Asiointi</Typography>
+        <Typography variant="p1">
+          Hoida asiasi verkossa, kun se sinulle parhaiten sopii. Useimmat palvelut ovat
+          käytettävissä ympäri vuorokauden.
+        </Typography>
+        <Typography variant="p1">
+          Jos et löydä etsimääsi, katso <TextLink href="#yhteystiedot">yhteystiedot</TextLink> ja
+          ota yhteyttä asiakaspalveluun.
+        </Typography>
       </main>
       <Footer
         accessibilityStatement={{
@@ -2391,9 +2409,14 @@ export const PageShellWithSkipLink: StoryObj<typeof AppHeader> = {
     await expect(canvas.getByRole('contentinfo')).not.toBeNull();
 
     // Not just presence — the whole point of the composition: activating the
-    // skip link inside a real AppHeader must still move focus to <main>.
+    // skip link inside a real AppHeader must still move focus to <main>, and
+    // the next Tab must land in the content, past the header's navigation.
     await userEvent.click(link);
     await expect(document.activeElement).toBe(canvas.getByRole('main'));
+    await userEvent.tab();
+    await expect(document.activeElement).toBe(
+      within(canvas.getByRole('main')).getAllByRole('link')[0]
+    );
   },
 };
 
