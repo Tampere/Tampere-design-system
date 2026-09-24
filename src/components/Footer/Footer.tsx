@@ -39,7 +39,8 @@ export interface FooterSocialLink {
 }
 
 interface FooterBaseProps {
-  /** Default: "Copyright © Tampereen kaupunki {current year}". */
+  /** Default: "Copyright © Tampereen kaupunki {current year}". Renders inside
+   * a `<p>`, so must be inline (phrasing) content. */
   copyrightText?: ReactNode;
   /** The legal links always render in Figma's order: cookies, accessibilityStatement,
    * privacy, terms, then `legalLinks`. */

@@ -391,6 +391,30 @@ export const ResponsiveLayout: Story = {
   },
 };
 
+export const ColumnsStayWithinTopSectionAtExtremeNarrowWidths: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Footer {...legal} columns={exampleColumns} socialLinks={socials} />,
+  play: async ({ canvasElement }) => {
+    const { page } = await import('@vitest/browser/context');
+    try {
+      // Narrower than xs's own row (320): the uncapped column minimum used to
+      // outgrow the section and get clipped by its overflow:hidden.
+      await page.viewport(260, 900);
+      await document.fonts.ready;
+      const topSectionEl = canvasElement.querySelector(`.${topSection}`) as HTMLElement;
+      const rightEdge =
+        topSectionEl.getBoundingClientRect().right -
+        parseFloat(getComputedStyle(topSectionEl).paddingRight);
+      const columnEls = [...canvasElement.querySelectorAll(`.${column}`)];
+      for (const el of columnEls) {
+        await expect(el.getBoundingClientRect().right).toBeLessThanOrEqual(rightEdge);
+      }
+    } finally {
+      await page.viewport(1280, 720);
+    }
+  },
+};
+
 export const WaveIsDecorative: Story = {
   render: () => <Footer {...legal} columns={exampleColumns} />,
   play: async ({ canvasElement }) => {

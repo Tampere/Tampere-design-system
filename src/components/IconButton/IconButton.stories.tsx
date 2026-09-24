@@ -244,9 +244,8 @@ export const InvertedVariantFocusVisibleHasBackground: Story = {
 export const InvertedAsAnchorHasWhiteIconColour: Story = {
   tags: ['!dev', '!autodocs'],
   // Rendered as `component="a"` with no explicit icon `fill` (e.g. Footer's
-  // social links): before the fix, `fill="currentColor"` resolved to the UA
-  // anchor-blue default instead of Figma's white, since no author rule set a
-  // rest-state colour on the root.
+  // social links): needs an explicit rest-state colour on the root, or
+  // `fill="currentColor"` resolves to the UA anchor-blue default instead of white.
   render: (args) => (
     <Box style={{ backgroundColor: vars.brand.blue.mainDark, width: 'fit-content' }}>
       <IconButton component="a" href="#search" size="md" {...args} variant="inverted">

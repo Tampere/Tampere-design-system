@@ -134,10 +134,11 @@ export const columns = style({
 
 export const column = style({
   flex: '1 1 0',
-  minWidth: footer.columnMinWidth,
-  // Figma's column text uses word-break: break-word — without it, long
-  // unbreakable strings (e.g. an email address) overflow the column and
-  // collide with its neighbour at narrow widths instead of wrapping.
+  // Capped at the row, same as legalLinks: below ~274px of available width the
+  // uncapped minimum would be clipped by the top section's overflow:hidden.
+  minWidth: `min(${footer.columnMinWidth}, 100%)`,
+  // Figma's column text uses word-break: break-word so long unbreakable strings
+  // (e.g. an email address) wrap instead of colliding with the next column.
   overflowWrap: 'anywhere',
 });
 

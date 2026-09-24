@@ -68,9 +68,7 @@ function stateBlock(background: string, color?: string) {
 // `inverted` gets an explicit rest-state colour: the icon's `fill="currentColor"`
 // otherwise inherits whatever `color` the root resolves to, and a `component="a"`
 // root with no author colour set falls back to the UA anchor-blue default
-// instead of white. `defaultVariant` is left alone — no production `<button>`
-// uses `variant="inverted"` today, so this can't change existing button
-// rendering.
+// instead of white.
 const inverted = stateBlock(iconButtonBackground.inverted, iconButtonForeground.inverted.default);
 const defaultVariant = stateBlock(iconButtonBackground.default);
 
