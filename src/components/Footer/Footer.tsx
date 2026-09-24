@@ -3,7 +3,6 @@ import { ArrowUpIcon } from '../../icons';
 import { TampereVaakunaWhite } from '../../logos/TampereVaakunaWhite';
 import { NavigationLink } from '../NavigationLink/NavigationLink';
 import { FooterBrand } from './FooterBrand';
-import { FooterWave } from './FooterWave';
 import {
   backToTop,
   bar,
@@ -14,7 +13,6 @@ import {
   copyright,
   legalLinks,
   topSection,
-  wave,
 } from './Footer.css';
 
 export interface FooterLink {
@@ -97,7 +95,6 @@ export function Footer(props: FooterProps) {
     <footer className={className}>
       {defaultVariant?.columns?.length ? (
         <div className={topSection}>
-          <FooterWave className={wave} />
           <FooterBrand socialLinks={defaultVariant.socialLinks} />
           <div className={columnsClass}>
             {defaultVariant.columns.map((content, index) => (

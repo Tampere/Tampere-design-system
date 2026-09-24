@@ -273,14 +273,6 @@ export function getTheme(bp: BreakpointKey) {
         maxWidth: rem('350px'),
       },
       socialLinksMinWidth: rem('248px'),
-      wave: {
-        width: rem('470.3px'),
-        height: rem('393.3px'),
-        offsetRight: rem('3.7px'),
-        offsetBottom: rem('2.41px'),
-        color: primitives.colors.blue['100'],
-        opacity: '0.3',
-      },
     },
     button: {
       fontSize: bpTokens.typography.size.p2,

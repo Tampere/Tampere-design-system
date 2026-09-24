@@ -13,7 +13,6 @@ const {
 } = vars;
 
 const row = {
-  position: 'relative',
   width: '100%',
   maxWidth: footer.contentMaxWidth,
   display: 'flex',
@@ -79,8 +78,7 @@ export const backToTop = style({
 });
 
 export const topSection = style({
-  position: 'relative',
-  // The fixed-size wave overflows the section on narrow screens (left edge at 320).
+  // The wordmark box's 348px minimum is wider than the row at the narrowest widths.
   overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
@@ -140,17 +138,6 @@ export const column = style({
   // Figma's column text uses word-break: break-word so long unbreakable strings
   // (e.g. an email address) wrap instead of colliding with the next column.
   overflowWrap: 'anywhere',
-});
-
-export const wave = style({
-  position: 'absolute',
-  right: footer.wave.offsetRight,
-  bottom: footer.wave.offsetBottom,
-  width: footer.wave.width,
-  height: footer.wave.height,
-  color: footer.wave.color,
-  opacity: footer.wave.opacity,
-  pointerEvents: 'none',
 });
 
 // Same allowlist inversion as Card.css.ts: Typography and TextLink set their own

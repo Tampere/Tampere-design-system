@@ -13,7 +13,6 @@ import {
   legalLinks,
   socialLinks,
   topSection,
-  wave,
   wordmarkBox,
 } from './Footer.css';
 
@@ -238,10 +237,9 @@ export const Extended: Story = {
     docs: {
       description: {
         story:
-          'Passing `columns` adds the section above the bar: the Tampere wordmark, ' +
-          'the social links and the decorative wave are built in; each column is ' +
-          'your own content. Typography and TextLink inside columns turn white ' +
-          'automatically. For phone numbers, use an inverted `NavigationLink` with a ' +
+          'Passing `columns` adds the section above the bar: the Tampere wordmark ' +
+          'and the social links are built in; each column is your own content. ' +
+          'Typography and TextLink inside columns turn white automatically. For phone numbers, use an inverted `NavigationLink` with a ' +
           '`tel:` href and `startIcon={<PhoneIcon />}`: no underline at rest, still one tap to call.',
       },
     },
@@ -396,7 +394,7 @@ export const ResponsiveLayout: Story = {
           width,
           top: topBeside,
         });
-        // The wave and the 348px wordmark minimum overflow at 300; neither may scroll the page.
+        // The 348px wordmark minimum overflows at 300; it must not scroll the page.
         await expect({ width, scroll: document.documentElement.scrollWidth }).toEqual({
           width,
           scroll: width,
@@ -434,23 +432,5 @@ export const ColumnsStayWithinTopSectionAtExtremeNarrowWidths: Story = {
     } finally {
       await page.viewport(1280, 720);
     }
-  },
-};
-
-export const WaveIsDecorative: Story = {
-  render: () => <Footer {...legal} columns={exampleColumns} />,
-  play: async ({ canvasElement }) => {
-    const waveSvg = canvasElement.querySelector(`.${wave}`) as SVGElement;
-    await expect(waveSvg).toHaveAttribute('aria-hidden', 'true');
-    await expect(getComputedStyle(waveSvg).pointerEvents).toBe('none');
-    // The last column sits over the wave (bottom-right); its links must be on top.
-    const lastColumn = [...canvasElement.querySelectorAll(`.${column}`)].at(-1) as HTMLElement;
-    const firstLink = within(lastColumn).getAllByRole('link')[0];
-    const rect = firstLink.getBoundingClientRect();
-    const waveRect = waveSvg.getBoundingClientRect();
-    // Guard: the check is meaningless if the two don't overlap at this viewport.
-    await expect(rect.right > waveRect.left && rect.bottom > waveRect.top).toBe(true);
-    const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    await expect(firstLink.contains(hit)).toBe(true);
   },
 };
