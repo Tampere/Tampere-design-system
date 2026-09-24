@@ -1,0 +1,114 @@
+import type { ReactNode } from 'react';
+import { ArrowUpIcon } from '../../icons';
+import { TampereVaakunaWhite } from '../../logos/TampereVaakunaWhite';
+import { NavigationLink } from '../NavigationLink/NavigationLink';
+import { backToTop, bar, barContent, coatOfArms, copyright, legalLinks } from './Footer.css';
+
+export interface FooterLink {
+  label: string;
+  href: string;
+}
+
+export type FooterSocialService =
+  | 'facebook'
+  | 'instagram'
+  | 'x'
+  | 'linkedin'
+  | 'bluesky'
+  | 'youtube'
+  | 'tiktok';
+
+export interface FooterSocialLink {
+  service: FooterSocialService;
+  href: string;
+  /** Accessible name. Default: the service's name, e.g. "Facebook". */
+  label?: string;
+}
+
+interface FooterBaseProps {
+  /** Default: "Copyright © Tampereen kaupunki {current year}". */
+  copyrightText?: ReactNode;
+  /** The legal links always render in Figma's order: cookies, accessibilityStatement,
+   * privacy, terms, then `legalLinks`. */
+  cookies?: FooterLink;
+  /** Required: the accessibility statement obligation (Act 306/2019) is unconditional. */
+  accessibilityStatement: FooterLink;
+  privacy?: FooterLink;
+  terms?: FooterLink;
+  /** Any further legal links, after the named ones, in the given order. */
+  legalLinks?: FooterLink[];
+  className?: string;
+}
+
+export type FooterProps =
+  | (FooterBaseProps & {
+      /** Copyright and legal links only (Figma "Dense"). */
+      variant: 'dense';
+    })
+  | (FooterBaseProps & {
+      /** Adds the coat of arms and back-to-top link; with `columns`, also the
+       * brand row and columns above the bar (Figma "Extended"). */
+      variant?: 'default';
+      /** Default true. */
+      showLogo?: boolean;
+      /** Default true. */
+      backToTop?: boolean;
+      /** Default '#top', the browser's built-in top-of-document target. */
+      backToTopHref?: string;
+      /** Default 'Sivun alkuun'. */
+      backToTopLabel?: string;
+      /** One entry per column. Footer only lays them out; Typography and TextLink
+       * inside are forced to white for the blue background. */
+      columns?: ReactNode[];
+      /** Icon links beside the wordmark, in the given order. Shown only with `columns`. */
+      socialLinks?: FooterSocialLink[];
+    });
+
+export function Footer(props: FooterProps) {
+  const {
+    copyrightText = `Copyright © Tampereen kaupunki ${new Date().getFullYear()}`,
+    cookies,
+    accessibilityStatement,
+    privacy,
+    terms,
+    legalLinks: extraLegalLinks = [],
+    className,
+  } = props;
+  const defaultVariant = props.variant === 'dense' ? null : props;
+  const links = [cookies, accessibilityStatement, privacy, terms, ...extraLegalLinks].filter(
+    (link): link is FooterLink => Boolean(link)
+  );
+
+  return (
+    <footer className={className}>
+      <div className={bar[defaultVariant ? 'default' : 'dense']}>
+        <div className={barContent}>
+          {defaultVariant && defaultVariant.showLogo !== false ? (
+            <TampereVaakunaWhite className={coatOfArms} aria-hidden="true" />
+          ) : null}
+          <p className={copyright}>{copyrightText}</p>
+          <ul className={legalLinks}>
+            {links.map((link) => (
+              <li key={`${link.href} ${link.label}`}>
+                <NavigationLink href={link.href} variant="inverted" size="sm">
+                  {link.label}
+                </NavigationLink>
+              </li>
+            ))}
+          </ul>
+          {defaultVariant && defaultVariant.backToTop !== false ? (
+            <div className={backToTop}>
+              <NavigationLink
+                href={defaultVariant.backToTopHref ?? '#top'}
+                variant="inverted"
+                endIcon={<ArrowUpIcon />}
+              >
+                {defaultVariant.backToTopLabel ?? 'Sivun alkuun'}
+              </NavigationLink>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </footer>
+  );
+}
