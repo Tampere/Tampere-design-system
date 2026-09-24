@@ -17,7 +17,7 @@ import {
   wordmarkBox,
 } from './Footer.css';
 
-// Fictional example content: real footer copy needs a legal/comms owner (#60).
+// Fictional example content: real footer copy needs a legal/comms owner.
 const legal = {
   cookies: { label: 'Evästeet', href: '#evasteet' },
   accessibilityStatement: { label: 'Saavutettavuusseloste', href: '#saavutettavuusseloste' },
@@ -34,7 +34,6 @@ const socials: FooterSocialLink[] = [
   { service: 'youtube', href: 'https://youtube.example/esimerkki' },
 ];
 
-// Each column's direct children are its items; Footer spaces them as Figma does.
 const exampleColumns = [
   <Fragment key="contact">
     <div>
@@ -174,8 +173,8 @@ export const OmittedNamedLegalLinksAreSkipped: Story = {
   },
 };
 
-export const LogoAndBackToTopCanBeHidden: Story = {
-  render: () => <Footer {...legal} showLogo={false} backToTop={false} />,
+export const CoatOfArmsAndBackToTopCanBeHidden: Story = {
+  render: () => <Footer {...legal} showCoatOfArms={false} backToTop={false} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvasElement.querySelector(`.${coatOfArms}`)).toBeNull();
@@ -213,7 +212,7 @@ export const CopyrightTextOverride: Story = {
   },
 };
 
-// Type-level tests: `npx tsc --noEmit` fails if either directive stops being needed.
+// Type-level tests: `npx tsc --noEmit` fails if any directive stops being needed.
 export const AccessibilityStatementIsRequired: Story = {
   render: () => (
     // @ts-expect-error — accessibilityStatement is required (Act 306/2019)
@@ -225,6 +224,20 @@ export const DenseRejectsDefaultOnlyProps: Story = {
   render: () => (
     // @ts-expect-error — backToTop exists only on the default variant
     <Footer variant="dense" backToTop {...legal} />
+  ),
+};
+
+export const DenseRejectsColumns: Story = {
+  render: () => (
+    // @ts-expect-error — columns exist only on the default variant
+    <Footer variant="dense" columns={[]} {...legal} />
+  ),
+};
+
+export const DenseRejectsSocialLinks: Story = {
+  render: () => (
+    // @ts-expect-error — socialLinks exist only on the default variant
+    <Footer variant="dense" socialLinks={[]} {...legal} />
   ),
 };
 
@@ -263,8 +276,7 @@ export const Extended: Story = {
       socials.map((s) => s.href)
     );
     await expect(links.every((link) => link.querySelector('svg'))).toBe(true);
-    // Figma shows white icons on the blue background — an `<a>` root has no
-    // ambient colour to inherit, so this catches the UA anchor-blue regression.
+    // Figma shows white icons on the blue background.
     await expect(links.every((link) => getComputedStyle(link).color === 'rgb(255, 255, 255)')).toBe(
       true
     );

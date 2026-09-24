@@ -62,7 +62,7 @@ export type FooterProps =
        * brand row and columns above the bar (Figma "Extended"). */
       variant?: 'default';
       /** Default true. */
-      showLogo?: boolean;
+      showCoatOfArms?: boolean;
       /** Default true. */
       backToTop?: boolean;
       /** Default '#top', the browser's built-in top-of-document target. */
@@ -108,7 +108,7 @@ export function Footer(props: FooterProps) {
       ) : null}
       <div className={bar[defaultVariant ? 'default' : 'dense']}>
         <div className={barContent}>
-          {defaultVariant && defaultVariant.showLogo !== false ? (
+          {defaultVariant && defaultVariant.showCoatOfArms !== false ? (
             <TampereVaakunaWhite className={coatOfArms} aria-hidden="true" />
           ) : null}
           <p className={copyright}>{copyrightText}</p>

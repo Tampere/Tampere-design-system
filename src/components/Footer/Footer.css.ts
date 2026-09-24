@@ -145,8 +145,8 @@ export const column = style({
   overflowWrap: 'anywhere',
 });
 
-// Same allowlist inversion as Card.css.ts: Typography and TextLink set their own
-// dark colours, which a parent colour can't override by inheritance.
+// Typography and TextLink set their own dark colours, which a parent colour
+// can't override by inheritance.
 const invertible = [...Object.values(typographyClasses), ...Object.values(link)];
 globalStyle(invertible.map((className) => `${column} .${className}`).join(', '), {
   color: `${contrast} !important`,
