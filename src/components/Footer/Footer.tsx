@@ -2,7 +2,20 @@ import type { ReactNode } from 'react';
 import { ArrowUpIcon } from '../../icons';
 import { TampereVaakunaWhite } from '../../logos/TampereVaakunaWhite';
 import { NavigationLink } from '../NavigationLink/NavigationLink';
-import { backToTop, bar, barContent, coatOfArms, copyright, legalLinks } from './Footer.css';
+import { FooterBrand } from './FooterBrand';
+import { FooterWave } from './FooterWave';
+import {
+  backToTop,
+  bar,
+  barContent,
+  coatOfArms,
+  column,
+  columns as columnsClass,
+  copyright,
+  legalLinks,
+  topSection,
+  wave,
+} from './Footer.css';
 
 export interface FooterLink {
   label: string;
@@ -81,6 +94,20 @@ export function Footer(props: FooterProps) {
 
   return (
     <footer className={className}>
+      {defaultVariant?.columns?.length ? (
+        <div className={topSection}>
+          <FooterWave className={wave} />
+          <FooterBrand socialLinks={defaultVariant.socialLinks} />
+          <div className={columnsClass}>
+            {defaultVariant.columns.map((content, index) => (
+              // Columns are positional and never reorder.
+              <div key={index} className={column}>
+                {content}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       <div className={bar[defaultVariant ? 'default' : 'dense']}>
         <div className={barContent}>
           {defaultVariant && defaultVariant.showLogo !== false ? (

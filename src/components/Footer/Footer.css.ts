@@ -1,10 +1,13 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '../../theme';
 import { breakpoint } from '../../theme/tokens/breakpoint';
+import { link } from '../TextLink/TextLink.css';
+import { typography as typographyClasses } from '../Typography/Typography.css';
 
 const {
   theme: {
     contrast,
+    focus,
     components: { footer, typography },
   },
 } = vars;
@@ -73,4 +76,84 @@ export const backToTop = style({
   '@media': {
     [`screen and (min-width: ${breakpoint.md.appWidth})`]: { flexBasis: 'auto' },
   },
+});
+
+export const topSection = style({
+  position: 'relative',
+  // The fixed-size wave overflows the section on narrow screens (left edge at 320).
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: footer.spacing,
+  padding: `${footer.padding.verticalTop} ${footer.padding.horizontal}`,
+  backgroundColor: footer.backgroundTop,
+  color: contrast,
+});
+
+export const brandRow = style({
+  ...row,
+  alignItems: 'flex-end',
+  columnGap: footer.columnGap,
+  rowGap: footer.brandRowGap,
+});
+
+// Figma's wordmark width at each breakpoint falls out of this box's min/max and
+// inset, not a per-breakpoint size (e.g. 224px at 768 but 320px at 480).
+export const wordmarkBox = style({
+  flex: '1 0 0',
+  minWidth: footer.wordmark.boxMinWidth,
+  maxWidth: footer.wordmark.boxMaxWidth,
+  paddingInline: footer.wordmark.inset,
+});
+
+export const wordmark = style({
+  display: 'block',
+  width: '100%',
+  maxWidth: footer.wordmark.maxWidth,
+  height: 'auto',
+});
+
+export const socialLinks = style({
+  flex: '1 0 0',
+  minWidth: footer.socialLinksMinWidth,
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: footer.socialLinksGap,
+  margin: 0,
+  padding: 0,
+  listStyle: 'none',
+});
+
+export const columns = style({
+  ...row,
+  columnGap: footer.columnGap,
+  rowGap: footer.spacing,
+});
+
+export const column = style({
+  flex: '1 1 0',
+  minWidth: footer.columnMinWidth,
+});
+
+export const wave = style({
+  position: 'absolute',
+  right: footer.wave.offsetRight,
+  bottom: footer.wave.offsetBottom,
+  width: footer.wave.width,
+  height: footer.wave.height,
+  color: footer.wave.color,
+  opacity: footer.wave.opacity,
+  pointerEvents: 'none',
+});
+
+// Same allowlist inversion as Card.css.ts: Typography and TextLink set their own
+// dark colours, which a parent colour can't override by inheritance.
+const invertible = [...Object.values(typographyClasses), ...Object.values(link)];
+globalStyle(invertible.map((className) => `${column} .${className}`).join(', '), {
+  color: `${contrast} !important`,
+});
+globalStyle(invertible.map((className) => `${column} .${className}:focus-visible`).join(', '), {
+  outlineColor: `${focus.visibleInverted} !important`,
 });

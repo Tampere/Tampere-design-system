@@ -1,8 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
-import { Footer } from './Footer';
-import { coatOfArms, legalLinks } from './Footer.css';
+import { NavigationLink } from '../NavigationLink/NavigationLink';
+import { TextLink } from '../TextLink/TextLink';
+import { Typography } from '../Typography/Typography';
+import { Footer, type FooterSocialLink } from './Footer';
+import {
+  coatOfArms,
+  column,
+  legalLinks,
+  socialLinks,
+  topSection,
+  wave,
+  wordmarkBox,
+} from './Footer.css';
 
 // Fictional example content: real footer copy needs a legal/comms owner (#60).
 const legal = {
@@ -11,6 +22,44 @@ const legal = {
   privacy: { label: 'Tietosuoja ja tiedonhallinta', href: '#tietosuoja' },
   terms: { label: 'Käyttöehdot', href: '#kayttoehdot' },
 };
+
+const socials: FooterSocialLink[] = [
+  { service: 'facebook', href: 'https://facebook.example/esimerkki' },
+  { service: 'instagram', href: 'https://instagram.example/esimerkki' },
+  { service: 'x', href: 'https://x.example/esimerkki' },
+  { service: 'linkedin', href: 'https://linkedin.example/esimerkki' },
+  { service: 'bluesky', href: 'https://bluesky.example/esimerkki' },
+  { service: 'youtube', href: 'https://youtube.example/esimerkki' },
+];
+
+const exampleColumns = [
+  <div key="contact">
+    <Typography variant="subheader" component="h2">
+      Esimerkkipalvelu
+    </Typography>
+    <Typography variant="p1">
+      PL 123
+      <br />
+      00000 Esimerkkilä
+    </Typography>
+  </div>,
+  <div key="service-point">
+    <Typography variant="subheader" component="h2">
+      Palvelupiste
+    </Typography>
+    <TextLink href="mailto:palvelupiste@esimerkki.example">palvelupiste@esimerkki.example</TextLink>
+    <Typography variant="p1">ma–pe klo 9–16</Typography>
+  </div>,
+  <ul key="links" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+    {['Organisaatio', 'Päättäjät ja päätökset', 'Talous', 'Strategia'].map((label) => (
+      <li key={label}>
+        <NavigationLink href={`#${label}`} variant="inverted">
+          {label}
+        </NavigationLink>
+      </li>
+    ))}
+  </ul>,
+];
 
 const meta = {
   component: Footer,
@@ -163,4 +212,109 @@ export const DenseRejectsDefaultOnlyProps: Story = {
     // @ts-expect-error — backToTop exists only on the default variant
     <Footer variant="dense" backToTop {...legal} />
   ),
+};
+
+export const Extended: Story = {
+  tags: docExample,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Passing `columns` adds the section above the bar: the Tampere wordmark, ' +
+          'the social links and the decorative wave are built in; each column is ' +
+          'your own content. Typography and TextLink inside columns turn white ' +
+          'automatically.',
+      },
+    },
+  },
+  render: () => <Footer {...legal} columns={exampleColumns} socialLinks={socials} />,
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector(`.${wordmarkBox} svg`)).not.toBeNull();
+    await expect(canvasElement.querySelectorAll(`.${column}`)).toHaveLength(3);
+    const socialList = canvasElement.querySelector(`.${socialLinks}`) as HTMLElement;
+    const links = within(socialList).getAllByRole('link');
+    await expect(links.map((link) => link.getAttribute('aria-label'))).toEqual([
+      'Facebook',
+      'Instagram',
+      'X',
+      'LinkedIn',
+      'Bluesky',
+      'YouTube',
+    ]);
+    await expect(links.map((link) => link.getAttribute('href'))).toEqual(
+      socials.map((s) => s.href)
+    );
+    await expect(links.every((link) => link.querySelector('svg'))).toBe(true);
+  },
+};
+
+export const SocialLinkCustomLabel: Story = {
+  render: () => (
+    <Footer
+      {...legal}
+      columns={exampleColumns}
+      socialLinks={[
+        {
+          service: 'tiktok',
+          href: 'https://tiktok.example/esimerkki',
+          label: 'Esimerkkipalvelu TikTokissa',
+        },
+      ]}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('link', { name: 'Esimerkkipalvelu TikTokissa' })).toHaveAttribute(
+      'href',
+      'https://tiktok.example/esimerkki'
+    );
+  },
+};
+
+export const NoSocialRowWhenEmpty: Story = {
+  render: () => <Footer {...legal} columns={exampleColumns} socialLinks={[]} />,
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector(`.${socialLinks}`)).toBeNull();
+    await expect(canvasElement.querySelector(`.${wordmarkBox}`)).not.toBeNull();
+  },
+};
+
+export const TopSectionNeedsColumns: Story = {
+  render: () => <Footer {...legal} socialLinks={socials} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvasElement.querySelector(`.${topSection}`)).toBeNull();
+    await expect(canvas.queryByRole('link', { name: 'Facebook' })).toBeNull();
+  },
+};
+
+export const ColumnTextIsWhite: Story = {
+  render: () => <Footer {...legal} columns={exampleColumns} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const white = 'rgb(255, 255, 255)';
+    await expect(getComputedStyle(canvas.getByText('Esimerkkipalvelu')).color).toBe(white);
+    await expect(getComputedStyle(canvas.getByText('ma–pe klo 9–16')).color).toBe(white);
+    await expect(
+      getComputedStyle(canvas.getByRole('link', { name: 'palvelupiste@esimerkki.example' })).color
+    ).toBe(white);
+  },
+};
+
+export const WaveIsDecorative: Story = {
+  render: () => <Footer {...legal} columns={exampleColumns} />,
+  play: async ({ canvasElement }) => {
+    const waveSvg = canvasElement.querySelector(`.${wave}`) as SVGElement;
+    await expect(waveSvg).toHaveAttribute('aria-hidden', 'true');
+    await expect(getComputedStyle(waveSvg).pointerEvents).toBe('none');
+    // The last column sits over the wave (bottom-right); its links must be on top.
+    const lastColumn = [...canvasElement.querySelectorAll(`.${column}`)].at(-1) as HTMLElement;
+    const firstLink = within(lastColumn).getAllByRole('link')[0];
+    const rect = firstLink.getBoundingClientRect();
+    const waveRect = waveSvg.getBoundingClientRect();
+    // Guard: the check is meaningless if the two don't overlap at this viewport.
+    await expect(rect.right > waveRect.left && rect.bottom > waveRect.top).toBe(true);
+    const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    await expect(firstLink.contains(hit)).toBe(true);
+  },
 };
