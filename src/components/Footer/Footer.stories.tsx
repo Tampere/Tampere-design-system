@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
+import { PhoneIcon } from '../../icons';
 import { NavigationLink } from '../NavigationLink/NavigationLink';
 import { TextLink } from '../TextLink/TextLink';
 import { Typography } from '../Typography/Typography';
@@ -43,12 +44,28 @@ const exampleColumns = [
       <br />
       00000 Esimerkkilä
     </Typography>
+    <Typography variant="subheader" component="h3">
+      Vaihde
+    </Typography>
+    <NavigationLink href="tel:+35830000000" variant="inverted" startIcon={<PhoneIcon />}>
+      03 000 000
+    </NavigationLink>
   </div>,
   <div key="service-point">
     <Typography variant="subheader" component="h2">
       Palvelupiste
     </Typography>
-    <TextLink href="mailto:palvelupiste@esimerkki.example">palvelupiste@esimerkki.example</TextLink>
+    {/* Both links are inline: each needs its own block to sit on its own line. */}
+    <div>
+      <TextLink href="mailto:palvelupiste@esimerkki.example">
+        palvelupiste@esimerkki.example
+      </TextLink>
+    </div>
+    <div>
+      <NavigationLink href="tel:+358410000000" variant="inverted" startIcon={<PhoneIcon />}>
+        041 000 0000
+      </NavigationLink>
+    </div>
     <Typography variant="p1">ma–pe klo 9–16</Typography>
   </div>,
   <ul key="links" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
@@ -224,7 +241,8 @@ export const Extended: Story = {
           'Passing `columns` adds the section above the bar: the Tampere wordmark, ' +
           'the social links and the decorative wave are built in; each column is ' +
           'your own content. Typography and TextLink inside columns turn white ' +
-          'automatically.',
+          'automatically. For phone numbers, use an inverted `NavigationLink` with a ' +
+          '`tel:` href and `startIcon={<PhoneIcon />}`: no underline at rest, still one tap to call.',
       },
     },
   },
@@ -232,6 +250,10 @@ export const Extended: Story = {
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector(`.${wordmarkBox} svg`)).not.toBeNull();
     await expect(canvasElement.querySelectorAll(`.${column}`)).toHaveLength(3);
+    const phone = within(canvasElement).getByRole('link', { name: '041 000 0000' });
+    await expect(phone).toHaveAttribute('href', 'tel:+358410000000');
+    await expect(phone.querySelector('svg')).not.toBeNull();
+    await expect(getComputedStyle(phone).color).toBe('rgb(255, 255, 255)');
     const socialList = canvasElement.querySelector(`.${socialLinks}`) as HTMLElement;
     const links = within(socialList).getAllByRole('link');
     await expect(links.map((link) => link.getAttribute('aria-label'))).toEqual([
