@@ -241,6 +241,26 @@ export const InvertedVariantFocusVisibleHasBackground: Story = {
   },
 };
 
+export const InvertedAsAnchorHasWhiteIconColour: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Rendered as `component="a"` with no explicit icon `fill` (e.g. Footer's
+  // social links): before the fix, `fill="currentColor"` resolved to the UA
+  // anchor-blue default instead of Figma's white, since no author rule set a
+  // rest-state colour on the root.
+  render: (args) => (
+    <Box style={{ backgroundColor: vars.brand.blue.mainDark, width: 'fit-content' }}>
+      <IconButton component="a" href="#search" size="md" {...args} variant="inverted">
+        <SearchIcon />
+      </IconButton>
+    </Box>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Search' });
+    await expect(getComputedStyle(link).color).toBe('rgb(255, 255, 255)');
+  },
+};
+
 export const DisabledDoesNotShowHoverBackground: Story = {
   tags: ['!dev', '!autodocs'],
   // A disabled <button> still matches the CSS `:hover` pseudo-class in this

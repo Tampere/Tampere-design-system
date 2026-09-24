@@ -135,6 +135,10 @@ export const columns = style({
 export const column = style({
   flex: '1 1 0',
   minWidth: footer.columnMinWidth,
+  // Figma's column text uses word-break: break-word — without it, long
+  // unbreakable strings (e.g. an email address) overflow the column and
+  // collide with its neighbour at narrow widths instead of wrapping.
+  overflowWrap: 'anywhere',
 });
 
 export const wave = style({

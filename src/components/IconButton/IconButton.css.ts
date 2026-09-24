@@ -53,8 +53,9 @@ globalStyle(`${root}[data-size="xl"] svg`, {
   height: icon.size.extraLarge,
 });
 
-function stateBlock(background: string) {
+function stateBlock(background: string, color?: string) {
   return style({
+    ...(color ? { color } : {}),
     selectors: {
       '&:hover': { background },
       '&:focus-visible': { background, borderRadius: cornerRadius, ...focusRing },
@@ -64,7 +65,13 @@ function stateBlock(background: string) {
   });
 }
 
-const inverted = stateBlock(iconButtonBackground.inverted);
+// `inverted` gets an explicit rest-state colour: the icon's `fill="currentColor"`
+// otherwise inherits whatever `color` the root resolves to, and a `component="a"`
+// root with no author colour set falls back to the UA anchor-blue default
+// instead of white. `defaultVariant` is left alone — no production `<button>`
+// uses `variant="inverted"` today, so this can't change existing button
+// rendering.
+const inverted = stateBlock(iconButtonBackground.inverted, iconButtonForeground.inverted.default);
 const defaultVariant = stateBlock(iconButtonBackground.default);
 
 globalStyle(`${inverted}:hover svg path`, { fill: iconButtonForeground.inverted.hover });

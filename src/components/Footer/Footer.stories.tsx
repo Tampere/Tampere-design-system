@@ -246,6 +246,11 @@ export const Extended: Story = {
       socials.map((s) => s.href)
     );
     await expect(links.every((link) => link.querySelector('svg'))).toBe(true);
+    // Figma shows white icons on the blue background — an `<a>` root has no
+    // ambient colour to inherit, so this catches the UA anchor-blue regression.
+    await expect(links.every((link) => getComputedStyle(link).color === 'rgb(255, 255, 255)')).toBe(
+      true
+    );
   },
 };
 
@@ -373,6 +378,11 @@ export const ResponsiveLayout: Story = {
         await expect({ width, scroll: document.documentElement.scrollWidth }).toEqual({
           width,
           scroll: width,
+        });
+        const overflowingColumns = columnEls.filter((el) => el.scrollWidth > el.clientWidth);
+        await expect({ width, overflow: overflowingColumns.length }).toEqual({
+          width,
+          overflow: 0,
         });
       }
     } finally {
