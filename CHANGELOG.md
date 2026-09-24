@@ -108,7 +108,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   | `core.backgroundDisabled`         | `theme.background.disabled`                   |
   | `core.contrast`                   | `theme.contrast`                              |
   | `core.error`                      | `theme.error`                                 |
-  | `core.main*`                      | `brand.blue.*`                                |
+  | `core.main*`                      | `brand.blue.main*`                            |
   | `core.focus.*`                    | `theme.focus.*`                               |
   | `core.hover.*`                    | `theme.hover.*`                               |
   | `core.divider`                    | `theme.divider`                               |
