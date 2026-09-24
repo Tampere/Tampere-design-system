@@ -347,6 +347,7 @@ export const ResponsiveLayout: Story = {
       // [viewport, columns on the first row, socials beside wordmark,
       //  copyright beside coat of arms, links beside copyright, back-to-top beside links]
       [2200, 3, true, true, true, true], // xxl (Figma 1920)
+      [1200, 3, true, true, false, true], // xl (Figma 1440)
       [1000, 3, true, true, false, true], // lg (Figma 1024)
       [740, 2, true, true, false, false], // md (Figma 768)
       [470, 1, false, true, false, false], // sm (Figma 480)
