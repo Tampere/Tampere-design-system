@@ -81,14 +81,34 @@ export type FooterProps =
 // The browser scrolls to a fragment but leaves keyboard focus on the link, so the
 // next Tab would continue from the bottom of the page.
 function focusBackToTopTarget(event: MouseEvent<HTMLAnchorElement>) {
+  // Modified clicks open a new tab or window; this page doesn't navigate.
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return;
+  }
   const href = event.currentTarget.getAttribute('href') ?? '';
   if (!href.startsWith('#')) return;
-  const id = href.slice(1);
-  // Same fallback as the browser's own fragment lookup: an empty fragment or an
-  // unmatched `#top` means the start of the document.
-  const isDocumentTop = id === '' || id.toLowerCase() === 'top';
-  const target = document.getElementById(id) ?? (isDocumentTop ? document.body : null);
-  if (target) moveFocusTo(target);
+  let id = href.slice(1);
+  try {
+    id = decodeURIComponent(id);
+  } catch {
+    // Malformed escapes: the browser falls back to the raw fragment too.
+  }
+  const target = document.getElementById(id);
+  if (target) {
+    moveFocusTo(target);
+  } else if (id === '' || id.toLowerCase() === 'top') {
+    // The browser's fallback for these is the document start. Focusing <body> moves
+    // Chrome's Tab starting point there (a plain blur() leaves it on the link);
+    // dropping the tabindex straight away keeps <body> out of :focus-visible.
+    const { body } = document;
+    if (body.hasAttribute('tabindex')) {
+      body.focus();
+    } else {
+      body.setAttribute('tabindex', '-1');
+      body.focus();
+      body.removeAttribute('tabindex');
+    }
+  }
 }
 
 export function Footer(props: FooterProps) {

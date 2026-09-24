@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, userEvent } from '@storybook/testing-library';
+import { within, userEvent, fireEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
 import { PhoneIcon } from '../../icons';
 import { NavigationLink } from '../NavigationLink/NavigationLink';
@@ -209,6 +209,7 @@ export const BackToTopMovesFocusToPageStart: Story = {
     backToTopLink.addEventListener('click', (event) => event.preventDefault());
     await userEvent.click(backToTopLink);
     await expect(document.activeElement).toBe(document.body);
+    await expect(document.body).not.toHaveAttribute('tabindex');
     // A real Tab: testing-library's simulated one doesn't start from a focused <body>.
     const { userEvent: trustedUserEvent } = await import('vitest/browser');
     await trustedUserEvent.keyboard('{Tab}');
@@ -231,6 +232,39 @@ export const BackToTopFocusesCustomTarget: Story = {
     backToTopLink.addEventListener('click', (event) => event.preventDefault());
     await userEvent.click(backToTopLink);
     await expect(document.activeElement).toBe(canvas.getByRole('heading', { name: 'Alku' }));
+  },
+};
+
+export const BackToTopDecodesPercentEncodedTarget: Story = {
+  render: () => (
+    <>
+      <h1 id="sivun-ä">Alku</h1>
+      <Footer {...legal} backToTopHref="#sivun-%C3%A4" />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const backToTopLink = canvas.getByRole('link', { name: 'Sivun alkuun' });
+    backToTopLink.addEventListener('click', (event) => event.preventDefault());
+    await userEvent.click(backToTopLink);
+    await expect(document.activeElement).toBe(canvas.getByRole('heading', { name: 'Alku' }));
+  },
+};
+
+export const BackToTopLeavesFocusOnModifiedClick: Story = {
+  render: () => (
+    <>
+      <h1 id="alku">Alku</h1>
+      <Footer {...legal} backToTopHref="#alku" />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const backToTopLink = canvas.getByRole('link', { name: 'Sivun alkuun' });
+    backToTopLink.addEventListener('click', (event) => event.preventDefault());
+    backToTopLink.focus();
+    fireEvent.click(backToTopLink, { ctrlKey: true });
+    await expect(document.activeElement).toBe(backToTopLink);
   },
 };
 
