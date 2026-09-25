@@ -149,7 +149,14 @@ export const GithubSearch: Story = {
     searchButtonLabel: 'Search GitHub users and repositories',
   },
   render: (args, { parameters }) => {
-    const githubFetch: GithubFetch = parameters.githubFetch ?? ((url) => fetch(url));
+    const githubFetch: GithubFetch =
+      parameters.githubFetch ??
+      ((url) => {
+        console.warn(
+          `SearchField story: no githubFetch stub, calling the live GitHub API (${url})`
+        );
+        return fetch(url);
+      });
     const [searchData, setData] = useState<SearchResult[]>([]);
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
