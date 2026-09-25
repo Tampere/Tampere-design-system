@@ -10,8 +10,9 @@ This React component library is built on top of [Mantine](https://mantine.dev/).
 
 ## 📄 License
 
-TREDS is released under the **European Union Public Licence (EUPL)**.  
-See the `LICENSE` file for full license details.
+The source code of Tampere Design System (TREDS) is licensed under the EUPL-1.2. See the `LICENSE` file for the full licence text.
+
+The City of Tampere branding assets (name, logo, coat of arms and wave pattern) are not covered by the EUPL-1.2 licence. All rights to these assets are reserved by the City of Tampere. Their use must not imply endorsement, sponsorship, affiliation, or any official connection with the City of Tampere without prior written permission.
 
 ---
 
