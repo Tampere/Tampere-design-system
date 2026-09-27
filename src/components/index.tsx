@@ -29,6 +29,17 @@ export {
   TableRow,
   type TableRowProps,
 } from './Table/Table';
+export {
+  Tabs,
+  TabsList,
+  TabsTab,
+  TabsPanel,
+  type TabsProps,
+  type TabsAlign,
+  type TabsListProps,
+  type TabsTabProps,
+  type TabsPanelProps,
+} from './Tabs';
 export { TextArea } from './TextArea/TextArea';
 export { TextField } from './TextField/TextField';
 export { ThemeProvider, type ThemeProviderProps } from './ThemeProvider';

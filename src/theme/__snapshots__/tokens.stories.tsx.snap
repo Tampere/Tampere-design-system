@@ -226,6 +226,28 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
     },
+    "tabs": {
+      "indicator": {
+        "thickness": "calc(0.375rem * var(--mantine-scale))",
+      },
+      "label": {
+        "fontWeight": {
+          "default": "400",
+          "selected": "600",
+        },
+      },
+      "rule": {
+        "color": "#52525b",
+        "thickness": "calc(0.125rem * var(--mantine-scale))",
+      },
+      "scrollButton": {
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "text": {
+        "default": "#52525b",
+        "selected": "#29549a",
+      },
+    },
     "textField": {
       "labelMargin": "0rem",
       "minHeight": "calc(3.25rem * var(--mantine-scale))",
@@ -576,6 +598,28 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
     },
+    "tabs": {
+      "indicator": {
+        "thickness": "calc(0.375rem * var(--mantine-scale))",
+      },
+      "label": {
+        "fontWeight": {
+          "default": "400",
+          "selected": "600",
+        },
+      },
+      "rule": {
+        "color": "#52525b",
+        "thickness": "calc(0.125rem * var(--mantine-scale))",
+      },
+      "scrollButton": {
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "text": {
+        "default": "#52525b",
+        "selected": "#29549a",
+      },
+    },
     "textField": {
       "labelMargin": "0rem",
       "minHeight": "calc(3.25rem * var(--mantine-scale))",
@@ -925,6 +969,28 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     "switch": {
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
+    },
+    "tabs": {
+      "indicator": {
+        "thickness": "calc(0.375rem * var(--mantine-scale))",
+      },
+      "label": {
+        "fontWeight": {
+          "default": "400",
+          "selected": "600",
+        },
+      },
+      "rule": {
+        "color": "#52525b",
+        "thickness": "calc(0.125rem * var(--mantine-scale))",
+      },
+      "scrollButton": {
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "text": {
+        "default": "#52525b",
+        "selected": "#29549a",
+      },
     },
     "textField": {
       "labelMargin": "0rem",
@@ -1690,6 +1756,28 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "backgroundUnchecked": "#dedee2",
         "height": "calc(1.5rem * var(--mantine-scale))",
       },
+      "tabs": {
+        "indicator": {
+          "thickness": "calc(0.375rem * var(--mantine-scale))",
+        },
+        "label": {
+          "fontWeight": {
+            "default": "400",
+            "selected": "600",
+          },
+        },
+        "rule": {
+          "color": "#52525b",
+          "thickness": "calc(0.125rem * var(--mantine-scale))",
+        },
+        "scrollButton": {
+          "spacing": "calc(0.5rem * var(--mantine-scale))",
+        },
+        "text": {
+          "default": "#52525b",
+          "selected": "#29549a",
+        },
+      },
       "textField": {
         "labelMargin": "0rem",
         "minHeight": "calc(3.25rem * var(--mantine-scale))",
@@ -2041,6 +2129,28 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
     },
+    "tabs": {
+      "indicator": {
+        "thickness": "calc(0.375rem * var(--mantine-scale))",
+      },
+      "label": {
+        "fontWeight": {
+          "default": "400",
+          "selected": "600",
+        },
+      },
+      "rule": {
+        "color": "#52525b",
+        "thickness": "calc(0.125rem * var(--mantine-scale))",
+      },
+      "scrollButton": {
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "text": {
+        "default": "#52525b",
+        "selected": "#29549a",
+      },
+    },
     "textField": {
       "labelMargin": "0rem",
       "minHeight": "calc(3.25rem * var(--mantine-scale))",
@@ -2391,6 +2501,28 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
     },
+    "tabs": {
+      "indicator": {
+        "thickness": "calc(0.375rem * var(--mantine-scale))",
+      },
+      "label": {
+        "fontWeight": {
+          "default": "400",
+          "selected": "600",
+        },
+      },
+      "rule": {
+        "color": "#52525b",
+        "thickness": "calc(0.125rem * var(--mantine-scale))",
+      },
+      "scrollButton": {
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "text": {
+        "default": "#52525b",
+        "selected": "#29549a",
+      },
+    },
     "textField": {
       "labelMargin": "0rem",
       "minHeight": "calc(3.25rem * var(--mantine-scale))",
@@ -2740,6 +2872,28 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     "switch": {
       "backgroundUnchecked": "#dedee2",
       "height": "calc(1.5rem * var(--mantine-scale))",
+    },
+    "tabs": {
+      "indicator": {
+        "thickness": "calc(0.375rem * var(--mantine-scale))",
+      },
+      "label": {
+        "fontWeight": {
+          "default": "400",
+          "selected": "600",
+        },
+      },
+      "rule": {
+        "color": "#52525b",
+        "thickness": "calc(0.125rem * var(--mantine-scale))",
+      },
+      "scrollButton": {
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "text": {
+        "default": "#52525b",
+        "selected": "#29549a",
+      },
     },
     "textField": {
       "labelMargin": "0rem",
