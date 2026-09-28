@@ -108,6 +108,36 @@ interface SearchResult extends SearchFieldData {
   data: GithubUser | GithubRepo;
 }
 
+type GithubFetch = (url: string) => Promise<Response>;
+
+const jsonResponse = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
+const stubUser: GithubUser = {
+  login: 'tampere',
+  id: 1,
+  avatar_url: '',
+  html_url: 'https://github.com/tampere',
+};
+
+const stubRepo: GithubRepo = {
+  id: 2,
+  full_name: 'Tampere/Tampere-design-system',
+  html_url: 'https://github.com/Tampere/Tampere-design-system',
+  owner: { login: 'Tampere' },
+};
+
+const stubGithubSearch: GithubFetch = async (url) =>
+  jsonResponse({
+    total_count: 1,
+    incomplete_results: false,
+    items: url.includes('/search/users') ? [stubUser] : [stubRepo],
+  });
+
+// GitHub's search API allows 10 unauthenticated requests a minute, so stories with a `play`
+// function stub it via this parameter; otherwise full-suite runs fail at random (#149).
+const stubbedGithubSearch = () => ({ parameters: { githubFetch: fn(stubGithubSearch) } });
+
 /**
  * A story demonstrating searching GitHub users and repositories.
  */
@@ -118,7 +148,15 @@ export const GithubSearch: Story = {
     clearButtonLabel: 'Clear',
     searchButtonLabel: 'Search GitHub users and repositories',
   },
-  render: (args) => {
+  render: (args, { parameters }) => {
+    const githubFetch: GithubFetch =
+      parameters.githubFetch ??
+      ((url) => {
+        console.warn(
+          `SearchField story: no githubFetch stub, calling the live GitHub API (${url})`
+        );
+        return fetch(url);
+      });
     const [searchData, setData] = useState<SearchResult[]>([]);
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
@@ -129,7 +167,7 @@ export const GithubSearch: Story = {
       const userUrl = `https://api.github.com/search/users?q=${encodeURIComponent(query)}+in:login`;
       const repoUrl = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+in:name`;
 
-      const [userRes, repoRes] = await Promise.all([fetch(userUrl), fetch(repoUrl)]);
+      const [userRes, repoRes] = await Promise.all([githubFetch(userUrl), githubFetch(repoUrl)]);
 
       if (!userRes.ok || !repoRes.ok) {
         const message =
@@ -231,20 +269,21 @@ export const GithubSearch: Story = {
 
 export const ShowsLoadingAfterThreeChars: Story = {
   ...GithubSearch,
-  play: async ({ canvasElement }) => {
+  ...stubbedGithubSearch(),
+  play: async ({ canvasElement, parameters }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole('textbox');
 
     await userEvent.type(input, 'Tam');
     await expect(screen.queryByRole('progressbar')).toBeInTheDocument();
-    await waitFor(() => {
-      waitForElementToBeRemoved(screen.queryByRole('progressbar'), { timeout: 4000 });
-    });
+    await waitForElementToBeRemoved(() => screen.queryByRole('progressbar'), { timeout: 4000 });
+    await expect(parameters.githubFetch).toHaveBeenCalled();
   },
 };
 
 export const NoLoadingWithTwoChars: Story = {
   ...GithubSearch,
+  ...stubbedGithubSearch(),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole('textbox');
@@ -256,8 +295,9 @@ export const NoLoadingWithTwoChars: Story = {
 
 export const ShowsSearchResult: Story = {
   ...GithubSearch,
+  ...stubbedGithubSearch(),
 
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, parameters }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole('textbox');
 
@@ -267,11 +307,15 @@ export const ShowsSearchResult: Story = {
         screen.getByRole('option', { name: 'Tampere/Tampere-design-system' })
       ).toBeInTheDocument();
     });
+    await expect(parameters.githubFetch).toHaveBeenCalledWith(
+      expect.stringContaining('api.github.com/search/repositories?q=Tampere%2Fdesign')
+    );
   },
 };
 
 export const OpensItemOnSelect: Story = {
   ...GithubSearch,
+  ...stubbedGithubSearch(),
 
   play: async ({ canvasElement }) => {
     window.open = fn();
@@ -286,14 +330,16 @@ export const OpensItemOnSelect: Story = {
     });
     await userEvent.click(screen.getByText('Tampere/Tampere-design-system'));
 
-    expect(window.open).toHaveBeenCalled();
+    expect(window.open).toHaveBeenCalledWith(stubRepo.html_url, '_blank');
   },
 };
 
 export const OpensItemOnEnter: Story = {
   ...GithubSearch,
+  ...stubbedGithubSearch(),
 
   play: async ({ canvasElement }) => {
+    window.open = fn();
     const canvas = within(canvasElement);
     const input = canvas.getByRole('textbox');
 
@@ -309,8 +355,25 @@ export const OpensItemOnEnter: Story = {
   },
 };
 
+export const ShowsRateLimitError: Story = {
+  ...GithubSearch,
+  tags: ['!dev', '!autodocs'],
+  parameters: { githubFetch: fn(async () => jsonResponse({ message: 'rate limited' }, 403)) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const message = 'GitHub rate limit exceeded. Try again in 30 seconds.';
+
+    await userEvent.type(canvas.getByRole('textbox'), 'Tam');
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: message })).toBeInTheDocument();
+    });
+    await expect(canvas.getByText(message)).toBeInTheDocument();
+  },
+};
+
 export const ClearInput: Story = {
   ...GithubSearch,
+  ...stubbedGithubSearch(),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole('textbox');

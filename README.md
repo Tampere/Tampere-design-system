@@ -10,8 +10,9 @@ This React component library is built on top of [Mantine](https://mantine.dev/).
 
 ## 📄 License
 
-TREDS is released under the **European Union Public Licence (EUPL)**.  
-See the `LICENSE` file for full license details.
+The source code of Tampere Design System (TREDS) is licensed under the EUPL-1.2. See the `LICENSE` file for the full licence text.
+
+The City of Tampere branding assets (name, logo, coat of arms and wave pattern) are not covered by the EUPL-1.2 licence. All rights to these assets are reserved by the City of Tampere. Their use must not imply endorsement, sponsorship, affiliation, or any official connection with the City of Tampere without prior written permission.
 
 ---
 
@@ -80,7 +81,7 @@ Add your GitHub Personal Access Token to your user-level npm config:
 npm install @tampere/treds
 ```
 
-Peer dependencies (`@mantine/core`, `@mantine/dates`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
+Peer dependencies (`@mantine/core`, `@mantine/dates`, `@mantine/dropzone`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
 
 ### Setup without NPM-package (Not recommended)
 
@@ -98,7 +99,7 @@ Build Tampere Design System as instructed above, then install it inside your pro
 npm install ../Tampere-design-system
 ```
 
-Peer dependencies (`@mantine/core`, `@mantine/dates`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
+Peer dependencies (`@mantine/core`, `@mantine/dates`, `@mantine/dropzone`, `@fontsource/montserrat`, `@fontsource/open-sans`) are installed automatically with npm v7+. To install specific versions, add them explicitly to the command above.
 
 ### Usage
 

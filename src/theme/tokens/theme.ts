@@ -37,6 +37,11 @@ const states = {
 // above) — borders are neutral at rest, borrowing brand blue only on hover/focus.
 const inputStates = { default: colors.neutral['600'] } as const;
 
+// Figma's Effects/Divider — shared by the semantic `divider` token below and
+// by components (e.g. dropzone) whose border is specified against that same
+// effect, so the two can't drift apart by editing only one of them.
+const divider = colors.neutral['200'];
+
 const selectionStates = {
   unchecked: {
     hover: colors.neutral['500'],
@@ -66,6 +71,13 @@ const cornerRadius = { sharp: rem(0), rounded: '9999px' } as const;
 const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
+
+// The kit's minimum touch target (WCAG 2.5.8-style floor), breakpoint-independent
+// unlike `bpTokens` below — a component sizes to content by default and opts into
+// this only where content alone would fall under it (e.g. AppHeader's small-text
+// language links; `components.iconButton.minTouchTarget` is the pre-existing
+// component-scoped equivalent for a different control family).
+const minTouchTarget = rem('24px');
 
 const dropShadow = 'rgba(0, 0, 0, 0.5000)';
 // Figma's Card/Accordion shadow spec, shared so the two can't drift apart.
@@ -188,17 +200,72 @@ export function getTheme(bp: BreakpointKey) {
     appHeader: {
       spacing: bpTokens.spacing.sm,
       padding: { horizontal: bpTokens.layout.margin, vertical: bpTokens.spacing.sm },
+      logo: {
+        primaryHeight: bpTokens.appHeader.logo.primaryLogoHeight,
+        secondaryHeight: bpTokens.appHeader.logo.secondaryLogoHeight,
+      },
+      // Single-row's First/Left/Right section gap in Figma (nodes 14147:8543,
+      // 14147:10912, 14147:10973) is the grid's own layout/gutter — 32/24/16
+      // across xl/lg/md — not appHeader.spacing. Multi-row's rows don't use
+      // this; keep it separate so appHeader.spacing stays untouched.
+      rowGap: bpTokens.layout.gutter,
+      language: {
+        // Figma's selected language link (node 4250:40872, "FI") is a local
+        // Bold override on top of its own P2/400 base style — a literal
+        // Open Sans Bold face, not the 600 Semi-Bold used elsewhere (p1,
+        // button, chip), so it gets its own token rather than reusing theirs.
+        selectedFontWeight: '700',
+      },
+      siteName: {
+        // Optical correction against the subheader type style's own
+        // line-height box — same technique as navigationLink.icon's own
+        // verticalOffset below, tuned separately per Figma's visual spec
+        // rather than derived from it.
+        verticalOffset: '-2px',
+      },
+    },
+    // The popover menu (Figma node 14187:18169, "Main menu"): a fixed,
+    // non-responsive box, unlike appHeader's own per-breakpoint padding —
+    // Figma gives it one width and one section padding at every breakpoint
+    // where it appears (below the breakpoint where the trigger disappears).
+    appHeaderMenu: {
+      width: rem('284px'),
+      sectionPadding: {
+        horizontal: primitives.spacing['3'],
+        vertical: primitives.spacing['1,5'],
+      },
     },
     footer: {
-      spacing: primitives.spacing['4'],
+      // Figma's footer auto-layout (Implement-Footer node 5870:41782) spaces every
+      // row with the shared per-breakpoint scales, so these follow them too.
+      spacing: bpTokens.spacing.lg,
       padding: {
-        horizontal: primitives.spacing['4'],
-        verticalBottom: primitives.spacing['2'],
-        verticalTop: primitives.spacing['8'],
+        horizontal: bpTokens.layout.margin,
+        verticalTop: bpTokens.spacing.xxl,
+        verticalBottom: bpTokens.spacing.md,
+        verticalDense: bpTokens.spacing.sm,
       },
+      columnGap: bpTokens.layout.gutter,
+      brandRowGap: bpTokens.spacing.md,
+      bottomBar: { columnGap: bpTokens.spacing.lg, rowGap: bpTokens.spacing.md },
+      legalLinks: { columnGap: bpTokens.spacing.md, rowGap: bpTokens.spacing.xs },
+      socialLinksGap: bpTokens.spacing.md,
       backgroundBottom: brand.blue.mainDark,
       backgroundTop: brand.blue.main,
-      columnMinWidth: bpTokens.footer.navigationMinWidth,
+      contentMaxWidth: breakpoint.xxl.appWidth,
+      columnMinWidth: rem('250px'),
+      columnItemGap: bpTokens.spacing.sm,
+      // The legal-links row's minimum, not a column minimum: Figma's links row is
+      // exactly this wide at 1920 and 1024.
+      navigationMinWidth: bpTokens.footer.navigationMinWidth,
+      coatOfArmsHeight: bpTokens.appHeader.logo.secondaryLogoHeight,
+      wordmark: {
+        boxMinWidth: rem('348px'),
+        boxMaxWidth: rem('555px'),
+        inset: primitives.spacing['8'],
+        maxWidth: rem('350px'),
+      },
+      socialLinksMinWidth: rem('248px'),
     },
     button: {
       fontSize: bpTokens.typography.size.p2,
@@ -236,6 +303,20 @@ export function getTheme(bp: BreakpointKey) {
         blue: colors.blue['500'],
         pink: colors.pink['200'],
       },
+    },
+    badge: {
+      background: {
+        // Deliberately not `chip.tagFill` — Figma binds Badge's default to the warm swatch.
+        neutral: colors.neutral.warm['100'],
+        neutralInverted: colors.neutral.warm['700'],
+        info: colors.blue['400'],
+        success: colors.green['600'],
+        warning: colors.yellow['200'],
+        error: colors.red['300'],
+      },
+      padding: { horizontal: bpTokens.spacing.sm },
+      spacing: bpTokens.spacing.xxs,
+      iconSize: rem('18px'),
     },
     chip: {
       // Figma spacing/2-extra-small, confirmed against the Breakpoints
@@ -278,7 +359,59 @@ export function getTheme(bp: BreakpointKey) {
       headerGap: primitives.spacing['1,5'],
       todayMarkerInset: primitives.spacing['0,5'],
     },
-    forms: { spacing: primitives.spacing['3'], fieldset: { spacing: primitives.spacing['1'] } },
+    dropzone: {
+      // Figma: File drop zone, component set 6814:2770. Border is Effects/Divider
+      // at Effects/Stroke/Weight/Default; padding is Spacing/2 Extra-large (64px)
+      // vertically, Spacing/Medium (24px) horizontally.
+      border: divider,
+      padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xxl },
+      // The drop area's own auto-layout gap (heading → picker). Figma binds the
+      // raw `Spacing/4` primitive here, so it stays 32px at every breakpoint —
+      // deliberately NOT `bpTokens.spacing.lg`, which drops to 24 below 1024.
+      spacing: primitives.spacing['4'],
+      // Not designed in Figma — derived from existing tokens pending design input.
+      // Replace these two with real variables once the drag states are drawn;
+      // do not treat them as Figma-backed.
+      dragOver: { border: states.hover, background: colors.neutral['50'] },
+      dragReject: { border: states.error, title: states.error },
+    },
+    fileList: {
+      // Figma: .File list, 6801:3920 — 48px rows = 24px line-height (reused from
+      // components.list.lineHeight) + Spacing/Extra-small (12px) top and bottom.
+      // The label's font/line-height are NOT duplicated here: .File list binds the
+      // same Components/List variables that components.list already exposes.
+      padding: { vertical: bpTokens.spacing.xs },
+      // The horizontal gap between a row's filename and its remove button —
+      // NOT the gap between rows. Rows correctly have no gap of their own
+      // (see FileList.css.ts `list`), matching Figma's flush 48px rows.
+      spacing: bpTokens.spacing.sm,
+    },
+    forms: {
+      spacing: primitives.spacing['3'],
+      fieldset: {
+        // Figma's `Components/Fieldset/Spacing`, aliased through
+        // `Breakpoint/Spacing/Small` — 16px at 1024/1440/1920, 12px at
+        // 320/480/768.
+        spacing: bpTokens.spacing.sm,
+        // Figma's `Components/Fieldset/Field-group-spacing`, aliased through
+        // `Breakpoint/Spacing/Medium` — 24px at 1024/1440/1920, 16px at
+        // 320/480/768. Gap between multiple distinct input elements composed
+        // directly inside one Fieldset (e.g. TextField + Select + DateField)
+        // — distinct from the tighter Checkbox/Radio item-to-item gap, which
+        // lives inside those components and is untouched.
+        fieldGroupSpacing: bpTokens.spacing.md,
+        // Figma's Fieldset `.Required` instance sits at x=336, right after the
+        // `.Input label` ending at x=332 — a fixed 4px gap, not per-breakpoint
+        // (same precedent as `labeledIconButton.spacing` below).
+        requiredIndicatorGap: primitives.spacing['0,5'],
+        // Figma's `Forms/Selection-items-spacing` (gap between Checkbox/Radio
+        // items grouped under one Fieldset) aliases through the same
+        // `Breakpoint/Spacing/Small` chain as `spacing` above — same values
+        // today, but kept as its own token since the two Figma variables are
+        // independent and could diverge later.
+        selectionItemsSpacing: bpTokens.spacing.sm,
+      },
+    },
     icon: {
       size: {
         extraSmall: rem('16px'),
@@ -317,6 +450,13 @@ export function getTheme(bp: BreakpointKey) {
     labeledIconButton: {
       // Figma Spacing/1 = 8, fixed (not per-breakpoint) — same as forms.fieldset.spacing.
       spacing: primitives.spacing['1'],
+      // Figma's label uses the Button/Medium text style: Caption's own
+      // size/family/line-height, but Subheader-style Semi-Bold weight rather
+      // than Caption's own Regular — same borrowed-weight pattern as
+      // `chip.label.fontWeight`, kept as its own token for the same reason.
+      label: {
+        fontWeight: '600',
+      },
     },
     input: {
       font: {
@@ -382,6 +522,45 @@ export function getTheme(bp: BreakpointKey) {
     },
     mainMenu: { spacing: primitives.spacing['4'] },
     menuItem: { padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.xs } },
+    navigationLink: {
+      icon: {
+        // Figma's startIcon/endIcon (node 3992:2329) are a fixed 18×18px
+        // square at both the Medium and Small size variants — a literal
+        // like Chip's own `iconSize` above, not derived from the generic
+        // `icon.size` scale (this codebase's precedent: component-specific
+        // icon sizing is its own constant even when the value coincides).
+        size: rem('18px'),
+        // Figma's Spacing/2-extra-small = 8px, same value on both sides —
+        // a fixed constant like labeledIconButton.spacing above, not part
+        // of the responsive scale.
+        spacing: primitives.spacing['1'],
+        // Same technique as `link.iconVerticalOffset` above (can't reference
+        // that key directly — it's a sibling in this same object literal):
+        // nudges the icon up to visually balance it against the link's
+        // underline, the same optical correction TextLink's trailing icon
+        // needs — but only half the nudge, tuned separately for this fixed
+        // 18px icon rather than TextLink's em-scaled one.
+        verticalOffset: '-0.1em',
+      },
+      // Figma's Medium size (node 3992:2329) reuses Subheader's Semi-Bold weight
+      // rather than P1's own Regular — same "borrow a heavier style's weight"
+      // pattern as Chip's `chip.label.fontWeight` and Button's `button.fontWeight`,
+      // kept as its own token so a future Subheader change can't silently
+      // restyle every link. Small size keeps P2's own Regular weight as-is.
+      label: {
+        mediumFontWeight: '600',
+      },
+    },
+    skipLink: {
+      // One above Mantine's "app" elevation (getDefaultZIndex('app') === 100):
+      // equal z-index would lose the stacking tie against fixed app-layer chrome
+      // (e.g. AppShell.Header), since ties fall back to DOM tree order and the
+      // skip link must render first in the document to be the first tab stop.
+      // Still below "modal" (200), so it can never paint over a modal. String,
+      // not number — every other leaf in this tree is a string (the
+      // vanilla-extract CSS-variable contract requires it).
+      zIndex: '101',
+    },
     switch: { height: rem('24px'), backgroundUnchecked: colors.neutral['200'] },
     tabs: {
       label: { fontWeight: { default: '400', selected: '600' } },
@@ -401,9 +580,10 @@ export function getTheme(bp: BreakpointKey) {
     error: colors.red['300'],
     focus,
     hover,
-    divider: colors.neutral['200'],
+    divider,
     cornerRadius,
     strokeWeight,
+    minTouchTarget,
     dropShadow,
     dropShadowTile,
     states,

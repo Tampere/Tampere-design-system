@@ -16,6 +16,8 @@ type ButtonBaseProps = PropsWithChildren<UnstyledButtonProps> &
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    /** Standard DOM id. `UnstyledButtonProps` doesn't declare it, though it already flows through via `...props`. */
+    id?: string;
   };
 
 // `iconOnly` has no visible text, so an accessible name can't come from `children` —

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import { TextArea } from './TextArea';
 
 const meta = {
@@ -56,4 +57,15 @@ export const WithHelperText: Story = {
     placeholder: 'Enter description',
   },
   render: (args) => <TextArea {...args} />,
+};
+
+// #169: the label must share TextField's semibold label style.
+export const LabelWeight: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: 'Additional information' },
+  render: (args) => <TextArea {...args} />,
+  play: async ({ canvasElement }) => {
+    const label = within(canvasElement).getByText('Additional information');
+    await expect(getComputedStyle(label).fontWeight).toBe('600');
+  },
 };

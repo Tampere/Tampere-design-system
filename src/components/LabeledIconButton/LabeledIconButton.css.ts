@@ -47,7 +47,7 @@ globalStyle(`${iconWrapper} svg`, {
 export const label = style({
   fontSize: typography.caption.fontSize,
   fontFamily: typography.caption.fontFamily,
-  fontWeight: typography.caption.fontWeight,
+  fontWeight: labeledIconButton.label.fontWeight,
   lineHeight: '100%',
 });
 

@@ -1,4 +1,5 @@
 export * from './AddIcon';
+export * from './AiIcon';
 export * from './AirplaneIcon';
 export * from './ArrowDownIcon';
 export * from './ArrowLeftIcon';
@@ -26,6 +27,7 @@ export * from './DateTimeIcon';
 export * from './DownloadIcon';
 export * from './EditIcon';
 export * from './EnlargeIcon';
+export * from './ErrorIcon';
 export * from './EuroIcon';
 export * from './FavouritesFilledIcon';
 export * from './FavouritesOutlinedIcon';

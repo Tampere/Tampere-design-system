@@ -1,0 +1,90 @@
+import { useId } from 'react';
+import cx from 'clsx';
+import {
+  Fieldset as MantineFieldset,
+  type FieldsetProps as MantineFieldsetProps,
+} from '@mantine/core';
+import { mergeClassNames } from '../../utils.ts';
+import {
+  asterisk,
+  childrenWrapper,
+  descriptionGroup,
+  errorText,
+  helperText as helperTextStyle,
+  legend as legendStyle,
+  root,
+  selectionGroup,
+  withBorder as withBorderStyle,
+} from './Fieldset.css';
+
+export interface FieldsetProps extends Omit<MantineFieldsetProps, 'legend' | 'variant' | 'radius'> {
+  legend: React.ReactNode;
+  /** Renders a decorative `*` next to the legend. Individual inputs inside still need their own `required` attribute — this isn't a native `<fieldset>` concept. */
+  showRequiredMarker?: boolean;
+  helperText?: React.ReactNode;
+  /** Rendered alongside `helperText`, not replacing it — matches TextField/Mantine's InputWrapper, which shows description and error together. */
+  error?: string;
+  /** Mantine's bordered "default" variant vs TREDS's borderless default (per Figma, #70). Default `false`. Sharp corners only — a rounded/pill radius needs more design work before it's offered here. */
+  withBorder?: boolean;
+  children?: React.ReactNode;
+  'data-testid'?: string;
+}
+
+/** Flex-column wrapper class for grouping Checkbox/RadioButton items inside one Fieldset — see the WithCheckboxGroup/WithRadioGroup doc examples. */
+export const fieldsetSelectionGroup = selectionGroup;
+
+/** Groups related form inputs under a common legend, using native `<fieldset>`/`<legend>` semantics. */
+export const Fieldset = ({
+  legend,
+  showRequiredMarker,
+  helperText,
+  error,
+  withBorder: hasBorder = false,
+  children,
+  className,
+  classNames,
+  ...props
+}: FieldsetProps) => {
+  const helperTextId = useId();
+  const errorId = useId();
+  const describedBy =
+    [helperText && helperTextId, error && errorId, props['aria-describedby']]
+      .filter(Boolean)
+      .join(' ') || undefined;
+
+  return (
+    <MantineFieldset
+      {...props}
+      variant="unstyled"
+      legend={
+        <>
+          {legend}
+          {showRequiredMarker && (
+            <span aria-hidden="true" className={asterisk}>
+              *
+            </span>
+          )}
+        </>
+      }
+      className={cx(root, hasBorder && withBorderStyle, className)}
+      classNames={mergeClassNames<{ legend: string }>({ legend: legendStyle }, classNames)}
+      aria-describedby={describedBy}
+    >
+      {(helperText || error) && (
+        <div className={descriptionGroup}>
+          {helperText && (
+            <p id={helperTextId} className={helperTextStyle}>
+              {helperText}
+            </p>
+          )}
+          {error && (
+            <p id={errorId} className={errorText}>
+              {error}
+            </p>
+          )}
+        </div>
+      )}
+      {children && <div className={childrenWrapper}>{children}</div>}
+    </MantineFieldset>
+  );
+};

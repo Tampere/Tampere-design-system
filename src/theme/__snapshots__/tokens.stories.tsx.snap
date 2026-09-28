@@ -15,11 +15,44 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
+      "logo": {
+        "primaryHeight": "calc(2rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.75rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
+      "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -67,20 +100,68 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
-    "footer": {
-      "backgroundBottom": "#22437b",
-      "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(42.5rem * var(--mantine-scale))",
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(4rem * var(--mantine-scale))",
       },
       "spacing": "calc(2rem * var(--mantine-scale))",
     },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "footer": {
+      "backgroundBottom": "#22437b",
+      "backgroundTop": "#29549a",
+      "bottomBar": {
+        "columnGap": "calc(2rem * var(--mantine-scale))",
+        "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.75rem * var(--mantine-scale))",
+      "columnGap": "calc(1.5rem * var(--mantine-scale))",
+      "columnItemGap": "calc(1rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(42.5rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1.5rem * var(--mantine-scale))",
+        "verticalDense": "calc(1rem * var(--mantine-scale))",
+        "verticalTop": "calc(4rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1.5rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(2rem * var(--mantine-scale))",
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
+    },
     "forms": {
       "fieldset": {
-        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "fieldGroupSpacing": "calc(1.5rem * var(--mantine-scale))",
+        "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(1rem * var(--mantine-scale))",
+        "spacing": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
     },
@@ -159,6 +240,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -199,6 +283,16 @@ exports[`Token Values Match Snapshot > lg 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
     },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
+      },
+    },
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -221,6 +315,9 @@ exports[`Token Values Match Snapshot > lg 1`] = `
     },
     "select": {
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
+    "skipLink": {
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -345,6 +442,7 @@ exports[`Token Values Match Snapshot > lg 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -387,11 +485,44 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
+      "logo": {
+        "primaryHeight": "calc(1.75rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.5rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(1.5rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
+      "rowGap": "calc(1rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -439,20 +570,68 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
-    "footer": {
-      "backgroundBottom": "#22437b",
-      "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(34.375rem * var(--mantine-scale))",
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "vertical": "calc(3rem * var(--mantine-scale))",
       },
       "spacing": "calc(2rem * var(--mantine-scale))",
     },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "footer": {
+      "backgroundBottom": "#22437b",
+      "backgroundTop": "#29549a",
+      "bottomBar": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(1rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.5rem * var(--mantine-scale))",
+      "columnGap": "calc(1rem * var(--mantine-scale))",
+      "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(34.375rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+        "verticalTop": "calc(3rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
+    },
     "forms": {
       "fieldset": {
-        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
+        "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
     },
@@ -531,6 +710,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -571,6 +753,16 @@ exports[`Token Values Match Snapshot > md 1`] = `
         "vertical": "calc(0.5rem * var(--mantine-scale))",
       },
     },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
+      },
+    },
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -593,6 +785,9 @@ exports[`Token Values Match Snapshot > md 1`] = `
     },
     "select": {
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
+    "skipLink": {
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -717,6 +912,7 @@ exports[`Token Values Match Snapshot > md 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -759,11 +955,44 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
+      "logo": {
+        "primaryHeight": "calc(1.5rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.25rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(1rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
+      "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -811,20 +1040,68 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
-    "footer": {
-      "backgroundBottom": "#22437b",
-      "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(18.75rem * var(--mantine-scale))",
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "vertical": "calc(2.5rem * var(--mantine-scale))",
       },
       "spacing": "calc(2rem * var(--mantine-scale))",
     },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "footer": {
+      "backgroundBottom": "#22437b",
+      "backgroundTop": "#29549a",
+      "bottomBar": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(1rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.25rem * var(--mantine-scale))",
+      "columnGap": "calc(0.75rem * var(--mantine-scale))",
+      "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(18.75rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+        "verticalTop": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
+    },
     "forms": {
       "fieldset": {
-        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
+        "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
     },
@@ -903,6 +1180,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -943,6 +1223,16 @@ exports[`Token Values Match Snapshot > sm 1`] = `
         "vertical": "calc(0.5rem * var(--mantine-scale))",
       },
     },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
+      },
+    },
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -965,6 +1255,9 @@ exports[`Token Values Match Snapshot > sm 1`] = `
     },
     "select": {
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
+    "skipLink": {
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -1089,6 +1382,7 @@ exports[`Token Values Match Snapshot > sm 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -1133,9 +1427,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "logo": {
           "primaryLogoHeight": "calc(2rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.75rem * var(--mantine-scale))",
-        },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
         },
       },
       "appWidth": "1024px",
@@ -1187,9 +1478,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "primaryLogoHeight": "calc(1.75rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.5rem * var(--mantine-scale))",
         },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
-        },
       },
       "appWidth": "768px",
       "components": {
@@ -1239,9 +1527,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "logo": {
           "primaryLogoHeight": "calc(1.5rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.25rem * var(--mantine-scale))",
-        },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
         },
       },
       "appWidth": "480px",
@@ -1293,9 +1578,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "primaryLogoHeight": "calc(2.125rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(2rem * var(--mantine-scale))",
         },
-        "search": {
-          "maxWidth": "calc(20rem * var(--mantine-scale))",
-        },
       },
       "appWidth": "1440px",
       "components": {
@@ -1346,9 +1628,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "primaryLogoHeight": "calc(1.5rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(1.25rem * var(--mantine-scale))",
         },
-        "search": {
-          "maxWidth": "calc(624.9375rem * var(--mantine-scale))",
-        },
       },
       "appWidth": "320px",
       "components": {
@@ -1398,9 +1677,6 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "logo": {
           "primaryLogoHeight": "calc(2.25rem * var(--mantine-scale))",
           "secondaryLogoHeight": "calc(2rem * var(--mantine-scale))",
-        },
-        "search": {
-          "maxWidth": "calc(20rem * var(--mantine-scale))",
         },
       },
       "appWidth": "1920px",
@@ -1486,6 +1762,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "black": "#000000",
         "warm": {
           "100": "#f1eeeb",
+          "700": "#3f3e3e",
         },
         "white": "#ffffff",
       },
@@ -1545,11 +1822,44 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "appHeader": {
+        "language": {
+          "selectedFontWeight": "700",
+        },
+        "logo": {
+          "primaryHeight": "calc(1.75rem * var(--mantine-scale))",
+          "secondaryHeight": "calc(1.5rem * var(--mantine-scale))",
+        },
         "padding": {
           "horizontal": "calc(1.5rem * var(--mantine-scale))",
           "vertical": "calc(0.75rem * var(--mantine-scale))",
         },
+        "rowGap": "calc(1rem * var(--mantine-scale))",
+        "siteName": {
+          "verticalOffset": "-2px",
+        },
         "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "appHeaderMenu": {
+        "sectionPadding": {
+          "horizontal": "calc(1.5rem * var(--mantine-scale))",
+          "vertical": "calc(0.75rem * var(--mantine-scale))",
+        },
+        "width": "calc(17.75rem * var(--mantine-scale))",
+      },
+      "badge": {
+        "background": {
+          "error": "#ae1e20",
+          "info": "#29549a",
+          "neutral": "#f1eeeb",
+          "neutralInverted": "#3f3e3e",
+          "success": "#386f49",
+          "warning": "#f4d240",
+        },
+        "iconSize": "calc(1.125rem * var(--mantine-scale))",
+        "padding": {
+          "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        },
+        "spacing": "calc(0.25rem * var(--mantine-scale))",
       },
       "breadcrumbs": {
         "activePageFontWeight": "600",
@@ -1597,20 +1907,68 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "todayMarkerContrast": "#ffffff",
         "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
       },
-      "footer": {
-        "backgroundBottom": "#22437b",
-        "backgroundTop": "#29549a",
-        "columnMinWidth": "calc(34.375rem * var(--mantine-scale))",
+      "dropzone": {
+        "border": "#dedee2",
+        "dragOver": {
+          "background": "#f7f7f9",
+          "border": "#1d3a6c",
+        },
+        "dragReject": {
+          "border": "#ae1e20",
+          "title": "#ae1e20",
+        },
         "padding": {
-          "horizontal": "calc(2rem * var(--mantine-scale))",
-          "verticalBottom": "calc(1rem * var(--mantine-scale))",
-          "verticalTop": "calc(4rem * var(--mantine-scale))",
+          "horizontal": "calc(1rem * var(--mantine-scale))",
+          "vertical": "calc(3rem * var(--mantine-scale))",
         },
         "spacing": "calc(2rem * var(--mantine-scale))",
       },
+      "fileList": {
+        "padding": {
+          "vertical": "calc(0.5rem * var(--mantine-scale))",
+        },
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "footer": {
+        "backgroundBottom": "#22437b",
+        "backgroundTop": "#29549a",
+        "bottomBar": {
+          "columnGap": "calc(1.5rem * var(--mantine-scale))",
+          "rowGap": "calc(1rem * var(--mantine-scale))",
+        },
+        "brandRowGap": "calc(1rem * var(--mantine-scale))",
+        "coatOfArmsHeight": "calc(1.5rem * var(--mantine-scale))",
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
+        "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+        "contentMaxWidth": "1920px",
+        "legalLinks": {
+          "columnGap": "calc(1rem * var(--mantine-scale))",
+          "rowGap": "calc(0.5rem * var(--mantine-scale))",
+        },
+        "navigationMinWidth": "calc(34.375rem * var(--mantine-scale))",
+        "padding": {
+          "horizontal": "calc(1.5rem * var(--mantine-scale))",
+          "verticalBottom": "calc(1rem * var(--mantine-scale))",
+          "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+          "verticalTop": "calc(3rem * var(--mantine-scale))",
+        },
+        "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+        "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+        "spacing": "calc(1.5rem * var(--mantine-scale))",
+        "wordmark": {
+          "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+          "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+          "inset": "calc(4rem * var(--mantine-scale))",
+          "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+        },
+      },
       "forms": {
         "fieldset": {
-          "spacing": "calc(0.5rem * var(--mantine-scale))",
+          "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
+          "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+          "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
+          "spacing": "calc(0.75rem * var(--mantine-scale))",
         },
         "spacing": "calc(1.5rem * var(--mantine-scale))",
       },
@@ -1689,6 +2047,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
         "highlightFontWeight": "600",
       },
       "labeledIconButton": {
+        "label": {
+          "fontWeight": "600",
+        },
         "spacing": "calc(0.5rem * var(--mantine-scale))",
       },
       "link": {
@@ -1729,6 +2090,16 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
           "vertical": "calc(0.5rem * var(--mantine-scale))",
         },
       },
+      "navigationLink": {
+        "icon": {
+          "size": "calc(1.125rem * var(--mantine-scale))",
+          "spacing": "calc(0.5rem * var(--mantine-scale))",
+          "verticalOffset": "-0.1em",
+        },
+        "label": {
+          "mediumFontWeight": "600",
+        },
+      },
       "pagination": {
         "itemHeight": "calc(2.5rem * var(--mantine-scale))",
         "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -1751,6 +2122,9 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
       },
       "select": {
         "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+      },
+      "skipLink": {
+        "zIndex": "101",
       },
       "switch": {
         "backgroundUnchecked": "#dedee2",
@@ -1875,6 +2249,7 @@ exports[`Token Values Match Snapshot > themeVariables 1`] = `
     "inputStates": {
       "default": "#52525b",
     },
+    "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
     "selectionStates": {
       "unchecked": {
         "active": "#9999a0",
@@ -1918,11 +2293,44 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
+      "logo": {
+        "primaryHeight": "calc(2.125rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(2rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(2rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
+      "rowGap": "calc(2rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -1970,20 +2378,68 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
-    "footer": {
-      "backgroundBottom": "#22437b",
-      "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(48rem * var(--mantine-scale))",
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(4rem * var(--mantine-scale))",
       },
       "spacing": "calc(2rem * var(--mantine-scale))",
     },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "footer": {
+      "backgroundBottom": "#22437b",
+      "backgroundTop": "#29549a",
+      "bottomBar": {
+        "columnGap": "calc(2rem * var(--mantine-scale))",
+        "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(2rem * var(--mantine-scale))",
+      "columnGap": "calc(2rem * var(--mantine-scale))",
+      "columnItemGap": "calc(1rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(48rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(2rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1.5rem * var(--mantine-scale))",
+        "verticalDense": "calc(1rem * var(--mantine-scale))",
+        "verticalTop": "calc(4rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1.5rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(2rem * var(--mantine-scale))",
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
+    },
     "forms": {
       "fieldset": {
-        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "fieldGroupSpacing": "calc(1.5rem * var(--mantine-scale))",
+        "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(1rem * var(--mantine-scale))",
+        "spacing": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
     },
@@ -2062,6 +2518,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -2102,6 +2561,16 @@ exports[`Token Values Match Snapshot > xl 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
     },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
+      },
+    },
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -2124,6 +2593,9 @@ exports[`Token Values Match Snapshot > xl 1`] = `
     },
     "select": {
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
+    "skipLink": {
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -2248,6 +2720,7 @@ exports[`Token Values Match Snapshot > xl 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -2290,11 +2763,44 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
+      "logo": {
+        "primaryHeight": "calc(1.5rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(1.25rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(0.75rem * var(--mantine-scale))",
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
+      "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.25rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2342,20 +2848,68 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
-    "footer": {
-      "backgroundBottom": "#22437b",
-      "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(17.5rem * var(--mantine-scale))",
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+        "vertical": "calc(2.5rem * var(--mantine-scale))",
       },
       "spacing": "calc(2rem * var(--mantine-scale))",
     },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.75rem * var(--mantine-scale))",
+    },
+    "footer": {
+      "backgroundBottom": "#22437b",
+      "backgroundTop": "#29549a",
+      "bottomBar": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(1rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(1.25rem * var(--mantine-scale))",
+      "columnGap": "calc(0.5rem * var(--mantine-scale))",
+      "columnItemGap": "calc(0.75rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1rem * var(--mantine-scale))",
+        "rowGap": "calc(0.5rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(17.5rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(0.75rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1rem * var(--mantine-scale))",
+        "verticalDense": "calc(0.75rem * var(--mantine-scale))",
+        "verticalTop": "calc(2.5rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(1.5rem * var(--mantine-scale))",
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
+    },
     "forms": {
       "fieldset": {
-        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "fieldGroupSpacing": "calc(1rem * var(--mantine-scale))",
+        "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(0.75rem * var(--mantine-scale))",
+        "spacing": "calc(0.75rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
     },
@@ -2434,6 +2988,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -2474,6 +3031,16 @@ exports[`Token Values Match Snapshot > xs 1`] = `
         "vertical": "calc(0.5rem * var(--mantine-scale))",
       },
     },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
+      },
+    },
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -2496,6 +3063,9 @@ exports[`Token Values Match Snapshot > xs 1`] = `
     },
     "select": {
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
+    "skipLink": {
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -2620,6 +3190,7 @@ exports[`Token Values Match Snapshot > xs 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",
@@ -2662,11 +3233,44 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "spacing": "calc(0.75rem * var(--mantine-scale))",
     },
     "appHeader": {
+      "language": {
+        "selectedFontWeight": "700",
+      },
+      "logo": {
+        "primaryHeight": "calc(2.25rem * var(--mantine-scale))",
+        "secondaryHeight": "calc(2rem * var(--mantine-scale))",
+      },
       "padding": {
         "horizontal": "calc(2rem * var(--mantine-scale))",
         "vertical": "calc(1rem * var(--mantine-scale))",
       },
+      "rowGap": "calc(2rem * var(--mantine-scale))",
+      "siteName": {
+        "verticalOffset": "-2px",
+      },
       "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "appHeaderMenu": {
+      "sectionPadding": {
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "width": "calc(17.75rem * var(--mantine-scale))",
+    },
+    "badge": {
+      "background": {
+        "error": "#ae1e20",
+        "info": "#29549a",
+        "neutral": "#f1eeeb",
+        "neutralInverted": "#3f3e3e",
+        "success": "#386f49",
+        "warning": "#f4d240",
+      },
+      "iconSize": "calc(1.125rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(1rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "breadcrumbs": {
       "activePageFontWeight": "600",
@@ -2714,20 +3318,68 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "todayMarkerContrast": "#ffffff",
       "todayMarkerInset": "calc(0.25rem * var(--mantine-scale))",
     },
-    "footer": {
-      "backgroundBottom": "#22437b",
-      "backgroundTop": "#29549a",
-      "columnMinWidth": "calc(48rem * var(--mantine-scale))",
+    "dropzone": {
+      "border": "#dedee2",
+      "dragOver": {
+        "background": "#f7f7f9",
+        "border": "#1d3a6c",
+      },
+      "dragReject": {
+        "border": "#ae1e20",
+        "title": "#ae1e20",
+      },
       "padding": {
-        "horizontal": "calc(2rem * var(--mantine-scale))",
-        "verticalBottom": "calc(1rem * var(--mantine-scale))",
-        "verticalTop": "calc(4rem * var(--mantine-scale))",
+        "horizontal": "calc(1.5rem * var(--mantine-scale))",
+        "vertical": "calc(4rem * var(--mantine-scale))",
       },
       "spacing": "calc(2rem * var(--mantine-scale))",
     },
+    "fileList": {
+      "padding": {
+        "vertical": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "spacing": "calc(1rem * var(--mantine-scale))",
+    },
+    "footer": {
+      "backgroundBottom": "#22437b",
+      "backgroundTop": "#29549a",
+      "bottomBar": {
+        "columnGap": "calc(2rem * var(--mantine-scale))",
+        "rowGap": "calc(1.5rem * var(--mantine-scale))",
+      },
+      "brandRowGap": "calc(1.5rem * var(--mantine-scale))",
+      "coatOfArmsHeight": "calc(2rem * var(--mantine-scale))",
+      "columnGap": "calc(2rem * var(--mantine-scale))",
+      "columnItemGap": "calc(1rem * var(--mantine-scale))",
+      "columnMinWidth": "calc(15.625rem * var(--mantine-scale))",
+      "contentMaxWidth": "1920px",
+      "legalLinks": {
+        "columnGap": "calc(1.5rem * var(--mantine-scale))",
+        "rowGap": "calc(0.75rem * var(--mantine-scale))",
+      },
+      "navigationMinWidth": "calc(48rem * var(--mantine-scale))",
+      "padding": {
+        "horizontal": "calc(2rem * var(--mantine-scale))",
+        "verticalBottom": "calc(1.5rem * var(--mantine-scale))",
+        "verticalDense": "calc(1rem * var(--mantine-scale))",
+        "verticalTop": "calc(4rem * var(--mantine-scale))",
+      },
+      "socialLinksGap": "calc(1.5rem * var(--mantine-scale))",
+      "socialLinksMinWidth": "calc(15.5rem * var(--mantine-scale))",
+      "spacing": "calc(2rem * var(--mantine-scale))",
+      "wordmark": {
+        "boxMaxWidth": "calc(34.6875rem * var(--mantine-scale))",
+        "boxMinWidth": "calc(21.75rem * var(--mantine-scale))",
+        "inset": "calc(4rem * var(--mantine-scale))",
+        "maxWidth": "calc(21.875rem * var(--mantine-scale))",
+      },
+    },
     "forms": {
       "fieldset": {
-        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "fieldGroupSpacing": "calc(1.5rem * var(--mantine-scale))",
+        "requiredIndicatorGap": "calc(0.25rem * var(--mantine-scale))",
+        "selectionItemsSpacing": "calc(1rem * var(--mantine-scale))",
+        "spacing": "calc(1rem * var(--mantine-scale))",
       },
       "spacing": "calc(1.5rem * var(--mantine-scale))",
     },
@@ -2806,6 +3458,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
       "highlightFontWeight": "600",
     },
     "labeledIconButton": {
+      "label": {
+        "fontWeight": "600",
+      },
       "spacing": "calc(0.5rem * var(--mantine-scale))",
     },
     "link": {
@@ -2846,6 +3501,16 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
         "vertical": "calc(0.75rem * var(--mantine-scale))",
       },
     },
+    "navigationLink": {
+      "icon": {
+        "size": "calc(1.125rem * var(--mantine-scale))",
+        "spacing": "calc(0.5rem * var(--mantine-scale))",
+        "verticalOffset": "-0.1em",
+      },
+      "label": {
+        "mediumFontWeight": "600",
+      },
+    },
     "pagination": {
       "itemHeight": "calc(2.5rem * var(--mantine-scale))",
       "itemWidth": "calc(2.5rem * var(--mantine-scale))",
@@ -2868,6 +3533,9 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
     },
     "select": {
       "dropDownMaxHeight": "calc(21.875rem * var(--mantine-scale))",
+    },
+    "skipLink": {
+      "zIndex": "101",
     },
     "switch": {
       "backgroundUnchecked": "#dedee2",
@@ -2992,6 +3660,7 @@ exports[`Token Values Match Snapshot > xxl 1`] = `
   "inputStates": {
     "default": "#52525b",
   },
+  "minTouchTarget": "calc(1.5rem * var(--mantine-scale))",
   "selectionStates": {
     "unchecked": {
       "active": "#9999a0",

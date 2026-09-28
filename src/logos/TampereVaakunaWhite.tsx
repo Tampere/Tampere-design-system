@@ -1,11 +1,18 @@
-export function TampereVaakunaWhite() {
+export function TampereVaakunaWhite({
+  className,
+  ...props
+}: { className?: string } & React.AriaAttributes) {
+  // Cropped to the ink (plus the 0.5-wide stroke) so a CSS height sizes the mark
+  // itself, not blank rows above and below it.
   return (
     <svg
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
       width="158"
       height="41"
-      viewBox="0 0 158 41"
+      viewBox="0 0.34 158 40.53"
       fill="none"
+      {...props}
     >
       <g>
         <path

@@ -235,9 +235,32 @@ export const InvertedVariantFocusVisibleHasBackground: Story = {
     button.focus();
     const style = getComputedStyle(button);
     await expect(style.outlineStyle).toBe('solid');
+    // The default focus ring's dark outline drops below WCAG 1.4.11/2.4.13's
+    // 3:1 contrast requirement on a coloured background — inverted must use
+    // the white outline (focus.visibleInverted) instead.
+    await expect(style.outlineColor).toBe('rgb(255, 255, 255)');
     // iconButtonBackground.inverted = iconButton.states.contrast.overlay =
     // rgba(255, 255, 255, 0.1) — exact match, not just "some color".
     await expect(style.backgroundColor).toBe('rgba(255, 255, 255, 0.1)');
+  },
+};
+
+export const InvertedAsAnchorHasWhiteIconColour: Story = {
+  tags: ['!dev', '!autodocs'],
+  // Rendered as `component="a"` with no explicit icon `fill` (e.g. Footer's
+  // social links): needs an explicit rest-state colour on the root, or
+  // `fill="currentColor"` resolves to the UA anchor-blue default instead of white.
+  render: (args) => (
+    <Box style={{ backgroundColor: vars.brand.blue.mainDark, width: 'fit-content' }}>
+      <IconButton component="a" href="#search" size="md" {...args} variant="inverted">
+        <SearchIcon />
+      </IconButton>
+    </Box>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Search' });
+    await expect(getComputedStyle(link).color).toBe('rgb(255, 255, 255)');
   },
 };
 

@@ -25,6 +25,12 @@ export interface LabeledIconButtonProps
   variant?: 'default' | 'inverted';
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  /** Swaps the rendered root element (e.g. a router `Link`) while keeping the
+   * icon/label children this component builds — forwarded to Mantine's
+   * `UnstyledButton`/`Box`, which already implements it. `any`, not a
+   * stricter type, matches Mantine's own `renderRoot` signature so the
+   * returned props object can be spread onto any element/component. */
+  renderRoot?: (props: Record<string, any>) => React.ReactNode;
 }
 
 export const LabeledIconButton = forwardRef<HTMLButtonElement, LabeledIconButtonProps>(

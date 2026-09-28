@@ -5,7 +5,7 @@ const {
   theme: {
     states,
     font,
-    components: { input: inputVars, textField },
+    components: { input: inputVars, textField, typography },
     text,
     focusRing,
     cornerRadius: { sharp: cornerRadius },
@@ -70,6 +70,7 @@ export const labelRoot = style({
   margin: textField.labelMargin,
   color: text.primary,
   fontSize: inputVars.font.label.fontSize,
+  fontWeight: typography.subheader.fontWeight,
   lineHeight: inputVars.font.label.lineHeight,
   letterSpacing: font.letterSpacing,
 });
