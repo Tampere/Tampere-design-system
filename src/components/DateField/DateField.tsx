@@ -48,6 +48,7 @@ type CalendarSession = { open: false } | { open: true; staged: Date | null; mont
 
 export interface DateFieldClassNames {
   root: string;
+  /** Applied to the wrapper around the `<input>` and its calendar button, not to the `<input>` itself — unlike `TimeFieldClassNames.input` (#129). */
   input: string;
   calendar: string;
 }
