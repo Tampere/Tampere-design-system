@@ -27,15 +27,14 @@ const states = {
   active: brand.blue.mainLight,
   disabled: colors.neutral['300'],
   error: colors.red['300'],
-  // Figma's "text/link-visited" (brand.blue.mainLight, #5f93c6) only reaches
-  // 3.24:1 against white — fails WCAG AA (4.5:1) for normal text. Uses the
-  // darkest blue brand stop instead, which clears AA with margin to spare.
+
+  // Figma's link-visited (mainLight, #5f93c6) is only 3.24:1 against white,
+  // failing WCAG AA (4.5:1) — uses the darkest blue stop instead to clear it.
   visited: brand.blue.mainExtraDark,
 } as const;
 
-// Figma's "Input-states" variable collection — distinct from "Primary-states"
-// (which `states` above maps to). Form-control borders are neutral at rest;
-// they only borrow the brand blue from `states` on hover/focus.
+// Figma's Input-states collection (distinct from Primary-states/`states`
+// above) — borders are neutral at rest, borrowing brand blue only on hover/focus.
 const inputStates = { default: colors.neutral['600'] } as const;
 
 // Figma's Effects/Divider — shared by the semantic `divider` token below and
@@ -63,17 +62,12 @@ const text = {
 
 const highlight = { fontWeight: '700', backgroundColor: 'transparent' } as const;
 
-// `sharp` is TREDS's system-wide default (Figma `Effects/Corner-radius/Default`).
-// `rounded` is Figma's `Effects/Corner-radius/Rounded` = 9999 — comfortably larger
-// than half of any built-in control height (max 52px, see controlHeights below), so
-// it clips to a full stadium/pill shape for every control this tier is used on.
-// `rounded` is a plain literal, not `rem(...)` — scaling a pill radius by
-// `--mantine-scale` is meaningless (it already clips to a full stadium/pill).
+// `sharp` = system default; `rounded` (9999) clips any control to a pill.
+// Literal, not rem() — a pill radius doesn't scale.
 const cornerRadius = { sharp: rem(0), rounded: '9999px' } as const;
 
-// Single source of truth for Chip label's line-height, so `chip.label.lineHeight`
-// and `chip.height`'s calc formula (which derives the same 150% relationship
-// from the label's font size) can't silently desync.
+// Single source for Chip's label line-height so `label.lineHeight` and
+// `height`'s calc can't desync.
 const chipLineHeightPercent = 150;
 
 const strokeWeight = rem('2px');
@@ -86,8 +80,7 @@ const strokeWeight = rem('2px');
 const minTouchTarget = rem('24px');
 
 const dropShadow = 'rgba(0, 0, 0, 0.5000)';
-// Figma's Card/Accordion dropshadow spec (offset 0/1, blur 4, spread 0) — shared
-// so the two components' shadows can't drift apart by editing one.
+// Figma's Card/Accordion shadow spec, shared so the two can't drift apart.
 const dropShadowTile = `0px 1px 4px 0px ${dropShadow}`;
 
 const focusRing = {
@@ -102,8 +95,8 @@ const focusRingInverted = {
 const fontFamilyHeader = 'Montserrat Variable, sans-serif';
 const fontFamilyBody = 'Open Sans Variable, sans-serif';
 
-// Figma `Breakpoint/Input/Line-height + 2 × Breakpoint/Spacing/Small` per breakpoint. See issue #79.
-// Every button variant and input renders at this height; borders are absorbed via `box-sizing: border-box`.
+// Figma Input line-height + 2×Spacing/Small per breakpoint (#79); every
+// button/input renders at this height, borders absorbed via border-box.
 const controlHeights = {
   xxl: '52px',
   xl: '52px',
@@ -113,8 +106,8 @@ const controlHeights = {
   xs: '40px',
 } as const satisfies Record<BreakpointKey, string>;
 
-// Calendar day-cell size: 50px from md up, shrinks to 36px on sm/xs to fit a ~320px popover.
-// `cellGap`/`headerGap`/`todayMarkerInset` below are fixed across breakpoints — only the cell size itself scales.
+// Day-cell size: 50px from md up, 36px on sm/xs to fit a ~320px popover.
+// cellGap/headerGap/todayMarkerInset stay fixed — only cell size scales.
 const calendarCellSizes = {
   xxl: '50px',
   xl: '50px',
@@ -125,10 +118,9 @@ const calendarCellSizes = {
 } as const satisfies Record<BreakpointKey, string>;
 
 /**
- * Returns the full `theme` tier (semantic + component tokens) for a given breakpoint.
- * Component tokens are nested under `.components` (e.g. `getTheme(bp).components.button`) —
- * this is not a drop-in replacement for the old `getComponents(bp)`, which returned the
- * components object directly one level up.
+ * Returns the theme tier for a breakpoint. Component tokens live under
+ * `.components` (e.g. `getTheme(bp).components.button`) — not a drop-in for
+ * the old `getComponents(bp)`.
  */
 export function getTheme(bp: BreakpointKey) {
   const bpTokens = breakpoint[bp];
@@ -277,22 +269,17 @@ export function getTheme(bp: BreakpointKey) {
     },
     button: {
       fontSize: bpTokens.typography.size.p2,
-      // Figma's button label reuses Subheader's Semi-Bold weight rather than P2's
-      // own Regular — same "borrow a heavier style's weight" pattern as Chip's
-      // `chip.label.fontWeight` below, kept as its own token (not a reference to
-      // `typography.subheader.fontWeight`) so a future Subheader change can't
-      // silently restyle every button.
+      // Borrows Subheader's Semi-Bold weight (not P2's Regular) — its own
+      // token, not a reference, so a Subheader change can't restyle every button.
       fontWeight: '600',
       lineHeight: bpTokens.components.button.lineHeight,
       spacing: bpTokens.spacing.xs,
-      // Figma splits these across two different spacing tokens — `spacing/medium`
-      // horizontal, `spacing/small` vertical — not the same value on both axes.
+      // Figma splits these: spacing/medium horizontal, spacing/small vertical.
       padding: { horizontal: bpTokens.spacing.md, vertical: bpTokens.spacing.sm },
     },
     card: {
       textContentSpacing: primitives.spacing['1'],
-      // Figma's "Card static content" top-level gap (spacing/medium) — between the
-      // text-content block (eyebrow/title/body) and the actions slot.
+      // Gap between the text-content block and the actions slot (spacing/medium).
       spacing: bpTokens.spacing.md,
       // Photos' conventional crop ratio, used for `top`-placement media.
       mediaAspectRatio: '3 / 2',
@@ -300,23 +287,17 @@ export function getTheme(bp: BreakpointKey) {
       mediaSplit: '50%',
     },
     paper: {
-      // Figma's "Card static content" padding scale (spacing/medium,
-      // spacing/extra-large, spacing/2-extra-large) — confirmed responsive
-      // (e.g. `small` is 24px at xxl/xl/lg but drops to 16px from the `md`
-      // (768px) breakpoint down through `xs`, same as every other
-      // `bpTokens.spacing` consumer).
+      // Figma's Card padding scale (spacing/medium, xl, 2xl) — responsive
+      // like every other bpTokens.spacing consumer.
       padding: {
         small: bpTokens.spacing.md,
         medium: bpTokens.spacing.xl,
         large: bpTokens.spacing.xxl,
       },
-      // Figma's Card "color override" examples — confirmed by pixel-sampling a
-      // real rendered instance of each (Figma's own reference codegen only
-      // reports the base component's default binding, not per-instance fill
-      // overrides, so this couldn't be read from `get_design_context` alone).
-      // Only these three are wired up because only these three have a real
-      // Figma example backing the exact shade — `red`/`yellow`/`green` aren't
-      // included since guessing an untested shade risks a contrast mismatch.
+      // Card color overrides, confirmed by pixel-sampling real instances
+      // (Figma's codegen only reports default bindings). Only these three
+      // have a real example backing the shade — no red/yellow/green, to
+      // avoid guessing an untested shade.
       background: {
         turquoise: colors.turquoise['300'],
         blue: colors.blue['500'],
@@ -338,58 +319,40 @@ export function getTheme(bp: BreakpointKey) {
       iconSize: rem('18px'),
     },
     chip: {
-      // Figma's "spacing/2-extra-small" — confirmed against the dedicated
-      // "Breakpoints" reference frame (5870:41586) in the redesign file,
-      // which binds this exact gap (icon↔label, label↔dismiss-button) to
-      // that variable at every breakpoint (8px at xxl/xl/lg, 4px at
-      // md/sm/xs) — not `xs` ("spacing/extra-small", 12px/8px), which an
-      // earlier, apparently-stale example instance elsewhere in the file
-      // used and this token was previously (incorrectly) matched to.
+      // Figma spacing/2-extra-small, confirmed against the Breakpoints
+      // reference frame (5870:41586) — not spacing/extra-small, which a
+      // stale example elsewhere incorrectly matched this to before.
       spacing: bpTokens.spacing.xxs,
       cornerRadius: rem('20px'),
-      // Figma's "Chip/Label" composite token: Caption's own size/family/line-height,
-      // but Subheader-style Semi-Bold weight rather than Caption's own Regular —
-      // matches `typography.caption` above except for that one deliberate override.
+      // Caption's size/family/line-height, but Subheader's Semi-Bold weight
+      // instead of Caption's own Regular.
       label: {
         fontFamily: fontFamilyBody,
         fontSize: bpTokens.typography.size.caption,
         fontWeight: '600',
         lineHeight: `${chipLineHeightPercent}%`,
       },
-      // Vertical padding is a fixed constant (not per-breakpoint, unlike
-      // `horizontal` below) — Figma's Spacing/0,5 = 4px at every breakpoint.
-      // Combined with `label`'s breakpoint-varying Caption size/line-height,
-      // this gives the spec's 32px total height at the lg/xl/xxl tier
-      // (4 + 150%*16px + 4 = 32) and a correspondingly smaller height on
-      // narrower breakpoints as Caption itself shrinks — same "reference
-      // height at the largest breakpoint" pattern used elsewhere in TREDS.
+      // Vertical padding is fixed (spacing/0,5 = 4px) unlike horizontal below;
+      // combined with label's responsive Caption size, gives 32px total
+      // height at lg/xl/xxl and shrinks with Caption on narrower breakpoints.
       padding: { horizontal: bpTokens.spacing.sm, vertical: primitives.spacing['0,5'] },
-      // Total pill height = 2×vertical padding + line-height of the label's
-      // font size (`chipLineHeightPercent`, matching `label.lineHeight`
-      // above). Mantine's Chip has no vertical-padding concept of its own
-      // (it sets height directly via --chip-size), so this is computed once
-      // here and fed to the Mantine-wrapped filter role, the bespoke
-      // removable-tag role, and Badge, keeping all three heights identical.
+      // 2×vertical padding + label line-height; computed here since
+      // Mantine's Chip has no vertical-padding concept, feeding both the
+      // filter and removable-tag roles the same height.
       height: `calc(${primitives.spacing['0,5']} * 2 + ${bpTokens.typography.size.caption} * ${chipLineHeightPercent / 100})`,
-      // Figma's "Neutral/100" tag fill — distinct from `background.disabled`
-      // even though the raw value is the same, since that token means
-      // something unrelated (a disabled-state background, not a tag chip's
-      // resting fill) — see the TextLink review lesson on not reusing a
-      // semantically-mismatched token just because its value happens to match.
+      // Figma's Neutral/100 tag fill — kept distinct from `background.disabled`
+      // even though the value matches, since that token means something
+      // semantically different (see the TextLink review lesson).
       tagFill: colors.neutral['100'],
-      // Fixed constant like `padding.vertical` above, not part of the
-      // responsive scale — Figma's Chip "Icon" slot is a literal 18×18px
-      // square at every breakpoint (verified against the 768/480/320
-      // breakpoint mockups in the redesign file, all identical).
+      // Fixed like padding.vertical — Figma's Chip icon is a literal
+      // 18×18px square at every breakpoint.
       iconSize: rem('18px'),
     },
     datePicker: {
       todayMarker: colors.neutral['800'],
-      // Contrast variant for a today cell that's also selected (blue background) —
-      // Figma's Components/Date-picker/Today-marker-contrast.
+      // Contrast variant for a today cell that's also selected (blue background).
       todayMarkerContrast: colors.neutral.white,
-      // Outer dropdown padding and the gap between header/grid/footer — Figma
-      // `Spacing/Medium`, which scales 24→16 across breakpoints.
+      // Outer dropdown padding and header/grid/footer gap — Spacing/Medium.
       padding: bpTokens.spacing.md,
       cellSize: rem(calendarCellSizes[bp]),
       cellGap: primitives.spacing['0,5'],
@@ -460,10 +423,9 @@ export function getTheme(bp: BreakpointKey) {
     },
     iconButton: {
       padding: rem('2px'),
-      // Unused by IconButton/LabeledIconButton's interactive-state backgrounds —
-      // those correctly use the top-level cornerRadius.sharp (0px), verified
-      // against Figma's Effects/Corner-radius/Default = 0 for this component
-      // family. Do not wire this in without re-checking Figma.
+      // Unused by IconButton/LabeledIconButton — those correctly use the
+      // top-level cornerRadius.sharp (0px). Don't wire this in without
+      // re-checking Figma.
       cornerRadius: rem('4px'),
       minTouchTarget: rem('24px'),
       states: {
@@ -480,14 +442,13 @@ export function getTheme(bp: BreakpointKey) {
         focus: colors.neutral['500'],
         active: colors.neutral['400'],
         disabled: colors.neutral['400'],
-        // Figma Background/Hover|Focus|Active = #f7f7f9 = colors.neutral['50'].
-        // (colors.neutral.warm['100'] = #f1eeeb was the wrong token here — that
-        // warm tint belongs to the Select "selected item" highlight instead.)
+        // Figma Background/Hover|Focus|Active = neutral['50'] — not
+        // neutral.warm['100'] (that belongs to Select's selected-item highlight).
         overlay: colors.neutral['50'],
       },
     },
     labeledIconButton: {
-      // Figma Spacing/1 = 8, a fixed constant (not per-breakpoint).
+      // Figma Spacing/1 = 8, fixed (not per-breakpoint) — same as forms.fieldset.spacing.
       spacing: primitives.spacing['1'],
       // Figma's label uses the Button/Medium text style: Caption's own
       // size/family/line-height, but Subheader-style Semi-Bold weight rather
@@ -503,8 +464,7 @@ export function getTheme(bp: BreakpointKey) {
           fontSize: bpTokens.typography.size.p2,
           lineHeight: bpTokens.components.input.lineHeight,
         },
-        // Figma uses the same Components/Input/Line-height token for the label as
-        // for the input text itself — match it instead of a fixed value.
+        // Matches the input text's own line-height token, not a fixed value.
         label: {
           fontSize: bpTokens.typography.size.p2,
           lineHeight: bpTokens.components.input.lineHeight,
@@ -534,22 +494,16 @@ export function getTheme(bp: BreakpointKey) {
     },
     link: {
       spacing: bpTokens.spacing.xxs,
-      // em-based (not breakpoint-driven, unlike `spacing` above) because
-      // TextLink's `size` spans the full Typography scale (h1…caption), so
-      // the icon gap must scale with whatever size is in use, not just bp.
+      // em-based, not breakpoint-driven — TextLink's `size` spans the full
+      // type scale, so the gap must scale with size, not just bp.
       iconSpacing: '0.25em',
-      // Same reasoning: em-based so the icon scales with `size` like the text
-      // around it. `iconVerticalOffset` nudges it up to visually balance
-      // against the underline (see the usage site for why).
+      // Same reasoning — em-based to scale with `size`. iconVerticalOffset
+      // nudges it up to balance against the underline.
       iconSize: '1em',
       iconVerticalOffset: '-0.2em',
-      // Same reasoning as iconSpacing: em-based, and set explicitly rather
-      // than left at the browser's auto/from-font default — empirically,
-      // the auto thickness appeared heavier on the bold h1…h5 weights than
-      // on p1/p2/caption, which made the hover/focus increase below barely
-      // register. Fixing the rest-state thickness keeps the hover/focus
-      // increase visually consistent across every size and weight in the
-      // scale.
+      // em-based, set explicitly rather than the browser default — auto
+      // thickness looked heavier on bold h1-h5 than p1/p2/caption, burying
+      // the hover/focus increase. Fixing it keeps that increase consistent.
       underlineThickness: '0.1em',
       hoverUnderlineThickness: '0.125em',
     },
@@ -608,6 +562,16 @@ export function getTheme(bp: BreakpointKey) {
       zIndex: '101',
     },
     switch: { height: rem('24px'), backgroundUnchecked: colors.neutral['200'] },
+    tabs: {
+      label: { fontWeight: { default: '400', selected: '600' } },
+      indicator: { thickness: rem('6px') },
+      rule: { thickness: rem('2px'), color: colors.neutral['600'] },
+      text: {
+        default: text.secondary,
+        selected: states.default,
+      },
+      scrollButton: { spacing: bpTokens.spacing.xs },
+    },
   };
 
   return {
