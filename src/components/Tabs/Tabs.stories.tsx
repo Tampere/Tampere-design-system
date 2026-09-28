@@ -4,8 +4,6 @@ import { within, userEvent, waitFor } from '@storybook/testing-library';
 import { expect, fn } from 'storybook/test';
 import { Tabs, TabsList, TabsTab, TabsPanel } from './Tabs';
 
-// Hardcoded <Tabs> trees, not `args` — TabsProps' discriminated union on
-// `scrollable` doesn't play well with Storybook's args typing.
 const meta = {
   component: Tabs,
   tags: ['!dev', '!autodocs'],
@@ -23,7 +21,7 @@ export const Default: Story = {
   tags: docExample,
   render: () => (
     <Tabs defaultValue="first">
-      <TabsList>
+      <TabsList aria-label="Esimerkkivälilehdet">
         <TabsTab value="first">Välilehti</TabsTab>
         <TabsTab value="second">Välilehti</TabsTab>
         <TabsTab value="third">Välilehti</TabsTab>
@@ -426,14 +424,10 @@ export const ScrollButtonsAppearAndDisableAtEnds: Story = {
   },
 };
 
+// Omits the scroll labels on purpose, so the assertions also cover the Finnish defaults
 export const NonOverflowingScrollableRendersBothChevronsDisabled: Story = {
   render: () => (
-    <Tabs
-      defaultValue="bussit"
-      scrollable
-      scrollLeftLabel="Vieritä vasemmalle"
-      scrollRightLabel="Vieritä oikealle"
-    >
+    <Tabs defaultValue="bussit" scrollable>
       <TabsList>
         <TabsTab value="bussit">Bussit</TabsTab>
         <TabsTab value="ratikat">Ratikat</TabsTab>
@@ -518,5 +512,22 @@ export const TablistContainsOnlyTabChildren: Story = {
       (child) => child.getAttribute('role') !== 'tab'
     );
     await expect(nonTabChildren).toHaveLength(0);
+  },
+};
+
+export const TabsListForwardsAriaLabel: Story = {
+  render: () => (
+    <Tabs defaultValue="bussit">
+      <TabsList aria-label="Aikataulut">
+        <TabsTab value="bussit">Bussit</TabsTab>
+        <TabsTab value="ratikat">Ratikat</TabsTab>
+      </TabsList>
+      <TabsPanel value="bussit">Bussiaikataulut</TabsPanel>
+      <TabsPanel value="ratikat">Ratikka-aikataulut</TabsPanel>
+    </Tabs>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('tablist', { name: 'Aikataulut' })).toBeInTheDocument();
   },
 };

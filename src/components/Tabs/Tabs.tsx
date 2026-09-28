@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  type AriaAttributes,
   type PropsWithChildren,
   type ReactNode,
 } from 'react';
@@ -41,13 +42,21 @@ const SCROLL_STEP_RATIO = 0.8;
 interface TabsListConfig {
   align: TabsAlign;
   scrollable: boolean;
-  scrollLeftLabel?: string;
-  scrollRightLabel?: string;
+  scrollLeftLabel: string;
+  scrollRightLabel: string;
 }
 
-const TabsListContext = createContext<TabsListConfig>({ align: 'left', scrollable: false });
+const DEFAULT_SCROLL_LEFT_LABEL = 'Vieritä vasemmalle';
+const DEFAULT_SCROLL_RIGHT_LABEL = 'Vieritä oikealle';
 
-interface TabsBaseProps extends PropsWithChildren {
+const TabsListContext = createContext<TabsListConfig>({
+  align: 'left',
+  scrollable: false,
+  scrollLeftLabel: DEFAULT_SCROLL_LEFT_LABEL,
+  scrollRightLabel: DEFAULT_SCROLL_RIGHT_LABEL,
+});
+
+export interface TabsProps extends PropsWithChildren {
   /** Controlled value. */
   value?: string | null;
   /** Uncontrolled default value. */
@@ -55,6 +64,12 @@ interface TabsBaseProps extends PropsWithChildren {
   onChange?: (value: string | null) => void;
   /** Position of the tab group within the full-width track. @default 'left' */
   align?: TabsAlign;
+  /** If set, the tabs scroll horizontally with chevron buttons when they overflow. @default false */
+  scrollable?: boolean;
+  /** Accessible name for the scroll-left button. @default 'Vieritä vasemmalle' */
+  scrollLeftLabel?: string;
+  /** Accessible name for the scroll-right button. @default 'Vieritä oikealle' */
+  scrollRightLabel?: string;
   /** If set, `arrow key` presses loop through items (first to last and last to first). @default true */
   loop?: boolean;
   /** If set, a tab is activated with arrow-key focus. @default true */
@@ -65,21 +80,14 @@ interface TabsBaseProps extends PropsWithChildren {
   classNames?: { root?: string };
 }
 
-// Required only when scrollable — no English fallback, consumer apps are Finnish
-export type TabsProps = TabsBaseProps &
-  (
-    | { scrollable: true; scrollLeftLabel: string; scrollRightLabel: string }
-    | { scrollable?: false; scrollLeftLabel?: never; scrollRightLabel?: never }
-  );
-
 export const Tabs = ({
   value,
   defaultValue,
   onChange,
   align = 'left',
   scrollable = false,
-  scrollLeftLabel,
-  scrollRightLabel,
+  scrollLeftLabel = DEFAULT_SCROLL_LEFT_LABEL,
+  scrollRightLabel = DEFAULT_SCROLL_RIGHT_LABEL,
   loop = true,
   activateTabWithKeyboard = true,
   keepMounted = true,
@@ -111,12 +119,13 @@ export const Tabs = ({
   );
 };
 
-export interface TabsListProps {
+// AriaAttributes so the tablist can be named (aria-label / aria-labelledby)
+export interface TabsListProps extends AriaAttributes {
   children: ReactNode;
   classNames?: { list?: string };
 }
 
-export const TabsList = ({ children, classNames }: TabsListProps) => {
+export const TabsList = ({ children, classNames, ...rest }: TabsListProps) => {
   const { align, scrollable, scrollLeftLabel, scrollRightLabel } = use(TabsListContext);
 
   const { ref: viewportRef, width: viewportWidth } = useElementSize<HTMLDivElement>();
@@ -150,11 +159,6 @@ export const TabsList = ({ children, classNames }: TabsListProps) => {
     activeTab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [viewportRef]);
 
-  // Covers the initial tab (defaultValue) — the observer below only fires on later changes
-  useEffect(() => {
-    scrollActiveIntoView();
-  }, [scrollActiveIntoView]);
-
   // Managed directly (not via mantine's useMutationObserver) so the effect
   // genuinely depends on `scrollable` and re-attaches once the viewport div
   // exists
@@ -162,6 +166,9 @@ export const TabsList = ({ children, classNames }: TabsListProps) => {
     if (!scrollable) return;
     const node = viewportRef.current;
     if (!node) return;
+    // The observer only fires on later changes, so reveal the tab that is
+    // already active — on mount, or when `scrollable` flips to true
+    scrollActiveIntoView();
     const observer = new MutationObserver(scrollActiveIntoView);
     observer.observe(node, mutationOptions);
     return () => observer.disconnect();
@@ -176,6 +183,7 @@ export const TabsList = ({ children, classNames }: TabsListProps) => {
   const tabsList = (
     <MantineTabs.List
       ref={contentRef}
+      {...rest}
       classNames={{ ...mergeClassNames({ list }, classNames) }} // Spread to tell typescript an object is always returned
     >
       {children}
