@@ -31,7 +31,7 @@
     "prepare": "husky",
     "test:watch": "vitest watch",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p .storybook"
   },
   "peerDependencies": {
     "@fontsource-variable/montserrat": "^5.2.8",
