@@ -9,6 +9,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { playwright } from '@vitest/browser-playwright';
+import type { BrowserCommand } from 'vitest/node';
+
+// The real Playwright mouse belongs to the page and outlives the test that moved it, so
+// the next test's content can render under it and match :hover. Parked off-page before
+// every test by .storybook/vitest.setup.ts.
+const parkMouse: BrowserCommand<[]> = async (context) => {
+  await context.page.mouse.move(-1, -1);
+};
+
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,6 +41,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright({}),
+            commands: { parkMouse },
             instances: [
               {
                 browser: 'chromium',

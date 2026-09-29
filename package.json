@@ -30,7 +30,8 @@
     "build": "rollup -c",
     "prepare": "husky",
     "test:watch": "vitest watch",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p .storybook"
   },
   "peerDependencies": {
     "@fontsource-variable/montserrat": "^5.2.8",
