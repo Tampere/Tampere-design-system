@@ -1,4 +1,4 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# Runs the CI checks, then publishes the package to GitHub Packages when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
 name: Publish package to GitHub Packages
@@ -6,7 +6,12 @@ on:
   release:
     types: [published]
 jobs:
-  build:
+  check:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+  publish:
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -14,9 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       # Setup .npmrc file to publish to GitHub Packages
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20.x'
+          node-version-file: .nvmrc
           registry-url:
             'https://npm.pkg.github.com'
             # Defaults to the user or organization that owns the workflow file
