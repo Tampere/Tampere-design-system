@@ -15,13 +15,12 @@ import {
 export interface Breadcrumb {
   label: string;
   href?: string;
-  /** Needs to have className and children placed from props in order to function correctly.  */
-
+  /** Needs to have className and children placed from props in order to function correctly. */
   linkComponent?: (props: any) => ReactNode;
 }
 
 export interface Props {
-  /** Maximum number of five breadcrumb elements are displayed.  */
+  /** Maximum number of five breadcrumb elements are displayed. */
   items: Breadcrumb[];
   ariaLabel?: string;
   className?: string;
@@ -30,14 +29,20 @@ export interface Props {
 
 export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
   const displayedItems = items.slice(-5);
+  const navigationLabel = ariaLabel || 'Murupolku';
 
   if (isMobile) {
     const prevLevelItem =
-      displayedItems.length > 2 ? items[displayedItems.length - 2] : displayedItems[0];
+      displayedItems.length > 2 ? displayedItems[displayedItems.length - 2] : displayedItems[0];
+
+    if (!prevLevelItem) {
+      return null;
+    }
+
     return (
-      <nav {...(ariaLabel && { ['aria-label']: ariaLabel })} className={cx(breadcrumbs, className)}>
+      <nav aria-label={navigationLabel} className={cx(breadcrumbs, className)}>
         <Flex className={mobileWrapper}>
-          <ArrowLeftIcon className={arrowLeftIcon} />
+          <ArrowLeftIcon className={arrowLeftIcon} aria-hidden="true" />
           <Anchor
             datatype="mobile-breadcrumb"
             className={breadcrumbItem}
@@ -54,23 +59,37 @@ export function Breadcrumbs({ items, ariaLabel, className, isMobile }: Props) {
   }
 
   return (
-    <nav {...(ariaLabel && { ['aria-label']: ariaLabel })} className={breadcrumbs}>
+    <nav aria-label={navigationLabel} className={cx(breadcrumbs, className)}>
       <ol className={breadcrumbsList}>
-        {displayedItems.map((item, idx) => (
-          <li key={item.label}>
-            <Anchor
-              className={breadcrumbListItem}
-              {...(item.href && { href: item.href })}
-              {...(item.linkComponent && {
-                renderRoot: (props) => item.linkComponent?.(props),
-              })}
-            >
-              {item.label}
-            </Anchor>
+        {displayedItems.map((item, idx) => {
+          const isCurrentPage = idx === displayedItems.length - 1;
 
-            {idx < displayedItems.length - 1 && <span className={separator}>›</span>}
-          </li>
-        ))}
+          return (
+            <li key={item.label}>
+              {isCurrentPage ? (
+                <span className={breadcrumbListItem} aria-current="page">
+                  {item.label}
+                </span>
+              ) : (
+                <>
+                  <Anchor
+                    className={breadcrumbListItem}
+                    {...(item.href && { href: item.href })}
+                    {...(item.linkComponent && {
+                      renderRoot: (props) => item.linkComponent?.(props),
+                    })}
+                  >
+                    {item.label}
+                  </Anchor>
+
+                  <span aria-hidden="true" className={separator}>
+                    ›
+                  </span>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
