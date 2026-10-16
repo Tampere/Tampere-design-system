@@ -97,8 +97,7 @@ export const Error: Story = {
 
 export const RadioGroup: Story = {
   render: () => {
-    const [selected, setSelected] = useArgs();
-    const selectedValue = selected.selected || 'option1';
+    const [selected, setSelected] = useState('option1');
 
     return (
       <fieldset
@@ -111,22 +110,16 @@ export const RadioGroup: Story = {
         }}
       >
         <label>Radio button group</label>
-        <RadioButton
-          label="Option 1"
-          checked={selectedValue === 'option1'}
-          onClick={() => setSelected({ selected: 'option1' })}
-        />
-        <RadioButton
-          label="Option 2"
-          checked={selectedValue === 'option2'}
-          onClick={() => setSelected({ selected: 'option2' })}
-        />
-        <RadioButton
-          label="Option 3"
-          checked={selectedValue === 'option3'}
-          onClick={() => setSelected({ selected: 'option3' })}
-        />
-        <RadioButton label="Disabled option" disabled checked={false} />
+        {['option1', 'option2', 'option3'].map((value, i) => (
+          <RadioButton
+            key={value}
+            name="radio-group"
+            label={`Option ${i + 1}`}
+            checked={selected === value}
+            onChange={() => setSelected(value)}
+          />
+        ))}
+        <RadioButton name="radio-group" label="Disabled option" disabled checked={false} />
       </fieldset>
     );
   },
@@ -198,26 +191,9 @@ export const ErrorCheckedHover: Story = {
   },
 };
 
-// `RadioGroup` keeps its selection in Storybook args, which don't round-trip in the test runner.
-const ControlledGroup = () => {
-  const [selected, setSelected] = useState('option1');
-  return (
-    <div>
-      {['option1', 'option2', 'option3'].map((value, i) => (
-        <RadioButton
-          key={value}
-          label={`Option ${i + 1}`}
-          checked={selected === value}
-          onChange={() => setSelected(value)}
-        />
-      ))}
-    </div>
-  );
-};
-
 export const ControlledGroupUnchanged: Story = {
   tags: ['!dev', '!autodocs'],
-  render: () => <ControlledGroup />,
+  render: RadioGroup.render,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByText('Option 2'));
