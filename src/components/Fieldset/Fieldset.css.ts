@@ -77,17 +77,16 @@ export const childrenWrapper = style({
   gap: forms.fieldset.fieldGroupSpacing,
 });
 
-// Groups same-type selection controls (Checkbox/RadioButton items) into a
-// single Fieldset child, matching Figma's "Checkbox group"/"Radio button
-// group" sub-components. TREDS has no dedicated CheckboxGroup/RadioGroup
-// component yet, so this is exported for consumers (and the doc examples) to
-// apply directly. Uses its own `selectionItemsSpacing` token (not the larger
-// `fieldGroupSpacing` meant for grouping distinct field types) — see that
-// token's own comment in theme.ts for why it's separate from `spacing`.
-/** Flex-column wrapper class for grouping Checkbox/RadioButton items inside one Fieldset — see the WithCheckboxGroup/WithRadioGroup doc examples. */
+/**
+ * Groups same-type selection controls (Checkbox/RadioButton items) into a single Fieldset
+ * child, matching Figma's "Checkbox group"/"Radio button group" sub-components. Exported
+ * because TREDS has no dedicated CheckboxGroup/RadioGroup component yet.
+ */
 export const fieldsetSelectionGroup = style({
   display: 'flex',
   flexDirection: 'column',
+  // Not the larger `fieldGroupSpacing`, which groups distinct field types; see theme.ts for
+  // why this token is separate from `spacing`
   gap: forms.fieldset.selectionItemsSpacing,
 });
 
