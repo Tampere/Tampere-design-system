@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { Fieldset } from '../Fieldset';
 import { RadioButton } from './RadioButton';
 
@@ -225,5 +225,63 @@ export const ControlledGroupUnchanged: Story = {
     await expect(isShownChecked(radios[1])).toBe(true);
     await expect(fillOf(radios[1])).toBe('rgb(41, 84, 154)');
     await expect(isShownChecked(radios[0])).toBe(false);
+  },
+};
+
+// ── Dev-warning tests (#139: a controlled RadioButton that only wires `onClick` must not log
+// React's "checked without onChange" warning, and a caller's own `onChange` must still fire) ──
+
+let capturedConsoleErrors: string[] = [];
+
+// Captured once at module scope so an aborted story can't leave a stub as the "original".
+const nativeConsoleError = console.error;
+
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+    nativeConsoleError(...messageArgs);
+  };
+  return () => {
+    console.error = nativeConsoleError;
+  };
+};
+
+export const ControlledWithoutOnChangeDoesNotWarn: Story = {
+  tags: ['!dev', '!autodocs'],
+  // No `args` spread: meta's `onChange` action would otherwise populate `onChange` and mask the bug.
+  render: () => <RadioButton label="Controlled option" checked onClick={() => {}} />,
+  beforeEach: captureConsoleErrors,
+  play: async ({ canvasElement }) => {
+    // Positive control: "no error matches" is trivially true if the capture isn't live.
+    const sentinel = 'radio-capture-sentinel';
+    console.error(sentinel);
+    await expect(capturedConsoleErrors).toContain(sentinel);
+
+    const warned = () => capturedConsoleErrors.some((m) => /provided a `checked` prop/.test(m));
+    await expect(warned()).toBe(false);
+    await userEvent.click(within(canvasElement).getByRole('radio'));
+    await expect(warned()).toBe(false);
+  },
+};
+
+const onChangeSpy = fn();
+
+export const ControlledForwardsCallerOnChange: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <RadioButton
+      label="Controlled option"
+      checked={false}
+      onClick={() => {}}
+      onChange={onChangeSpy}
+    />
+  ),
+  beforeEach: () => {
+    onChangeSpy.mockClear();
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('radio'));
+    await expect(onChangeSpy).toHaveBeenCalledTimes(1);
   },
 };

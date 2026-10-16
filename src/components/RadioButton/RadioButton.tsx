@@ -8,7 +8,17 @@ export interface RadioButtonProps extends Omit<InputHTMLAttributes<HTMLInputElem
   error?: boolean;
 }
 
-export const RadioButton = ({ label, className, error, id, ...props }: RadioButtonProps) => {
+// React pairs `checked` with `onChange`, not `onClick`; without one it warns (#139).
+const noop = () => {};
+
+export const RadioButton = ({
+  label,
+  className,
+  error,
+  id,
+  onChange,
+  ...props
+}: RadioButtonProps) => {
   const generatedId = useId();
   const inputId = id ?? `radio-${generatedId}`;
 
@@ -20,6 +30,7 @@ export const RadioButton = ({ label, className, error, id, ...props }: RadioButt
           id={inputId}
           className={styles.input}
           {...props}
+          onChange={onChange ?? noop}
           data-error={error ? true : undefined}
         />
         <RadioCheckedIcon aria-hidden className={styles.iconChecked} />
