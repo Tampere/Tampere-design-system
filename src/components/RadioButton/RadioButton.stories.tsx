@@ -128,11 +128,12 @@ export const RadioGroup: Story = {
 export const UncontrolledGroup: Story = {
   tags: ['!dev', '!autodocs'],
   render: () => (
-    <div>
+    <form>
       <RadioButton name="uc" label="One" defaultChecked />
       <RadioButton name="uc" label="Two" />
       <RadioButton name="uc" label="Three" />
-    </div>
+      <button type="reset">Reset</button>
+    </form>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -140,9 +141,10 @@ export const UncontrolledGroup: Story = {
     await expect([one, two, three].map(isShownChecked)).toEqual([true, false, false]);
     await userEvent.click(canvas.getByText('Three'));
     await expect([one, two, three].map(isShownChecked)).toEqual([false, false, true]);
-    // Arrow keys move the selection natively without a click.
     await userEvent.keyboard('{ArrowUp}');
     await expect([one, two, three].map(isShownChecked)).toEqual([false, true, false]);
+    await userEvent.click(canvas.getByRole('button', { name: 'Reset' }));
+    await expect([one, two, three].map(isShownChecked)).toEqual([true, false, false]);
   },
 };
 

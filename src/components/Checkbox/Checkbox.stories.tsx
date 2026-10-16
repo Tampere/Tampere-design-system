@@ -279,11 +279,11 @@ export const ErrorDisabled: Story = {
   },
 };
 
-// A native `<fieldset disabled>` disables its controls without a `disabled` prop on them, so the
-// look has to follow the input's `:disabled` state rather than a prop-derived attribute.
 const fillOfInput = (input: HTMLElement) =>
   getComputedStyle(input.parentElement?.querySelector('svg path:last-of-type') as Element).fill;
 
+// A native `<fieldset disabled>` disables its controls without a `disabled` prop on them, so the
+// look has to follow the input's `:disabled` state rather than a prop-derived attribute.
 export const InDisabledFieldset: Story = {
   tags: ['!dev', '!autodocs'],
   render: () => (

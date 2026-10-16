@@ -54,6 +54,7 @@ const icon = style({
 export const iconChecked = style([icon]);
 export const iconUnchecked = style([icon]);
 
+// Keyed on native :checked, not the prop, so uncontrolled and arrow-key selection show correctly.
 globalStyle(`${input}:not(:checked) ~ ${iconChecked}`, { display: 'none' });
 globalStyle(`${input}:checked ~ ${iconUnchecked}`, { display: 'none' });
 
