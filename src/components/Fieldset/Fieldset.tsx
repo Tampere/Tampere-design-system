@@ -13,7 +13,6 @@ import {
   helperText as helperTextStyle,
   legend as legendStyle,
   root,
-  selectionGroup,
   withBorder as withBorderStyle,
 } from './Fieldset.css';
 
@@ -29,9 +28,6 @@ export interface FieldsetProps extends Omit<MantineFieldsetProps, 'legend' | 'va
   children?: React.ReactNode;
   'data-testid'?: string;
 }
-
-/** Flex-column wrapper class for grouping Checkbox/RadioButton items inside one Fieldset — see the WithCheckboxGroup/WithRadioGroup doc examples. */
-export const fieldsetSelectionGroup = selectionGroup;
 
 /** Groups related form inputs under a common legend, using native `<fieldset>`/`<legend>` semantics. */
 export const Fieldset = ({

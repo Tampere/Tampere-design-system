@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent } from '@storybook/testing-library';
 import { expect } from 'storybook/test';
-import { Fieldset, fieldsetSelectionGroup } from './Fieldset';
+import { Fieldset, fieldsetSelectionGroup } from '.';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { RadioButton } from '../RadioButton/RadioButton';
 import { TextField } from '../TextField/TextField';
