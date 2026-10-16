@@ -27,12 +27,7 @@ export const RadioButton = ({ label, className, error, id, ...props }: RadioButt
       </div>
 
       {label && (
-        <label
-          data-disabled={props.disabled}
-          data-error={error}
-          htmlFor={inputId}
-          className={styles.labelText}
-        >
+        <label data-error={error} htmlFor={inputId} className={styles.labelText}>
           {label}
         </label>
       )}

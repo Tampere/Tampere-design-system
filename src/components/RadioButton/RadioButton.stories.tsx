@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
+import { Fieldset } from '../Fieldset';
 import { RadioButton } from './RadioButton';
 
 const meta: Meta<typeof RadioButton> = {
@@ -162,6 +163,26 @@ export const ErrorDisabled: Story = {
     await expect(getComputedStyle(canvas.getByText('Error disabled')).color).toBe(
       'rgb(104, 104, 114)'
     );
+  },
+};
+
+// A native `<fieldset disabled>` disables its controls without a `disabled` prop on them.
+export const InDisabledFieldset: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Fieldset legend="Disabled group" disabled>
+      <RadioButton name="g" label="Plain" />
+      <RadioButton name="g" label="Pre-checked" defaultChecked />
+    </Fieldset>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const radio of canvas.getAllByRole('radio')) {
+      await expect(fillOf(radio)).toBe('rgb(201, 201, 206)');
+    }
+    for (const text of ['Plain', 'Pre-checked']) {
+      await expect(getComputedStyle(canvas.getByText(text)).color).toBe('rgb(104, 104, 114)');
+    }
   },
 };
 

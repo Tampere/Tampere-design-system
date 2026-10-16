@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { type MouseEvent, useState } from 'react';
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { CheckboxIndeterminateIcon } from '../../icons/CheckboxIndeterminateIcon';
+import { Fieldset } from '../Fieldset';
 import { Checkbox } from './Checkbox';
 
 function SelectAllExample() {
@@ -274,6 +275,44 @@ export const ErrorDisabled: Story = {
     // ...and the icon agrees with the label, which greys out on `disabled` regardless.
     await expect(getComputedStyle(canvas.getByText('Error disabled')).color).toBe(
       'rgb(104, 104, 114)'
+    );
+  },
+};
+
+// A native `<fieldset disabled>` disables its controls without a `disabled` prop on them, so the
+// look has to follow the input's `:disabled` state rather than a prop-derived attribute.
+const fillOfInput = (input: HTMLElement) =>
+  getComputedStyle(input.parentElement?.querySelector('svg path:last-of-type') as Element).fill;
+
+export const InDisabledFieldset: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Fieldset legend="Disabled group" disabled>
+      <Checkbox label="Plain" />
+      <Checkbox label="Pre-checked" defaultChecked />
+    </Fieldset>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const input of canvas.getAllByRole('checkbox')) {
+      await expect(fillOfInput(input)).toBe('rgb(201, 201, 206)');
+    }
+    for (const text of ['Plain', 'Pre-checked']) {
+      await expect(getComputedStyle(canvas.getByText(text)).color).toBe('rgb(104, 104, 114)');
+    }
+  },
+};
+
+export const ErrorInDisabledFieldset: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Fieldset legend="Disabled group" disabled>
+      <Checkbox label="Errored" error />
+    </Fieldset>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(fillOfInput(within(canvasElement).getByRole('checkbox'))).toBe(
+      'rgb(201, 201, 206)'
     );
   },
 };

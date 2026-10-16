@@ -191,10 +191,7 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
           <CheckboxUncheckedIcon aria-hidden="true" className={icon} />
         )}
       </Box>
-      <label
-        className={cx(root, inputLabel[inputProps.disabled ? 'disabled' : 'default'])}
-        htmlFor={safeId}
-      >
+      <label className={cx(root, inputLabel)} htmlFor={safeId}>
         {label}
       </label>
     </Flex>

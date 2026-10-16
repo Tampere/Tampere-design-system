@@ -126,10 +126,10 @@ export const labelText = style({
   ...typography.p2,
   color: text.primary,
   cursor: 'pointer',
-  selectors: {
-    '&[data-disabled=true]': {
-      color: text.disabled,
-      cursor: 'default',
-    },
-  },
+});
+
+// Keyed on the native state so a disabled `<fieldset>` greys the label too, not just `disabled`.
+globalStyle(`${container}:has(${input}:disabled) ${labelText}`, {
+  color: text.disabled,
+  cursor: 'default',
 });
