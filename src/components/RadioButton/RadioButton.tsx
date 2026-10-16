@@ -8,24 +8,19 @@ export interface RadioButtonProps extends Omit<InputHTMLAttributes<HTMLInputElem
   error?: boolean;
 }
 
+// React pairs `checked` with `onChange`, not `onClick`; without one it warns (#139).
+const noop = () => {};
+
 export const RadioButton = ({
   label,
-  checked,
   className,
   error,
   id,
+  onChange,
   ...props
 }: RadioButtonProps) => {
   const generatedId = useId();
   const inputId = id ?? `radio-${generatedId}`;
-
-  const getInputVariant = () => {
-    if (error) return { 'data-error': true };
-    if (props.disabled) return { 'data-disabled': true };
-    if (checked) return { 'data-checked': true };
-    return null;
-  };
-  const inputVariant = getInputVariant();
 
   return (
     <div className={`${styles.container} ${className ?? ''}`}>
@@ -33,25 +28,18 @@ export const RadioButton = ({
         <input
           type="radio"
           id={inputId}
-          checked={checked}
           className={styles.input}
+          aria-invalid={error && !props.disabled ? true : undefined}
           {...props}
-          {...inputVariant}
+          onChange={onChange ?? noop}
+          data-error={error ? true : undefined}
         />
-        {checked ? (
-          <RadioCheckedIcon aria-hidden className={styles.icon} />
-        ) : (
-          <RadioUncheckedIcon aria-hidden className={styles.icon} />
-        )}
+        <RadioCheckedIcon aria-hidden className={styles.iconChecked} />
+        <RadioUncheckedIcon aria-hidden className={styles.iconUnchecked} />
       </div>
 
       {label && (
-        <label
-          data-disabled={props.disabled}
-          data-error={error}
-          htmlFor={inputId}
-          className={styles.labelText}
-        >
+        <label data-error={error} htmlFor={inputId} className={styles.labelText}>
           {label}
         </label>
       )}

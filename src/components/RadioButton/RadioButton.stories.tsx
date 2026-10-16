@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
-import { expect, within } from 'storybook/test';
+import { useState } from 'react';
+import { expect, fn, userEvent, within } from 'storybook/test';
+import { Fieldset } from '../Fieldset';
 import { RadioButton } from './RadioButton';
 
 const meta: Meta<typeof RadioButton> = {
@@ -23,6 +25,17 @@ const meta: Meta<typeof RadioButton> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+const visibleIcon = (radio: HTMLElement) => {
+  const icons = [...(radio.parentElement?.querySelectorAll('svg') ?? [])].filter(
+    (svg) => getComputedStyle(svg).display !== 'none'
+  );
+  return icons.length === 1 ? icons[0] : null;
+};
+const fillOf = (radio: HTMLElement) =>
+  getComputedStyle(visibleIcon(radio)?.querySelector('path') as Element).fill;
+const isShownChecked = (radio: HTMLElement) =>
+  visibleIcon(radio)?.getAttribute('class')?.includes('iconChecked') ?? false;
 
 export const Primary: Story = {
   args: { label: 'Option 1' },
@@ -84,8 +97,7 @@ export const Error: Story = {
 
 export const RadioGroup: Story = {
   render: () => {
-    const [selected, setSelected] = useArgs();
-    const selectedValue = selected.selected || 'option1';
+    const [selected, setSelected] = useState('option1');
 
     return (
       <fieldset
@@ -98,23 +110,181 @@ export const RadioGroup: Story = {
         }}
       >
         <label>Radio button group</label>
-        <RadioButton
-          label="Option 1"
-          checked={selectedValue === 'option1'}
-          onClick={() => setSelected({ selected: 'option1' })}
-        />
-        <RadioButton
-          label="Option 2"
-          checked={selectedValue === 'option2'}
-          onClick={() => setSelected({ selected: 'option2' })}
-        />
-        <RadioButton
-          label="Option 3"
-          checked={selectedValue === 'option3'}
-          onClick={() => setSelected({ selected: 'option3' })}
-        />
-        <RadioButton label="Disabled option" disabled checked={false} />
+        {['option1', 'option2', 'option3'].map((value, i) => (
+          <RadioButton
+            key={value}
+            name="radio-group"
+            label={`Option ${i + 1}`}
+            checked={selected === value}
+            onChange={() => setSelected(value)}
+          />
+        ))}
+        <RadioButton name="radio-group" label="Disabled option" disabled checked={false} />
       </fieldset>
     );
+  },
+};
+
+export const UncontrolledGroup: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <form>
+      <RadioButton name="uc" label="One" defaultChecked />
+      <RadioButton name="uc" label="Two" />
+      <RadioButton name="uc" label="Three" />
+      <button type="reset">Reset</button>
+    </form>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const [one, two, three] = canvas.getAllByRole('radio');
+    await expect([one, two, three].map(isShownChecked)).toEqual([true, false, false]);
+    await userEvent.click(canvas.getByText('Three'));
+    await expect([one, two, three].map(isShownChecked)).toEqual([false, false, true]);
+    await userEvent.keyboard('{ArrowUp}');
+    await expect([one, two, three].map(isShownChecked)).toEqual([false, true, false]);
+    await userEvent.click(canvas.getByRole('button', { name: 'Reset' }));
+    await expect([one, two, three].map(isShownChecked)).toEqual([true, false, false]);
+  },
+};
+
+export const ErrorDisabled: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error disabled', error: true, disabled: true, checked: false },
+  render: (args) => <RadioButton {...args} onChange={() => {}} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(fillOf(canvas.getByRole('radio'))).toBe('rgb(201, 201, 206)');
+    await expect(getComputedStyle(canvas.getByText('Error disabled')).color).toBe(
+      'rgb(104, 104, 114)'
+    );
+  },
+};
+
+// A native `<fieldset disabled>` disables its controls without a `disabled` prop on them.
+export const InDisabledFieldset: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Fieldset legend="Disabled group" disabled>
+      <RadioButton name="g" label="Plain" />
+      <RadioButton name="g" label="Pre-checked" defaultChecked />
+    </Fieldset>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const radio of canvas.getAllByRole('radio')) {
+      await expect(fillOf(radio)).toBe('rgb(201, 201, 206)');
+    }
+    for (const text of ['Plain', 'Pre-checked']) {
+      await expect(getComputedStyle(canvas.getByText(text)).color).toBe('rgb(104, 104, 114)');
+    }
+  },
+};
+
+export const ErrorCheckedHover: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error checked', error: true, checked: true },
+  render: (args) => <RadioButton {...args} onChange={() => {}} />,
+  play: async ({ canvasElement }) => {
+    const radio = within(canvasElement).getByRole('radio');
+    await expect(fillOf(radio)).toBe('rgb(174, 30, 32)');
+    await userEvent.hover(radio);
+    await expect(fillOf(radio)).toBe('rgb(174, 30, 32)');
+  },
+};
+
+export const ControlledGroupUnchanged: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: RadioGroup.render,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByText('Option 2'));
+    const radios = canvas.getAllByRole('radio');
+    await expect(isShownChecked(radios[1])).toBe(true);
+    await expect(fillOf(radios[1])).toBe('rgb(41, 84, 154)');
+    await expect(isShownChecked(radios[0])).toBe(false);
+  },
+};
+
+// ── Dev warnings (#139) ──────────────────────────────────────────────────────
+
+let capturedConsoleErrors: string[] = [];
+
+// Captured once at module scope so an aborted story can't leave a stub as the "original".
+const nativeConsoleError = console.error;
+
+const captureConsoleErrors = () => {
+  capturedConsoleErrors = [];
+  console.error = (...messageArgs: unknown[]) => {
+    capturedConsoleErrors.push(String(messageArgs[0]));
+    nativeConsoleError(...messageArgs);
+  };
+  return () => {
+    console.error = nativeConsoleError;
+  };
+};
+
+export const ControlledWithoutOnChangeDoesNotWarn: Story = {
+  tags: ['!dev', '!autodocs'],
+  // No `args` spread: meta's `onChange` action would otherwise populate `onChange` and mask the bug.
+  render: () => <RadioButton label="Controlled option" checked onClick={() => {}} />,
+  beforeEach: captureConsoleErrors,
+  play: async ({ canvasElement }) => {
+    // Positive control: "no error matches" is trivially true if the capture isn't live.
+    const sentinel = 'radio-capture-sentinel';
+    console.error(sentinel);
+    await expect(capturedConsoleErrors).toContain(sentinel);
+
+    const warned = () => capturedConsoleErrors.some((m) => /provided a `checked` prop/.test(m));
+    await expect(warned()).toBe(false);
+    await userEvent.click(within(canvasElement).getByRole('radio'));
+    await expect(warned()).toBe(false);
+  },
+};
+
+const onChangeSpy = fn();
+
+export const ControlledForwardsCallerOnChange: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <RadioButton
+      label="Controlled option"
+      checked={false}
+      onClick={() => {}}
+      onChange={onChangeSpy}
+    />
+  ),
+  beforeEach: () => {
+    onChangeSpy.mockClear();
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('radio'));
+    await expect(onChangeSpy).toHaveBeenCalledTimes(1);
+  },
+};
+
+// ── aria-invalid (#197) ──────────────────────────────────────────────────────
+
+export const ErrorSetsAriaInvalid: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <RadioButton label="Option" error />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('radio')).toHaveAttribute('aria-invalid', 'true');
+  },
+};
+
+export const ErrorDisabledNotInvalid: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <RadioButton label="Option" error disabled />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('radio')).not.toHaveAttribute('aria-invalid');
+  },
+};
+
+export const CallerAriaInvalidWins: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <RadioButton label="Option" error aria-invalid={false} />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('radio')).toHaveAttribute('aria-invalid', 'false');
   },
 };
