@@ -117,11 +117,6 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
   const uniqueId = useId();
   const safeId = inputProps.id ?? uniqueId;
 
-  // Exactly one `data-*` attribute is emitted, so this ordering — not the CSS — is what resolves
-  // a control in several states at once. `disabled` outranks `error`: a control the user cannot
-  // interact with should read as inert rather than as something they are being asked to fix, and
-  // the label below greys out on `disabled` unconditionally, so any other order would render the
-  // control half-disabled (error-red icon, greyed label).
   const getInputVariant = () => {
     if (inputProps.disabled) return { 'data-disabled': true };
     if (error) return { 'data-error': true };

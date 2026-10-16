@@ -228,8 +228,7 @@ export const ControlledGroupUnchanged: Story = {
   },
 };
 
-// ── Dev-warning tests (#139: a controlled RadioButton that only wires `onClick` must not log
-// React's "checked without onChange" warning, and a caller's own `onChange` must still fire) ──
+// ── Dev warnings (#139) ──────────────────────────────────────────────────────
 
 let capturedConsoleErrors: string[] = [];
 
