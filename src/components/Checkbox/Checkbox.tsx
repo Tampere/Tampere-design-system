@@ -137,6 +137,9 @@ export function Checkbox({ label, error, indeterminate, defaultChecked, ...input
       <Box className={inner}>
         <input
           {...inputProps}
+          aria-invalid={
+            inputProps['aria-invalid'] ?? (error && !inputProps.disabled ? true : undefined)
+          }
           ref={inputRef}
           checked={checked}
           aria-checked={indeterminate ? 'mixed' : undefined}

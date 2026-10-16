@@ -820,3 +820,35 @@ export const FormResetKeepsControlledValue: Story = {
     await expect(checkboxInput).not.toHaveAttribute('data-checked');
   },
 };
+
+// ── aria-invalid (#197) ──────────────────────────────────────────────────────
+
+export const ErrorSetsAriaInvalid: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Option" error />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('checkbox')).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
+  },
+};
+
+export const ErrorDisabledNotInvalid: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Option" error disabled />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('checkbox')).not.toHaveAttribute('aria-invalid');
+  },
+};
+
+export const CallerAriaInvalidWins: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Option" error aria-invalid={false} />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('checkbox')).toHaveAttribute(
+      'aria-invalid',
+      'false'
+    );
+  },
+};

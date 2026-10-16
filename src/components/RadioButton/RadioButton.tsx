@@ -29,6 +29,7 @@ export const RadioButton = ({
           type="radio"
           id={inputId}
           className={styles.input}
+          aria-invalid={error && !props.disabled ? true : undefined}
           {...props}
           onChange={onChange ?? noop}
           data-error={error ? true : undefined}

@@ -285,3 +285,29 @@ export const ControlledForwardsCallerOnChange: Story = {
     await expect(onChangeSpy).toHaveBeenCalledTimes(1);
   },
 };
+
+// ── aria-invalid (#197) ──────────────────────────────────────────────────────
+
+export const ErrorSetsAriaInvalid: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <RadioButton label="Option" error />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('radio')).toHaveAttribute('aria-invalid', 'true');
+  },
+};
+
+export const ErrorDisabledNotInvalid: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <RadioButton label="Option" error disabled />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('radio')).not.toHaveAttribute('aria-invalid');
+  },
+};
+
+export const CallerAriaInvalidWins: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <RadioButton label="Option" error aria-invalid={false} />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('radio')).toHaveAttribute('aria-invalid', 'false');
+  },
+};
