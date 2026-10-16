@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useArgs } from '@storybook/client-api';
-import { expect, within } from 'storybook/test';
+import { useState } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
 import { RadioButton } from './RadioButton';
 
 const meta: Meta<typeof RadioButton> = {
@@ -23,6 +24,17 @@ const meta: Meta<typeof RadioButton> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+const visibleIcon = (radio: HTMLElement) => {
+  const icons = [...(radio.parentElement?.querySelectorAll('svg') ?? [])].filter(
+    (svg) => getComputedStyle(svg).display !== 'none'
+  );
+  return icons.length === 1 ? icons[0] : null;
+};
+const fillOf = (radio: HTMLElement) =>
+  getComputedStyle(visibleIcon(radio)?.querySelector('path') as Element).fill;
+const isShownChecked = (radio: HTMLElement) =>
+  visibleIcon(radio)?.getAttribute('class')?.includes('iconChecked') ?? false;
 
 export const Primary: Story = {
   args: { label: 'Option 1' },
@@ -116,5 +128,81 @@ export const RadioGroup: Story = {
         <RadioButton label="Disabled option" disabled checked={false} />
       </fieldset>
     );
+  },
+};
+
+export const UncontrolledGroup: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <div>
+      <RadioButton name="uc" label="One" defaultChecked />
+      <RadioButton name="uc" label="Two" />
+      <RadioButton name="uc" label="Three" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const [one, two, three] = canvas.getAllByRole('radio');
+    await expect([one, two, three].map(isShownChecked)).toEqual([true, false, false]);
+    await userEvent.click(canvas.getByText('Three'));
+    await expect([one, two, three].map(isShownChecked)).toEqual([false, false, true]);
+    // Arrow keys move the selection natively without a click.
+    await userEvent.keyboard('{ArrowUp}');
+    await expect([one, two, three].map(isShownChecked)).toEqual([false, true, false]);
+  },
+};
+
+export const ErrorDisabled: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error disabled', error: true, disabled: true, checked: false },
+  render: (args) => <RadioButton {...args} onChange={() => {}} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(fillOf(canvas.getByRole('radio'))).toBe('rgb(201, 201, 206)');
+    await expect(getComputedStyle(canvas.getByText('Error disabled')).color).toBe(
+      'rgb(104, 104, 114)'
+    );
+  },
+};
+
+export const ErrorCheckedHover: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { label: 'Error checked', error: true, checked: true },
+  render: (args) => <RadioButton {...args} onChange={() => {}} />,
+  play: async ({ canvasElement }) => {
+    const radio = within(canvasElement).getByRole('radio');
+    await expect(fillOf(radio)).toBe('rgb(174, 30, 32)');
+    await userEvent.hover(radio);
+    await expect(fillOf(radio)).toBe('rgb(174, 30, 32)');
+  },
+};
+
+// `RadioGroup` keeps its selection in Storybook args, which don't round-trip in the test runner.
+const ControlledGroup = () => {
+  const [selected, setSelected] = useState('option1');
+  return (
+    <div>
+      {['option1', 'option2', 'option3'].map((value, i) => (
+        <RadioButton
+          key={value}
+          label={`Option ${i + 1}`}
+          checked={selected === value}
+          onChange={() => setSelected(value)}
+        />
+      ))}
+    </div>
+  );
+};
+
+export const ControlledGroupUnchanged: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <ControlledGroup />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByText('Option 2'));
+    const radios = canvas.getAllByRole('radio');
+    await expect(isShownChecked(radios[1])).toBe(true);
+    await expect(fillOf(radios[1])).toBe('rgb(41, 84, 154)');
+    await expect(isShownChecked(radios[0])).toBe(false);
   },
 };

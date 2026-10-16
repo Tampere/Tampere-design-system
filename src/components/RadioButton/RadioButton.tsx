@@ -8,24 +8,9 @@ export interface RadioButtonProps extends Omit<InputHTMLAttributes<HTMLInputElem
   error?: boolean;
 }
 
-export const RadioButton = ({
-  label,
-  checked,
-  className,
-  error,
-  id,
-  ...props
-}: RadioButtonProps) => {
+export const RadioButton = ({ label, className, error, id, ...props }: RadioButtonProps) => {
   const generatedId = useId();
   const inputId = id ?? `radio-${generatedId}`;
-
-  const getInputVariant = () => {
-    if (error) return { 'data-error': true };
-    if (props.disabled) return { 'data-disabled': true };
-    if (checked) return { 'data-checked': true };
-    return null;
-  };
-  const inputVariant = getInputVariant();
 
   return (
     <div className={`${styles.container} ${className ?? ''}`}>
@@ -33,16 +18,12 @@ export const RadioButton = ({
         <input
           type="radio"
           id={inputId}
-          checked={checked}
           className={styles.input}
           {...props}
-          {...inputVariant}
+          data-error={error ? true : undefined}
         />
-        {checked ? (
-          <RadioCheckedIcon aria-hidden className={styles.icon} />
-        ) : (
-          <RadioUncheckedIcon aria-hidden className={styles.icon} />
-        )}
+        <RadioCheckedIcon aria-hidden className={styles.iconChecked} />
+        <RadioUncheckedIcon aria-hidden className={styles.iconUnchecked} />
       </div>
 
       {label && (
