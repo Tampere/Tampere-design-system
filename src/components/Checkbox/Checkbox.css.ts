@@ -15,7 +15,7 @@ const {
 
 export const root = style({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   cursor: 'pointer',
   gap: spacing[2],
 });
@@ -52,7 +52,9 @@ export const inputLabel = style({
   ...typography.p2,
   color: text.primary,
   appearance: 'none',
-  height: rem(24),
+  // Centres the first text line on the 24px box whatever the breakpoint's line height; a fixed or
+  // min height would grow the row by (line height - 24px) wherever the line is taller than the box.
+  marginBlock: `calc((${rem(24)} - 1lh) / 2)`,
   gap: spacing['0,5'],
 });
 

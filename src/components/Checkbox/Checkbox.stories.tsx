@@ -852,3 +852,57 @@ export const CallerAriaInvalidWins: Story = {
     );
   },
 };
+
+// ── Wrapping label (#196) ────────────────────────────────────────────────────
+
+const longLabel =
+  'Hyväksyn henkilötietojeni käsittelyn Tampereen kaupungin asiakasrekisterissä tietosuojaselosteen mukaisesti';
+
+export const WrappingLabelDoesNotOverlap: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Flex direction="column" gap={16} w={200}>
+      <Checkbox label={longLabel} />
+      <Checkbox label="Second" />
+    </Flex>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const label = canvas.getByText(longLabel);
+    const secondInput = canvas.getByRole('checkbox', { name: 'Second' });
+    await expect(label.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      secondInput.getBoundingClientRect().top
+    );
+    await expect(label.clientHeight).toBe(label.scrollHeight);
+  },
+};
+
+export const WrappingLabelAlignsToFirstLine: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => (
+    <Flex direction="column" w={200}>
+      <Checkbox label={longLabel} />
+    </Flex>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('checkbox');
+    const label = canvas.getByText(longLabel);
+    const lineHeight = parseFloat(getComputedStyle(label).lineHeight);
+    const firstLineCentre = label.getBoundingClientRect().top + lineHeight / 2;
+    const inputCentre =
+      input.getBoundingClientRect().top + input.getBoundingClientRect().height / 2;
+    await expect(Math.abs(firstLineCentre - inputCentre)).toBeLessThanOrEqual(0.5);
+  },
+};
+
+export const SingleLineHeightUnchanged: Story = {
+  tags: ['!dev', '!autodocs'],
+  render: () => <Checkbox label="Option" />,
+  play: async ({ canvasElement }) => {
+    const label = within(canvasElement).getByText('Option');
+    // The row, not the label: the label's own box is one line tall and is offset by a margin so
+    // that line centres on the 24px input.
+    await expect(label.parentElement!.getBoundingClientRect().height).toBe(24);
+  },
+};
