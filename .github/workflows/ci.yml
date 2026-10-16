@@ -15,6 +15,8 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # Runs take ~3 min; GitHub's default is 6 hours
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -23,8 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      # `npm run eslint` applies --fix, which would hide lint errors in CI
-      - run: npx eslint src
+      # `npm run eslint` applies --fix, which would silently fix auto-fixable errors in CI
+      - run: npx eslint --max-warnings 0 src .storybook vite.config.ts vitest.shims.d.ts
       - run: npm run prettier:check
       - run: npx playwright install --with-deps chromium
       - run: npm test
