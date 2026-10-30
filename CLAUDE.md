@@ -22,6 +22,7 @@ Project content (code, comments, docs, data, UI text) may contain Finnish terms.
 - `npm test` — run tests once; `npm run test:watch` — watch mode
 - `npm run eslint` — lint (auto-fixes)
 - `npm run prettier` — format; `npm run prettier:check` — check formatting without writing
+- `npm run typecheck` — type-check both the root project and `.storybook` (which has its own tsconfig). The pre-commit hook runs this whenever a `.ts`/`.tsx` file is staged, so local and CI type-checking cover the same files.
 - Check `package.json` for the full script list and `tsconfig.json` for TS config
 
 ## Architecture
@@ -100,7 +101,7 @@ Consumers must wrap their app in `<ThemeProvider>` (wraps `MantineProvider`), wh
 
 ### Build
 
-- Library: Rollup → `dist/index.cjs.js` (CJS), `dist/index.esm.js` (ESM), `dist/index.d.ts` (types)
+- Library: Rollup → CJS, ESM and bundled type declarations in `dist/`. `rollup.config.js` takes the CJS and ESM output paths from `package.json`'s `main` and `module`, so the filenames live there (alongside `types` and `exports`) rather than being restated here.
 - Dev/Storybook: Vite with `@vanilla-extract/vite-plugin` and `@vitejs/plugin-react`
 - Peer dependencies (React, Mantine, fonts) are excluded from the bundle
 
@@ -129,21 +130,28 @@ Consumers must wrap their app in `<ThemeProvider>` (wraps `MantineProvider`), wh
 
 - Issue numbers come from the GitHub Project backlog.
 - Work on a feature branch named `type/issuenumber-name-in-kebab-case`, using the commit types below, e.g. `feat/42-tooltip-component`.
+- Release branches are the exception: `chore/release-vX.Y.Z`, since a release has no backlog issue — see [Publishing a Release](#publishing-a-release).
 - Push the branch and open a PR to request review.
+- CI (`.github/workflows/ci.yml`) gates merging to `main`. It runs, in order: `npm run typecheck`, `npx eslint --max-warnings 0 src .storybook vite.config.ts vitest.shims.d.ts` (no `--fix`, so warnings fail the build too), `npm run prettier:check`, `npm test`, `npm run build`. Run the same set locally before opening a PR.
 
 ## Commit Message Convention
 
 - This repo enforces [Conventional Commits](https://www.conventionalcommits.org/) via commitlint + husky — invalid commit messages are rejected automatically.
 - Format: `type(#issue): subject`, where the scope is the issue number from the GitHub Project backlog, e.g. `feat(#42): add tooltip component`.
 - Breaking changes: `fix(#67)!: breaking change`, plus a `BREAKING CHANGE:` footer.
+- Release commits are the one exception to the issue-number scope: use the literal scope `release` — `chore(release): vX.Y.Z` — following the `standard-version` convention. No commitlint change is needed; `chore` is already a valid type and the `scope-case` rule accepts lower-case scopes. Give the release PR the same title, since a squash merge turns the PR title into the commit message on `main` (that path skips the `commit-msg` hook, so commitlint never checks it).
 - Valid types: feat, fix, style, docs, refactor, test, chore, perf, build, ci, revert.
 - If AI was used for the change, end the commit message with a `Co-Authored-By: Claude <noreply@anthropic.com>` trailer.
 
 ## Publishing a Release
 
-- `npm version patch|minor|major` — bumps version, commits, and creates a git tag
-- `git push && git push origin --tags`
-- Merge to main, then create a GitHub Release from the tag — CI publishes to GitHub Packages automatically
+A release goes through a PR like any other change: `.husky/pre-push` rejects pushes from `main`, and CI only runs on PRs to `main`, so bumping and pushing on `main` directly is rejected.
+
+1. Branch off `main`: `chore/release-vX.Y.Z`.
+2. Bump the version with `npm version patch|minor|major --no-git-tag-version` (edits `package.json` and `package-lock.json` only), add the `CHANGELOG.md` entry, and commit both as `chore(release): vX.Y.Z`. The flag matters: left to itself, `npm version` commits the message `vX.Y.Z`, which has no Conventional Commits type and is rejected by commitlint.
+3. Push the branch, open the PR, let CI gate it, and merge to `main`.
+4. Create a GitHub Release with a new tag `vX.Y.Z` targeting `main`. Creating the tag here rather than on the release branch keeps it on `main`'s history whatever the merge strategy — a tag made on the branch is orphaned by a squash merge (`v1.0.0` points at a branch commit and survives only because #174 was merged with a merge commit).
+5. `.github/workflows/npm-publish.yml` picks up the published release, re-runs the full CI suite, and publishes to GitHub Packages on success.
 
 ## Additional Notes
 
