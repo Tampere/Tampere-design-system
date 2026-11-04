@@ -1,5 +1,5 @@
 export default {
   '*.{ts,tsx,js,jsx}': ['eslint --fix', 'prettier --write'],
-  '*.{ts,tsx}': () => 'tsc --noEmit',
+  '*.{ts,tsx}': () => 'npm run typecheck',
   '*.{html,json,css,scss,md,mdx}': ['prettier -w'],
 };

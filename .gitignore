@@ -420,7 +420,8 @@ FodyWeavers.xsd
 *storybook.log
 storybook-static
 dist
-CLAUDE.md
+CLAUDE.local.md
+.claude/settings.local.json
 docs/
 
 # Obsidian
