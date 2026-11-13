@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { TextArea } from './TextArea';
 
 const meta = {
@@ -59,7 +59,31 @@ export const WithHelperText: Story = {
   render: (args) => <TextArea {...args} />,
 };
 
-// #169: the label must share TextField's semibold label style.
+// an uncontrolled defaultValue must show and stay editable.
+export const WithDefaultValue: Story = {
+  args: { inputLabel: 'Additional information', defaultValue: 'Initial text' },
+  render: (args) => <TextArea {...args} />,
+  play: async ({ canvasElement }) => {
+    const textarea = within(canvasElement).getByLabelText('Additional information');
+    await expect(textarea).toHaveValue('Initial text');
+    await userEvent.type(textarea, '!');
+    await expect(textarea).toHaveValue('Initial text!');
+  },
+};
+
+// Mantine's label/description must render when inputLabel/helperText aren't set.
+export const MantineLabelFallback: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: undefined, helperText: undefined, label: 'Notes', description: 'Optional' },
+  render: (args) => <TextArea {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText('Notes')).toBeInTheDocument();
+    await expect(canvas.getByText('Optional')).toBeInTheDocument();
+  },
+};
+
+// the label must share TextField's semibold label style.
 export const LabelWeight: Story = {
   tags: ['!dev', '!autodocs'],
   args: { inputLabel: 'Additional information' },

@@ -106,6 +106,33 @@ export const Controlled: Story = {
   },
 };
 
+// #200: an uncontrolled defaultValue must show, stay editable, and clear.
+export const WithDefaultValue: Story = {
+  args: { inputLabel: 'Start date', defaultValue: '1.6.2026', showClearButton: true },
+  render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Start date');
+    await expect(input).toHaveValue('1.6.2026');
+    await userEvent.type(input, '7');
+    await expect(input).toHaveValue('1.6.20267');
+    await userEvent.click(canvas.getByRole('button', { name: 'Clear' }));
+    await expect(input).toHaveValue('');
+  },
+};
+
+// #178: Mantine's label/description must render when inputLabel/helperText aren't set.
+export const MantineLabelFallback: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: undefined, helperText: undefined, label: 'Name', description: 'Full name' },
+  render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText('Name')).toBeInTheDocument();
+    await expect(canvas.getByText('Full name')).toBeInTheDocument();
+  },
+};
+
 export const SizeSmall: Story = {
   args: { inputLabel: 'Small', size: 'sm', placeholder: 'Small input' },
   render: (args) => <TextField {...args} />,
