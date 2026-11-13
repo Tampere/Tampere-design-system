@@ -106,7 +106,7 @@
     "storybook": "^10.6.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.2",
+    "vite": "^7.3.7",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.1.12"
   }
