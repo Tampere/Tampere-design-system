@@ -24,7 +24,11 @@ export interface TextFieldProps extends TextInputProps, React.AriaAttributes {
    * Label for the input field. If not set, you must provide an aria-label for accessibility.
    */
   inputLabel?: string;
+  /** @deprecated Use `inputLabel` instead. `label` will be removed in 2.0. */
+  label?: TextInputProps['label'];
   helperText?: React.ReactNode;
+  /** @deprecated Use `helperText` instead. `description` will be removed in 2.0. */
+  description?: TextInputProps['description'];
   error?: string; // Overrides TextInputProps error to be string for error message. Remove this if custom error components are needed.
   showSearchIcon?: boolean;
   showClearButton?: boolean;
@@ -72,6 +76,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     {
       inputLabel,
       helperText,
+      // Mantine's names still work as fallbacks so 1.x stays non-breaking; drop them in 2.0.
+      label: mantineLabel,
+      description: mantineDescription,
       error,
       disabled,
       showSearchIcon,
@@ -81,16 +88,16 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       onChange,
       onClearButtonClick,
       classNames,
+      defaultValue,
       ...props
     },
     ref
   ) => {
     const inputStatus = getInputStatus(error, disabled);
 
-    const [textValue, setTextValue] = useState('');
-    // Cast: TextField is a single-line text input, so `value` is always a string
-    // in practice even though the inherited HTML input type also allows number/array.
-    const currentValue = (props.value as string | undefined) ?? textValue;
+    // String(): the DOM stores numeric values as text, so `.length` must see them that way too (#200).
+    const [textValue, setTextValue] = useState(String(defaultValue ?? ''));
+    const currentValue = String(props.value ?? textValue);
 
     // TextField padding is calculated based on which icons are shown in
     // right and left sections
@@ -135,8 +142,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         unstyled
         classNames={mergeClassNames(defaultClassNames, classNames)}
         disabled={disabled}
-        label={inputLabel}
-        description={helperText}
+        // Joined with `||`, not `??`: an empty inputLabel would otherwise leave the input unnamed.
+        label={inputLabel || mantineLabel}
+        description={helperText || mantineDescription}
         error={error}
         inputContainer={(children) => (
           <InputContainer endInstance={endInstance}>{children}</InputContainer>
