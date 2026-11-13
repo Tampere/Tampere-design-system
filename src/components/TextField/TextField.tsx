@@ -76,7 +76,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     {
       inputLabel,
       helperText,
-      // Mantine's names still work as fallbacks so 1.x stays non-breaking; drop them in 2.0 (#178).
+      // Mantine's names still work as fallbacks so 1.x stays non-breaking; drop them in 2.0.
       label: mantineLabel,
       description: mantineDescription,
       error,
@@ -88,7 +88,6 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       onChange,
       onClearButtonClick,
       classNames,
-      // Not forwarded: TextInput always gets `value`, so it would ignore it (#200).
       defaultValue,
       ...props
     },
@@ -96,10 +95,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   ) => {
     const inputStatus = getInputStatus(error, disabled);
 
-    const [textValue, setTextValue] = useState((defaultValue as string | undefined) ?? '');
-    // Cast: TextField is a single-line text input, so `value` is always a string
-    // in practice even though the inherited HTML input type also allows number/array.
-    const currentValue = (props.value as string | undefined) ?? textValue;
+    // String(): the DOM stores numeric values as text, so `.length` must see them that way too (#200).
+    const [textValue, setTextValue] = useState(String(defaultValue ?? ''));
+    const currentValue = String(props.value ?? textValue);
 
     // TextField padding is calculated based on which icons are shown in
     // right and left sections
@@ -144,8 +142,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         unstyled
         classNames={mergeClassNames(defaultClassNames, classNames)}
         disabled={disabled}
-        label={inputLabel ?? mantineLabel}
-        description={helperText ?? mantineDescription}
+        // Joined with `||`, not `??`: an empty inputLabel would otherwise leave the input unnamed.
+        label={inputLabel || mantineLabel}
+        description={helperText || mantineDescription}
         error={error}
         inputContainer={(children) => (
           <InputContainer endInstance={endInstance}>{children}</InputContainer>

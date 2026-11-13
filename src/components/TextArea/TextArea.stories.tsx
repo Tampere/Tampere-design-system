@@ -78,8 +78,42 @@ export const MantineLabelFallback: Story = {
   render: (args) => <TextArea {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByLabelText('Notes')).toBeInTheDocument();
-    await expect(canvas.getByText('Optional')).toBeInTheDocument();
+    const textarea = canvas.getByLabelText('Notes');
+    await expect(textarea).toHaveAccessibleName('Notes');
+    await expect(textarea).toHaveAccessibleDescription('Optional');
+  },
+};
+
+// An empty inputLabel/helperText counts as unset, so Mantine's label/description still apply.
+export const EmptyPropsUseMantineFallback: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: '', helperText: '', label: 'Notes', description: 'Optional' },
+  render: (args) => <TextArea {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const textarea = canvas.getByLabelText('Notes');
+    await expect(textarea).toHaveAccessibleName('Notes');
+    await expect(textarea).toHaveAccessibleDescription('Optional');
+  },
+};
+
+// When both are set, inputLabel/helperText must win over Mantine's label/description.
+export const PropsWinOverMantineFallback: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: {
+    inputLabel: 'Primary',
+    helperText: 'Primary help',
+    label: 'Fallback',
+    description: 'Fallback help',
+  },
+  render: (args) => <TextArea {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const textarea = canvas.getByLabelText('Primary');
+    await expect(textarea).toHaveAccessibleName('Primary');
+    await expect(textarea).not.toHaveAccessibleName('Fallback');
+    await expect(textarea).toHaveAccessibleDescription('Primary help');
+    await expect(textarea).not.toHaveAccessibleDescription('Fallback help');
   },
 };
 

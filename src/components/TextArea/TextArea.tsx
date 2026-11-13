@@ -50,7 +50,7 @@ export const TextArea = ({
     error: cx(errorRoot, errorText),
   };
 
-  const [textValue, setTextValue] = useState((defaultValue as string | undefined) ?? '');
+  const [textValue, setTextValue] = useState(String(defaultValue ?? ''));
 
   return (
     <Textarea
@@ -63,8 +63,9 @@ export const TextArea = ({
       unstyled
       classNames={mergeClassNames(defaultClassNames, classNames)}
       disabled={disabled}
-      label={inputLabel ?? mantineLabel}
-      description={helperText ?? mantineDescription}
+      // Joined with `||`, not `??`: an empty inputLabel would otherwise leave the textarea unnamed.
+      label={inputLabel || mantineLabel}
+      description={helperText || mantineDescription}
       error={error}
     />
   );

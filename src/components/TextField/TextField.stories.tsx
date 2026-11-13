@@ -106,7 +106,7 @@ export const Controlled: Story = {
   },
 };
 
-// #200: an uncontrolled defaultValue must show, stay editable, and clear.
+// an uncontrolled defaultValue must show, stay editable, and clear.
 export const WithDefaultValue: Story = {
   args: { inputLabel: 'Start date', defaultValue: '1.6.2026', showClearButton: true },
   render: (args) => <TextField {...args} />,
@@ -121,15 +121,75 @@ export const WithDefaultValue: Story = {
   },
 };
 
-// #178: Mantine's label/description must render when inputLabel/helperText aren't set.
+// Mantine's label/description must render when inputLabel/helperText aren't set.
 export const MantineLabelFallback: Story = {
   tags: ['!dev', '!autodocs'],
   args: { inputLabel: undefined, helperText: undefined, label: 'Name', description: 'Full name' },
   render: (args) => <TextField {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByLabelText('Name')).toBeInTheDocument();
-    await expect(canvas.getByText('Full name')).toBeInTheDocument();
+    const input = canvas.getByLabelText('Name');
+    await expect(input).toHaveAccessibleName('Name');
+    await expect(input).toHaveAccessibleDescription('Full name');
+  },
+};
+
+// An empty inputLabel/helperText counts as unset, so Mantine's label/description still apply.
+export const EmptyPropsUseMantineFallback: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: '', helperText: '', label: 'Name', description: 'Full name' },
+  render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Name');
+    await expect(input).toHaveAccessibleName('Name');
+    await expect(input).toHaveAccessibleDescription('Full name');
+  },
+};
+
+// When both are set, inputLabel/helperText must win over Mantine's label/description.
+export const PropsWinOverMantineFallback: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: {
+    inputLabel: 'Primary',
+    helperText: 'Primary help',
+    label: 'Fallback',
+    description: 'Fallback help',
+  },
+  render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Primary');
+    await expect(input).toHaveAccessibleName('Primary');
+    await expect(input).not.toHaveAccessibleName('Fallback');
+    await expect(input).toHaveAccessibleDescription('Primary help');
+    await expect(input).not.toHaveAccessibleDescription('Fallback help');
+  },
+};
+
+// A numeric defaultValue must count as non-empty, so the clear button shows and clears it (#200).
+export const NumericDefaultValue: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: 'Amount', defaultValue: 123, showClearButton: true },
+  render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText('Amount');
+    await expect(input).toHaveValue('123');
+    await userEvent.click(canvas.getByRole('button', { name: 'Clear' }));
+    await expect(input).toHaveValue('');
+  },
+};
+
+// A numeric controlled value must count as non-empty, so the clear button shows (#200).
+export const NumericControlledValue: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: { inputLabel: 'Amount', value: 123, showClearButton: true },
+  render: (args) => <TextField {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText('Amount')).toHaveValue('123');
+    await expect(canvas.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
   },
 };
 
