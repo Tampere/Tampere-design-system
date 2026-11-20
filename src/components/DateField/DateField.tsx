@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { FocusTrap, Popover } from '@mantine/core';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import 'dayjs/locale/fi';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+import localizedFormat from 'dayjs/plugin/localizedFormat.js';
+import 'dayjs/locale/fi.js';
 import cx from 'clsx';
 import { TextField } from '../TextField';
 import { Button } from '../Button';
