@@ -40,6 +40,19 @@ export default defineConfig([
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       '@typescript-eslint/no-unused-vars': 'warn',
+      // We're "type": "module", so webpack 5 resolves our ESM bundle's imports fully specified (#252).
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^dayjs/(?!.*\\.js$)',
+              message:
+                'Add the .js extension: webpack 5 cannot resolve extensionless dayjs subpaths.',
+            },
+          ],
+        },
+      ],
     },
   },
 
