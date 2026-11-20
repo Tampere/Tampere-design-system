@@ -9,7 +9,11 @@ export interface TextAreaProps extends TextareaProps, React.AriaAttributes {
    * Label for the textarea field. If not set, you must provide an aria-label for accessibility.
    */
   inputLabel?: string;
+  /** @deprecated Use `inputLabel` instead. `label` will be removed in 2.0. */
+  label?: TextareaProps['label'];
   helperText?: string;
+  /** @deprecated Use `helperText` instead. `description` will be removed in 2.0. */
+  description?: TextareaProps['description'];
   error?: string; // Overrides TextInputProps error to be string for error message. Remove this if custom error components are needed.
 }
 
@@ -25,10 +29,14 @@ const getInputStatus = (error?: TextAreaProps['error'], disabled?: boolean): Inp
 export const TextArea = ({
   inputLabel,
   helperText,
+  // Mantine's names still work as fallbacks so 1.x stays non-breaking; drop them in 2.0 (#178).
+  label: mantineLabel,
+  description: mantineDescription,
   error,
   disabled,
   onChange,
   classNames,
+  defaultValue,
   ...props
 }: TextAreaProps) => {
   const inputStatus = getInputStatus(error, disabled);
@@ -42,7 +50,7 @@ export const TextArea = ({
     error: cx(errorRoot, errorText),
   };
 
-  const [textValue, setTextValue] = useState('');
+  const [textValue, setTextValue] = useState(String(defaultValue ?? ''));
 
   return (
     <Textarea
@@ -55,8 +63,9 @@ export const TextArea = ({
       unstyled
       classNames={mergeClassNames(defaultClassNames, classNames)}
       disabled={disabled}
-      label={inputLabel}
-      description={helperText}
+      // Joined with `||`, not `??`: an empty inputLabel would otherwise leave the textarea unnamed.
+      label={inputLabel || mantineLabel}
+      description={helperText || mantineDescription}
       error={error}
     />
   );
