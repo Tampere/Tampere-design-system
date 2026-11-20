@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.layer.css';
 import dayjs from 'dayjs';
-import 'dayjs/locale/fi';
+import 'dayjs/locale/fi.js';
 import cx from 'clsx';
 import { Button } from '../Button';
 import { IconButton } from '../IconButton';
