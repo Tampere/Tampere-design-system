@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases before 1.0.0 bumped the minor version for breaking changes; from 1.0.0 on, a breaking change bumps the major version.
 
+## [1.0.1] - 2026-11-27
+
+### Upgrade notes
+
+- **`Breadcrumbs`: the last item now renders as plain text, not a link.** It is the current page and is marked with `aria-current="page"`; its `href` and `linkComponent` are no longer used ([#207](https://github.com/Tampere/Tampere-design-system/issues/207)).
+- **The CommonJS bundle is now `dist/index.cjs`** (was `dist/index.cjs.js`). `require('@tampere/treds')` resolves it through `exports`; only code importing `dist/index.cjs.js` by path needs to change ([#233](https://github.com/Tampere/Tampere-design-system/issues/233)).
+
+### Deprecated
+
+- `TextField`'s and `TextArea`'s `label` and `description` props, in favour of `inputLabel` and `helperText`. They work again as fallbacks (see Fixed) and will be removed in 2.0 ([#178](https://github.com/Tampere/Tampere-design-system/issues/178)).
+
+### Fixed
+
+- **`require('@tampere/treds')` works.** `exports.require` pointed at `dist/index.cjs`, a file the build didn't produce, so CommonJS consumers failed with "Cannot find module" ([#233](https://github.com/Tampere/Tampere-design-system/issues/233)).
+- **webpack 5 can build an app that imports the package.** The ESM bundle imported three `dayjs` subpaths without the `.js` extension, which webpack 5 can't resolve from a `"type": "module"` package ([#252](https://github.com/Tampere/Tampere-design-system/issues/252)).
+- **`TextField` and `TextArea` render `label` and `description`** when `inputLabel` and `helperText` aren't set; they were silently dropped, leaving a field that used them without a label. `defaultValue` now pre-fills the field instead of being ignored ([#178](https://github.com/Tampere/Tampere-design-system/issues/178), [#200](https://github.com/Tampere/Tampere-design-system/issues/200)).
+- **An uncontrolled `RadioButton` shows its selection.** The checked icon now follows the native input, so clicks, arrow keys and form reset show up without a controlled `checked` prop ([#198](https://github.com/Tampere/Tampere-design-system/issues/198)).
+- **`Checkbox` and `RadioButton` inside a disabled `<fieldset>` look disabled.** The disabled style follows the native `:disabled` state, not only the `disabled` prop ([#199](https://github.com/Tampere/Tampere-design-system/issues/199)). A disabled `RadioButton` with `error` now looks disabled rather than error-red, matching `Checkbox` ([#137](https://github.com/Tampere/Tampere-design-system/issues/137)).
+- **`error` on `Checkbox` and `RadioButton` sets `aria-invalid`**, unless the control is disabled; an `aria-invalid` you pass still wins ([#197](https://github.com/Tampere/Tampere-design-system/issues/197)).
+- **`Breadcrumbs`:** the `nav` is named "Murupolku" by default (override with `ariaLabel`) and the `›` separators are hidden from screen readers ([#207](https://github.com/Tampere/Tampere-design-system/issues/207)); `className` is applied in the desktop layout too, not only with `isMobile` ([#181](https://github.com/Tampere/Tampere-design-system/issues/181)); with `isMobile` and more than five items, the back link points to the parent page instead of an earlier level ([#206](https://github.com/Tampere/Tampere-design-system/issues/206)); and an empty `items` array no longer throws with `isMobile`.
+- A `Checkbox` label that wraps grows its row instead of overlapping the next checkbox, with the box aligned to the first line ([#196](https://github.com/Tampere/Tampere-design-system/issues/196)).
+- A controlled `RadioButton` with an `onClick` but no `onChange` no longer logs React's "checked prop without an onChange handler" warning ([#139](https://github.com/Tampere/Tampere-design-system/issues/139)).
+
 ## [1.0.0] - 2026-09-29
 
 ### Upgrade notes
